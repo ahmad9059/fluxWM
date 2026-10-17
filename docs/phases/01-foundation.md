@@ -1,6 +1,6 @@
 # Phase 1: Foundation and reproducible development
 
-Status: planned. **Dependencies:** None. The repository contains planning documents and a standalone research probe, not a compositor workspace.
+Status: in progress; exit gate unqualified. **Dependencies:** None. A pinned Rust workspace, bootstrap and component implementations now exist. See the [current audit](../24-implementation-readiness-audit.md) for remaining artifacts and evidence; a compiling bootstrap does not pass this phase.
 
 ## Objective
 

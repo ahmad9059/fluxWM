@@ -1,4 +1,6 @@
-# Independent review outcome
+# Historical design-only independent review outcome
+
+These reports predate the Rust implementation and do not verify the current workspace. See the [review index](README.md) for the later implementation audit.
 
 Three actual Claude Code review passes completed successfully. The raw outputs preserve model, duration, tool-limit and permission metadata. The primary review model was `claude-opus-5-5`. Reviewer command/write tools were unavailable; no subagents were spawned.
 

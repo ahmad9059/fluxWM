@@ -1,6 +1,6 @@
 # Implementation contracts for the first Rust milestones
 
-These are proposed interfaces and procedures, **not compiled FluxWM APIs**. The standalone evidence probe is the only Rust code currently provided. Use the [architecture](02-architecture.md), [ordering rules](14-state-machines.md), and [resource policy](17-resource-security.md) as constraints when selecting actual types against a pinned Smithay revision.
+These are required design contracts and conceptual interfaces. Some core/config/layout/IPC APIs now exist, but the bootstrap has not integrated them; consult [development docs](development/README.md) and the [current audit](24-implementation-readiness-audit.md) for executable behavior. Use the [architecture](02-architecture.md), [ordering rules](14-state-machines.md), and [resource policy](17-resource-security.md) as constraints when selecting actual types against a pinned Smithay revision.
 
 ## Identity and state boundaries
 
@@ -57,13 +57,13 @@ Example request and success response:
 ```
 
 ```json
-{"version":1,"id":"req-17","state_sequence":42,"result":{"windows":[]}}
+{"version":1,"id":"req-17","state_sequence":"42","result":{"windows":[]}}
 ```
 
 Example error:
 
 ```json
-{"version":1,"id":"req-18","state_sequence":42,"error":{"code":"permission_denied","message":"Action is unavailable while the session is locked."}}
+{"version":1,"id":"req-18","state_sequence":"42","error":{"code":"permission_denied","message":"Action is unavailable while the session is locked."}}
 ```
 
 IDs are bounded strings, maximum 128 UTF-8 bytes, unique among outstanding requests per connection. There is no arbitrary shell-command method; `spawn` accepts explicit argv under local-control policy. Return structured unknown-method, unsupported-version, invalid-params, stale-object, permission-denied, busy, and device-operation-failed errors. JSON duplicate object keys and excessive nesting are rejected rather than accepted with parser-specific precedence.

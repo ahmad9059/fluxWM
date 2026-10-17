@@ -1461,5 +1461,265 @@
     "status": "specified",
     "result": null,
     "variants": []
+  },
+  {
+    "id": "RUN-01",
+    "stimulus": "One Wayland client keeps its socket readable while a second maps and closes a window",
+    "expected": "Bound work per dispatch and service the second client and shutdown source within a declared measured dispatch-latency budget",
+    "evidence_required": "Two synthetic clients; per-source dispatch counts, monotonic latency distribution, chosen budget and raw trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "RUN-02",
+    "stimulus": "Leave a static nested scene idle, then commit damage and request one frame callback",
+    "expected": "No self-sustaining redraw loop; commit wakes renderer and requested callback progresses without continuous polling",
+    "evidence_required": "Idle redraw/submit counters followed by commit-to-frame trace; CPU samples are supporting evidence",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core",
+      "single_gpu"
+    ],
+    "qualified_phase": 3,
+    "variants": []
+  },
+  {
+    "id": "RUN-03",
+    "stimulus": "Resize nested host to zero dimensions, minimize, then restore while a client commits",
+    "expected": "No zero-sized EGL submit or unwrap failure; retain membership and repaint latest committed content on restoration",
+    "evidence_required": "Host-size event log, submission sizes, client IDs and restored image",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core",
+      "single_gpu"
+    ],
+    "qualified_phase": 3,
+    "variants": []
+  },
+  {
+    "id": "RUN-04",
+    "stimulus": "Request shutdown during partial client input and while a supervised helper is starting",
+    "expected": "Wake event loop, stop owned work, reap supervised children and remove only owned sockets; do not affect host services",
+    "evidence_required": "Isolated process-tree and socket inode snapshots before/after SIGTERM and normal exit",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core",
+      "output_core"
+    ],
+    "qualified_phase": 3,
+    "variants": []
+  },
+  {
+    "id": "RUN-05",
+    "stimulus": "Advance monotonic animation time across a long suspend-like gap and repeated frame timestamp values",
+    "expected": "Retarget deterministically, bound integration work and settle according to resume policy without NaN or timer storm",
+    "evidence_required": "Fake-clock replay and frame dispatch counts; native suspend is separately qualified by OUT cases",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "motion",
+      "single_gpu"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "RUN-06",
+    "stimulus": "Send a valid IPC request then shut down only the client write half",
+    "expected": "Process complete buffered request and flush its response before retiring the connection; reject incomplete trailing frame",
+    "evidence_required": "UnixStream shutdown-write integration test and decoded response transcript",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "RUN-07",
+    "stimulus": "Mutate state then send malformed or unsupported request in the same IPC batch",
+    "expected": "Every later response uses a coherent nonregressing current state sequence, including transport-generated errors",
+    "evidence_required": "Decoded ordered response sequence trace with mutation handler counter",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "RUN-08",
+    "stimulus": "Server trickles a framed reply and config source is a FIFO or keeps growing",
+    "expected": "CLI transaction and config source acquisition obey total monotonic deadlines and byte bounds; compositor dispatch never waits for either",
+    "evidence_required": "Isolated trickle-server and FIFO fixtures, wall elapsed times, fd/process cleanup evidence",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "SURF-10",
+    "stimulus": "Bind xdg-shell capability-event version and exercise every advertised toplevel capability",
+    "expected": "Advertise only implemented behavior; unsupported requests preserve valid protocol progress without fake success",
+    "evidence_required": "Synthetic client capability event and request/configure/state transcript",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-11",
+    "stimulus": "Request move or resize after unmap or destruction and destroy drag source during callbacks",
+    "expected": "Validate live seat/client/serial and membership; cancel safely without process panic or stale focus",
+    "evidence_required": "Synthetic client and adversarial callback-order replay with server exit status and seat trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-12",
+    "stimulus": "Issue activation token after focus changes, reconnect, expiry or client destruction",
+    "expected": "Apply declared freshness and user-intent policy; metadata alone cannot steal focus and stale tokens cannot target reused identities",
+    "evidence_required": "Token lifecycle and seat serial traces with denied/allowed outcomes across GTK/Qt/native fixtures",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core",
+      "desktop"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "INP-09",
+    "stimulus": "Run pointer motion through rotated mixed-scale outputs with negative origins and a confined surface",
+    "expected": "Use one coherent coordinate conversion; preserve pointer position across boundary and respect input regions and constraint lifetime",
+    "evidence_required": "Physical/logical/surface transform trace and independently computed picking fixtures",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "motion",
+      "output_core"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "INP-10",
+    "stimulus": "Send high-resolution wheel fractions, finger stop and direction changes while camera animates",
+    "expected": "Preserve supported axis precision/source/stop semantics and route each gesture to one owner without a stuck scroll",
+    "evidence_required": "Synthetic axis event transcript and camera-versus-client delivery counts",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "motion"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "INP-11",
+    "stimulus": "Change idle inhibitors while windows hide, outputs power off and session locks",
+    "expected": "Apply visibility and lock policy per inhibitor type; stale/destroyed surface cannot inhibit indefinitely or bypass lock",
+    "evidence_required": "Idle timer/inhibitor ownership trace, DPMS and lock transition recording",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "desktop"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "GPU-10",
+    "stimulus": "Commit odd-sized buffers with fractional scale, viewport crop, transform and nonzero window geometry",
+    "expected": "Validate coordinate domains and legal buffer state; shared edges remain consistent and picking matches rendered content",
+    "evidence_required": "Pixel reference fixtures plus surface/buffer/output transform and input-region trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "single_gpu",
+      "scale"
+    ],
+    "qualified_phase": 4,
+    "variants": []
+  },
+  {
+    "id": "GPU-11",
+    "stimulus": "Reject atomic test or real commit during direct-scanout entry, exit or output reconfiguration",
+    "expected": "Preserve last confirmed state and resource ownership; safely compose fallback or fail the declared route without unsafe release",
+    "evidence_required": "Fault-injected KMS commit results, plane/framebuffer ownership ledger and visible recovery",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "single_gpu",
+      "direct_scanout"
+    ],
+    "qualified_phase": 9,
+    "variants": []
+  },
+  {
+    "id": "OPS-09",
+    "stimulus": "Install binary with missing or incompatible companion, shader or native library on clean target system",
+    "expected": "Report actionable startup failure and unwind owned session resources; package declares every required runtime asset and ABI",
+    "evidence_required": "Clean image package install/run/uninstall logs with intentionally absent dependencies",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 1,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "OPS-10",
+    "stimulus": "Replay recorded fuzz failure and rerun an old passing case after its security-sensitive dependency changes",
+    "expected": "Retain minimized seed and invalidate affected old qualification; require evidence matching current source and environment",
+    "evidence_required": "Seed replay, source/dependency hashes, affected-case mapping and release evidence validation",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 1,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
   }
 ]

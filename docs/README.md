@@ -23,7 +23,7 @@ Research date: **2026-10-17**. This folder specifies the product, architecture, 
 | [Initial documentation audit](12-documentation-audit.md) | Historical first-pass checks and limits |
 | [Production audit and blockers](13-production-audit.md) | Evidence classification, corrections, unresolved implementation gates |
 | [State machines](14-state-machines.md) | Surface, buffer, output, lock, capture, and config ordering |
-| [94 edge cases](15-edge-cases.md) | Stimuli, expected results, and future verification oracles |
+| [112 edge cases](15-edge-cases.md) | Stimuli, expected results, and future verification oracles |
 | [Integration contracts](16-integration-contracts.md) | Portal/X11/IME/accessibility/text/session obligations |
 | [Resources and privilege](17-resource-security.md) | Numeric proposals, helper containment, trust policy |
 | [Immutable source findings](18-source-findings.md) | Source commits/hashes and observed API facts |
@@ -31,6 +31,8 @@ Research date: **2026-10-17**. This folder specifies the product, architecture, 
 | [Implementation contracts](20-implementation-contracts.md) | Typed identities, startup readiness, IPC framing, action and snapshot semantics |
 | [Review decisions](21-review-resolutions.md) | Selected trust, capture, helper, ownership and infrastructure contracts |
 | [XDG window-state matrix](22-window-state-matrix.md) | Client flags, bounds, visibility, fullscreen backdrop, version gates |
+| [Current implementation audit](24-implementation-readiness-audit.md) | Source-backed findings, executable evidence and production blockers |
+| [Development documentation](development/README.md) | Implemented component APIs and remaining integration work |
 | [Independent review](reviews/README.md) | Claude review, remediation, and verification limits |
 
 ## Interpretation

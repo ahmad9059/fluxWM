@@ -1,5 +1,7 @@
 # Final documentation verification
 
+Historical design-only verification, superseded for current implementation status by the [implementation audit](24-implementation-readiness-audit.md). The observations below describe their original snapshot.
+
 Date: 2026-10-17. Scope: expanded engineering plan and research evidence, not a working compositor.
 
 ## Checks actually performed

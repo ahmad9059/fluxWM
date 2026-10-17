@@ -38,7 +38,10 @@
       "SURF-05",
       "SURF-06",
       "SURF-07",
-      "SURF-08"
+      "SURF-08",
+      "RUN-01",
+      "SURF-10",
+      "SURF-11"
     ],
     "3": [
       "GPU-01:implicit",
@@ -51,7 +54,10 @@
       "OUT-04",
       "OUT-04:cli-preview",
       "OUT-05",
-      "OUT-08"
+      "OUT-08",
+      "RUN-02",
+      "RUN-03",
+      "RUN-04"
     ],
     "4": [
       "LAY-01",
@@ -61,7 +67,8 @@
       "LAY-07",
       "LAY-08",
       "GPU-02:implicit",
-      "LAY-09"
+      "LAY-09",
+      "GPU-10"
     ],
     "5": [
       "OUT-07",
@@ -72,7 +79,10 @@
       "INP-08",
       "A11Y-02:text-fixture",
       "A11Y-03",
-      "A11Y-09"
+      "A11Y-09",
+      "RUN-05",
+      "INP-09",
+      "INP-10"
     ],
     "6": [
       "CFG-01",
@@ -83,7 +93,10 @@
       "CFG-06",
       "CFG-07",
       "CFG-08",
-      "SEC-12:host-control"
+      "SEC-12:host-control",
+      "RUN-06",
+      "RUN-07",
+      "RUN-08"
     ],
     "7": [
       "OUT-01",
@@ -114,7 +127,9 @@
       "SEC-13",
       "OUT-09",
       "SURF-09:strip-native",
-      "CAP-12"
+      "CAP-12",
+      "SURF-12",
+      "INP-11"
     ],
     "8": [
       "LAY-04",
@@ -140,7 +155,8 @@
       "GPU-08",
       "CAP-04",
       "GPU-09",
-      "CAP-11"
+      "CAP-11",
+      "GPU-11"
     ],
     "10": [
       "SEC-08",
@@ -151,7 +167,9 @@
       "OPS-05",
       "OPS-06",
       "OPS-07",
-      "OPS-08"
+      "OPS-08",
+      "OPS-09",
+      "OPS-10"
     ]
   }
 }

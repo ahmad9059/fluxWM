@@ -1,0 +1,183 @@
+{
+  "timestamp_utc": "2026-10-17T09:45:45.058793+00:00",
+  "scope": "Local build/component/document checks; no compositor launch or native-device qualification",
+  "source_files_sha256": {
+    "Cargo.lock": "5dfd0a73db5eb6110e394badc5057237329bc6d4514d3e8ac9341d3fd83283fa",
+    "Cargo.toml": "6fdf0abe465fc22ab7c5f63b50c832fc7709b6a3d403c5e76bff2588163dd164",
+    "crates/flux-config/Cargo.toml": "13fc5e84fccc44b14fc8217632f0635772ac8231ca1de9375cb2898ffc6cf38c",
+    "crates/flux-config/src/bounds.rs": "e612db88e0574a8df9d33295982a10e96e303e5e2adf3b869ea36604291da320",
+    "crates/flux-config/src/lib.rs": "f1445f7f61dcde53a29344e07ba8e68587a5f5012154c8e3ea4b7fb17cfc8692",
+    "crates/flux-config/src/schema.rs": "08a246065bad70e80bf7138a5671aefdecc37f9c56dc2555ae92e2da8ed0bdfb",
+    "crates/flux-config/src/supervisor.rs": "be8d9bd541af0a1d09c07e71602e3e66746f3c4db19165b75732fe7a2b3985c0",
+    "crates/flux-core/Cargo.toml": "dc28e6f621a14b4b4dd145781ceea6a4a89a7847895d45f5e24b9a94f190c49d",
+    "crates/flux-core/src/lib.rs": "859b9d02f961c054ba84288b30317fbcea8a1907036e6940e32cb9134a64fede",
+    "crates/flux-ipc/Cargo.toml": "3d3d8b11742d87d2327aa077ddcdf17991c661d49ef41517e69657c2ba5b4153",
+    "crates/flux-ipc/src/lib.rs": "e363bfdfe30b319cf44d15b2c42e5d4ff425fcae634d1dbe7cdfe939210896ab",
+    "crates/flux-layout/Cargo.toml": "56ebc73dcdaf8d18ecfe175a3e65e7fd4724a3fb334b6554f1148282e10a7af7",
+    "crates/flux-layout/src/lib.rs": "bbc66fbd4ea20b2c9b724adb40f063a103119d7afad13a8b603f6ab6e51f5f59",
+    "crates/fluxctl/Cargo.toml": "b6a8f524e8bc7634df065f688f2c85ef0061e338f61d0453596014130ce19212",
+    "crates/fluxctl/src/main.rs": "7c17dfef2588ee8782daac99b6e7bfb852791d1b1f3a39b319e1ee7c4493f0da",
+    "crates/fluxctl/tests/cli.rs": "4e416667bbf9f4b60ee1a5c7fbafd73696c7375c1dfb8bc5485ced3d732a15cc",
+    "crates/fluxwm/Cargo.toml": "596a9adc061b7eee61a6cd972a4b0af69b32e48ae2ed1816fc33db784501a6c5",
+    "crates/fluxwm/src/grabs/mod.rs": "df46101d77433e8134bf7f55bc6b6cdf00fec66cf156003064327f1a329a4778",
+    "crates/fluxwm/src/grabs/move_grab.rs": "bedfccfe8db05e8856c40713dfe11ae7c689e422a88c066bd2eefb790078e6b9",
+    "crates/fluxwm/src/grabs/resize_grab.rs": "d3177922c201f53069c411927aa4b5b79def9fb7d7d3eecffd90b1083cedea3d",
+    "crates/fluxwm/src/handlers/compositor.rs": "8c6eb4df929f93c2ecd198248adeb4006bc9b0fa5d7e0ddd5be1e6fcab0a327e",
+    "crates/fluxwm/src/handlers/mod.rs": "5b585b3ba176807e9086d608b06439971fbe50f021561db40a6ad6bb58e24601",
+    "crates/fluxwm/src/handlers/xdg_shell.rs": "5b937acbb4a491c99c3f05ae7c6fafbd746f0acb4eb081b6218302abfd474358",
+    "crates/fluxwm/src/input.rs": "ce69fc1c51d3757b3b048a243981ef996756d2b1116933e7ddc075f50eac5b7e",
+    "crates/fluxwm/src/main.rs": "3149439486c5b1bfabcb9e02e08f114735c906d93fb1f09c9998c97f8ba3e591",
+    "crates/fluxwm/src/state.rs": "6c988e9f0e6e50e28563ff3c091dabce1244d78e18af424307e260756b771abe",
+    "crates/fluxwm/src/winit.rs": "41e6e677b3679cea0f1905ae672c6355bf440d89426a6f577ffd43e28b6082c9",
+    "crates/fluxwm-config/Cargo.toml": "28e303c999fca202076f6f2951b3e5eba9d5dd62c7639ef22b67b240769c8ddb",
+    "crates/fluxwm-config/src/main.rs": "7580bb135369b9c870bab2ba70afff98d91aff1bd9ba150629a4bf4e9e8dec20",
+    "crates/fluxwm-config/tests/containment.rs": "5caf60c617f3e7776655318f1327e1d029323115ca08ea6b76474d76efc4bc7b",
+    "rust-toolchain.toml": "2ad6f15416572b4836585087f1d4abc53b8fa2dbd616f8dacfaa587ed6714228",
+    "tools/check_docs.py": "d349f69425afee14206a44401fec0580d7f3a9d10832002eaad6a4dee080f5c9",
+    "tools/record_audit.py": "df7033afdd2a4ef857ddfe6a34ad8500dadab6172cbbaa4810927fe27fd7929f"
+  },
+  "source_unchanged_during_checks": true,
+  "results": [
+    {
+      "name": "toolchain",
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 0.016,
+      "artifact": "toolchain.log",
+      "sha256": "e9e4ced8161a774af62ef1d599e5c84c25735205d052feaf97e7d480c29d135e"
+    },
+    {
+      "name": "native-metadata",
+      "argv": [
+        "pkg-config",
+        "--modversion",
+        "wayland-server",
+        "xkbcommon",
+        "libudev",
+        "gbm",
+        "egl",
+        "glesv2"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 0.002,
+      "artifact": "native-metadata.log",
+      "sha256": "9da08956f9fdc11cd032f0211354390a84ffa9f24e4c2d54cfc872bab6d5a363"
+    },
+    {
+      "name": "check",
+      "argv": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--locked"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 0.364,
+      "artifact": "check.log",
+      "sha256": "5bad3bbc07a6478d43ecd8d114c8137ab20df1bf55fa144638ace60baffa505b"
+    },
+    {
+      "name": "tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--locked"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 2.168,
+      "artifact": "tests.log",
+      "sha256": "b61908386b3257a3a529af1c6a47f48aecc3c37960b19bedfd050d0343d53cca"
+    },
+    {
+      "name": "ipc-defect-reproduction",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--manifest-path",
+        "docs/evidence/ipc-audit-probe/Cargo.toml",
+        "--target-dir",
+        "/tmp/flux-ipc-audit-target"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 1.016,
+      "artifact": "ipc-defect-reproduction.log",
+      "sha256": "74b259cb376a2709228824afbe09b7caf696d585072fc695b09d8319eccf1c2d"
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 0.465,
+      "artifact": "clippy.log",
+      "sha256": "4b08f46878f95c200391d1cb34b622bd46846947072c29cd4a5fecbe6de38692"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 0.114,
+      "artifact": "format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "docs",
+      "argv": [
+        "python3",
+        "tools/check_docs.py"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 0.096,
+      "artifact": "docs.log",
+      "sha256": "0cc85947f2695e0f36f39889a9cfbd6b0daa6577a9af35a9beb3c42504a4dc65"
+    },
+    {
+      "name": "whitespace",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008,
+      "artifact": "whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "passed": true,
+  "limits": [
+    "No live protocol/global inventory",
+    "No compositor runtime or hardware tests",
+    "Existing unit tests can miss production defects",
+    "Native pkg-config metadata is not a full runtime dependency inventory"
+  ],
+  "note": "Documentation check rerun after importing final subsystem audits and clarifying first-cycle mode conversion; other recorded checks were unchanged."
+}

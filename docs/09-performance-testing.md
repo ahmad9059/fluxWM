@@ -1,6 +1,6 @@
 # Performance targets and verification strategy
 
-Every number below is a proposed target. No FluxWM benchmarks have been run because no compositor exists yet. Choose and publish baseline hardware in phase 1, then review targets after phase 3 without hiding regressions.
+Every number below is a proposed target. No qualified FluxWM compositor benchmarks have been recorded; the initial bootstrap does not establish these targets. Choose and publish baseline hardware in phase 1, then review targets after phase 3 without hiding regressions.
 
 ## Initial budgets
 

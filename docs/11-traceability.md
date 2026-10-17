@@ -21,7 +21,7 @@ This table audits the **documentation deliverable** requested for this repositor
 
 ## Documentation audit method
 
-Inspect file contents, not merely filenames. Confirm each phase includes dependencies, tasks, required artifacts, verification, and a gate. Resolve all relative Markdown file links. Check the Lua example's basic syntax when an interpreter is available; runtime schema validation is impossible until phase 6 and must remain labeled as future work. Check that source-backed upstream facts link to relevant primary documentation and that targets are not presented as benchmark results.
+Inspect file contents, not merely filenames. Confirm each phase includes dependencies, tasks, required artifacts, verification, and a gate. Resolve all relative Markdown file links. Check the Lua example's basic syntax when an interpreter is available; distinguish the helper schema tests now available from unqualified compositor reload integration. Check that source-backed upstream facts link to relevant primary documentation and that targets are not presented as benchmark results.
 
 ## Implementation evidence ledger template
 
@@ -31,11 +31,11 @@ During implementation, keep one record per requirement: requirement ID, feature/
 
 | Additional requirement | Contract | Evidence status |
 | --- | --- | --- |
-| Immutable upstream evidence | [Manifest](evidence/upstream-sources.json), [findings](18-source-findings.md) | Retrieved source bytes/hashes; no qualified dependency build |
-| Hard config execution boundary | [Resources/helper](17-resource-security.md), [Lua probe](evidence/lua54-probe.txt) | Standalone Lua behavior observed; helper implementation unrun |
+| Immutable upstream evidence | [Manifest](evidence/upstream-sources.json), [findings](18-source-findings.md) | Retrieved source bytes/hashes; bootstrap compiles, complete phase-1 qualification remains open |
+| Hard config execution boundary | [Resources/helper](17-resource-security.md), [Lua probe](evidence/lua54-probe.txt) | Standalone Lua behavior observed; helper/component evidence is recorded in the current audit |
 | No layout timeout bypasses acquire | [State machines](14-state-machines.md) | Required design; GPU runtime tests unrun |
 | Revocable privileged capabilities | [Trust policy](17-resource-security.md) | Required design; bound-object tests unrun |
 | Complete integration contracts | [Desktop contracts](16-integration-contracts.md) | Source-informed plan; portal/X11/assistive spikes open |
-| Explicit failure/edge oracles | [94 cases](15-edge-cases.md) | Specified only, machine-readable statuses preserved |
+| Explicit failure/edge oracles | [112 cases](15-edge-cases.md) | Specified only, machine-readable statuses preserved |
 | Incident and release readiness | [Operations](19-release-operations.md) | Planned; no release artifact/runtime qualification |
 | Independent Claude review | [Review records](reviews/README.md) | See actual review output and disposition; never a production certification |

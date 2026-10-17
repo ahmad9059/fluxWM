@@ -1,6 +1,6 @@
 # Production gap audit and blocking decisions
 
-Audit scope: documentation and upstream source inspection, 2026-10-17. **FluxWM is not production-ready: no compositor implementation exists.** This audit strengthens a build plan; it does not certify future code. Production readiness is a set of demonstrated contracts on a declared support matrix, never a promise to handle every driver or application.
+Audit scope: documentation and upstream source inspection, 2026-10-17. **FluxWM is not production-ready.** This original design audit predates the initial Rust workspace; consult the [current implementation audit](24-implementation-readiness-audit.md) for source findings and build evidence. This audit strengthens a build plan; it does not certify future code. Production readiness is a set of demonstrated contracts on a declared support matrix, never a promise to handle every driver or application.
 
 ## Evidence classification
 
