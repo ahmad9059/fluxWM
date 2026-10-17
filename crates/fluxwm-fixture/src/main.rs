@@ -2455,7 +2455,7 @@ fn health_registry(
     Ok(registry)
 }
 fn health_destroy_windows(state: &mut State) {
-    for window in &mut state.windows {
+    for window in state.windows.iter_mut().filter(|w| !w.destroyed) {
         window.toplevel.destroy();
         window.xdg.destroy();
         window.surface.destroy();
@@ -2465,11 +2465,25 @@ fn health_destroy_windows(state: &mut State) {
         window.destroyed = true;
     }
 }
-fn shell_health(timeout: Duration, capacity: bool) -> Json {
+fn health_no_redraw(before: &Json, after: &Json) -> Result<()> {
+    for name in ["redraws", "compositions", "submissions", "frames_sent"] {
+        if before["runtime"][name].as_u64().is_none()
+            || before["runtime"][name] != after["runtime"][name]
+        {
+            return Err(format!(
+                "health changed render counter {name}: {} -> {}",
+                before["runtime"][name], after["runtime"][name]
+            ));
+        }
+    }
+    Ok(())
+}
+fn shell_health(timeout: Duration, mode: &str) -> Json {
+    let capacity = mode == "shell-health-capacity";
+    let disconnect = mode == "shell-health-disconnect";
     let start = Instant::now();
     let deadline = start + timeout;
-    let mut evidence =
-        json!({"ok":false,"mode":if capacity {"shell-health-capacity"} else {"shell-health"}});
+    let mut evidence = json!({"ok":false,"mode":mode});
     let mut state = State::new(start);
     state.health_mode = !capacity;
     state.health_ignore = !capacity;
@@ -2485,6 +2499,44 @@ fn shell_health(timeout: Duration, capacity: bool) -> Json {
         let snapshot = diagnostics.call("diagnostics", json!({}), deadline)?;
         if snapshot.get("shell_health").is_none() {
             return Err("compositor has no shell health diagnostics".into());
+        }
+        if snapshot["shell_health"]["timeout_ms"] != json!(2000)
+            || snapshot["shell_health"]["interval_ms"] != json!(5000)
+        {
+            return Err("configured shell health policy differs from 2000/5000 ms".into());
+        }
+        if disconnect {
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "disconnect real ping",
+                |s| s.health_serials.len() == 1,
+            )?;
+            observe_for(
+                &connection,
+                &mut queue,
+                &mut state,
+                Duration::from_millis(2200),
+                deadline,
+            )?;
+            let stalled = diagnostics.call("diagnostics", json!({}), deadline)?;
+            let clients = stalled["shell_health"]["clients"]
+                .as_array()
+                .ok_or("missing stalled clients")?;
+            if clients.len() != 1
+                || clients[0]["status"] != "unresponsive"
+                || stalled["shell_health"]["timer_armed"] != false
+            {
+                return Err(format!(
+                    "disconnect must begin with live timed-out binding and no timer: {stalled}"
+                ));
+            }
+            evidence["before_disconnect"] = stalled;
+            evidence["disconnect_with_live_binding"] = json!(true);
+            evidence["explicit_shell_destroy_sent"] = json!(false);
+            return Ok(()); // Process exit closes the live connection; no destroy request.
         }
         let global = state
             .globals
@@ -2511,6 +2563,8 @@ fn shell_health(timeout: Duration, capacity: bool) -> Json {
             if health["capacity"] != json!(1024)
                 || health["clients"].as_array().map(Vec::len) != Some(1024)
                 || health["stats"]["capacity_rejections"] != json!(2)
+                || health["stats"]["sent"] != json!(1024)
+                || health["stats"]["pongs"] != json!(1024)
             {
                 return Err(format!("monitor capacity oracle failed: {health}"));
             }
@@ -2585,7 +2639,25 @@ fn shell_health(timeout: Duration, capacity: bool) -> Json {
                 &connection,
                 &mut queue,
                 &mut state,
-                Duration::from_millis(2200),
+                Duration::from_millis(1800),
+                deadline,
+            )?;
+            let early = diagnostics.call("diagnostics", json!({}), deadline)?;
+            if early["shell_health"]["stats"]["timeouts"] != json!(0)
+                || !early["shell_health"]["clients"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|c| c["status"] == "waiting")
+            {
+                return Err(format!("probe expired before 1.8-second check: {early}"));
+            }
+            evidence["before_deadline"] = early;
+            observe_for(
+                &connection,
+                &mut queue,
+                &mut state,
+                Duration::from_millis(400),
                 deadline,
             )?;
             let expired = diagnostics.call("diagnostics", json!({}), deadline)?;
@@ -2606,6 +2678,8 @@ fn shell_health(timeout: Duration, capacity: bool) -> Json {
             if diagnostics.last_sequence.unwrap() <= before_sequence {
                 return Err("timeout did not advance IPC sequence".into());
             }
+            health_no_redraw(&before, &expired)?;
+            evidence["no_redraw_during_timeout"] = json!(true);
             evidence["expired_sequence"] = json!(diagnostics.last_sequence.unwrap());
             evidence["expired"] = expired;
             // A different binding remains usable while the first is timed out.
@@ -2630,6 +2704,22 @@ fn shell_health(timeout: Duration, capacity: bool) -> Json {
                 |s| s.windows[window].frames > 0,
             )?;
             state.wm = Some(wm.clone());
+            evidence["sibling_frame_while_primary_unresponsive"] =
+                json!(state.windows[window].frames);
+            health_destroy_windows(&mut state);
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            observe_for(
+                &connection,
+                &mut queue,
+                &mut state,
+                Duration::from_millis(150),
+                deadline,
+            )?;
+            let before_recovery = diagnostics.call("diagnostics", json!({}), deadline)?;
+            if before_recovery["mapped_windows"] != json!(0) {
+                return Err("recovery render comparison requires no mapped windows".into());
+            }
+            evidence["before_recovery"] = before_recovery.clone();
             wm.pong(serial);
             health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             let recovered = diagnostics.call("diagnostics", json!({}), deadline)?;
@@ -2643,6 +2733,8 @@ fn shell_health(timeout: Duration, capacity: bool) -> Json {
             {
                 return Err(format!("late matching pong failed: {recovered}"));
             }
+            health_no_redraw(&before_recovery, &recovered)?;
+            evidence["no_redraw_during_recovery"] = json!(true);
             evidence["recovered"] = recovered;
             // A replay is ignored; the next periodic ping needs its new serial.
             wm.pong(serial);
@@ -2656,7 +2748,18 @@ fn shell_health(timeout: Duration, capacity: bool) -> Json {
                 &connection,
                 &mut queue,
                 &mut state,
-                Duration::from_millis(5200),
+                Duration::from_millis(4700),
+                deadline,
+            )?;
+            if state.health_serials.len() != 1 {
+                return Err("primary was re-probed before 4.7-second check".into());
+            }
+            evidence["no_reprobe_at_ms"] = json!(4700);
+            observe_for(
+                &connection,
+                &mut queue,
+                &mut state,
+                Duration::from_millis(500),
                 deadline,
             )?;
             health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
@@ -2706,11 +2809,17 @@ fn main() {
         return;
     }
     let parsed = match args.as_slice() {
-        [mode] if mode == "shell-health" || mode == "shell-health-capacity" => {
+        [mode]
+            if mode == "shell-health"
+                || mode == "shell-health-capacity"
+                || mode == "shell-health-disconnect" =>
+        {
             Ok((mode.as_str(), Duration::from_millis(12000)))
         }
         [mode, flag, value]
-            if (mode == "shell-health" || mode == "shell-health-capacity")
+            if (mode == "shell-health"
+                || mode == "shell-health-capacity"
+                || mode == "shell-health-disconnect")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -2754,7 +2863,7 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
@@ -2764,8 +2873,10 @@ fn main() {
         Ok(("container-clip", timeout)) => container_clip(timeout),
         Ok(("popup-clip", timeout)) => popup_clip(timeout),
         Ok(("input-probe", timeout)) => input_probe(timeout),
-        Ok(("shell-health", timeout)) => shell_health(timeout, false),
-        Ok(("shell-health-capacity", timeout)) => shell_health(timeout, true),
+        Ok((
+            mode @ ("shell-health" | "shell-health-capacity" | "shell-health-disconnect"),
+            timeout,
+        )) => shell_health(timeout, mode),
         Ok((_, timeout)) => run(timeout),
         Err(error) => json!({"ok":false,"error":error}),
     };

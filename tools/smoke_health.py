@@ -74,7 +74,11 @@ def run_case(binary, fixture, directory, mode, parent):
         report = json.loads((directory / 'fixture.stdout.log').read_text())
         result['fixture_report'] = report
         require(client.returncode == 0 and report['ok'], 'real fixture oracle failed: ' + str(report.get('error')))
+        cleanup_start = time.monotonic()
         after = ipc('diagnostics')
+        while after['shell_health']['clients'] and time.monotonic() - cleanup_start < .5:
+            check(); time.sleep(.01); after = ipc('diagnostics')
+        result['disconnect_cleanup_ms'] = round((time.monotonic() - cleanup_start) * 1000, 2)
         require(after['shell_health']['clients'] == [] and after['shell_health']['timer_armed'] is False, 'monitor/timer survived client retirement')
         result['after_disconnect'] = after
         result['quit'] = ipc('action', {'name': 'quit'})
@@ -113,7 +117,7 @@ def main():
     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
     parent = dict(os.environ)
     cases = [run_case(args.binary.resolve(), args.fixture.resolve(), directory / mode, mode, parent)
-             for mode in ['shell-health', 'shell-health-capacity']]
+             for mode in ['shell-health', 'shell-health-capacity', 'shell-health-disconnect']]
     result = {'ok': all(case['ok'] for case in cases), 'cases': cases, 'harness_sha256': sha256(Path(__file__)),
               'parent_environment_unchanged': parent == dict(os.environ), 'scope': 'synthetic XDG shell resource responsiveness, nonfatal diagnostics and monitor bounds; no application/frame-progress/native or global resource qualification'}
     write_json(directory / 'summary.json', result)
