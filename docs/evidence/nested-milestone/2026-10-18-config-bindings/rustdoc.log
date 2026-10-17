@@ -1,0 +1,6 @@
+    Checking flux-input v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-input)
+ Documenting flux-input v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-input)
+ Documenting fluxwm-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm-config)
+ Documenting fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.66s
+   Generated /home/ahmad/Documents/Projects/fluxwm/target/doc/flux_config/index.html and 10 other files

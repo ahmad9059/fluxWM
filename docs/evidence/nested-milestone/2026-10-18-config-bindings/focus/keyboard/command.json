@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-final-focus/fluxwm",
+    "--socket",
+    "fluxfocus-4e6e12d146bd4815",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-final-focus/keyboard/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-final-focus/keyboard/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-final-focus/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

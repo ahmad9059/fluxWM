@@ -1,4 +1,7 @@
 # Independent Claude review
+
+[Configuration/binding review](config-bindings-2026-10-18/disposition.md) inspects frozen `2a4cfb7`, identifies a cancellation-oracle gap and records later typed/sleeping helper tests with two independent failing mutations. Its 1,977 input hashes match and actual trace has 23 calls. The [focused follow-up](config-bindings-followup-2026-10-18/disposition.md) inspects `639f687`, finds no new high/medium issue within the corrections, and identifies low test gaps. Later author-only live-image and lock/group tests detect their named mutations. All 1,978 follow-up hashes match; actual trace has 15 calls. Neither reviewer executed tests or certified production readiness.
+
 [Claude’s configure-stream review](configure-stream-2026-10-17/disposition.md) inspects frozen `0dba143` and identifies static rejected-buffer recovery. Its disposition records a real failure on that executable and later automatic admission without a new surface commit. The actual trace has 23 read/search calls and 1,662 matching input hashes. Author tests and later source changes are separate. The [focused follow-up](configure-stream-followup-2026-10-17/disposition.md) inspects final `6435fcb`, finds no new high/medium issue within that correction, and retains retry-cost/ordering/fairness limits. Its actual trace has 13 calls and all 1,662 hashes match.
 
 

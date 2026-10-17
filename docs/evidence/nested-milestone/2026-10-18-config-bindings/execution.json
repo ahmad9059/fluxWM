@@ -1,0 +1,159 @@
+{
+  "source_commit": "ad35841de13fa51d2e97dbb44f9821521c27d029",
+  "source_branch": "impl/input-bindings",
+  "parallel_author_commits": [
+    "b4f396d19d40c51ccb9994e12d9c948ba424cdc8",
+    "3239013e94fd7e7d6dad8597712381c9f083de3c",
+    "419aa43a7432551de395c605269c7433460e0353"
+  ],
+  "integrated_commits": [
+    "2a4cfb794bb8952436a070ef4017669fae04a90b",
+    "639f6876e1bbc3784d5be41ad4072f52cac57f16",
+    "ad35841de13fa51d2e97dbb44f9821521c27d029"
+  ],
+  "parallel_worktree": "/home/ahmad/Documents/Projects/fluxwm-config",
+  "reviewed_commit": "2a4cfb794bb8952436a070ef4017669fae04a90b",
+  "followup_commit": "639f6876e1bbc3784d5be41ad4072f52cac57f16",
+  "named_tests": 142,
+  "binary_sha256": "b8da49c242729441c6f9b12cd1ee52eb6748d6b70976edd6597d44671652275c",
+  "fixture_sha256": "3e5d8dfda9b446ad497fa9f437fdf30ba61459dc7b99af74431bb2043128273f",
+  "cargo_lock_sha256": "1fcc6077d0acbe1de17186186da92a8f590e99749976833260ddeaba6ea1fffa",
+  "source_sha256": {
+    "crates/flux-config/src/coordinator.rs": "c4dea7be484ffd8de15f7d46a9f40b7c37b472f826376d5f0f003abbcc785627",
+    "crates/flux-config/src/supervisor.rs": "22c52e389b4600d6d020a00d5d5f39b9aa12f4e5b84539ef46a043319943c5f3",
+    "crates/fluxwm-config/tests/coordinator.rs": "8d48f871f77b34a87dd839344ed62362a6e9b294c2ead717e4b80163cc1a0857",
+    "crates/flux-input/src/lib.rs": "35c30dde11e8b6850f831fb634935a5ce11452f084d8715bf8fca818d286b2ce",
+    "crates/flux-input/tests/bindings.rs": "c765849cdd8a14ec2bc26117334dbb8afa5ab2f206fb12d0be398ce91c4fe13c",
+    "crates/fluxwm/src/input.rs": "0853f79bd44dc45d208a0f2f562a04d2592b47adbdc0c532ef25323fd22ff222",
+    "crates/fluxwm/src/state.rs": "5ffc5c2353c2322227982b76159f7209dac70d7312ece0198381b207b79411b1",
+    "crates/fluxwm/src/ipc.rs": "f0d430fb1bbfa44c8cc31002c695edd11834cf55bf242be2873d32626c45328b"
+  },
+  "scope": "Reusable config coordinator and compiled development bindings; runtime user-Lua publication remains unavailable",
+  "commands": [
+    {
+      "command": "cargo build --workspace --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked -- --list",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_private.py --bundle target/configure-verified-xvfb --artifacts target/config-bindings-final-regressions",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_focus.py --bundle target/configure-verified-xvfb --artifacts target/config-bindings-final-focus",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test -p flux-input --locked",
+      "exit_code": 0
+    }
+  ],
+  "cleanup_record_checks": "All final private suites and focus cases record owned authority/server/X socket/runtime endpoint cleanup and unchanged parent environment.",
+  "runtime_qualified_commit": "639f6876e1bbc3784d5be41ad4072f52cac57f16",
+  "final_checks": [
+    {
+      "command": "cargo build --workspace --locked",
+      "exit_code": 0,
+      "elapsed_seconds": 0.952
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked",
+      "exit_code": 0,
+      "elapsed_seconds": 3.085
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked -- --list",
+      "exit_code": 0,
+      "elapsed_seconds": 0.118
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 0.501
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked",
+      "exit_code": 0,
+      "elapsed_seconds": 0.685
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.201
+    }
+  ],
+  "runtime_binary_rechecked_sha256": "b8da49c242729441c6f9b12cd1ee52eb6748d6b70976edd6597d44671652275c",
+  "runtime_fixture_rechecked_sha256": "3e5d8dfda9b446ad497fa9f437fdf30ba61459dc7b99af74431bb2043128273f",
+  "production_diff_since_gui": {
+    "command": [
+      "git",
+      "diff",
+      "--name-only",
+      "639f6876e1bbc3784d5be41ad4072f52cac57f16",
+      "ad35841"
+    ],
+    "result": [
+      "crates/flux-input/tests/bindings.rs",
+      "crates/fluxwm-config/tests/coordinator.rs"
+    ],
+    "production_files_changed": []
+  },
+  "changes_after_gui_and_followup_review": [
+    "crates/flux-input/tests/bindings.rs",
+    "crates/fluxwm-config/tests/coordinator.rs"
+  ],
+  "runtime_record_recheck": {
+    "regressions/configure/summary.json": {
+      "ok": true,
+      "parent_environment_unchanged": true
+    },
+    "regressions/health/summary.json": {
+      "ok": true,
+      "parent_environment_unchanged": true
+    },
+    "regressions/nested/summary.json": {
+      "ok": true,
+      "parent_environment_unchanged": null
+    },
+    "regressions/scene/summary.json": {
+      "ok": true,
+      "parent_environment_unchanged": true
+    },
+    "regressions/shutdown/summary.json": {
+      "ok": true,
+      "parent_environment_unchanged": true
+    },
+    "focus/summary.json": {
+      "ok": true,
+      "cases": 3,
+      "parent_environment_unchanged": true,
+      "cleanup": true
+    },
+    "regressions/result.json": {
+      "ok": true,
+      "suites": 6,
+      "all_exit_zero": true,
+      "cleanup": true,
+      "parent_environment_unchanged": true
+    }
+  }
+}

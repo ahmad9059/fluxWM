@@ -126,3 +126,5 @@ The nested runtime uses `poll_controlled` and `Dispatch::Drain` to queue the qui
 `diagnostics.input_state` reports virtual key/suppression counts, observed host focus, grab flags and `authorized_buttons` (the application’s authorization ledger). `composed_scene` counts come from the last successful published snapshot. [Host-focus documentation](host-focus.md) distinguishes those observations from hardware state and raw-pixel proof.
 
 The nested `windows.list` rows expose [toplevel configure state](configure-stream.md): actual unacknowledged count, pending intent, and separate last-acked/committed serials and size suggestions. These fields do not prove actual buffer size, acquire readiness or presentation.
+
+`diagnostics.keyboard_bindings` reports the development-table source, entry/inactive counts and `runtime_keymap_changes: false`. These counts do not mean user configuration was applied; config check/reload/effective runtime endpoints remain unavailable.

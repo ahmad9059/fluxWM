@@ -1,0 +1,730 @@
+[
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-admission/command.json",
+    "copy": "regressions/configure/configure-admission/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-admission/compositor.stderr.log",
+    "copy": "regressions/configure/configure-admission/compositor.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-admission/compositor.stdout.log",
+    "copy": "regressions/configure/configure-admission/compositor.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-admission/fixture.stderr.log",
+    "copy": "regressions/configure/configure-admission/fixture.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-admission/fixture.stdout.log",
+    "copy": "regressions/configure/configure-admission/fixture.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-admission/ready.json",
+    "copy": "regressions/configure/configure-admission/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-admission/result.json",
+    "copy": "regressions/configure/configure-admission/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-admission/stats.json",
+    "copy": "regressions/configure/configure-admission/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-stream/command.json",
+    "copy": "regressions/configure/configure-stream/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-stream/compositor.stderr.log",
+    "copy": "regressions/configure/configure-stream/compositor.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-stream/compositor.stdout.log",
+    "copy": "regressions/configure/configure-stream/compositor.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-stream/fixture.stderr.log",
+    "copy": "regressions/configure/configure-stream/fixture.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-stream/fixture.stdout.log",
+    "copy": "regressions/configure/configure-stream/fixture.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-stream/ready.json",
+    "copy": "regressions/configure/configure-stream/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-stream/result.json",
+    "copy": "regressions/configure/configure-stream/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/configure-stream/stats.json",
+    "copy": "regressions/configure/configure-stream/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure/summary.json",
+    "copy": "regressions/configure/summary.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure.stderr",
+    "copy": "regressions/configure.stderr"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/configure.stdout",
+    "copy": "regressions/configure.stdout"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health/command.json",
+    "copy": "regressions/health/shell-health/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health/compositor.stderr.log",
+    "copy": "regressions/health/shell-health/compositor.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health/compositor.stdout.log",
+    "copy": "regressions/health/shell-health/compositor.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health/fixture.stderr.log",
+    "copy": "regressions/health/shell-health/fixture.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health/fixture.stdout.log",
+    "copy": "regressions/health/shell-health/fixture.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health/ready.json",
+    "copy": "regressions/health/shell-health/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health/result.json",
+    "copy": "regressions/health/shell-health/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health/stats.json",
+    "copy": "regressions/health/shell-health/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-capacity/command.json",
+    "copy": "regressions/health/shell-health-capacity/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-capacity/compositor.stderr.log",
+    "copy": "regressions/health/shell-health-capacity/compositor.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-capacity/compositor.stdout.log",
+    "copy": "regressions/health/shell-health-capacity/compositor.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-capacity/fixture.stderr.log",
+    "copy": "regressions/health/shell-health-capacity/fixture.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-capacity/fixture.stdout.log",
+    "copy": "regressions/health/shell-health-capacity/fixture.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-capacity/ready.json",
+    "copy": "regressions/health/shell-health-capacity/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-capacity/result.json",
+    "copy": "regressions/health/shell-health-capacity/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-capacity/stats.json",
+    "copy": "regressions/health/shell-health-capacity/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-disconnect/command.json",
+    "copy": "regressions/health/shell-health-disconnect/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-disconnect/compositor.stderr.log",
+    "copy": "regressions/health/shell-health-disconnect/compositor.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-disconnect/compositor.stdout.log",
+    "copy": "regressions/health/shell-health-disconnect/compositor.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-disconnect/fixture.stderr.log",
+    "copy": "regressions/health/shell-health-disconnect/fixture.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-disconnect/fixture.stdout.log",
+    "copy": "regressions/health/shell-health-disconnect/fixture.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-disconnect/ready.json",
+    "copy": "regressions/health/shell-health-disconnect/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-disconnect/result.json",
+    "copy": "regressions/health/shell-health-disconnect/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/shell-health-disconnect/stats.json",
+    "copy": "regressions/health/shell-health-disconnect/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health/summary.json",
+    "copy": "regressions/health/summary.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health.stderr",
+    "copy": "regressions/health.stderr"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/health.stdout",
+    "copy": "regressions/health.stdout"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc/child.json",
+    "copy": "regressions/ipc/child.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc/collision-lock.log",
+    "copy": "regressions/ipc/collision-lock.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc/collision-path.log",
+    "copy": "regressions/ipc/collision-path.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc/ready.json",
+    "copy": "regressions/ipc/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc/result.json",
+    "copy": "regressions/ipc/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc/stats.json",
+    "copy": "regressions/ipc/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc/stderr.log",
+    "copy": "regressions/ipc/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc/stdout.log",
+    "copy": "regressions/ipc/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc.stderr",
+    "copy": "regressions/ipc.stderr"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/ipc.stdout",
+    "copy": "regressions/ipc.stdout"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-long/command.json",
+    "copy": "regressions/nested/idle-long/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-long/ready.json",
+    "copy": "regressions/nested/idle-long/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-long/result.json",
+    "copy": "regressions/nested/idle-long/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-long/stats.json",
+    "copy": "regressions/nested/idle-long/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-long/stderr.log",
+    "copy": "regressions/nested/idle-long/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-long/stdout.log",
+    "copy": "regressions/nested/idle-long/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-short/command.json",
+    "copy": "regressions/nested/idle-short/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-short/ready.json",
+    "copy": "regressions/nested/idle-short/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-short/result.json",
+    "copy": "regressions/nested/idle-short/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-short/stats.json",
+    "copy": "regressions/nested/idle-short/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-short/stderr.log",
+    "copy": "regressions/nested/idle-short/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/idle-short/stdout.log",
+    "copy": "regressions/nested/idle-short/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/lifecycle/command.json",
+    "copy": "regressions/nested/lifecycle/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/lifecycle/fixture.json",
+    "copy": "regressions/nested/lifecycle/fixture.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/lifecycle/ready.json",
+    "copy": "regressions/nested/lifecycle/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/lifecycle/result.json",
+    "copy": "regressions/nested/lifecycle/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/lifecycle/stats.json",
+    "copy": "regressions/nested/lifecycle/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/lifecycle/stderr.log",
+    "copy": "regressions/nested/lifecycle/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/lifecycle/stdout.log",
+    "copy": "regressions/nested/lifecycle/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/sigterm/command.json",
+    "copy": "regressions/nested/sigterm/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/sigterm/ready.json",
+    "copy": "regressions/nested/sigterm/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/sigterm/result.json",
+    "copy": "regressions/nested/sigterm/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/sigterm/stats.json",
+    "copy": "regressions/nested/sigterm/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/sigterm/stderr.log",
+    "copy": "regressions/nested/sigterm/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/sigterm/stdout.log",
+    "copy": "regressions/nested/sigterm/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested/summary.json",
+    "copy": "regressions/nested/summary.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested.stderr",
+    "copy": "regressions/nested.stderr"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/nested.stdout",
+    "copy": "regressions/nested.stdout"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/package-verification.json",
+    "copy": "regressions/package-verification.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/result.json",
+    "copy": "regressions/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/container-clip/command.json",
+    "copy": "regressions/scene/container-clip/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/container-clip/fixture.json",
+    "copy": "regressions/scene/container-clip/fixture.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/container-clip/ready.json",
+    "copy": "regressions/scene/container-clip/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/container-clip/result.json",
+    "copy": "regressions/scene/container-clip/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/container-clip/stats.json",
+    "copy": "regressions/scene/container-clip/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/container-clip/stderr.log",
+    "copy": "regressions/scene/container-clip/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/container-clip/stdout.log",
+    "copy": "regressions/scene/container-clip/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/pointer-feedback/command.json",
+    "copy": "regressions/scene/pointer-feedback/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/pointer-feedback/fixture.json",
+    "copy": "regressions/scene/pointer-feedback/fixture.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/pointer-feedback/ready.json",
+    "copy": "regressions/scene/pointer-feedback/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/pointer-feedback/result.json",
+    "copy": "regressions/scene/pointer-feedback/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/pointer-feedback/stats.json",
+    "copy": "regressions/scene/pointer-feedback/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/pointer-feedback/stderr.log",
+    "copy": "regressions/scene/pointer-feedback/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/pointer-feedback/stdout.log",
+    "copy": "regressions/scene/pointer-feedback/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-clip/command.json",
+    "copy": "regressions/scene/popup-clip/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-clip/fixture.json",
+    "copy": "regressions/scene/popup-clip/fixture.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-clip/ready.json",
+    "copy": "regressions/scene/popup-clip/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-clip/result.json",
+    "copy": "regressions/scene/popup-clip/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-clip/stats.json",
+    "copy": "regressions/scene/popup-clip/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-clip/stderr.log",
+    "copy": "regressions/scene/popup-clip/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-clip/stdout.log",
+    "copy": "regressions/scene/popup-clip/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-lifecycle/command.json",
+    "copy": "regressions/scene/popup-lifecycle/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-lifecycle/fixture.json",
+    "copy": "regressions/scene/popup-lifecycle/fixture.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-lifecycle/ready.json",
+    "copy": "regressions/scene/popup-lifecycle/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-lifecycle/result.json",
+    "copy": "regressions/scene/popup-lifecycle/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-lifecycle/stats.json",
+    "copy": "regressions/scene/popup-lifecycle/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-lifecycle/stderr.log",
+    "copy": "regressions/scene/popup-lifecycle/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/popup-lifecycle/stdout.log",
+    "copy": "regressions/scene/popup-lifecycle/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene/summary.json",
+    "copy": "regressions/scene/summary.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene.stderr",
+    "copy": "regressions/scene.stderr"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/scene.stdout",
+    "copy": "regressions/scene.stdout"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/pipeline/command.json",
+    "copy": "regressions/shutdown/pipeline/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/pipeline/ready.json",
+    "copy": "regressions/shutdown/pipeline/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/pipeline/result.json",
+    "copy": "regressions/shutdown/pipeline/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/pipeline/stats.json",
+    "copy": "regressions/shutdown/pipeline/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/pipeline/stderr.log",
+    "copy": "regressions/shutdown/pipeline/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/pipeline/stdout.log",
+    "copy": "regressions/shutdown/pipeline/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/slow-peer/command.json",
+    "copy": "regressions/shutdown/slow-peer/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/slow-peer/ready.json",
+    "copy": "regressions/shutdown/slow-peer/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/slow-peer/result.json",
+    "copy": "regressions/shutdown/slow-peer/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/slow-peer/stats.json",
+    "copy": "regressions/shutdown/slow-peer/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/slow-peer/stderr.log",
+    "copy": "regressions/shutdown/slow-peer/stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/slow-peer/stdout.log",
+    "copy": "regressions/shutdown/slow-peer/stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown/summary.json",
+    "copy": "regressions/shutdown/summary.json"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown.stderr",
+    "copy": "regressions/shutdown.stderr"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/shutdown.stdout",
+    "copy": "regressions/shutdown.stdout"
+  },
+  {
+    "source": "target/config-bindings-final-regressions/xvfb.log",
+    "copy": "regressions/xvfb.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/command.json",
+    "copy": "focus/keyboard/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/compositor.stderr.log",
+    "copy": "focus/keyboard/compositor.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/compositor.stdout.log",
+    "copy": "focus/keyboard/compositor.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/fixture.stderr.log",
+    "copy": "focus/keyboard/fixture.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/fixture.stdout.log",
+    "copy": "focus/keyboard/fixture.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/input.events.jsonl",
+    "copy": "focus/keyboard/input.events.jsonl"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/ready.json",
+    "copy": "focus/keyboard/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/result.json",
+    "copy": "focus/keyboard/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/stats.json",
+    "copy": "focus/keyboard/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/keyboard/xvfb.log",
+    "copy": "focus/keyboard/xvfb.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/package-verification.json",
+    "copy": "focus/package-verification.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/command.json",
+    "copy": "focus/pointer/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/compositor.stderr.log",
+    "copy": "focus/pointer/compositor.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/compositor.stdout.log",
+    "copy": "focus/pointer/compositor.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/fixture.stderr.log",
+    "copy": "focus/pointer/fixture.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/fixture.stdout.log",
+    "copy": "focus/pointer/fixture.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/input.events.jsonl",
+    "copy": "focus/pointer/input.events.jsonl"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/ready.json",
+    "copy": "focus/pointer/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/result.json",
+    "copy": "focus/pointer/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/stats.json",
+    "copy": "focus/pointer/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/pointer/xvfb.log",
+    "copy": "focus/pointer/xvfb.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/command.json",
+    "copy": "focus/popup/command.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/compositor.stderr.log",
+    "copy": "focus/popup/compositor.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/compositor.stdout.log",
+    "copy": "focus/popup/compositor.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/fixture.stderr.log",
+    "copy": "focus/popup/fixture.stderr.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/fixture.stdout.log",
+    "copy": "focus/popup/fixture.stdout.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/input.events.jsonl",
+    "copy": "focus/popup/input.events.jsonl"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/ready.json",
+    "copy": "focus/popup/ready.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/result.json",
+    "copy": "focus/popup/result.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/stats.json",
+    "copy": "focus/popup/stats.json"
+  },
+  {
+    "source": "target/config-bindings-final-focus/popup/xvfb.log",
+    "copy": "focus/popup/xvfb.log"
+  },
+  {
+    "source": "target/config-bindings-final-focus/summary.json",
+    "copy": "focus/summary.json"
+  },
+  {
+    "source": "target/bindings-transition-baseline-final/bindings.rs",
+    "copy": "modifier-trigger-baseline/bindings.rs"
+  },
+  {
+    "source": "target/bindings-transition-baseline-final/execution.json",
+    "copy": "modifier-trigger-baseline/execution.json"
+  },
+  {
+    "source": "target/bindings-transition-baseline-final/tests.log",
+    "copy": "modifier-trigger-baseline/tests.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-coordinator-evidence/checks.json",
+    "copy": "parallel-component-checks/checks.json"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-coordinator-evidence/clippy.log",
+    "copy": "parallel-component-checks/clippy.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-coordinator-evidence/diff.log",
+    "copy": "parallel-component-checks/diff.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-coordinator-evidence/fmt.log",
+    "copy": "parallel-component-checks/fmt.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-coordinator-evidence/tests.log",
+    "copy": "parallel-component-checks/tests.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/checks.json",
+    "copy": "cancellation-proof/checks.json"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/clippy.log",
+    "copy": "cancellation-proof/clippy.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/coordinator-flag-mutation.log",
+    "copy": "cancellation-proof/coordinator-flag-mutation.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/diff.log",
+    "copy": "cancellation-proof/diff.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/direct-before.log",
+    "copy": "cancellation-proof/direct-before.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/fmt.log",
+    "copy": "cancellation-proof/fmt.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/mutations.json",
+    "copy": "cancellation-proof/mutations.json"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/supervisor-loop-mutation.log",
+    "copy": "cancellation-proof/supervisor-loop-mutation.log"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm-config/target/config-cancellation-evidence/tests.log",
+    "copy": "cancellation-proof/tests.log"
+  }
+]

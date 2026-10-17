@@ -1,0 +1,50 @@
+[
+  {
+    "mutation": "locks",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "flux-input",
+      "--test",
+      "bindings",
+      "lock_only_actions_are_checked_even_when_matching_ignores_lock_modifiers",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "removed_exact_text": "for locked in [0, caps, num, caps | num] {",
+    "replacement_exact_text": "for locked in [0, caps & 0, num & 0, (caps | num) & 0] {",
+    "source_before_sha256": "35c30dde11e8b6850f831fb634935a5ce11452f084d8715bf8fca818d286b2ce",
+    "mutated_source_sha256": "4a110ab7c8e663bda5fe85c133f0c09a3744af2d073ed815eb824fb986b0267f",
+    "test_source_sha256": "c765849cdd8a14ec2bc26117334dbb8afa5ab2f206fb12d0be398ce91c4fe13c",
+    "exit_code": 101,
+    "elapsed_seconds": 0.315,
+    "expected_ok_instead_of_rejection": true
+  },
+  {
+    "mutation": "group",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "flux-input",
+      "--test",
+      "bindings",
+      "actions_present_only_in_the_second_group_are_checked_in_that_group",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "removed_exact_text": "probe.update_mask(depressed, 0, locked, 0, 0, layout);",
+    "replacement_exact_text": "probe.update_mask(depressed, 0, locked, 0, 0, 0);",
+    "source_before_sha256": "35c30dde11e8b6850f831fb634935a5ce11452f084d8715bf8fca818d286b2ce",
+    "mutated_source_sha256": "a5edf561271afbe6ca83d78f6b5b605d8b6881c645045a704e663ce8262acea3",
+    "test_source_sha256": "c765849cdd8a14ec2bc26117334dbb8afa5ab2f206fb12d0be398ce91c4fe13c",
+    "exit_code": 101,
+    "elapsed_seconds": 0.319,
+    "expected_ok_instead_of_rejection": true
+  }
+]

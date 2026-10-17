@@ -74,3 +74,7 @@ The [XDG responsiveness monitor](shell-health.md) probes live shell bindings, re
 On nested host-focus loss, [held input cancellation](host-focus.md) releases virtual keys/buttons, preserves shortcut consumption and ends tracked popup grabs. Logical window selection persists; complete activation/native/input policy remains open.
 
 [Bounded toplevel configure scheduling](configure-stream.md) coalesces ordinary layout changes behind one unacknowledged configure and flushes the latest state on accepted acknowledgment. A remap initial configure may coexist with one older in-flight record. This does not implement atomic layout transactions or popup configure bounds.
+
+The [keymap-qualified binding table](input-bindings.md) now routes development shortcuts using current-group base symbols, exact modifiers and retained consumed-key ownership. It is compiled from built-in data, not user Lua. The reusable configuration coordinator is available, but runtime configuration endpoints still report unavailable.
+
+The US development table also explicitly binds Alt+Shift+c/s/Return to their unshifted actions; Alt+Shift+equal implements the physical Alt+plus chord. A base `plus` alternative serves keymaps where that symbol is unshifted. On the tested US keymap that alternative is inactive, so the diagnostics correctly report one inactive entry without losing the physical width shortcut.

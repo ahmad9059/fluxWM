@@ -1,0 +1,23 @@
+{
+  "base_commit": "2a4cfb794bb8952436a070ef4017669fae04a90b",
+  "final_source_commit": "639f6876e1bbc3784d5be41ad4072f52cac57f16",
+  "base_compiler_sha256": "b463318e558c93f967f1dcd4b86e48ab6a17eb6d6c08448e313bc0097373de98",
+  "restored_compiler_sha256": "35c30dde11e8b6850f831fb634935a5ce11452f084d8715bf8fca818d286b2ce",
+  "test_source_sha256": "f15524b5e70ebce08b17683d0066d1df1de5f44795c5c674bbecc0455e3a412a",
+  "scope": "Final actual-XKB modifier-transition test applied to earlier compiler source; expected failed test; no GUI or compositor started",
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "-p",
+    "flux-input",
+    "--test",
+    "bindings",
+    "modifier_and_group_triggers_are_not_misreported_as_reachable",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "source_restored": true
+}

@@ -1,0 +1,20 @@
+   Compiling flux-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-config)
+   Compiling flux-input v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-input)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.73s
+     Running tests/bindings.rs (target/debug/deps/bindings-32be602451b5eb31)
+
+running 1 test
+
+thread 'modifier_and_group_triggers_are_not_misreported_as_reachable' (105718) panicked at crates/flux-input/tests/bindings.rs:262:14:
+called `Result::unwrap_err()` on an `Ok` value: BindingSet { actions: [WorkspaceMode { mode: Canvas }], codes: {}, symbols: {(65505, Modifiers { ctrl: false, alt: true, shift: false, logo: false, level3: false, level5: false }): 0}, inactive: [] }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test modifier_and_group_triggers_are_not_misreported_as_reachable ... FAILED
+
+failures:
+
+failures:
+    modifier_and_group_triggers_are_not_misreported_as_reachable
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p flux-input --test bindings`

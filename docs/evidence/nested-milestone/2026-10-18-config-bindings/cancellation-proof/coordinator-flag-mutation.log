@@ -1,0 +1,32 @@
+   Compiling flux-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm-config/crates/flux-config)
+warning: unused import: `Ordering`
+ --> crates/flux-config/src/coordinator.rs:7:30
+  |
+7 |         atomic::{AtomicBool, Ordering},
+  |                              ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `flux-config` (lib) generated 1 warning (run `cargo fix --lib -p flux-config` to apply 1 suggestion)
+   Compiling fluxwm-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm-config/crates/fluxwm-config)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.73s
+     Running tests/coordinator.rs (target/debug/deps/coordinator-e3ae9b1a736b4366)
+
+running 1 test
+test coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop ... FAILED
+
+failures:
+
+---- coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop stdout ----
+
+thread 'coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop' (99191) panicked at crates/fluxwm-config/tests/coordinator.rs:226:5:
+shutdown waited for the ten-second evaluation deadline instead of cancelling the sleeping helper
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 4 filtered out; finished in 10.00s
+
+error: test failed, to rerun pass `-p fluxwm-config --test coordinator`

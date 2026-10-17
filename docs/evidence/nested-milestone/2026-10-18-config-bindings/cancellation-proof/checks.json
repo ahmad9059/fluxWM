@@ -1,0 +1,59 @@
+[
+  {
+    "name": "tests",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "flux-config",
+      "-p",
+      "fluxwm-config"
+    ],
+    "returncode": 0,
+    "elapsed_ms": 1904,
+    "log": "target/config-cancellation-evidence/tests.log"
+  },
+  {
+    "name": "clippy",
+    "command": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "-p",
+      "flux-config",
+      "-p",
+      "fluxwm-config",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "elapsed_ms": 436,
+    "log": "target/config-cancellation-evidence/clippy.log"
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "returncode": 0,
+    "elapsed_ms": 196,
+    "log": "target/config-cancellation-evidence/fmt.log"
+  },
+  {
+    "name": "diff",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "elapsed_ms": 7,
+    "log": "target/config-cancellation-evidence/diff.log"
+  }
+]

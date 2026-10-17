@@ -1,0 +1,10 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 168.11,
+  "snapshot": {
+    "commit": "639f6876e1bbc3784d5be41ad4072f52cac57f16",
+    "frozen": "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-followup-snapshot",
+    "smithay_revision": "023b78b1c5a05ca512767cacc07efca55fae8be4",
+    "xkbcommon_rust_version": "0.9.0"
+  }
+}

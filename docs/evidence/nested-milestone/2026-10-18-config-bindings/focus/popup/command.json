@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-final-focus/fluxwm",
+    "--socket",
+    "fluxfocus-a1ce6a2a04e4446f",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-final-focus/popup/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-final-focus/popup/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/config-bindings-final-focus/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

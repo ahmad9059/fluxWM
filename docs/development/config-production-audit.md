@@ -7,9 +7,29 @@ not the requested independent Claude review. It does not certify phase 6 or a us
 production session. Findings below distinguish code evidence from remaining integration
 and qualification work.
 
+The findings below describe those named snapshots. For current component behavior,
+read [configuration status](config.md), [input binding status](input-bindings.md) and
+[runtime findings](runtime-findings.md); historical absence claims are not live probes.
+
+## Follow-up status — 2026-10-18
+
+| Original finding | Verified progress | Remaining closure |
+| --- | --- | --- |
+| CFG-01 generation/ownership | A reusable coordinator owns one active helper, one latest pending source and one completion; actual-helper tests cover stale/foreign candidates, explicit commit-only last-good ownership and shutdown | Connect calloop/startup/reload and publish prepared compositor state atomically; qualify storms, failure boundaries and externally retained snapshots |
+| CFG-05 keymap semantics | `flux-input` resolves real seat keymaps, rejects aliases/code-symbol conflicts and modifier/group triggers; actual XKB and private input tests qualify named cases | Apply user bindings, keymap/device replacement, physical-code end-to-end and accessibility/custom-keymap policy coherently |
+| CFG-10 cancellation | Shutdown cancellation is typed and tested with sleeping helpers, live-image readiness, owned-child reaping and two independently failing mutations | Bound/measure parent compilation and retirement, integrate lifecycle away from dispatch and qualify accepted-work scheduling; no universal kernel deadline is claimed |
+
+These are partial closures. The [retained evidence](../evidence/nested-milestone/2026-10-18-config-bindings/README.md)
+records 142 named workspace tests and exact execution limits. The [initial independent
+Claude review](../reviews/config-bindings-2026-10-18/disposition.md) found a masking
+cancellation oracle; the [focused follow-up](../reviews/config-bindings-followup-2026-10-18/disposition.md)
+found no new high/medium issue within its corrections. Later author-only test fixes
+and mutation proofs are identified explicitly. Full user-config publication remains
+unavailable and phase 6 remains open.
+
 ## Evidence examined and reproducible checks
 
-The current code is [owned schema](../../crates/flux-config/src/schema.rs),
+The inspected code was [owned schema](../../crates/flux-config/src/schema.rs),
 [parent structural preflight](../../crates/flux-config/src/bounds.rs),
 [process supervisor](../../crates/flux-config/src/supervisor.rs),
 [Lua helper](../../crates/fluxwm-config/src/main.rs), and

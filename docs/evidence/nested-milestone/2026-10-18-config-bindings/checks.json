@@ -1,0 +1,32 @@
+[
+  {
+    "command": "cargo build --workspace --locked",
+    "exit_code": 0,
+    "elapsed_seconds": 0.952
+  },
+  {
+    "command": "cargo test --workspace --all-targets --locked",
+    "exit_code": 0,
+    "elapsed_seconds": 3.085
+  },
+  {
+    "command": "cargo test --workspace --all-targets --locked -- --list",
+    "exit_code": 0,
+    "elapsed_seconds": 0.118
+  },
+  {
+    "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+    "exit_code": 0,
+    "elapsed_seconds": 0.501
+  },
+  {
+    "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked",
+    "exit_code": 0,
+    "elapsed_seconds": 0.685
+  },
+  {
+    "command": "cargo fmt --all -- --check",
+    "exit_code": 0,
+    "elapsed_seconds": 0.201
+  }
+]

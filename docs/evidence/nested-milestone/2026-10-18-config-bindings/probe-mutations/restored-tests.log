@@ -1,0 +1,31 @@
+   Compiling flux-input v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-input)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.29s
+     Running unittests src/lib.rs (target/debug/deps/flux_input-a7850fad5f48e434)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bindings.rs (target/debug/deps/bindings-32be602451b5eb31)
+
+running 11 tests
+test group_changing_actions_cannot_change_their_own_lookup_group ... ok
+test code_and_symbol_collisions_are_rejected_in_both_orders ... ok
+test actions_present_only_in_the_second_group_are_checked_in_that_group ... ok
+test evdev_code_is_not_xkb_code_and_can_bind_without_symbol_assignment ... ok
+test a_state_changing_shifted_action_is_checked_at_the_configured_modifier_level ... ok
+test exact_modifiers_and_base_symbols_ignore_locked_caps_and_shifted_letters ... ok
+test invalid_names_numeric_aliases_and_duplicate_modifier_chords_fail_before_install ... ok
+test modifier_and_group_triggers_are_not_misreported_as_reachable ... ok
+test limits_and_action_validation_apply_to_direct_rust_callers_too ... ok
+test lock_only_actions_are_checked_even_when_matching_ignores_lock_modifiers ... ok
+test absent_symbols_are_explicit_and_foreign_groups_use_current_base_symbols ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Doc-tests flux_input
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

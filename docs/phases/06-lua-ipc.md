@@ -41,3 +41,7 @@ Record build revision, dependencies, environment, commands/scenario IDs, raw res
 Use the [production blocker register](../13-production-audit.md) and [review decisions](../21-review-resolutions.md). The exact case exit-gate list for this phase is in [phase-gates.json](../evidence/phase-gates.json); full cases and early variants are distinct. Do not require features scheduled for later phases. `introduced_phase` is design/harness work only, not a full-case pass.
 
 Retain [ordering contracts](../14-state-machines.md), [resources/trust](../17-resource-security.md), [desktop integration](../16-integration-contracts.md), [typed implementation contracts](../20-implementation-contracts.md) and the [window-state matrix](../22-window-state-matrix.md). Substage closure evidence for shared blockers is listed in the blocker register. Numeric limits require qualification.
+
+## Partial implementation evidence
+
+The [configuration coordinator](../development/config.md) implements bounded asynchronous evaluation, stale/foreign-candidate rejection, explicit last-good ownership and actual-helper cancellation tests. The [input compiler](../development/input-bindings.md) resolves actual keymaps and routes development controls through typed tables. These are component/task-2/3/4 foundations; runtime candidate preparation/publication, startup fallback/discovery, autostart and complete effective settings remain open. This phase is not closed.

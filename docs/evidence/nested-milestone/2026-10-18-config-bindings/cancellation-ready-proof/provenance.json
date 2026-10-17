@@ -1,0 +1,11 @@
+{
+  "author_commit": "419aa43a7432551de395c605269c7433460e0353",
+  "integrated_commit": "ad35841de13fa51d2e97dbb44f9821521c27d029",
+  "compared_author_worktree": "/home/ahmad/Documents/Projects/fluxwm-config",
+  "source_sha256": {
+    "crates/flux-config/src/coordinator.rs": "c4dea7be484ffd8de15f7d46a9f40b7c37b472f826376d5f0f003abbcc785627",
+    "crates/flux-config/src/supervisor.rs": "22c52e389b4600d6d020a00d5d5f39b9aa12f4e5b84539ef46a043319943c5f3",
+    "crates/fluxwm-config/tests/coordinator.rs": "8d48f871f77b34a87dd839344ed62362a6e9b294c2ead717e4b80163cc1a0857"
+  },
+  "scope": "Author copied final source/test byte equality; mutation metadata and logs retained unchanged"
+}

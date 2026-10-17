@@ -1,0 +1,20 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "-p",
+    "fluxwm-config",
+    "--test",
+    "coordinator",
+    "coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop",
+    "--",
+    "--exact"
+  ],
+  "removed_exact_text": "            self.shared.cancelled.store(true, Ordering::Release);\n",
+  "source_before_sha256": "c4dea7be484ffd8de15f7d46a9f40b7c37b472f826376d5f0f003abbcc785627",
+  "returncode": 101,
+  "elapsed_ms": 10706,
+  "expected_assertion_observed": true,
+  "source_restored_sha256": "c4dea7be484ffd8de15f7d46a9f40b7c37b472f826376d5f0f003abbcc785627"
+}

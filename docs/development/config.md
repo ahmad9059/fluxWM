@@ -2,8 +2,10 @@
 
 The source under `crates/flux-config` and `crates/fluxwm-config` implements the initial
 schema and evaluator, including the documentation example in `docs/examples/config.lua`.
-This does not close phase 6: compositor integration, transactions, keymap resolution,
-autostart lifecycle, hot reload and reference generation still need implementation.
+The asynchronous coordinator and real-keymap binding compiler now provide preparation
+components. This does not close phase 6: atomic compositor publication, config-driven
+keymap/device transactions, autostart lifecycle, hot reload and reference generation
+still need implementation.
 The wider documents describe the target contract; this file records current behavior.
 
 ## Run and consume
@@ -105,7 +107,10 @@ other error, and verifies `waitpid` reports `ECHILD`. Its 500 ms supervisor dead
 bounds a broken cancellation path; CPU limits cannot terminate the sleeping helper
 and satisfy the oracle. A separate coordinator test also uses an observed sleeping helper, a ten-second
 evaluation deadline, one pending replacement and a shutdown bound below one second;
-this checks the coordinator-to-supervisor cancellation wiring independently of CPU
+it verifies the live canonical sleep executable through Linux `/proc/PID/exe` and
+the active generation/PID immediately before shutdown, preventing early helper exit
+from satisfying that oracle. Missing procfs or an executable `/bin/sleep` fails this test.
+This checks the coordinator-to-supervisor cancellation wiring independently of CPU
 limits. The actual-Lua shutdown check separately requires retirement in under one
 second, below its two-second CPU backstop. These timings qualify the
 local test environment; they do not establish universal kernel shutdown deadlines.
@@ -114,9 +119,10 @@ supervisor-loop cancellation check fails the typed unit oracle with `Timeout`;
 removing only the coordinator's cancellation-flag store fails the sleeping-helper
 shutdown oracle after the ten-second deadline. Both source files were restored in
 `finally` blocks and the repaired suite rerun. Exact commands, assertion transcripts
-and restored source hashes are retained in
-`target/config-cancellation-evidence/{checks,mutations}.json` and adjacent logs in
-the configuration worktree. These mutations establish detection of those specific
+and restored source hashes are retained in the
+[cancellation evidence](../evidence/nested-milestone/2026-10-18-config-bindings/README.md),
+including a repeated flag-store mutation with the final live-image readiness test.
+These mutations establish detection of those specific
 missing checks, not arbitrary cancellation or kernel fault schedules.
 These establish this library's local behavior, not atomic compositor hot reload,
 keymap/device transactions, filesystem acquisition or complete phase-6 readiness.
@@ -211,3 +217,7 @@ check a window's lifetime, enforce lock restrictions or prove an executable exis
 Those remain compositor command/application checks. The earlier configuration audit's
 warning about direct core Action unit decoding applies to its recorded historical
 snapshot; the current core implementation closes that specific defect for every caller.
+
+The [keymap-qualified input compiler](input-bindings.md) additionally resolves actual symbols, base-level reachability and code/symbol ambiguity. Its tables now drive the built-in development controls. Connecting a loader candidate to this preparation and to one atomic runtime publication is still required; coordinator commit alone does not install bindings or change layout/device state.
+
+Runtime integration must also budget retirement of superseded compiled snapshots: request/commit can drop prior completion or last-good ownership. These bounds and component tests do not establish a dispatch-latency budget for allocating or destroying regex/config data.

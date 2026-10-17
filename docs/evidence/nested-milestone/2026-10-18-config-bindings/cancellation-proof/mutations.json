@@ -1,0 +1,46 @@
+[
+  {
+    "mutation": "supervisor-loop",
+    "removed_exact_text": "        if cancelled.load(std::sync::atomic::Ordering::Acquire) {\n            return Err(ConfigError::Cancelled);\n        }\n",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "flux-config",
+      "supervisor::tests::cancellation_of_spawned_sleeping_helper_is_typed_and_reaped",
+      "--",
+      "--exact"
+    ],
+    "returncode": 101,
+    "elapsed_ms": 1068,
+    "log": "target/config-cancellation-evidence/supervisor-loop-mutation.log"
+  },
+  {
+    "mutation": "supervisor-loop",
+    "source_restored_sha256": "22c52e389b4600d6d020a00d5d5f39b9aa12f4e5b84539ef46a043319943c5f3"
+  },
+  {
+    "mutation": "coordinator-flag",
+    "removed_exact_text": "            self.shared.cancelled.store(true, Ordering::Release);\n",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "fluxwm-config",
+      "--test",
+      "coordinator",
+      "coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop",
+      "--",
+      "--exact"
+    ],
+    "returncode": 101,
+    "elapsed_ms": 10807,
+    "log": "target/config-cancellation-evidence/coordinator-flag-mutation.log"
+  },
+  {
+    "mutation": "coordinator-flag",
+    "source_restored_sha256": "c4dea7be484ffd8de15f7d46a9f40b7c37b472f826376d5f0f003abbcc785627"
+  }
+]

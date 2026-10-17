@@ -1,0 +1,43 @@
+{
+  "raw_check": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "output": "docs/evidence/nested-milestone/2026-10-18-config-bindings/bindings-restored-tests.log:29: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-proof/direct-before.log:9: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-proof/tests.log:60: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-ready-proof/baseline.log:9: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-ready-proof/tests.log:60: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-config-bindings/parallel-component-checks/tests.log:58: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-config-bindings/probe-mutations/restored-tests.log:31: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-config-bindings/tests.log:168: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-config-bindings/tests.log:170: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-config-bindings/tests.log:172: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-config-bindings/tests.log:174: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-config-bindings/tests.log:176: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-config-bindings/tests.log:279: new blank line at EOF.\n"
+  },
+  "source_and_docs_check": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-config-bindings/bindings-restored-tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-proof/direct-before.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-proof/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-ready-proof/baseline.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-ready-proof/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-config-bindings/parallel-component-checks/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-config-bindings/probe-mutations/restored-tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-config-bindings/tests.log"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  "excluded_paths": [
+    "docs/evidence/nested-milestone/2026-10-18-config-bindings/bindings-restored-tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-proof/direct-before.log",
+    "docs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-proof/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-ready-proof/baseline.log",
+    "docs/evidence/nested-milestone/2026-10-18-config-bindings/cancellation-ready-proof/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-config-bindings/parallel-component-checks/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-config-bindings/probe-mutations/restored-tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-config-bindings/tests.log"
+  ],
+  "reason": "Preserve raw console bytes, including libtest subprocess trailing whitespace and blank terminal lines; do not normalize execution evidence."
+}

@@ -1,0 +1,22 @@
+   Compiling flux-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm-config/crates/flux-config)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s
+     Running unittests src/lib.rs (target/debug/deps/flux_config-d0c07e42a5bdc97d)
+
+running 1 test
+test supervisor::tests::cancellation_of_spawned_sleeping_helper_is_typed_and_reaped ... FAILED
+
+failures:
+
+---- supervisor::tests::cancellation_of_spawned_sleeping_helper_is_typed_and_reaped stdout ----
+
+thread 'supervisor::tests::cancellation_of_spawned_sleeping_helper_is_typed_and_reaped' (98741) panicked at crates/flux-config/src/supervisor.rs:277:9:
+expected cancellation, got Err(Timeout)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    supervisor::tests::cancellation_of_spawned_sleeping_helper_is_typed_and_reaped
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.50s
+
+error: test failed, to rerun pass `-p flux-config --lib`
