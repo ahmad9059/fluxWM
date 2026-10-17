@@ -2936,6 +2936,92 @@ fn configure_stream(timeout: Duration) -> Json {
 
 /// Layout rejection must not confuse protocol buffer ownership with scene
 /// membership. Keep the client alive so it can unmap and retry smaller hints.
+fn config_width(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    let mut evidence = json!({"ok":false,"mode":"config-width"});
+    let result = (|| -> Result<()> {
+        let connection = connect(&display_path()?, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit IPC socket required")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        for (index, expected) in [
+            json!({"logical_px":400.0}),
+            json!({"logical_px":760.0}),
+            json!({"fraction":0.25}),
+            json!({"logical_px":600.0}),
+            json!({"logical_px":600.0}),
+            json!({"logical_px":480.0}),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            loop {
+                let effective = diagnostics.call("config.effective", json!({}), deadline)?;
+                let status = diagnostics.call("diagnostics", json!({}), deadline)?;
+                let failed = status["configuration"]["status"] == "failed";
+                if effective["effective"]["layout"]["default_width"] == expected
+                    && (index != 4 || failed)
+                {
+                    break;
+                }
+                observe_for(
+                    &connection,
+                    &mut queue,
+                    &mut state,
+                    Duration::from_millis(10),
+                    deadline,
+                )?;
+            }
+            let root = state.create(&qh, &format!("width-{index}"));
+            state.windows[root].surface.commit();
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "width initial configure",
+                |s| s.windows[root].configures > 0,
+            )?;
+            state.map(root, &qh)?;
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "width initial frame",
+                |s| s.windows[root].frames > 0,
+            )?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            state.windows[root]
+                .toplevel
+                .set_title(format!("width-{index}-ready"));
+            state.windows[root].surface.commit();
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        }
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(1500),
+            deadline,
+        )?;
+        evidence["windows"]=json!(state.windows.iter().enumerate().map(|(index,w)|json!({"index":index,"frames":w.frames,"configure_sizes":w.configure_sizes})).collect::<Vec<_>>());
+        if let Some(error) = state.error.take() {
+            return Err(error);
+        }
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["events"] = json!(state.events);
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence
+}
+
 fn config_geometry(timeout: Duration) -> Json {
     let start = Instant::now();
     let deadline = start + timeout;
@@ -3566,11 +3652,12 @@ fn main() {
                 .map(|n| (mode.as_str(), Duration::from_millis(n)))
                 .ok_or("shell-health timeout must be 1..15000ms")
         }
-        [mode] if mode == "input-probe" || mode == "config-geometry" => {
+        [mode] if mode == "input-probe" || mode == "config-geometry" || mode == "config-width" => {
             Ok((mode.as_str(), Duration::from_millis(10000)))
         }
         [mode, flag, value]
-            if (mode == "input-probe" || mode == "config-geometry") && flag == "--timeout-ms" =>
+            if (mode == "input-probe" || mode == "config-geometry" || mode == "config-width")
+                && flag == "--timeout-ms" =>
         {
             value
                 .parse::<u64>()
@@ -3610,11 +3697,12 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
         Ok(("configure-stream", timeout)) => configure_stream(timeout),
+        Ok(("config-width", timeout)) => config_width(timeout),
         Ok(("config-geometry", timeout)) => config_geometry(timeout),
         Ok(("configure-admission", timeout)) => configure_admission(timeout),
         Ok(("slow-reader", timeout)) => slow_reader(timeout),

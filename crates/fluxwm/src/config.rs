@@ -12,6 +12,7 @@ type Failure = &'static str;
 struct Prepared {
     desired: Config,
     bindings: BindingSet,
+    default_width: flux_layout::WidthPolicy,
 }
 // Retired schema/tables and replaced live-model storage are dropped on the worker.
 // Temporary layout clones in reconfigure/validation still drop on dispatch.
@@ -161,6 +162,39 @@ impl Drop for RuntimeConfig {
         let _ = self.shutdown();
     }
 }
+fn resolve_default_width(
+    layout: &flux_config::Layout,
+) -> Result<flux_layout::WidthPolicy, Failure> {
+    let width = match &layout.default_width {
+        flux_config::Width::Preset { preset } => layout
+            .width_presets
+            .get(
+                preset
+                    .checked_sub(1)
+                    .ok_or("default width preset is invalid")?,
+            )
+            .ok_or("default width preset is invalid")?,
+        width => width,
+    };
+    match width {
+        flux_config::Width::Pixels { logical_px } => {
+            Ok(flux_layout::WidthPolicy::Fixed(*logical_px))
+        }
+        flux_config::Width::Fraction { fraction } => {
+            Ok(flux_layout::WidthPolicy::ViewportFraction(*fraction))
+        }
+        flux_config::Width::Preset { .. } => Err("default width preset is recursive"),
+    }
+}
+fn width_value(width: flux_layout::WidthPolicy) -> serde_json::Value {
+    match width {
+        flux_layout::WidthPolicy::Fixed(logical_px) => serde_json::json!({"logical_px":logical_px}),
+        flux_layout::WidthPolicy::ViewportFraction(fraction) => {
+            serde_json::json!({"fraction":fraction})
+        }
+    }
+}
+
 fn run_worker(
     shared: Arc<Shared>,
     mut coordinator: ConfigCoordinator,
@@ -258,6 +292,7 @@ fn run_worker(
                     )
                     .map_err(|_| "configuration bindings failed seat-keymap validation")?;
                     Ok(Prepared {
+                        default_width: resolve_default_width(&config.layout)?,
                         desired: config.clone(),
                         bindings,
                     })
@@ -349,7 +384,11 @@ impl crate::Fluxwm {
                 Ok(prepared) => {
                     let mut layout = self.layout.clone();
                     if layout
-                        .reconfigure(prepared.desired.layout.gaps, prepared.desired.layout.mode)
+                        .reconfigure_with_default_width(
+                            prepared.desired.layout.gaps,
+                            prepared.desired.layout.mode,
+                            prepared.default_width,
+                        )
                         .is_err()
                     {
                         config.status = "failed";
@@ -394,9 +433,9 @@ impl crate::Fluxwm {
         let config = self.config.as_ref();
         serde_json::json!({
             "generation":config.and_then(|c|c.applied).map(|g|g.to_string()),
-            "desired":config.and_then(|c|c.desired.as_ref()).map(|c|serde_json::json!({"layout":{"gaps":c.layout.gaps,"mode":c.layout.mode},"binding_entries":c.bindings.len()})),
-            "effective":{"layout":{"gaps":self.layout.gap(),"mode":self.layout.mode()},"binding_entries":self.bindings.len(),"keymap":"startup-seat-keymap"},
-            "unsupported":["layout.outer_gap","layout.width_presets","layout.default_width","layout.focus_margin","layout.canvas","input","outputs","animations","decoration","rules","autostart","security"],
+            "desired":config.and_then(|c|c.desired.as_ref()).map(|c|serde_json::json!({"layout":{"gaps":c.layout.gaps,"mode":c.layout.mode,"default_width":c.layout.default_width,"width_presets":c.layout.width_presets},"binding_entries":c.bindings.len()})),
+            "effective":{"layout":{"gaps":self.layout.gap(),"mode":self.layout.mode(),"default_width":width_value(self.layout.default_width())},"binding_entries":self.bindings.len(),"keymap":"startup-seat-keymap"},
+            "unsupported":["layout.outer_gap","layout.focus_margin","layout.canvas","input","outputs","animations","decoration","rules","autostart","security"],
         })
     }
 }
@@ -404,6 +443,42 @@ impl crate::Fluxwm {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn configured_width_resolves_one_based_presets_without_recursive_defaults() {
+        use flux_config::Width;
+        use flux_layout::WidthPolicy;
+        let mut layout = flux_config::Layout::default();
+        assert_eq!(
+            resolve_default_width(&layout).unwrap(),
+            WidthPolicy::ViewportFraction(0.5)
+        );
+        layout.width_presets = vec![
+            Width::Pixels { logical_px: 400. },
+            Width::Fraction { fraction: 0.25 },
+        ];
+        layout.default_width = Width::Preset { preset: 1 };
+        assert_eq!(
+            resolve_default_width(&layout).unwrap(),
+            WidthPolicy::Fixed(400.)
+        );
+        layout.default_width = Width::Preset { preset: 2 };
+        assert_eq!(
+            resolve_default_width(&layout).unwrap(),
+            WidthPolicy::ViewportFraction(0.25)
+        );
+        for preset in [0, 3, usize::MAX] {
+            layout.default_width = Width::Preset { preset };
+            assert!(resolve_default_width(&layout).is_err());
+        }
+        layout.default_width = Width::Preset { preset: 1 };
+        layout.width_presets[0] = Width::Preset { preset: 1 };
+        assert!(resolve_default_width(&layout).is_err());
+        layout.default_width = Width::Pixels { logical_px: 640. };
+        assert_eq!(
+            resolve_default_width(&layout).unwrap(),
+            WidthPolicy::Fixed(640.)
+        );
+    }
     #[test]
     fn worker_publication_rejects_stale_and_closed_generations() {
         let shared = Shared::default();
@@ -431,6 +506,7 @@ mod tests {
                 Ok(Prepared {
                     desired: Config::default(),
                     bindings: BindingSet::default(),
+                    default_width: flux_layout::WidthPolicy::ViewportFraction(0.5),
                 }),
             ));
         }
@@ -523,7 +599,14 @@ mod tests {
         {
             let mut c = shared.control.lock().unwrap();
             c.latest = 1;
-            c.completion = Some((1, Ok(Prepared { desired, bindings })));
+            c.completion = Some((
+                1,
+                Ok(Prepared {
+                    desired,
+                    bindings,
+                    default_width: flux_layout::WidthPolicy::ViewportFraction(0.5),
+                }),
+            ));
         }
         // A live owned test worker avoids the stopped-worker fallback masking
         // removal of the actual publication gate. It does not evaluate Lua.

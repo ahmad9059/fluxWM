@@ -211,6 +211,7 @@ struct Column {
 pub struct Layout {
     viewport: Size,
     gap: f64,
+    default_width: WidthPolicy,
     mode: LayoutMode,
     columns: Vec<Column>,
     members: BTreeMap<WindowId, SizeConstraints>,
@@ -231,6 +232,7 @@ impl Layout {
         Ok(Self {
             viewport,
             gap: 8.0,
+            default_width: WidthPolicy::ViewportFraction(0.5),
             mode: LayoutMode::Strip,
             columns: Vec::new(),
             members: BTreeMap::new(),
@@ -255,7 +257,20 @@ impl Layout {
     /// focus in the current mode; mode conversion follows [`Self::set_mode`].
     /// Failure leaves the complete model, including saved mode state, unchanged.
     pub fn reconfigure(&mut self, gap: f64, mode: LayoutMode) -> Result<(), LayoutError> {
+        self.reconfigure_with_default_width(gap, mode, self.default_width)
+    }
+    /// Atomically change defaults for future columns alongside gap/mode. The
+    /// selected policy must resolve for the current viewport. Existing members,
+    /// explicit sizes and dormant mode geometry retain their width policies.
+    pub fn reconfigure_with_default_width(
+        &mut self,
+        gap: f64,
+        mode: LayoutMode,
+        default_width: WidthPolicy,
+    ) -> Result<(), LayoutError> {
+        default_width.resolve(self.viewport.width)?;
         let mut candidate = self.clone();
+        candidate.default_width = default_width;
         if gap != candidate.gap {
             candidate.set_gap(gap)?;
         }
@@ -279,6 +294,11 @@ impl Layout {
         candidate.mode = mode;
         *self = candidate;
         Ok(())
+    }
+    /// Width policy copied into each newly admitted column. Existing columns
+    /// retain their policies across configuration changes.
+    pub fn default_width(&self) -> WidthPolicy {
+        self.default_width
     }
     pub fn focused(&self) -> Option<WindowId> {
         self.focus
@@ -317,6 +337,7 @@ impl Layout {
         if !valid_size(viewport) {
             return Err(LayoutError::InvalidGeometry);
         }
+        self.default_width.resolve(viewport.width)?;
         self.check_strip_extent(viewport.width, self.gap, None, None, 0.0)?;
         self.viewport = viewport;
         self.reveal_focus();
@@ -357,7 +378,10 @@ impl Layout {
             self.gap,
             None,
             None,
-            (self.viewport.width * 0.5).max(constraints.min.width) + self.gap,
+            self.default_width
+                .resolve(self.viewport.width)?
+                .max(constraints.min.width)
+                + self.gap,
         )?;
         let index = self
             .focus
@@ -374,7 +398,7 @@ impl Layout {
             Column {
                 group,
                 windows: vec![window],
-                width: WidthPolicy::ViewportFraction(0.5),
+                width: self.default_width,
                 mode: ColumnMode::Stack,
                 active: window,
                 scroll_y: 0.0,
@@ -952,6 +976,9 @@ impl Layout {
         Ok(())
     }
     pub fn validate(&self) -> Result<(), &'static str> {
+        if self.default_width.resolve(self.viewport.width).is_err() {
+            return Err("invalid default width");
+        }
         let flattened: Vec<_> = self
             .columns
             .iter()
@@ -1232,6 +1259,126 @@ mod tests {
             height: 600.0,
         })
         .unwrap()
+    }
+    #[test]
+    fn configured_default_width_only_changes_new_columns_in_both_modes() {
+        let mut l = layout();
+        l.insert(id(0), SizeConstraints::default()).unwrap();
+        l.set_column_width(id(0), WidthPolicy::Fixed(420.)).unwrap();
+        let group = l.group_for(id(0));
+        l.reconfigure_with_default_width(8., LayoutMode::Strip, WidthPolicy::Fixed(700.))
+            .unwrap();
+        assert_eq!(rect(&l, id(0)).width, 420.);
+        assert_eq!(l.group_for(id(0)), group);
+        assert_eq!(l.focused(), Some(id(0)));
+        l.insert(id(1), SizeConstraints::default()).unwrap();
+        assert_eq!(rect(&l, id(1)).width, 700.);
+        l.reconfigure_with_default_width(
+            8.,
+            LayoutMode::Strip,
+            WidthPolicy::ViewportFraction(0.25),
+        )
+        .unwrap();
+        l.insert(id(2), SizeConstraints::default()).unwrap();
+        assert_eq!(rect(&l, id(2)).width, 250.);
+        l.set_viewport(Size {
+            width: 2000.,
+            height: 600.,
+        })
+        .unwrap();
+        assert_eq!(rect(&l, id(0)).width, 420.);
+        assert_eq!(rect(&l, id(1)).width, 700.);
+        assert_eq!(rect(&l, id(2)).width, 500.);
+        l.set_mode(LayoutMode::Canvas);
+        l.insert(id(3), SizeConstraints::default()).unwrap();
+        assert_eq!(rect(&l, id(3)).width, 500.);
+        assert_eq!(rect(&l, id(0)).width, 420.);
+        assert_eq!(rect(&l, id(1)).width, 700.);
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn invalid_default_or_future_admission_preserves_the_complete_model() {
+        let mut l = layout();
+        l.insert(id(0), SizeConstraints::default()).unwrap();
+        let before = format!("{l:?}");
+        for policy in [
+            WidthPolicy::Fixed(f64::NAN),
+            WidthPolicy::Fixed(f64::INFINITY),
+            WidthPolicy::Fixed(0.),
+            WidthPolicy::Fixed(MAX_COORD + 1.),
+            WidthPolicy::ViewportFraction(0.),
+            WidthPolicy::ViewportFraction(MAX_COORD),
+        ] {
+            assert_eq!(
+                l.reconfigure_with_default_width(20., LayoutMode::Canvas, policy),
+                Err(LayoutError::InvalidGeometry)
+            );
+            assert_eq!(format!("{l:?}"), before);
+        }
+        l.reconfigure_with_default_width(
+            8.,
+            LayoutMode::Strip,
+            WidthPolicy::Fixed(MAX_COORD - 100.),
+        )
+        .unwrap();
+        let before = format!("{l:?}");
+        assert_eq!(
+            l.insert(id(1), SizeConstraints::default()),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_eq!(format!("{l:?}"), before);
+        l.reconfigure_with_default_width(8., LayoutMode::Strip, WidthPolicy::ViewportFraction(16.))
+            .unwrap();
+        let before = format!("{l:?}");
+        assert_eq!(
+            l.set_viewport(Size {
+                width: MAX_COORD,
+                height: 600.
+            }),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_eq!(format!("{l:?}"), before);
+    }
+    #[test]
+    fn configured_width_still_honors_each_client_size_constraints() {
+        let mut l = layout();
+        l.reconfigure_with_default_width(8., LayoutMode::Strip, WidthPolicy::Fixed(200.))
+            .unwrap();
+        l.insert(
+            id(0),
+            SizeConstraints {
+                min: Size {
+                    width: 350.,
+                    height: 1.,
+                },
+                max: Some(Size {
+                    width: 450.,
+                    height: 600.,
+                }),
+            },
+        )
+        .unwrap();
+        assert_eq!(rect(&l, id(0)).width, 350.);
+        l.reconfigure_with_default_width(8., LayoutMode::Strip, WidthPolicy::Fixed(800.))
+            .unwrap();
+        l.insert(
+            id(1),
+            SizeConstraints {
+                min: Size {
+                    width: 1.,
+                    height: 1.,
+                },
+                max: Some(Size {
+                    width: 450.,
+                    height: 600.,
+                }),
+            },
+        )
+        .unwrap();
+        assert_eq!(rect(&l, id(0)).width, 350.);
+        assert_eq!(rect(&l, id(1)).width, 450.);
+        assert_eq!(l.default_width(), WidthPolicy::Fixed(800.));
+        assert_eq!(l.validate(), Ok(()));
     }
     fn rect(l: &Layout, w: WindowId) -> Rect {
         l.placements()

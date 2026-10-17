@@ -188,11 +188,12 @@ def assert_applied(snapshot, expected_generation, gap, mode, entries=3):
     # Exact effective shape is intentionally strict; update only with runtime API agreement.
     effective = snapshot['effective']
     require(effective['generation'] == expected_generation, 'effective generation differs')
-    require(effective['desired'] == {'layout': {'gaps': gap, 'mode': mode}, 'binding_entries': entries}, 'desired configuration differs')
+    require(effective['desired'] == {'layout': {'gaps': gap, 'mode': mode, 'default_width': {'preset': 2}, 'width_presets': [{'fraction': .33}, {'fraction': .5}, {'fraction': .66}]}, 'binding_entries': entries}, 'desired configuration differs')
     require(effective['effective']['binding_entries'] == entries and effective['effective']['keymap'] == 'startup-seat-keymap', 'effective binding/keymap differs')
-    require(set(effective['unsupported']) == {'layout.outer_gap', 'layout.width_presets', 'layout.default_width', 'layout.focus_margin', 'layout.canvas', 'input', 'outputs', 'animations', 'decoration', 'rules', 'autostart', 'security'}, 'unsupported setting categories differ')
+    require(set(effective['unsupported']) == {'layout.outer_gap', 'layout.focus_margin', 'layout.canvas', 'input', 'outputs', 'animations', 'decoration', 'rules', 'autostart', 'security'}, 'unsupported setting categories differ')
     require(effective['effective']['layout']['gaps'] == gap and effective['effective']['layout']['mode'] == mode,
             'effective layout differs')
+    require(effective['effective']['layout']['default_width'] == {'fraction': .5}, 'default preset width did not resolve')
 
 
 def exercise(binary, directory, environment, name):
@@ -219,7 +220,7 @@ def exercise(binary, directory, environment, name):
             case.result['snapshot'] = case.snapshot('failed-startup')
             fallback = case.result['snapshot']['effective']
             require(fallback['generation'] is None and fallback['desired'] is None, 'failed startup published desired config')
-            require(fallback['effective']['layout'] == {'gaps': 8.0, 'mode': 'strip'}, 'failed startup changed default layout')
+            require(fallback['effective']['layout'] == {'gaps': 8.0, 'mode': 'strip', 'default_width': {'fraction': .5}}, 'failed startup changed default layout')
         else:
             initial = case.await_status('applied')
             first = initial['configuration']['applied_generation']
