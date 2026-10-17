@@ -490,13 +490,13 @@ fn argv(a: &[String], path: &str) -> Result<()> {
     }
     Ok(())
 }
-fn pattern(p: &Option<String>, path: &str) -> Result<Option<Regex>> {
+fn pattern(p: &Option<String>, path: &str, engine_limit: usize) -> Result<Option<Regex>> {
     p.as_ref()
         .map(|s| {
             text(s, path, true)?;
             RegexBuilder::new(s)
-                .size_limit(1024 * 1024)
-                .dfa_size_limit(1024 * 1024)
+                .size_limit(engine_limit)
+                .dfa_size_limit(engine_limit)
                 .nest_limit(64)
                 .build()
                 .map_err(|e| invalid(format!("{path}: {e}")))
@@ -734,6 +734,16 @@ impl Config {
         if self.rules.len() > 1024 {
             return Err(invalid("rules: maximum 1024"));
         }
+        // Allocate a shared engine-size budget across every pattern before any
+        // compilation. Limits concern regex engine accounting, not exact RSS.
+        let pattern_count = self
+            .rules
+            .iter()
+            .map(|r| {
+                usize::from(r.matcher.app_id.is_some()) + usize::from(r.matcher.title.is_some())
+            })
+            .sum::<usize>();
+        let engine_limit = (32 * 1024 * 1024 / pattern_count.max(1)).min(1024 * 1024);
         let mut rules = Vec::new();
         for (i, r) in self.rules.iter().enumerate() {
             if r.matcher.app_id.is_none()
@@ -743,8 +753,16 @@ impl Config {
                 return Err(invalid(format!("rules[{i}].match: empty matcher")));
             }
             rules.push(CompiledRule {
-                app_id: pattern(&r.matcher.app_id, &format!("rules[{i}].match.app_id"))?,
-                title: pattern(&r.matcher.title, &format!("rules[{i}].match.title"))?,
+                app_id: pattern(
+                    &r.matcher.app_id,
+                    &format!("rules[{i}].match.app_id"),
+                    engine_limit,
+                )?,
+                title: pattern(
+                    &r.matcher.title,
+                    &format!("rules[{i}].match.title"),
+                    engine_limit,
+                )?,
                 is_dialog: r.matcher.is_dialog,
                 set: r.set.clone(),
                 dynamic: r.dynamic,
@@ -892,6 +910,30 @@ mod tests {
             restart_on_change: false,
         });
         assert!(c.validate().is_err());
+    }
+    #[test]
+    fn aggregate_pattern_engine_budget_rejects_large_combined_programs() {
+        let rule = Rule {
+            matcher: RuleMatch {
+                app_id: Some("a{5000}".into()),
+                title: Some("a{5000}".into()),
+                is_dialog: None,
+            },
+            set: RuleSet::default(),
+            dynamic: false,
+        };
+        let mut c = Config {
+            rules: vec![rule.clone()],
+            ..Default::default()
+        };
+        c.validate().unwrap();
+        c.rules = vec![rule; 1024];
+        assert!(
+            c.validate()
+                .expect_err("aggregate budget must reject")
+                .to_string()
+                .contains("size limit")
+        );
     }
     #[test]
     fn all_matching_output_rules_merge_fields_in_order() {
