@@ -13,6 +13,7 @@ struct Prepared {
     desired: Config,
     bindings: BindingSet,
     default_width: flux_layout::WidthPolicy,
+    autostart: Arc<flux_process::AutostartPlan>,
 }
 // Retired schema/tables and replaced live-model storage are dropped on the worker.
 // Temporary layout clones in reconfigure/validation still drop on dispatch.
@@ -20,6 +21,7 @@ struct Retired {
     _desired: Option<Config>,
     _bindings: Option<BindingSet>,
     _layout: Option<flux_layout::Layout>,
+    _autostart: Option<Arc<flux_process::AutostartPlan>>,
 }
 #[derive(Default)]
 struct Control {
@@ -40,6 +42,7 @@ pub struct RuntimeConfig {
     shared: Arc<Shared>,
     worker: Option<JoinHandle<()>>,
     desired: Option<Config>,
+    active_autostart: Option<Arc<flux_process::AutostartPlan>>,
     applied: Option<u64>,
     status: &'static str,
     last_error: Option<Failure>,
@@ -50,6 +53,8 @@ impl RuntimeConfig {
         helper: PathBuf,
         keymap: String,
         ping: calloop::ping::Ping,
+        display: std::ffi::OsString,
+        ipc: Option<PathBuf>,
     ) -> std::io::Result<Self> {
         let shared = Arc::new(Shared::default());
         let notified = shared.clone();
@@ -64,12 +69,13 @@ impl RuntimeConfig {
         let control = shared.clone();
         let worker = std::thread::Builder::new()
             .name("flux-config-prepare".into())
-            .spawn(move || run_worker(control, coordinator, keymap, ping))?;
+            .spawn(move || run_worker(control, coordinator, keymap, ping, display, ipc))?;
         Ok(Self {
             source,
             shared,
             worker: Some(worker),
             desired: None,
+            active_autostart: None,
             applied: None,
             status: "pending",
             last_error: None,
@@ -200,6 +206,8 @@ fn run_worker(
     mut coordinator: ConfigCoordinator,
     keymap: String,
     ping: calloop::ping::Ping,
+    display: std::ffi::OsString,
+    ipc: Option<PathBuf>,
 ) {
     let context = xkb::Context::new(xkb::CONTEXT_NO_ENVIRONMENT_NAMES);
     let map = xkb::Keymap::new_from_string(
@@ -291,7 +299,23 @@ fn run_worker(
                         UnmappedPolicy::Reject,
                     )
                     .map_err(|_| "configuration bindings failed seat-keymap validation")?;
+                    let autostart = flux_process::AutostartPlan::prepare(
+                        generation,
+                        config
+                            .autostart
+                            .iter()
+                            .map(|a| flux_process::AutostartCommand {
+                                id: a.id.clone(),
+                                argv: a.argv.clone(),
+                                restart_on_change: a.restart_on_change,
+                            })
+                            .collect(),
+                        display.clone(),
+                        ipc.clone(),
+                    )
+                    .map_err(|_| "autostart plan failed validation")?;
                     Ok(Prepared {
+                        autostart,
                         default_width: resolve_default_width(&config.layout)?,
                         desired: config.clone(),
                         bindings,
@@ -345,7 +369,14 @@ impl crate::Fluxwm {
             // the worker receives owned bytes and creates its own native map.
             unsafe { xkb.keymap() }.get_as_string(xkb::KEYMAP_FORMAT_TEXT_V1)
         });
-        let mut config = RuntimeConfig::new(source, helper, keymap, ping)?;
+        let mut config = RuntimeConfig::new(
+            source,
+            helper,
+            keymap,
+            ping,
+            self.socket_name.clone(),
+            self.ipc_socket.clone(),
+        )?;
         config.request().map_err(std::io::Error::other)?;
         self.config = Some(config);
         Ok(())
@@ -398,6 +429,7 @@ impl crate::Fluxwm {
                             _desired: Some(prepared.desired),
                             _bindings: Some(prepared.bindings),
                             _layout: Some(layout),
+                            _autostart: Some(prepared.autostart),
                         });
                     } else if self.sequence == u64::MAX {
                         config.status = "failed";
@@ -406,9 +438,11 @@ impl crate::Fluxwm {
                             _desired: Some(prepared.desired),
                             _bindings: Some(prepared.bindings),
                             _layout: Some(layout),
+                            _autostart: Some(prepared.autostart),
                         });
                     } else {
                         let old = Retired {
+                            _autostart: config.active_autostart.replace(prepared.autostart.clone()),
                             _desired: config.desired.replace(prepared.desired),
                             _bindings: Some(std::mem::replace(
                                 &mut self.bindings,
@@ -419,6 +453,7 @@ impl crate::Fluxwm {
                         config.applied = Some(generation);
                         config.status = "applied";
                         config.last_error = None;
+                        self.schedule_autostart(prepared.autostart);
                         config.retire(old);
                         self.relayout();
                         self.restore_keyboard_focus();
@@ -433,9 +468,9 @@ impl crate::Fluxwm {
         let config = self.config.as_ref();
         serde_json::json!({
             "generation":config.and_then(|c|c.applied).map(|g|g.to_string()),
-            "desired":config.and_then(|c|c.desired.as_ref()).map(|c|serde_json::json!({"layout":{"gaps":c.layout.gaps,"mode":c.layout.mode,"default_width":c.layout.default_width,"width_presets":c.layout.width_presets},"binding_entries":c.bindings.len()})),
+            "desired":config.and_then(|c|c.desired.as_ref()).map(|c|serde_json::json!({"layout":{"gaps":c.layout.gaps,"mode":c.layout.mode,"default_width":c.layout.default_width,"width_presets":c.layout.width_presets},"binding_entries":c.bindings.len(),"autostart_entries":c.autostart.len()})),
             "effective":{"layout":{"gaps":self.layout.gap(),"mode":self.layout.mode(),"default_width":width_value(self.layout.default_width())},"binding_entries":self.bindings.len(),"keymap":"startup-seat-keymap"},
-            "unsupported":["layout.outer_gap","layout.focus_margin","layout.canvas","input","outputs","animations","decoration","rules","autostart","security"],
+            "unsupported":["layout.outer_gap","layout.focus_margin","layout.canvas","input","outputs","animations","decoration","rules","security"],
         })
     }
 }
@@ -507,6 +542,8 @@ mod tests {
                     desired: Config::default(),
                     bindings: BindingSet::default(),
                     default_width: flux_layout::WidthPolicy::ViewportFraction(0.5),
+                    autostart: flux_process::AutostartPlan::prepare(1, vec![], "test".into(), None)
+                        .unwrap(),
                 }),
             ));
         }
@@ -524,6 +561,7 @@ mod tests {
             shared,
             worker: Some(worker),
             desired: None,
+            active_autostart: None,
             applied: None,
             status: "pending",
             last_error: None,
@@ -605,6 +643,8 @@ mod tests {
                     desired,
                     bindings,
                     default_width: flux_layout::WidthPolicy::ViewportFraction(0.5),
+                    autostart: flux_process::AutostartPlan::prepare(1, vec![], "test".into(), None)
+                        .unwrap(),
                 }),
             ));
         }
@@ -622,6 +662,7 @@ mod tests {
             shared,
             worker: Some(worker),
             desired: None,
+            active_autostart: None,
             applied: None,
             status: "pending",
             last_error: None,

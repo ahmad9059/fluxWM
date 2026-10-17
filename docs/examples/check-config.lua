@@ -94,7 +94,15 @@ for i,r in ipairs(config.rules) do
   if r.set.capture then enum(r.set.capture,'allow deny','rules.set.capture') end
 end
 array(config.autostart,'autostart')
-for i,a in ipairs(config.autostart) do rec(a,fields('argv restart_on_change'),'autostart['..i..']');array(a.argv,'autostart.argv');typ(a.restart_on_change,'boolean','restart_on_change') end
+local autostart_ids = {}
+for i,a in ipairs(config.autostart) do
+  if a.id ~= nil then
+    typ(a.id,'string','autostart.id')
+    assert(#a.id > 0 and #a.id <= 128 and not a.id:find('%z') and not autostart_ids[a.id], 'invalid or duplicate autostart.id')
+    autostart_ids[a.id] = true
+  end
+end
+for i,a in ipairs(config.autostart) do rec(a,fields('id argv restart_on_change'),'autostart['..i..']');array(a.argv,'autostart.argv');typ(a.restart_on_change,'boolean','restart_on_change') end
 rec(config.security,fields('portal_capture ipc'),'security')
 enum(config.security.portal_capture,'consent','security.portal_capture');enum(config.security.ipc,'same-user','security.ipc')
 print('Documentation fixture contract passed: tagged widths/keys, ordered output selectors, field whitelist, references and enums.')

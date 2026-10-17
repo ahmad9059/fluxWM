@@ -55,3 +55,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 [Configuration loader coordination](config.md) now owns one active evaluation, one replaceable pending source and one completion, with explicit last-good commit and cancellation. It was developed on an isolated worktree/branch and integrated with the input compiler; [Runtime Lua publication](runtime-config.md) now uses this coordinator behind a worker and explicitly limits application to gap/mode/bindings.
 
 [Configured width defaults](config-widths.md) extend Lua application to new admissions using fixed/fraction policies and one-based preset references. Desired/effective queries distinguish the requested tag from the normalized policy; existing column policies remain intact.
+
+[Autostart ownership](autostart.md) defines named/positional identity, reload behavior, bounds, diagnostics and direct-child shutdown. [Current production gaps](production-status-2026-10-18.md) records evidence and closure requirements.

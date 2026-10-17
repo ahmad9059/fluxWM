@@ -99,6 +99,7 @@ impl Fluxwm {
             }
             Method::EffectiveConfig => Ok(self.effective_config()),
             Method::Diagnostics => Ok(json!({
+                "autostart":self.autostart_diagnostics(),
                 "configuration":self.config.as_ref().map(|c|c.diagnostics()).unwrap_or_else(||json!({"requested_generation":null,"applied_generation":null,"prepared_generation":null,"status":"disabled","last_error":null})),
                 "keyboard_bindings": {"source":if self.config.as_ref().is_some_and(|c|c.applied()) {"user-config"} else {"development-defaults"}, "entries":self.bindings.len(), "inactive":self.bindings.inactive_indices().len(), "runtime_keymap_changes":false},
                 "composed_scene": self.scene.as_ref().map(|scene| {

@@ -1,6 +1,7 @@
 // Adapted from Smithay Smallvil, MIT; see LICENSES/Smithay-MIT.txt.
 #![allow(irrefutable_let_patterns)]
 mod actions;
+mod autostart;
 mod config;
 mod configure;
 mod grabs;
@@ -304,6 +305,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let signal_dispatcher = calloop::Dispatcher::new(signals, |event, _, state: &mut Fluxwm| {
         if event.signal() != calloop::signals::Signal::SIGCHLD {
             state.stop();
+        } else if let Some(worker) = state.autostart.as_ref() {
+            worker.notify_child_exit();
         }
     });
     let mut event_loop: EventLoop<Fluxwm> = EventLoop::try_new()?;
@@ -356,6 +359,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some(path) => absolute_config_path(path)?,
         None => absolute_config_path(std::env::current_exe()?.with_file_name("fluxwm-config"))?,
     };
+    if source.is_some() {
+        state.init_autostart(&event_loop.handle())?;
+    }
     state.init_config(&event_loop.handle(), source, helper)?;
     let mut child = if let Some((command, args)) = options.command.split_first() {
         Some(SupervisedChild(spawn_client(
@@ -382,6 +388,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     state.finish_dispatch();
     // Join and release process ownership outside event dispatch. Dropping the
     // event loop drains any delivered outcomes still held by its channel.
+    state.shutdown_autostart()?;
     if let Some(mut config) = state.config.take() {
         config.shutdown()?;
     }

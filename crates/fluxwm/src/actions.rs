@@ -80,6 +80,9 @@ impl Fluxwm {
                 self.pending_spawns += 1;
             }
             Action::Quit => {
+                if let Some(worker) = self.autostart.as_ref() {
+                    worker.stop();
+                }
                 let started = std::time::Instant::now();
                 let deadline = started + std::time::Duration::from_millis(250);
                 self.shutdown_started = Some(started);

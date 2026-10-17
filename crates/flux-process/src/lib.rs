@@ -1,5 +1,8 @@
 //! Trusted-host application launching. Never evaluate Lua or split shell strings here.
 //! Worker and ManagedChild shutdown can wait for the OS; drop outside event dispatch.
+mod autostart;
+pub use autostart::*;
+
 use calloop::channel::{Channel, SyncSender as CompletionSender};
 use std::{
     ffi::OsString,

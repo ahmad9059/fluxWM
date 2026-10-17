@@ -43,6 +43,8 @@ pub struct ManagedWindow {
 
 #[derive(Default, serde::Serialize)]
 pub struct RuntimeStats {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub autostart: Option<serde_json::Value>,
     pub redraws: u64,
     pub submissions: u64,
     pub compositions: u64,
@@ -68,6 +70,12 @@ pub struct RuntimeStats {
 }
 
 pub struct Fluxwm {
+    pub autostart: Option<flux_process::AutostartWorker>,
+    pub autostart_view: flux_process::AutostartSnapshot,
+    pub autostart_generation: Option<u64>,
+    pub autostart_pending: Option<Arc<flux_process::AutostartPlan>>,
+    pub autostart_enabled: bool,
+    pub autostart_notified: bool,
     pub config: Option<crate::config::RuntimeConfig>,
     pub stopping: bool,
     pub bindings: flux_input::BindingSet,
@@ -193,6 +201,12 @@ impl Fluxwm {
         let loop_signal = event_loop.get_signal();
 
         let mut state = Self {
+            autostart: None,
+            autostart_view: Default::default(),
+            autostart_generation: None,
+            autostart_pending: None,
+            autostart_enabled: false,
+            autostart_notified: false,
             config: None,
             stopping: false,
             bindings: Default::default(),
@@ -351,6 +365,9 @@ impl Fluxwm {
 
     /// Seal runtime publication before requesting event-loop termination.
     pub fn stop(&mut self) {
+        if let Some(worker) = self.autostart.as_ref() {
+            worker.stop();
+        }
         self.stopping = true;
         self.loop_signal.stop();
     }
@@ -819,6 +836,7 @@ impl Fluxwm {
         self.drive_ipc();
         self.cleanup_popup_grab();
         self.drive_config();
+        self.drive_autostart();
         self.refresh_pointer_focus();
         self.flush_wayland();
     }

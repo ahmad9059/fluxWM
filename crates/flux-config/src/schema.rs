@@ -390,6 +390,8 @@ pub struct RuleSet {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Autostart {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
     pub argv: Vec<String>,
     #[serde(default)]
     pub restart_on_change: bool,
@@ -729,7 +731,16 @@ impl Config {
         if self.autostart.len() > 128 {
             return Err(invalid("autostart: maximum 128 commands"));
         }
+        let mut autostart_ids = BTreeSet::new();
         for (i, a) in self.autostart.iter().enumerate() {
+            if let Some(id) = &a.id {
+                text(id, &format!("autostart[{i}].id"), false)?;
+                if id.len() > 128 || !autostart_ids.insert(id) {
+                    return Err(invalid(format!(
+                        "autostart[{i}].id: oversized or duplicate identity"
+                    )));
+                }
+            }
             argv(&a.argv, &format!("autostart[{i}].argv"))?;
         }
         Ok(CompiledConfig {
@@ -864,10 +875,31 @@ mod tests {
         assert!(c.validate().is_err());
         c = Config::default();
         c.autostart.push(Autostart {
+            id: None,
             argv: vec!["evil\0argv".into()],
             restart_on_change: false,
         });
         assert!(c.validate().is_err());
+    }
+    #[test]
+    fn autostart_optional_ids_are_bounded_unique_and_backward_compatible() {
+        let c =
+            Config::from_json(br#"{"autostart":[{"argv":["true"]},{"id":"0","argv":["true"]}]}"#)
+                .unwrap();
+        c.validate().unwrap();
+        assert!(c.autostart[0].id.is_none());
+        assert_eq!(c.autostart[1].id.as_deref(), Some("0"));
+        for id in [String::new(), "x".repeat(129), "nul\0id".into()] {
+            let mut bad = c.clone();
+            bad.autostart[1].id = Some(id);
+            assert!(bad.validate().is_err());
+        }
+        let mut duplicate = c.clone();
+        duplicate.autostart[0].id = Some("0".into());
+        assert!(duplicate.validate().is_err());
+        let mut boundary = c;
+        boundary.autostart[1].id = Some("x".repeat(128));
+        boundary.validate().unwrap();
     }
     #[test]
     fn aggregate_pattern_engine_budget_rejects_large_combined_programs() {
