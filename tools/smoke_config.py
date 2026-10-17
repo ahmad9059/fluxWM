@@ -25,13 +25,15 @@ def generation(value):
     return number
 
 
-def lua(gap, mode, marker=None, unknown=False):
+def lua(gap, mode, marker=None, unknown=False, route=False):
     # JSON string quoting is also valid for these ASCII Lua paths/chords.
     bindings = [('Super+Shift+q', 'quit'), ('Super+r', 'reload-config'), ('Super+q', 'close-window')]
     if unknown:
         bindings.append(('Super+FluxwmDefinitelyUnknownKeysym', 'quit'))
     entries = ',\n'.join('{ key = { sym = ' + json.dumps(key) + ' }, action = { name = ' + json.dumps(action) + ' } }'
                          for key, action in bindings)
+    if route:
+        entries += ', { key = { sym = "Alt+a" }, action = { name = "workspace-mode", mode = "canvas" } }'
     autostart = '' if marker is None else ', autostart = { { argv = { "/usr/bin/touch", ' + json.dumps(str(marker)) + ' } } }'
     return f'return {{ schema_version = 1, layout = {{ gaps = {gap}, mode = "{mode}" }}, bindings = {{ {entries} }}{autostart} }}\n'
 
@@ -175,19 +177,19 @@ class Case:
         write_json(self.directory / 'result.json', self.result)
 
 
-def assert_applied(snapshot, expected_generation, gap, mode):
+def assert_applied(snapshot, expected_generation, gap, mode, entries=3):
     config = snapshot['diagnostics']['configuration']
     require(config['status'] == 'applied' and config['applied_generation'] == expected_generation and config['requested_generation'] == expected_generation and config['last_error'] is None,
             'applied generation/status mismatch')
     bindings = snapshot['diagnostics']['keyboard_bindings']
-    require(bindings['source'] == 'user-config' and bindings['entries'] == 3 and bindings['inactive'] == 0,
+    require(bindings['source'] == 'user-config' and bindings['entries'] == entries and bindings['inactive'] == 0,
             'user binding publication differs')
     require(snapshot['workspaces']['workspaces'][0]['mode'] == mode, 'live workspace mode differs')
     # Exact effective shape is intentionally strict; update only with runtime API agreement.
     effective = snapshot['effective']
     require(effective['generation'] == expected_generation, 'effective generation differs')
-    require(effective['desired'] == {'layout': {'gaps': gap, 'mode': mode}, 'binding_entries': 3}, 'desired configuration differs')
-    require(effective['effective']['binding_entries'] == 3 and effective['effective']['keymap'] == 'startup-seat-keymap', 'effective binding/keymap differs')
+    require(effective['desired'] == {'layout': {'gaps': gap, 'mode': mode}, 'binding_entries': entries}, 'desired configuration differs')
+    require(effective['effective']['binding_entries'] == entries and effective['effective']['keymap'] == 'startup-seat-keymap', 'effective binding/keymap differs')
     require(set(effective['unsupported']) == {'layout.outer_gap', 'layout.width_presets', 'layout.default_width', 'layout.focus_margin', 'layout.canvas', 'input', 'outputs', 'animations', 'decoration', 'rules', 'autostart', 'security'}, 'unsupported setting categories differ')
     require(effective['effective']['layout']['gaps'] == gap and effective['effective']['layout']['mode'] == mode,
             'effective layout differs')
@@ -252,11 +254,136 @@ def exercise(binary, directory, environment, name):
     return case.result
 
 
+def extra_case(binary, fixture, directory, environment, session, name):
+    case = Case(binary, directory / name, environment, None)
+    client = None
+    fixture_streams = []
+    journal_path = case.directory / 'input.events.jsonl'
+    def events():
+        if not journal_path.exists():
+            return []
+        require(journal_path.stat().st_size <= 1024 * 1024, 'input journal exceeds bound')
+        text = journal_path.read_text()
+        lines = text.splitlines()
+        if text and not text.endswith('\n'):
+            lines = lines[:-1]
+        require(len(lines) <= 1024, 'input journal event bound exceeded')
+        return [record.get('event', {}) for record in map(json.loads, lines)]
+    def seen(kind, since=0, **values):
+        return any(event.get('type') == kind and all(event.get(key) == value for key, value in values.items())
+                   for event in events()[since:])
+    def inject(kind, **values):
+        case.check()
+        return session.test(case.process.pid, {'kind': kind, **values})
+    try:
+        case.replace(lua(13, 'strip', route=name == 'input-publication'))
+        case.start()
+        initial = case.await_status('applied')['configuration']['applied_generation']
+        good = case.snapshot('initial')
+        assert_applied(good, initial, 13, 'strip', 4 if name == 'input-publication' else 3)
+        if name == 'path-retention':
+            for label in ['missing-path', 'layout-gap-out-of-range']:
+                if label == 'missing-path':
+                    case.config.unlink()
+                else:
+                    case.replace(lua(2048, 'canvas', case.marker))
+                requested = case.reload()
+                failed = case.await_status('failed', requested)
+                require(failed['configuration']['applied_generation'] == initial and failed['configuration']['last_error'], 'path/layout failure replaced applied config')
+                snapshot = case.snapshot(label)
+                require(snapshot['effective']['effective'] == good['effective']['effective'], 'path/layout failure changed effective config')
+                require(snapshot['workspaces'] == good['workspaces'], 'path/layout failure changed workspace')
+                require(snapshot['diagnostics']['keyboard_bindings'] == good['diagnostics']['keyboard_bindings'], 'path/layout failure changed bindings')
+            case.replace(lua(19, 'canvas'))
+            requested = case.reload(); case.await_status('applied', requested)
+            assert_applied(case.snapshot('path-recovered'), requested, 19, 'canvas')
+        else:
+            case.result['target'] = session.test(case.process.pid)
+            inject('focus', focused=True)
+            fixture_environment = dict(environment, WAYLAND_DISPLAY=case.instance, FLUXWM_SOCKET=str(case.ipc_path), FLUXWM_FIXTURE_EVENT_FILE=str(journal_path))
+            fixture_environment.pop('FLUXWM_FIXTURE_GRAB_POPUP', None)
+            fixture_streams = [(case.directory / name).open('wb') for name in ['fixture.stdout.log', 'fixture.stderr.log']]
+            client = subprocess.Popen([str(fixture), 'input-probe', '--timeout-ms', '10000'], env=fixture_environment,
+                                      stdout=fixture_streams[0], stderr=fixture_streams[1], start_new_session=True)
+            case.wait(lambda: seen('ready'), 8)
+            case.wait(lambda: seen('keyboard.enter'))
+            inject('key', key='Alt_L', pressed=True)
+            case.wait(lambda: seen('keyboard.key', key=56, state='pressed'))
+            case.wait(lambda: case.ipc('diagnostics')['input_state']['pressed_keys'] == 1)
+            case.replace(lua(31, 'strip', route=True))
+            requested = case.reload()
+            pending_start = time.monotonic()
+            samples = []
+            while time.monotonic() - pending_start < .35:
+                snapshot = case.snapshot('held-pending')
+                config = snapshot['diagnostics']['configuration']
+                require(config['status'] == 'pending' and config['requested_generation'] == requested and config['applied_generation'] == initial, 'held key allowed configuration publication')
+                require(snapshot['effective']['effective'] == good['effective']['effective'], 'held key changed effective config')
+                require(snapshot['diagnostics']['input_state']['pressed_keys'] == 1, 'held Alt disappeared during reload')
+                samples.append(config)
+                time.sleep(.04)
+            case.result['held_pending_samples'] = samples
+            case.result['held_pending_ms'] = round((time.monotonic() - pending_start) * 1000, 2)
+            inject('key', key='Alt_L', pressed=False)
+            case.wait(lambda: seen('keyboard.key', key=56, state='released'))
+            case.await_status('applied', requested)
+            assert_applied(case.snapshot('after-release-applied'), requested, 31, 'strip', 4)
+            # Execute a shortcut from the newly published user table. A is absent
+            # from the three control bindings and no IPC action changes mode here.
+            chord = len(events())
+            inject('key', key='Alt_L', pressed=True)
+            inject('key', key='a', pressed=True)
+            case.wait(lambda: case.ipc('workspaces.list')['workspaces'][0]['mode'] == 'canvas')
+            case.wait(lambda: case.ipc('diagnostics')['input_state']['suppressed_keys'] == 1)
+            inject('key', key='a', pressed=False); inject('key', key='Alt_L', pressed=False)
+            case.wait(lambda: case.ipc('diagnostics')['input_state']['pressed_keys'] == 0 and case.ipc('diagnostics')['input_state']['suppressed_keys'] == 0)
+            require(not seen('keyboard.key', since=chord, key=30), 'configured shortcut press/release leaked to client')
+            plain = len(events())
+            inject('key', key='a', pressed=True); inject('key', key='a', pressed=False)
+            case.wait(lambda: seen('keyboard.key', since=plain, key=30, state='pressed') and seen('keyboard.key', since=plain, key=30, state='released'))
+            require(case.ipc('workspaces.list')['workspaces'][0]['mode'] == 'canvas', 'plain A unexpectedly changed workspace')
+            case.result['shortcut_snapshot'] = case.snapshot('configured-shortcut')
+            case.result['chord_event_index'] = chord
+            case.result['plain_event_index'] = plain
+            case.wait(lambda: client.poll() is not None, 9)
+            require((case.directory / 'fixture.stdout.log').stat().st_size <= 1024 * 1024, 'fixture report exceeds bound')
+            report = json.loads((case.directory / 'fixture.stdout.log').read_text())
+            require(client.returncode == 0 and report.get('ok') is True, 'input fixture failed')
+            journal = events()
+            counts = {str(key): {state: sum(event.get('type') == 'keyboard.key' and event.get('key') == key and event.get('state') == state for event in journal)
+                                 for state in ['pressed', 'released']} for key in [30, 56]}
+            require(counts == {'30': {'pressed': 1, 'released': 1}, '56': {'pressed': 2, 'released': 2}}, 'complete fixture key ownership differs')
+            case.result['complete_key_counts'] = counts
+            case.result['fixture_report'] = report
+        case.result['ok'] = True
+    except Exception as error:
+        case.result['error'] = str(error)
+    finally:
+        if case.process is not None and case.process.poll() is None:
+            for key in ['a', 'Alt_L']:
+                try:
+                    session.test(case.process.pid, {'kind': 'key', 'key': key, 'pressed': False, 'activate': False})
+                except Exception:
+                    pass
+        if client is not None and client.poll() is None:
+            client.terminate()
+            try:
+                client.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                client.kill(); client.wait(timeout=2)
+        for stream in fixture_streams:
+            stream.close()
+        case.close()
+    return case.result
+
+
 def main():
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--binary', type=Path, default=root / 'target/debug/fluxwm')
     parser.add_argument('--bundle', type=Path)
+    parser.add_argument('--fixture', type=Path, help='defaults to fluxwm-fixture beside selected binary')
+    parser.add_argument('--case', choices=['all', 'baseline', 'input-publication', 'path-retention'], default='all')
     parser.add_argument('--artifacts', type=Path)
     args = parser.parse_args()
     directory = (args.artifacts or root / 'target/smoke-config' / uuid.uuid4().hex).resolve()
@@ -264,11 +391,13 @@ def main():
     parent = dict(os.environ)
     binary = args.binary.resolve()
     helper = binary.with_name('fluxwm-config')
-    result = {'ok': False, 'scope': 'private nested configuration publication/retention and diagnostics; no input injection or sustained frame-progress qualification',
+    fixture = (args.fixture or binary.with_name('fluxwm-fixture')).resolve()
+    result = {'ok': False, 'scope': 'private nested configuration publication/retention, held Alt deferral and configured key ownership; no host-session injection, native or sustained frame-progress qualification',
               'harness_sha256': sha256(Path(__file__)), 'cases': []}
     session = runtime_owner = None
     try:
-        result['executables'] = {str(path): sha256(path) for path in (binary, helper)}
+        tested_paths = [binary, helper] + ([fixture] if args.case in ('all', 'input-publication') else [])
+        result['executables'] = {str(path): sha256(path) for path in tested_paths}
         xvfb, result['package'] = prepare_xvfb(args.bundle, directory)
         session = Session(xvfb, directory, screen='3000x2000x24')
         until = time.monotonic() + 8
@@ -280,8 +409,12 @@ def main():
         runtime_owner = short_runtime()
         environment = dict(session.environment, XDG_RUNTIME_DIR=runtime_owner.name)
         result['private_display'] = session.display
-        result['cases'] = [exercise(binary, directory, environment, name)
-                           for name in ['disabled', 'invalid-startup', 'reload-retention']]
+        if args.case in ('all', 'baseline'):
+            result['cases'].extend(exercise(binary, directory, environment, name)
+                                   for name in ['disabled', 'invalid-startup', 'reload-retention'])
+        for name in ['input-publication', 'path-retention']:
+            if args.case in ('all', name):
+                result['cases'].append(extra_case(binary, fixture, directory, environment, session, name))
         result['ok'] = all(case['ok'] for case in result['cases'])
         result['executables_unchanged'] = all(sha256(Path(path)) == digest for path, digest in result['executables'].items())
         result['ok'] &= result['executables_unchanged']
