@@ -1,0 +1,112 @@
+{
+  "scope": "Intentional low corrections and report-index additions after the final frozen review; author checked, not separately Claude-reviewed",
+  "changed_frozen_files": [
+    {
+      "path": "docs/06-lua.md",
+      "reviewed_sha256": "85c07398e3affac978be814b79b8e538f70f2db37f190ea25d999d771ae33c1e",
+      "current_sha256": "f469e262e2a0fd380fab40f0caa388b3096e0bc41f76b14316f9b6927a0bca29"
+    },
+    {
+      "path": "docs/13-production-audit.md",
+      "reviewed_sha256": "9d5c769a443d514bb375cd68ba34aac2ed2172828e9c4725cbfb31730f6e1d83",
+      "current_sha256": "faeb082146e8147e16339adfccbe5bd0629dfba126a8b6b9c35da32deb9f69dc"
+    },
+    {
+      "path": "docs/15-edge-cases.md",
+      "reviewed_sha256": "32d0e0278754b479590facfed31f1657a07095a6e7ad10e27b4aa0abf78945e2",
+      "current_sha256": "c71481c0f6aba3c3a544fa0616b220163af490faec7ec5504291b40b265b42ed"
+    },
+    {
+      "path": "docs/16-integration-contracts.md",
+      "reviewed_sha256": "995e419982a0b2176409a0132ceed6673a66e98b1cee251d8ce48a17088a55e7",
+      "current_sha256": "247449f71ae8d86874d37c41d10e597c20c3890f70e75ff82c4d0629d200e46f"
+    },
+    {
+      "path": "docs/21-review-resolutions.md",
+      "reviewed_sha256": "a2494d02fd7758fac5c4270904ff00327d0ab217524af7a39be861d929ae2c56",
+      "current_sha256": "ddd6278379077598fcf71ab6a1650b8418730fac82213bbcc6e66a0991a5d92b"
+    },
+    {
+      "path": "docs/README.md",
+      "reviewed_sha256": "33ac468f1b5d4cbe1d6474582b48cf7ee1cdaf644a0d487ecc313bf77fd5ce1b",
+      "current_sha256": "d23bb25622539c731fcacce4a0a6a476ddbea29fadfb9b2d3194599800fc3690"
+    },
+    {
+      "path": "docs/evidence/edge-cases.json",
+      "reviewed_sha256": "b49aa9540e50f8f3b8884064186947eab314ade11c275b937e7569405f23d6c8",
+      "current_sha256": "41135bc2cff8c4cc82829f446437233b962bc66c28075839213d3e1c88108b80"
+    },
+    {
+      "path": "docs/evidence/phase-gates.json",
+      "reviewed_sha256": "cf68f99c40d1ca7b127fe37e5752d8fdb4a49c1a3d637feb1fcdb28fd4ed9c19",
+      "current_sha256": "a00b1a4863ba7786de50a0f3f316c3fdcf6d107afaedc41c45c3d5a52d13501d"
+    },
+    {
+      "path": "docs/evidence/protocol-provenance.json",
+      "reviewed_sha256": "5ea15b3c12ff0f40023141a3da6e2e52c843357b129cdcfa209f0d213321b730",
+      "current_sha256": "8c0c261ef0cbf4d6bc836081790d3914c986aba8c0b6484a232fa12ba1b578a1"
+    },
+    {
+      "path": "docs/phases/01-foundation.md",
+      "reviewed_sha256": "85dc0030dd765bb23de33559dcf5dad4a0c8b3c64cff09233f6598f4823bccbb",
+      "current_sha256": "51ccbd9dd217c61d90713f9ffdee84db18455793a8276d164581910e34f81c88"
+    },
+    {
+      "path": "docs/phases/02-minimal-compositor.md",
+      "reviewed_sha256": "c98e0b7402bdbf15ca5e25b84a1d82fc4aeb71915a6adbafb432d0eeab44a45c",
+      "current_sha256": "35d337ac53ee65b58585f9817fa2bd37a26d3a47ec460a9d8eb008d70d9f6edc"
+    },
+    {
+      "path": "docs/phases/03-gpu-backend.md",
+      "reviewed_sha256": "3ec329a26acb5d20cf51c60ae5a0818737e11e22baa8ca3e9d748b7ebb2e4e9b",
+      "current_sha256": "bfcb0190f21e385aa4541f365317f37b029c8905d9c47bb622dec15176b2a721"
+    },
+    {
+      "path": "docs/phases/04-scrolling-layout.md",
+      "reviewed_sha256": "06cb0e6aa61d84b401444787342ffc28d9d1b1f29002edcfe46166a5c74eb15f",
+      "current_sha256": "0e85a98d04ff7fab06186349f5dd1da7068f661660dad475d9e3767eb14f8341"
+    },
+    {
+      "path": "docs/phases/05-animation.md",
+      "reviewed_sha256": "86edb5cab653d1e0b7fce64efb0064b3feef7bbe13b205a3b678dffb80acc56f",
+      "current_sha256": "03e52397811af985662557e90b0649599f96b185fee25a4565eed1c517c0eaa3"
+    },
+    {
+      "path": "docs/phases/06-lua-ipc.md",
+      "reviewed_sha256": "154d8007b21c8dc1f6829948787ed9be6231828a96d045e1b5d123bf6da306b1",
+      "current_sha256": "e291f23e930fe74434d009dcd793315b415bb83c1bcba2f3e4578b76fcc95920"
+    },
+    {
+      "path": "docs/phases/07-desktop.md",
+      "reviewed_sha256": "d10394a0799009a5d03cc6c1cb833c1117a09a26125ae509c8dca1252375b1a0",
+      "current_sha256": "127cd2e134fddbf0e2a00d6c72af855d6b345d2c74efafac44158ce64ea9f9d7"
+    },
+    {
+      "path": "docs/phases/08-canvas.md",
+      "reviewed_sha256": "2845d4ed5881283968464be98f8b11e3b27b0c7a49e6433a275cd25932c5b5c9",
+      "current_sha256": "23265f7e66b7512e7c582f1468a8a2ab76af42dcbcf67f91179d99171e5bd468"
+    },
+    {
+      "path": "docs/phases/09-optimization.md",
+      "reviewed_sha256": "cf7721e357f51960255be832e060f82872f343c79ff396e165ac2fba7a0089b8",
+      "current_sha256": "0c02f88c8c77129bc14a4c5bd34858fd6e82c853ca6e4c2b23cf90924ecf0bf9"
+    },
+    {
+      "path": "docs/phases/10-release.md",
+      "reviewed_sha256": "2b734b5588cbc8679d31f1cd6aff7180b7bb607a3ddb3678926129331ae1e881",
+      "current_sha256": "4b9a2a6b2e8fa85488aa99d38441b124ba7c7736d90ff549ac822ece4413d17f"
+    },
+    {
+      "path": "docs/reviews/README.md",
+      "reviewed_sha256": "2eb7f883888d6d4d3dd92d0b201896c91989614e323f81be4aed6cd854b06b62",
+      "current_sha256": "0e26ad73f6ea6bd3ddef8221d9c9e5da923617aade485a2127601a42221a9d27"
+    }
+  ],
+  "new_files_after_snapshot": [
+    "docs/23-final-verification.md",
+    "docs/reviews/claude-final-result.json",
+    "docs/reviews/claude-final.md",
+    "docs/reviews/final-frozen-input-check.json",
+    "docs/reviews/final-summary.md"
+  ]
+}

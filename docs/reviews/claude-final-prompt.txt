@@ -1,0 +1,14 @@
+Perform a FINAL FOCUSED independent consistency review of the FluxWM corrections after your initial and follow-up reports. Read docs/reviews/claude-followup.md and docs/reviews/followup-disposition.md first. Do not assume the disposition is correct.
+
+Use read/search tools only. Do not execute, edit, create subagents, read outside this repository, or fetch sources. This is a focused document-contract review; disclose that no runtime checks/hashes/source claims are independently verified. Inputs are listed in docs/evidence/final-review-snapshot.json and the author will recompute hashes after completion.
+
+Check F1-F5 and the low items from the follow-up by reading the affected portions of:
+- docs/21-review-resolutions.md and docs/17-resource-security.md / docs/16-integration-contracts.md for trusted-host IME/VK lock routing (any authenticated trusted host may type only into current lock tree, no unspecified per-program approval), explicit helper fd closure and untagged sandbox limitation.
+- docs/07-protocols.md and phases/02,03,05,07,09 for security-context phase 7 with design phase 2, font spike phase 3/full UI data model phase 5/AT-SPI qualification phase 8, and W11.
+- docs/evidence/phase-gates.json and relevant edge-cases.json entries: GPU-05 full client scanout phase 9 plus primary-plane variant phase 3; A11Y-02 full search phase 8 plus text-fixture variant phase 5; SEC-12 full lock phase 7 plus no-lock host-control variant phase 6; security_context tags SEC-04/05/06/11 phase 7; SURF-09:strip-native phase 7; CAP-12 new capture grants denied while locked.
+- docs/14-state-machines.md, docs/08-desktop-security.md and 21 for existing capture streams black on lock, new grants denied, terminal stop only on revoke/source loss; powered-off output coverage via backend-proven disabled/plane-cleared state without waking, safe first later frame and B08 qualification/fallback.
+- docs/10-roadmap.md table is correctly four columns with phase-7 dependency 3–6 and no remaining duration estimates.
+- docs/22-window-state-matrix.md for minimize phase 4, version gates, acknowledged maximized configure scope; docs/06-lua.md and examples/config.lua for canonical space and explicit Shift, sticky deny vs allow.
+- 03-layout.md and the LAY-02 / INP-08 case oracles are concrete; package ownership checked all 13 XML files, while signature/ancestry qualification remains open in B01.
+
+Return a concise Markdown report: actual scope and limitations; F1-F5 resolved/still inconsistent table; only NEW or remaining high/medium contradictions with exact files and concrete fixes; verdict for documentation readiness to begin phased implementation. Do not report ordinary planned implementation proof as an unfixed design contradiction. Do not certify runtime/production readiness. Prefer bounded targeted reads/searches rather than re-reading the whole 40k-word tree.

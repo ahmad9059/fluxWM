@@ -1,0 +1,365 @@
+{
+  "research_date": "2026-10-17",
+  "purpose": "Immutable source evidence for documentation; not dependency selection or a build qualification",
+  "cache_note": "Source bodies inspected from temporary cache, not vendored into project",
+  "repositories": [
+    {
+      "id": "smithay",
+      "repository": "Smithay/smithay",
+      "requested_ref": "master",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/Cargo.toml",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/Cargo.toml",
+          "status": "retrieved",
+          "sha256": "be7c9d514a9b7a49c583838b8be45a1375cbed75c9ecf1fbb2aec63b5747ba4d",
+          "bytes": 6088
+        },
+        {
+          "path": "src/wayland/session_lock/mod.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/session_lock/mod.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/session_lock/mod.rs",
+          "status": "retrieved",
+          "sha256": "c92cc86921b4f1bfd11f209e3fc19bd6e9f26070314a7bfc6dea32894143f04f",
+          "bytes": 8112
+        },
+        {
+          "path": "src/wayland/drm_syncobj/mod.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/drm_syncobj/mod.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/drm_syncobj/mod.rs",
+          "status": "retrieved",
+          "sha256": "95e93b6a476c0d2ee105e0265484d203109ceba3abccb4b357e756459680c4ba",
+          "bytes": 20050
+        },
+        {
+          "path": "src/wayland/security_context/mod.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/security_context/mod.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/security_context/mod.rs",
+          "status": "retrieved",
+          "sha256": "88160798a2600e69fb5d1e2e1da331881a9a2284f5e7f5862d9ac51c67e3ce09",
+          "bytes": 7917
+        },
+        {
+          "path": "src/backend/renderer/mod.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/backend/renderer/mod.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/backend/renderer/mod.rs",
+          "status": "retrieved",
+          "sha256": "9cdf6dce223ff28775781ba1bb9cd640c1b941a844ccaf9dffaa014bc16ce9f1",
+          "bytes": 41585
+        },
+        {
+          "path": "src/backend/renderer/multigpu/mod.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/backend/renderer/multigpu/mod.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/backend/renderer/multigpu/mod.rs",
+          "status": "retrieved",
+          "sha256": "e182e236d9ae142a93512aa52f4477bc1591cb4d8b6080b3bb76d1cf124b1b25",
+          "bytes": 159427
+        },
+        {
+          "path": "src/backend/session/libseat.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/backend/session/libseat.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/backend/session/libseat.rs",
+          "status": "retrieved",
+          "sha256": "3167179cc4bb00c0bbb50555fa760d5531bf1a0ccd5a16c6e7843ec8adc66836",
+          "bytes": 9461
+        },
+        {
+          "path": "anvil/src/udev.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/anvil/src/udev.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/anvil/src/udev.rs",
+          "status": "retrieved",
+          "sha256": "92f18740903ac6748d494e56a168b930a5b4686bcf834608d4914d856eccc7d9",
+          "bytes": 62048
+        },
+        {
+          "path": "src/wayland/drm_syncobj/sync_point.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/drm_syncobj/sync_point.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/drm_syncobj/sync_point.rs",
+          "status": "retrieved",
+          "bytes": 10988,
+          "sha256": "493e6b5bebf7db87843cdeccde38626a45cd4952e87e4f86e967173014ff224e"
+        },
+        {
+          "path": "src/backend/renderer/utils/wayland.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/backend/renderer/utils/wayland.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/backend/renderer/utils/wayland.rs",
+          "status": "retrieved",
+          "bytes": 24729,
+          "sha256": "4378224d40d7de344869ef78fbfceb9b85bb6aee6ea38699eb9f0094de7ded57"
+        },
+        {
+          "path": "src/wayland/compositor/mod.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/compositor/mod.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/compositor/mod.rs",
+          "status": "retrieved",
+          "bytes": 30846,
+          "sha256": "9e84877e87a4271c36b3bfb1efdd21352a9fab3772c2c395e96e677acada05b8"
+        },
+        {
+          "path": "src/wayland/image_copy_capture/mod.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/image_copy_capture/mod.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/image_copy_capture/mod.rs",
+          "status": "retrieved",
+          "bytes": 46561,
+          "sha256": "e36d74c95cd20a7d8d04654c5bf74b5c2fc734c9bf50afd451b982b5e9c6f510"
+        },
+        {
+          "path": "src/wayland/image_capture_source/mod.rs",
+          "url": "https://raw.githubusercontent.com/Smithay/smithay/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/image_capture_source/mod.rs",
+          "browse_url": "https://github.com/Smithay/smithay/blob/023b78b1c5a05ca512767cacc07efca55fae8be4/src/wayland/image_capture_source/mod.rs",
+          "status": "retrieved",
+          "bytes": 20745,
+          "sha256": "f4feaefa0fb090920a077f4083943a7eb805a3dc25e516c14fb14a76ffe07e38"
+        }
+      ],
+      "resolved_commit": "023b78b1c5a05ca512767cacc07efca55fae8be4",
+      "commit_date": "2026-10-15T12:49:56Z"
+    },
+    {
+      "id": "protocols",
+      "repository": "wayland-mirror/wayland-protocols",
+      "requested_ref": "main",
+      "files": [
+        {
+          "path": "stable/xdg-shell/xdg-shell.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/stable/xdg-shell/xdg-shell.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/stable/xdg-shell/xdg-shell.xml",
+          "status": "retrieved",
+          "sha256": "7ba7f9c8473deee674cb1f154a18abd0bb0cc072604fc055b0c15e459fc4c7df",
+          "bytes": 63846
+        },
+        {
+          "path": "stable/linux-dmabuf/linux-dmabuf-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/stable/linux-dmabuf/linux-dmabuf-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/stable/linux-dmabuf/linux-dmabuf-v1.xml",
+          "status": "retrieved",
+          "sha256": "29ce3ece4fb86e00c6e7f07332274bcb9ceb0eb8b1380d3635c1a67bbde830ab",
+          "bytes": 30999
+        },
+        {
+          "path": "staging/ext-session-lock/ext-session-lock-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/ext-session-lock/ext-session-lock-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/ext-session-lock/ext-session-lock-v1.xml",
+          "status": "retrieved",
+          "sha256": "a05df7d95c5e523e457037b3a149484e8064828cda66971f3c7caeb87d597a81",
+          "bytes": 16072
+        },
+        {
+          "path": "staging/linux-drm-syncobj/linux-drm-syncobj-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/linux-drm-syncobj/linux-drm-syncobj-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/linux-drm-syncobj/linux-drm-syncobj-v1.xml",
+          "status": "retrieved",
+          "sha256": "5ede41a56eced6aa635caa7ab2996066bff9fd211620dbf9f73aafab740bec71",
+          "bytes": 12655
+        },
+        {
+          "path": "staging/security-context/security-context-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/security-context/security-context-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/security-context/security-context-v1.xml",
+          "status": "retrieved",
+          "sha256": "f4f8ba15ebd2df62db611b1de32e992f660a4aeeea83250cb88fa468da42ffcb",
+          "bytes": 8093
+        },
+        {
+          "path": "staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml",
+          "status": "retrieved",
+          "sha256": "41a446653f788fabb404cab3168c0bd667c1ff4b54f1f0bb1e18810a1f47d73f",
+          "bytes": 19006
+        },
+        {
+          "path": "staging/ext-image-capture-source/ext-image-capture-source-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/ext-image-capture-source/ext-image-capture-source-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/ext-image-capture-source/ext-image-capture-source-v1.xml",
+          "status": "retrieved",
+          "sha256": "4ef41d15e4cdb9f550158391358ceec724a6708b43b7efedec03121a6bb8458d",
+          "bytes": 5035
+        },
+        {
+          "path": "staging/xdg-toplevel-tag/xdg-toplevel-tag-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/xdg-toplevel-tag/xdg-toplevel-tag-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/xdg-toplevel-tag/xdg-toplevel-tag-v1.xml",
+          "status": "retrieved",
+          "sha256": "bde3615b434a237388c5592028345eef185ab1e7ade9023dd2413a4b2c56ab9f",
+          "bytes": 4135
+        },
+        {
+          "path": "staging/ext-foreign-toplevel-list/ext-foreign-toplevel-list-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/ext-foreign-toplevel-list/ext-foreign-toplevel-list-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/ext-foreign-toplevel-list/ext-foreign-toplevel-list-v1.xml",
+          "status": "retrieved",
+          "bytes": 10021,
+          "sha256": "6b2ffb3a07d679d1c4170263adfefb9a7c37dd34ed3db5180bf58cb8ff8fbd0b"
+        },
+        {
+          "path": "staging/fractional-scale/fractional-scale-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/fractional-scale/fractional-scale-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/staging/fractional-scale/fractional-scale-v1.xml",
+          "status": "retrieved",
+          "bytes": 4636,
+          "sha256": "5941de5d28f427ecdadddc8623a6f6af0a30b0ab4726847236ba7a7652b81316"
+        },
+        {
+          "path": "stable/viewporter/viewporter.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/stable/viewporter/viewporter.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/stable/viewporter/viewporter.xml",
+          "status": "retrieved",
+          "bytes": 8133,
+          "sha256": "dcb12279a03746301fe490aaed4b38a403485a925abfce2ccfceb644e104fe71"
+        },
+        {
+          "path": "unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
+          "status": "retrieved",
+          "bytes": 15115,
+          "sha256": "f980fac900ba1dcfbbe97f588fc17b893926bd2b57624563653a1bfe4d035948"
+        },
+        {
+          "path": "unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml",
+          "url": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/819004adb3ab7e46f3fa3caef05b96e20434b244/unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml",
+          "browse_url": "https://github.com/wayland-mirror/wayland-protocols/blob/819004adb3ab7e46f3fa3caef05b96e20434b244/unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml",
+          "status": "retrieved",
+          "bytes": 6645,
+          "sha256": "9117d9e8ec02e9a3c3c55803b41e1227e76986f555f7c12eeb29f796fa63e69b"
+        }
+      ],
+      "resolved_commit": "819004adb3ab7e46f3fa3caef05b96e20434b244",
+      "commit_date": "2026-09-09T14:17:43Z"
+    },
+    {
+      "id": "niri",
+      "repository": "niri-wm/niri",
+      "requested_ref": "main",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "url": "https://raw.githubusercontent.com/niri-wm/niri/45739bc072f9875a674d335ae724f10d3b35c665/Cargo.toml",
+          "browse_url": "https://github.com/niri-wm/niri/blob/45739bc072f9875a674d335ae724f10d3b35c665/Cargo.toml",
+          "status": "retrieved",
+          "sha256": "69710697f36f668c6a012163f502f52db0e6df6f7b9c731f4146a8de75408b5e",
+          "bytes": 6146
+        },
+        {
+          "path": "src/a11y.rs",
+          "url": "https://raw.githubusercontent.com/niri-wm/niri/45739bc072f9875a674d335ae724f10d3b35c665/src/a11y.rs",
+          "browse_url": "https://github.com/niri-wm/niri/blob/45739bc072f9875a674d335ae724f10d3b35c665/src/a11y.rs",
+          "status": "retrieved",
+          "sha256": "dece0bc11ffba2c2077320a907a09f11bfde80dbc19c97895e972ce37393151b",
+          "bytes": 12159
+        },
+        {
+          "path": "docs/wiki/Accessibility.md",
+          "url": "https://raw.githubusercontent.com/niri-wm/niri/45739bc072f9875a674d335ae724f10d3b35c665/docs/wiki/Accessibility.md",
+          "browse_url": "https://github.com/niri-wm/niri/blob/45739bc072f9875a674d335ae724f10d3b35c665/docs/wiki/Accessibility.md",
+          "status": "retrieved",
+          "sha256": "6e82baf9ae6be10db53859f116d7168dbc1d2f1eea8b11b212b839bd2a1a2eec",
+          "bytes": 3354
+        }
+      ],
+      "resolved_commit": "45739bc072f9875a674d335ae724f10d3b35c665",
+      "commit_date": "2026-10-15T05:16:42Z"
+    },
+    {
+      "id": "satellite",
+      "repository": "Supreeeme/xwayland-satellite",
+      "requested_ref": "main",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "url": "https://raw.githubusercontent.com/Supreeeme/xwayland-satellite/97a89cec53eb4f8788386a574450dd94c0538754/Cargo.toml",
+          "browse_url": "https://github.com/Supreeeme/xwayland-satellite/blob/97a89cec53eb4f8788386a574450dd94c0538754/Cargo.toml",
+          "status": "retrieved",
+          "sha256": "0cb6369d4dd88f8c52669821ee3a412b8ec86859843beeb50d9cd1394cc05797",
+          "bytes": 2049
+        },
+        {
+          "path": "README.md",
+          "url": "https://raw.githubusercontent.com/Supreeeme/xwayland-satellite/97a89cec53eb4f8788386a574450dd94c0538754/README.md",
+          "browse_url": "https://github.com/Supreeeme/xwayland-satellite/blob/97a89cec53eb4f8788386a574450dd94c0538754/README.md",
+          "status": "retrieved",
+          "sha256": "29c5e646f64b8fc2ada8fa9fc33efdfead746cf8468153ba3f327e4433ea6307",
+          "bytes": 5855
+        },
+        {
+          "path": "ARCHITECTURE.md",
+          "url": "https://raw.githubusercontent.com/Supreeeme/xwayland-satellite/97a89cec53eb4f8788386a574450dd94c0538754/ARCHITECTURE.md",
+          "browse_url": "https://github.com/Supreeeme/xwayland-satellite/blob/97a89cec53eb4f8788386a574450dd94c0538754/ARCHITECTURE.md",
+          "status": "retrieved",
+          "sha256": "9b6dbbb9b41e3bf04270e4109ea0b2a6241983d263812aeb5b04ae0fa4b00a14",
+          "bytes": 4673
+        }
+      ],
+      "resolved_commit": "97a89cec53eb4f8788386a574450dd94c0538754",
+      "commit_date": "2026-10-15T13:20:59Z"
+    },
+    {
+      "id": "mlua",
+      "repository": "mlua-rs/mlua",
+      "requested_ref": "main",
+      "files": [
+        {
+          "path": "Cargo.toml",
+          "url": "https://raw.githubusercontent.com/mlua-rs/mlua/a186d461c7772aed4cb0a9fa1d1899121c6450e7/Cargo.toml",
+          "browse_url": "https://github.com/mlua-rs/mlua/blob/a186d461c7772aed4cb0a9fa1d1899121c6450e7/Cargo.toml",
+          "status": "retrieved",
+          "sha256": "e582fa492417cc9ecefa67c496445ff2e9504567b17315f15de8d1206358ffb5",
+          "bytes": 3631
+        },
+        {
+          "path": "src/state.rs",
+          "url": "https://raw.githubusercontent.com/mlua-rs/mlua/a186d461c7772aed4cb0a9fa1d1899121c6450e7/src/state.rs",
+          "browse_url": "https://github.com/mlua-rs/mlua/blob/a186d461c7772aed4cb0a9fa1d1899121c6450e7/src/state.rs",
+          "status": "retrieved",
+          "sha256": "b89470171fb6f45711ca68602b4460119e988563fef0201038e17708bf545fe7",
+          "bytes": 95502
+        }
+      ],
+      "resolved_commit": "a186d461c7772aed4cb0a9fa1d1899121c6450e7",
+      "commit_date": "2026-10-03T10:11:56Z"
+    },
+    {
+      "id": "portal-wlr",
+      "repository": "emersion/xdg-desktop-portal-wlr",
+      "requested_ref": "master",
+      "files": [
+        {
+          "path": "README.md",
+          "url": "https://raw.githubusercontent.com/emersion/xdg-desktop-portal-wlr/c0255d7b047b7263629ab5a314661045ff7f65e3/README.md",
+          "browse_url": "https://github.com/emersion/xdg-desktop-portal-wlr/blob/c0255d7b047b7263629ab5a314661045ff7f65e3/README.md",
+          "status": "retrieved",
+          "sha256": "0550c9ab7fb15820d52118e2f4ca2a340c043652e0be2d89228fdd6b79d7ce71",
+          "bytes": 3015
+        },
+        {
+          "path": "src/screencast/screencast.c",
+          "url": "https://raw.githubusercontent.com/emersion/xdg-desktop-portal-wlr/c0255d7b047b7263629ab5a314661045ff7f65e3/src/screencast/screencast.c",
+          "browse_url": "https://github.com/emersion/xdg-desktop-portal-wlr/blob/c0255d7b047b7263629ab5a314661045ff7f65e3/src/screencast/screencast.c",
+          "status": "retrieved",
+          "bytes": 22132,
+          "sha256": "bd8094da676da9cf342d54787dde1cba97274655cd5a186f032aaba2575496f3"
+        },
+        {
+          "path": "src/screencast/wlr_screencast.c",
+          "url": "https://raw.githubusercontent.com/emersion/xdg-desktop-portal-wlr/c0255d7b047b7263629ab5a314661045ff7f65e3/src/screencast/wlr_screencast.c",
+          "browse_url": "https://github.com/emersion/xdg-desktop-portal-wlr/blob/c0255d7b047b7263629ab5a314661045ff7f65e3/src/screencast/wlr_screencast.c",
+          "status": "retrieved",
+          "bytes": 23520,
+          "sha256": "32f87e95bd1baa6cdac94c10d3e0e04b09d68fb2fd0ff856799f19b1492560d4"
+        },
+        {
+          "path": "src/screencast/chooser.c",
+          "url": "https://raw.githubusercontent.com/emersion/xdg-desktop-portal-wlr/c0255d7b047b7263629ab5a314661045ff7f65e3/src/screencast/chooser.c",
+          "browse_url": "https://github.com/emersion/xdg-desktop-portal-wlr/blob/c0255d7b047b7263629ab5a314661045ff7f65e3/src/screencast/chooser.c",
+          "status": "retrieved",
+          "bytes": 7670,
+          "sha256": "6c0cbbe75bdde25da8f87cddcebb909ee9f1310e6eaf8a931a168cc809641e6f"
+        }
+      ],
+      "resolved_commit": "c0255d7b047b7263629ab5a314661045ff7f65e3",
+      "commit_date": "2026-08-13T08:18:27Z"
+    }
+  ]
+}

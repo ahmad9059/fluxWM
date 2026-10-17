@@ -1,0 +1,66 @@
+{
+  "scope": "Documentation integrity and explicit Lua 5.4 example checks; no FluxWM runtime tests",
+  "markdown_documents": 45,
+  "markdown_words": 44335,
+  "local_links": 272,
+  "phase_documents": 10,
+  "source_repositories": 6,
+  "retrieved_source_files": 38,
+  "source_cache_hashes_checked": 38,
+  "protocol_interfaces": 35,
+  "mlua_probe_record_integrity": "checked; recorded execution is not rerun by this command",
+  "specified_acceptance_cases": 94,
+  "narrow_early_variants": 11,
+  "phase_feature_coherence": "checked against declared feature-first-phase map; runtime existence unproven",
+  "lua54_checks": [
+    {
+      "command": [
+        "/usr/bin/luac5.4",
+        "-p",
+        "docs/examples/config.lua"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/lua5.4",
+        "-e",
+        "local c=assert(loadfile(\"docs/examples/config.lua\",\"t\",{}))(); assert(type(c)==\"table\" and c.schema_version==1)"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/lua5.4",
+        "docs/evidence/lua-hook-catchability.lua"
+      ],
+      "exit_code": 0,
+      "stdout": "instruction-hook errors: trips=5, caught=5\nConclusion: hook errors alone do not force the outer config to terminate.",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/lua5.4",
+        "docs/examples/check-config.lua"
+      ],
+      "exit_code": 0,
+      "stdout": "Documentation fixture contract passed: tagged widths/keys, ordered output selectors, field whitelist, references and enums.\nNot a hardened helper/parser, complete production schema, regex compiler, or hardware validator.",
+      "stderr": ""
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "limits": [
+    "Does not validate external URL availability or all Markdown anchors",
+    "Source hashes prove recorded bytes, not build/API interoperability",
+    "Standalone Lua checks do not validate mlua embedding or a FluxWM schema parser",
+    "Acceptance cases are specifications only; no runtime passed status",
+    "Feature phase map is a reviewed declaration, not implementation evidence",
+    "Fixture schema checks cover the documented example contract, not a hardened production parser",
+    "Does not prove production completeness or hardware compatibility"
+  ]
+}

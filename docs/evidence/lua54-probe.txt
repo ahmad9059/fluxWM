@@ -1,0 +1,4 @@
+Lua 5.4.9  Copyright (C) 1994-2026 Lua.org, PUC-Rio
+instruction-hook errors: trips=5, caught=5
+Conclusion: hook errors alone do not force the outer config to terminate.
+Lua 5.4 config syntax and table evaluation passed

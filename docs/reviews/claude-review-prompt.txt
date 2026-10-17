@@ -1,0 +1,15 @@
+Independently review the FluxWM production-planning documentation in the current repository. The user explicitly requested a Claude independent review after deeper research. You are the reviewer, not the author. Be adversarial and technically precise; do not endorse documentation because it is long.
+
+Scope: read README.md and all relevant docs/, including all ten phase work packages, production audit, state machines, 80-case catalog, source manifest and source findings, resource policy, integration contracts and release operations. No compositor exists. Assess whether the documents provide an internally consistent implementable plan for a production-grade Rust Wayland compositor with scrolling tiling, true two-axis canvas, GPU GLES rendering/synchronization, Lua config, animation, desktop integration and accessibility.
+
+Use only read/search/web tools. Do not modify any file, execute commands, read credentials/home configuration, contact anyone, or create subagents. Files outside this repository are out of scope. Where helpful verify high-risk technical claims against the exact upstream source URLs in docs/evidence/upstream-sources.json using WebFetch. A tool failure is a limitation, not evidence a claim is false. Do not treat source API presence as runtime compatibility. Standalone Lua probe is not an mlua test.
+
+Look for contradictions, incorrect protocol semantics, hidden assumptions, unclosed production blockers, impractical lifetime/security/recovery claims, missing input/output/capture/IME/accessibility edge cases, weak verification oracles, unrealistic estimates, test/code status inflation and configuration schema contradictions. In particular examine lock/capture revocation, acquire-versus-layout deadlines, unused-buffer release, config helper hard limits, same-user versus sandbox trust, privacy through effects, fullscreen/maximize, text rendering and source identity.
+
+Return a Markdown report with:
+1. Scope actually reviewed and sources actually fetched; explicit limitations.
+2. Prioritized findings with IDs CR-01 etc, severity, exact repository file/section, technical rationale, evidence/source, and concrete remediation. Distinguish errors from unresolved implementation decisions and optional improvements.
+3. Missing production requirements, if any, and whether existing blocker/gate ownership is sufficient.
+4. Verdict for documentation quality/readiness to start implementation, with no claim of runtime or production certification.
+
+If no critical findings exist, still report substantive gaps and residual uncertainties honestly. Do not invent executed tests or independently verified source access.

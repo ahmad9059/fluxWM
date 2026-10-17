@@ -1,0 +1,99 @@
+{
+  "duration_api_ms": 146403,
+  "stop_reason": "end_turn",
+  "session_id": "e6e6bb1f-06b5-4642-bc48-5a9d61b10de2",
+  "total_cost_usd": 1.1730894,
+  "usage": {
+    "input_tokens": 46,
+    "cache_creation_input_tokens": 82570,
+    "cache_read_input_tokens": 1192427,
+    "output_tokens": 13693,
+    "output_tokens_details": {
+      "thinking_tokens": 4922
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 82570,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 3358,
+        "cache_read_input_tokens": 83896,
+        "cache_creation_input_tokens": 2413,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2413
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-opus-5-5": {
+      "inputTokens": 46,
+      "outputTokens": 13693,
+      "cacheReadInputTokens": 1192427,
+      "cacheCreationInputTokens": 82570,
+      "webSearchRequests": 0,
+      "costUSD": 1.1730894,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 4922,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 43,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "# FluxWM final focused consistency review\n\n**Verdict:** F1\u2013F5 are all fixed in the documents I read. I found no new or remaining high- or medium-severity contradictions. The documentation is ready to start phased implementation at phase 1. Only a few low-severity wording fixes are left.\n\n## 1. What I checked, and what I didn't\n\n- **Read in full:** `claude-followup.md`, `followup-disposition.md`, `final-review-snapshot.json`, `21-review-resolutions.md`, `22-window-state-matrix.md`, `10-roadmap.md`, `phase-gates.json`, `phases/05` and `phases/07`.\n- **Read in part:**\n  - `17` lines 1\u201367.\n  - `16` lines 35\u201384.\n  - `14` lines 53\u201384.\n  - `08` lines 13\u201332.\n  - `13` lines 28\u201369.\n  - `06` lines 40\u201376.\n  - `config.lua` lines 40\u201370.\n  - `00` lines 43\u201351.\n  - `phases/02` and `phases/03` tasks plus the follow-up notes.\n  - `protocol-provenance.json` header and limits.\n  - `07` lines 1\u20138 plus search hits.\n  - The relevant `edge-cases.json` entries.\n- **Searched only:** `15`, `03`, `05`, `01`, phases 06, 08, 09 and 10, and the phase dependency lines.\n- **Not read:** `frozen-input-check.json`, `check_docs.py`, the probes, and the rest of the tree.\n- **Nothing run or recomputed.** I ran no checks, Lua or probes and recomputed no SHA-256 values. I assumed the files match `final-review-snapshot.json`; the author's recompute is what actually confirms that. I didn't count all 94 cases. I did count the variant rows in `15`, and there are 11.\n- **No sources fetched.** Protocol, Smithay, KMS and driver claims, such as whether a driver allows lock coverage without waking a powered-off output, were not checked against upstream.\n- **No plan file written.** Plan mode asked for a plan file and an exit call, but this session had no write, plan-exit or question tool.\n- **No runtime, hardware or production readiness is certified.**\n\n## 2. F1\u2013F5\n\n| Finding | Status | Where it's fixed |\n| --- | --- | --- |\n| F1: security-context not scheduled | **Resolved** | `07:43` now reads \"2 design / 7 implementation\", with accessibility split into its own phase-8 row at `07:44`. `phases/02:45` covers B16 design. `phases/07:49` has the implementation task. `phase-gates.json` maps `security_context: 7`. SEC-04/05/06/11 now carry `security_context`. `21:9` states the limitation that untagged sandboxes count as trusted host. |\n| F2: later features in early gates | **Resolved** | GPU-05 is now phase 9 (`direct_scanout`), with `:primary-plane` at phase 3 (`phases/03:47`). A11Y-02 is now phase 8 (`search_ui`), with `:text-fixture` at phase 5. B17 is in phase 3 and phase 5 (`phases/05:47`: data model in phase 5, AT-SPI in phase 8). SEC-12 is now phase 7, with `:host-control` at phase 6. The JSON and Markdown rows agree. |\n| F3: no way to approve one host input client over another | **Resolved (option a)** | `21:13`, `21:63`, `16:39` (\"no unspecified per-program approval\"), `17:16`, and the SEC-07/SEC-13 oracles now agree: any authenticated trusted-host input method or on-screen keyboard may type only into the current lock tree. Tagged sandbox injection is denied, and compositor-wide key monitors get nothing. |\n| F4: waking powered-off outputs to lock | **Resolved as a design contract** | `21:59`: no wake caused by lock; a disabled or plane-cleared state proven by the backend counts as covered; every enable path commits black or lock content first; a qualified active-black fallback is allowed, or lock is refused; B08 is responsible for proof. `14:68` and the OUT-09 oracle match. Whether real drivers can do this is still for B08, which is ordinary planned proof. |\n| F5: leftover contradicting prose | **Resolved** | `phases/07:13` now says lock-redaction, with terminal stop only on revoke or source loss. New capture grants while locked are denied (`08:19`, `21:69`, CAP-12 at phase 7). Roadmap: next item. `phases/09:16,47` now include W11. `phases/06:25` tests that the coroutine library is absent. `14:68` and `16:61` point to `21`. |\n\n**Roadmap (`10-roadmap.md`):** the table now has four well-formed columns. Phase 7's dependency is \"3\u20136\", which matches `phases/07:3`. Every row says \"Not estimated\". All phase-file dependency lines match the table.\n\n**Low items from the follow-up:**\n- **Fixed:**\n  - Pinned XML links (no `blob/main` links remain).\n  - Package ownership recorded for all 13 XML files.\n  - The `SURF-09:strip-native` variant at phase 7.\n  - Minimize implemented from phase 4 (`22:42`).\n  - Maximized validation scoped to a new buffer after an acknowledged configure (`22:28`).\n  - Canonical `space` key name and explicit Shift (`06:69,75`; `config.lua:49,52`).\n  - `allow` can't clear a sticky deny.\n  - Concrete LAY-02 and INP-08 oracles.\n  - CAP-06/07/08 retagged.\n- **Still open:** `GPU-07` and `GPU-07:implicit` remain near-duplicates at phase 3. This wasn't claimed as fixed and is harmless.\n\n## 3. New or remaining high/medium contradictions\n\n**None.**\n\nThese low-severity fixes are optional before phase 2:\n\n1. **Helper fd closing.** `21:41` is cited as the \"exact\" spawn spec (`17:66`, `20:40`) but still only says fds are \"close-on-exec\". The explicit closing of every fd outside the allowlist before exec appears only in `17:46`. **Fix:** copy the `17:46` sentence into `21:41`.\n2. **Sticky deny vs. rule order.** `06:51` says later rules win for the same field. `16:79` and `06:75` say a deny is sticky. It's undefined what happens when, in a single evaluation, a matching `capture = \"deny\"` rule is followed by a matching `\"allow\"` rule. **Fix:** state that `capture` merges deny-first within one evaluation, or say exactly when a rule's deny becomes sticky.\n3. **B01 row.** `13:31`'s B01 evidence column doesn't list XML provenance, signature or ancestry qualification, although `01:66` and `07:3` assign that work to B01. **Fix:** add \"selected protocol XML provenance\" to its evidence column.\n4. **Wording:**\n   - Every phase file's line 7 still says to see the roadmap for \"effort estimates\". It should say \"sequencing\".\n   - `13:64` B17 says \"accessible \u2026 UI by phase 5\". It should say \"semantic data model by phase 5; AT-SPI in phase 8\".\n   - `protocol-provenance.json:4`'s top-level `package_owner_check` still names only `xdg-shell`.\n   - SEC-07 is tagged only `lock`, not `ime`. This has no effect on scheduling.\n\n## 4. Verdict\n\n- **Documentation:** internally consistent for the F1\u2013F5 scope. The trust model, lock input routing, capture across lock, power-off lock coverage, phase gates, roadmap, window-state matrix and key-binding rules now agree with each other.\n- **Phase 1:** ready to start.\n- **Phase 2:** ready to start. The B16 design scope now includes security-context classification before privileged globals are registered.\n- **Phase 3 and later:** no documentation blockers. Fix the low items whenever convenient.\n- **Still unproven:** B04, B08, B15\u2013B20, and every case remain `specified`. They need implementation evidence; that is the plan working as designed, not a contradiction in the documents.",
+  "ttft_ms": 4465,
+  "type": "result",
+  "duration_ms": 147354,
+  "uuid": "97b7a014-fb83-47a4-8731-e901cd6f0b68",
+  "ttft_stream_ms": 2073,
+  "time_to_request_ms": 731,
+  "first_content_frame_ms": 2073,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

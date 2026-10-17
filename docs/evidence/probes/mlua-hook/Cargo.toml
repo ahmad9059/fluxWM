@@ -1,0 +1,11 @@
+[package]
+name = "fluxwm-evidence-mlua-hook"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+# A narrow evidence probe, not FluxWM implementation or dependency selection.
+[dependencies]
+mlua = { git = "https://github.com/mlua-rs/mlua", rev = "a186d461c7772aed4cb0a9fa1d1899121c6450e7", default-features = false, features = ["lua54", "vendored"] }
+
+[workspace]

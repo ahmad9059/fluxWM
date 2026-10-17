@@ -1,0 +1,1465 @@
+[
+  {
+    "id": "SURF-01",
+    "stimulus": "Ack a stale/unknown configure serial",
+    "expected": "Protocol-defined handling; no rollback to an obsolete target",
+    "evidence_required": "Synthetic client protocol trace + target epoch",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-02",
+    "stimulus": "Commit null buffer then remap same role",
+    "expected": "One membership removed then one restored; no duplicate tile",
+    "evidence_required": "Model membership and map/unmap events",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-03",
+    "stimulus": "Destroy parent with nested popup grabs",
+    "expected": "Dependent grabs/surfaces cleanly retired; normal focus recoverable",
+    "evidence_required": "Seat/grab log + client trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-04",
+    "stimulus": "Commit synchronized and desynchronized subsurfaces in varying order",
+    "expected": "Only valid committed surface-tree state appears",
+    "evidence_required": "Reference image + commit tree trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-05",
+    "stimulus": "Reuse buffer storage across multiple surfaces/outputs",
+    "expected": "No release while any real consumer still reads it",
+    "evidence_required": "Buffer lease/fence trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-06",
+    "stimulus": "Shrink/truncate an SHM pool backing file while mapped",
+    "expected": "Invalid memory access cannot kill compositor; library fault policy exercised",
+    "evidence_required": "Isolated subprocess client test and server liveness",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-07",
+    "stimulus": "Overflow dimensions/offset/stride arithmetic",
+    "expected": "Reject invalid allocation/import before unsafe access",
+    "evidence_required": "Boundary-value client + checked failure result",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "SURF-08",
+    "stimulus": "Commit a valid buffer with empty input/opaque region",
+    "expected": "Correct rendering and click-through/occlusion semantics",
+    "evidence_required": "Image + hit-test trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 2,
+    "required_features": [
+      "surface_core"
+    ],
+    "qualified_phase": 2,
+    "variants": []
+  },
+  {
+    "id": "LAY-01",
+    "stimulus": "Open next column with viewport already full",
+    "expected": "Unrelated columns retain widths; camera reveals new focus",
+    "evidence_required": "Before/after rectangles + camera trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 4,
+    "required_features": [
+      "strip"
+    ],
+    "qualified_phase": 4,
+    "variants": []
+  },
+  {
+    "id": "LAY-02",
+    "stimulus": "Client minimum heights exceed stack available height",
+    "expected": "Keep each minimum, expose vertical overflow scroll inside stack when minima exceed height; finite nonnegative rectangles and every member reachable",
+    "evidence_required": "Constraint solver state + visible recovery",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 4,
+    "required_features": [
+      "strip"
+    ],
+    "qualified_phase": 4,
+    "variants": []
+  },
+  {
+    "id": "LAY-03",
+    "stimulus": "Close focused last tile while camera moving",
+    "expected": "Focus becomes live neighbor or empty; no dangling animation target",
+    "evidence_required": "Fake-clock command replay",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 4,
+    "required_features": [
+      "strip"
+    ],
+    "qualified_phase": 4,
+    "variants": []
+  },
+  {
+    "id": "LAY-04",
+    "stimulus": "Pan canvas to huge positive/negative positions then rebase",
+    "expected": "Relative geometry and drag anchors stay stable within tolerance",
+    "evidence_required": "Transform round-trip and scene comparisons",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 4,
+    "required_features": [
+      "canvas"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "LAY-05",
+    "stimulus": "Switch strip/canvas repeatedly with new and destroyed windows",
+    "expected": "Unique membership; mode state reconciled deterministically",
+    "evidence_required": "Property trace across both saved states",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 4,
+    "required_features": [
+      "canvas"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "LAY-06",
+    "stimulus": "Make usable area zero with panel reservations",
+    "expected": "No NaN/division by zero; retain recoverable layout",
+    "evidence_required": "Layer reservation log + finite-state assertions",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 4,
+    "required_features": [
+      "strip"
+    ],
+    "qualified_phase": 4,
+    "variants": []
+  },
+  {
+    "id": "LAY-07",
+    "stimulus": "Create equal-distance directional candidates",
+    "expected": "Select by angular deviation, edge projection, perpendicular distance, then smallest stable generational ID",
+    "evidence_required": "Recorded candidate scores and selected ID across repeated replay",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 4,
+    "required_features": [
+      "strip"
+    ],
+    "qualified_phase": 4,
+    "variants": []
+  },
+  {
+    "id": "LAY-08",
+    "stimulus": "Transfer fullscreen constrained window between scales",
+    "expected": "Restore geometry remains valid and panels follow policy",
+    "evidence_required": "Target rect/scale/fullscreen state + images",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 4,
+    "required_features": [
+      "strip"
+    ],
+    "qualified_phase": 4,
+    "variants": []
+  },
+  {
+    "id": "GPU-01",
+    "stimulus": "Acquire point never signals for newly attached buffer",
+    "expected": "Do not read; unrelated outputs/input continue",
+    "evidence_required": "GPU acquire trace + independent frame evidence",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "explicit_sync"
+    ],
+    "qualified_phase": 9,
+    "variants": [
+      {
+        "id": "GPU-01:implicit",
+        "qualified_phase": 3,
+        "required_features": [
+          "single_gpu"
+        ],
+        "expected": "Delay backend-supported implicit buffer readiness; no reader samples it early; independent input progresses",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "GPU-02",
+    "stimulus": "Layout deadline expires before GPU acquire",
+    "expected": "Fallback uses previous safe content; deadline never bypasses acquire",
+    "evidence_required": "Transaction and buffer IDs correlated",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "explicit_sync",
+      "strip"
+    ],
+    "qualified_phase": 9,
+    "variants": [
+      {
+        "id": "GPU-02:implicit",
+        "qualified_phase": 4,
+        "required_features": [
+          "single_gpu",
+          "strip"
+        ],
+        "expected": "Layout deadline chooses previous acquired content; no read of pending implicit buffer",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "GPU-03",
+    "stimulus": "Release point timeline equals acquire with invalid ordering",
+    "expected": "Protocol error at required validation point",
+    "evidence_required": "Synthetic syncobj client trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "explicit_sync"
+    ],
+    "qualified_phase": 9,
+    "variants": []
+  },
+  {
+    "id": "GPU-04",
+    "stimulus": "Replace a never-read explicit-sync commit",
+    "expected": "After replacement processing, release is signaled by next retirement dispatch; reader/import count is zero",
+    "evidence_required": "Timeline events + dispatch sequence + consumer ledger",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "explicit_sync"
+    ],
+    "qualified_phase": 9,
+    "variants": [
+      {
+        "id": "GPU-04:implicit",
+        "qualified_phase": 3,
+        "required_features": [
+          "single_gpu"
+        ],
+        "expected": "Replace never-read implicit buffer; zero readers/imports and release in next retirement dispatch",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "GPU-05",
+    "stimulus": "Remove direct-scanned buffer from scene",
+    "expected": "Hold through replacement/disable completion",
+    "evidence_required": "KMS commit/page-flip + lease retirement",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "direct_scanout"
+    ],
+    "qualified_phase": 9,
+    "variants": [
+      {
+        "id": "GPU-05:primary-plane",
+        "qualified_phase": 3,
+        "required_features": [
+          "output_core",
+          "single_gpu"
+        ],
+        "expected": "Compositor-owned primary framebuffer retained through replacement/disable completion; no client direct-scanout support assumed",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "GPU-06",
+    "stimulus": "Render on GPU A and scan/capture on GPU B",
+    "expected": "Every consumer synchronization respected; explicit copy if needed",
+    "evidence_required": "Per-device fence/import/copy ledger",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "multi_gpu",
+      "capture"
+    ],
+    "qualified_phase": 9,
+    "variants": []
+  },
+  {
+    "id": "GPU-07",
+    "stimulus": "Destroy wl_buffer while explicit-sync GPU read is deliberately delayed",
+    "expected": "Source ownership survives resource destruction; explicit release timeline signal is not earlier than final GPU completion",
+    "evidence_required": "Correlated GPU completion/release timestamps and retained owner count",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "single_gpu",
+      "explicit_sync"
+    ],
+    "qualified_phase": 9,
+    "variants": [
+      {
+        "id": "GPU-07:implicit",
+        "qualified_phase": 3,
+        "required_features": [
+          "single_gpu"
+        ],
+        "expected": "Delay GPU completion; final source ownership remains until completion even after wl_buffer destruction",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "GPU-08",
+    "stimulus": "GPU reset/import failure during blur and capture",
+    "expected": "No stale handle reuse; explicit recovery or controlled session failure",
+    "evidence_required": "Injected failure + epoch/resource diagnostics",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "multi_gpu",
+      "blur_privacy",
+      "capture"
+    ],
+    "qualified_phase": 9,
+    "variants": []
+  },
+  {
+    "id": "OUT-01",
+    "stimulus": "Remove output with queued page flip and capture",
+    "expected": "Reject stale output epoch; safely retire old work",
+    "evidence_required": "Epoch/commit/capture trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "output_core",
+      "capture"
+    ],
+    "qualified_phase": 7,
+    "variants": [
+      {
+        "id": "OUT-01:no-capture",
+        "qualified_phase": 3,
+        "required_features": [
+          "output_core"
+        ],
+        "expected": "Remove output with queued page flip; stale epoch ignored and prior resources retire safely",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "OUT-02",
+    "stimulus": "Disconnect every output then reconnect one",
+    "expected": "Server stays alive, no output frames submitted while none exist, all windows enumerated, focused live window restored on reconnect",
+    "evidence_required": "Socket liveness, window IDs before/after, submission count and focus",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "output_core"
+    ],
+    "qualified_phase": 3,
+    "variants": []
+  },
+  {
+    "id": "OUT-03",
+    "stimulus": "Two displays expose identical/missing EDID",
+    "expected": "No incorrect claim of unique identity; deterministic safe placement",
+    "evidence_required": "Identity matching diagnostics",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "output_core"
+    ],
+    "qualified_phase": 3,
+    "variants": []
+  },
+  {
+    "id": "OUT-04",
+    "stimulus": "Preview unsupported mode then let confirmation time out",
+    "expected": "Keep or restore usable state; do not replay disconnected handles",
+    "evidence_required": "Atomic test/apply/revert record",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "output_core"
+    ],
+    "qualified_phase": 3,
+    "variants": [
+      {
+        "id": "OUT-04:cli-preview",
+        "qualified_phase": 3,
+        "required_features": [
+          "output_core"
+        ],
+        "expected": "CLI-acknowledged mode preview reverts after 15 seconds without acknowledgement; no text UI assumed",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "OUT-05",
+    "stimulus": "Switch VT repeatedly while clients animate",
+    "expected": "No device use while session inactive; resume repaints safely",
+    "evidence_required": "Session/backend event trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "output_core"
+    ],
+    "qualified_phase": 3,
+    "variants": []
+  },
+  {
+    "id": "OUT-06",
+    "stimulus": "Suspend locked while external output powers off",
+    "expected": "No sensitive frame on resume; lock remains authoritative",
+    "evidence_required": "Physical test video + lock/presentation trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "output_core",
+      "lock"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "OUT-07",
+    "stimulus": "Change 60/144 Hz pair to rotated fractional output",
+    "expected": "Independent clocks; pointer and physical edges agree",
+    "evidence_required": "Presentation times + geometry/picking trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "scale",
+      "motion"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "OUT-08",
+    "stimulus": "Hotplug storm from MST dock",
+    "expected": "Bound probing, invalidate removal immediately, no fd/resource growth",
+    "evidence_required": "Stress event log + fd/memory trend",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 3,
+    "required_features": [
+      "output_core"
+    ],
+    "qualified_phase": 3,
+    "variants": []
+  },
+  {
+    "id": "INP-01",
+    "stimulus": "Consume key press then change focus before release",
+    "expected": "Consistent ownership; no accidental client action/stuck shortcut",
+    "evidence_required": "Seat event trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "motion"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "INP-02",
+    "stimulus": "Enter lock/unlock while shortcut modifiers held",
+    "expected": "No ordinary shortcut leaks; fresh chord policy enforced",
+    "evidence_required": "Physical events + command log",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "lock"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "INP-03",
+    "stimulus": "Cancel gesture after compositor/client ownership decision",
+    "expected": "Exactly one owner sees valid end/cancel",
+    "evidence_required": "Gesture and client protocol traces",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "motion"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "INP-04",
+    "stimulus": "Close constrained-pointer surface mid-drag",
+    "expected": "Constraint/grab released; pointer recoverable",
+    "evidence_required": "Relative/constraint state trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "pointer_constraints"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "INP-05",
+    "stimulus": "Change zoom during world-space group drag",
+    "expected": "Grab anchor stays under pointer",
+    "evidence_required": "Inverse-transform numerical checks",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "canvas"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "INP-06",
+    "stimulus": "Retarget spring under irregular 30\u2013240 Hz sampling",
+    "expected": "Continuous position/velocity and eventual settle",
+    "evidence_required": "Fake-clock curve outputs",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "motion"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "INP-07",
+    "stimulus": "Remove touch/tablet device with active contacts",
+    "expected": "Cancel contacts/tools correctly; no ghost interaction",
+    "evidence_required": "Device and seat lifecycle traces",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "tablet"
+    ],
+    "qualified_phase": 7,
+    "variants": [
+      {
+        "id": "INP-07:pointer-only",
+        "qualified_phase": 5,
+        "required_features": [
+          "motion"
+        ],
+        "expected": "Remove pointer device mid-button drag; release/cancel ownership and keep keyboard recovery",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "INP-08",
+    "stimulus": "Reconfigure keymap/layout while keys held",
+    "expected": "Cancel compositor-owned chords, publish coherent new keymap/modifiers, suppress shortcut retrigger until held keys released; no stuck client modifiers",
+    "evidence_required": "xkb/seat state and client events",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "motion"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "CFG-01",
+    "stimulus": "Catch instruction-hook error repeatedly with pcall",
+    "expected": "Parent deadline kills helper; compositor responsive",
+    "evidence_required": "Probe + actual helper supervisor test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 6,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "CFG-02",
+    "stimulus": "Return cyclic/metatable/very deep Lua tables",
+    "expected": "Bounded raw conversion rejects unsupported structure",
+    "evidence_required": "Field-path diagnostic + memory bound",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 6,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "CFG-03",
+    "stimulus": "Use sparse/mixed-key action arrays or embedded NUL argv",
+    "expected": "Reject ambiguous schema or invalid OS argument",
+    "evidence_required": "Schema boundary test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 6,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "CFG-04",
+    "stimulus": "Rename config during read or traverse module symlink",
+    "expected": "Consistent snapshot; no unintended file disclosure",
+    "evidence_required": "Open/read trace + path-policy test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 6,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "CFG-05",
+    "stimulus": "Reload newer generation while older helper finishes",
+    "expected": "Stale result discarded; one active generation",
+    "evidence_required": "Helper IDs and config events",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 6,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "CFG-06",
+    "stimulus": "Send partial/oversized/duplicate-ID IPC requests",
+    "expected": "Bounded parser, deterministic error, no unrelated client impact",
+    "evidence_required": "Raw framing test + socket telemetry",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 6,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "CFG-07",
+    "stimulus": "Slow IPC subscriber never drains",
+    "expected": "Bounded output with disconnect/resync; render loop never waits",
+    "evidence_required": "Queue size and responsiveness trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 6,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "CFG-08",
+    "stimulus": "Apply output setting fails after logical validation",
+    "expected": "Desired/effective state reported honestly; preserve working session",
+    "evidence_required": "Config/output transaction record",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 6,
+    "required_features": [
+      "config_ipc"
+    ],
+    "qualified_phase": 6,
+    "variants": []
+  },
+  {
+    "id": "SEC-01",
+    "stimulus": "Two lock clients race then loser creates surface",
+    "expected": "Only selected owner has authority; loser cannot cover/unlock",
+    "evidence_required": "Client identities and lock-object trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "lock"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "SEC-02",
+    "stimulus": "Locker dies before/after lock confirmation",
+    "expected": "Correct reject or persistent locked recovery; no false success",
+    "evidence_required": "Lock state + presented safe-frame evidence",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "lock"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "SEC-03",
+    "stimulus": "Hotplug output with cursor/overlay planes while locked",
+    "expected": "First visible content is safe; no stale plane leaks",
+    "evidence_required": "Plane assignment and physical observation",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "lock"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "SEC-04",
+    "stimulus": "Sandbox client spoofs app_id/title/UID-derived role",
+    "expected": "Metadata does not grant capture/lock/input privilege",
+    "evidence_required": "Authorization audit decision",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "lock",
+      "security_context"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "SEC-05",
+    "stimulus": "Hide/remove privileged global after client already bound",
+    "expected": "Existing object actions still checked; revocation not just registry change",
+    "evidence_required": "Bound-object request test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "lock",
+      "security_context"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "SEC-06",
+    "stimulus": "Nest security contexts or disconnect creating launcher",
+    "expected": "No privilege escalation; listener lifetime follows protocol",
+    "evidence_required": "Listener fd lifecycle and context trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "lock",
+      "security_context"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "SEC-07",
+    "stimulus": "Accessibility/input-method helper requests keys while locked",
+    "expected": "Trusted host IME/virtual keyboard may target only current lock tree; normal applications and compositor key-monitor streams receive no lock input",
+    "evidence_required": "D-Bus/Wayland access decision + input trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "lock",
+      "ime"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "SEC-08",
+    "stimulus": "SIGKILL compositor while locked in supported isolated display-manager session",
+    "expected": "Session manager returns only safe greeter/blank/VT and never an automatically restarted unlocked desktop; route fails qualification otherwise",
+    "evidence_required": "Physical/KMS observation through crash and session-manager journal",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "CAP-01",
+    "stimulus": "Revoke capture permission with queued/in-flight copies",
+    "expected": "No sensitive job submitted after revocation epoch; no stale ready/portal publication; already issued consumer memory explicitly outside retroactive revocation",
+    "evidence_required": "Permission epoch vs job submit/completion/publication trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "capture"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "CAP-02",
+    "stimulus": "Close window being shared",
+    "expected": "Stop selected source; never silently share whole output",
+    "evidence_required": "Portal/session/source events",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "capture"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "CAP-03",
+    "stimulus": "Reuse PipeWire node ID or reconnect monitor",
+    "expected": "Opaque source identity prevents substitution",
+    "evidence_required": "Node serial/session mapping",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "capture"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "CAP-04",
+    "stimulus": "Mark window private during blur/direct scanout/overview",
+    "expected": "Every capture source honors policy without leaking sampled pixels",
+    "evidence_required": "Output/window capture images and effect dependencies",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "blur_privacy"
+    ],
+    "qualified_phase": 9,
+    "variants": []
+  },
+  {
+    "id": "CAP-05",
+    "stimulus": "Restore token after permission revoked or target missing",
+    "expected": "No stale grant; reprompt or fail coherently",
+    "evidence_required": "Portal persistence response and chooser evidence",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "capture"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "CAP-06",
+    "stimulus": "Large clipboard transfer receiver stalls/dies",
+    "expected": "No event-loop blockage; bounded fd/transfer lifetime",
+    "evidence_required": "Async pipe backpressure test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "clipboard"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "CAP-07",
+    "stimulus": "Kill selected X11 bridge while X11 clients are active",
+    "expected": "Report connection loss, retire X11 windows/selection ownership, clean helper/socket state, allow a new display instance without claiming old apps survived",
+    "evidence_required": "Helper lifecycle, old/new connection IDs and window/resource counts",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "x11"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "CAP-08",
+    "stimulus": "IME popup over transformed window then focus changes",
+    "expected": "Correct placement, text routing, surrounding-text privacy",
+    "evidence_required": "GTK/Qt IME session trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 7,
+    "required_features": [
+      "ime"
+    ],
+    "qualified_phase": 7,
+    "variants": []
+  },
+  {
+    "id": "A11Y-01",
+    "stimulus": "Screen reader enters overview/search and returns to app",
+    "expected": "Semantic nodes, focus and selected state announced",
+    "evidence_required": "Orca + accessible tree recording",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 8,
+    "required_features": [
+      "a11y"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "A11Y-02",
+    "stimulus": "RTL/combining/emoji title in search and task list",
+    "expected": "Safe shaped display; search and clipping do not corrupt UTF-8",
+    "evidence_required": "Text fixture images and semantic labels",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "text_ui",
+      "search_ui"
+    ],
+    "qualified_phase": 8,
+    "variants": [
+      {
+        "id": "A11Y-02:text-fixture",
+        "qualified_phase": 5,
+        "required_features": [
+          "text_ui"
+        ],
+        "expected": "Shape and render bidi/combining/emoji fixture with declared fallback and grapheme-safe truncation; no search UI required",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "A11Y-03",
+    "stimulus": "Malformed or bidi-control-heavy client title",
+    "expected": "No terminal escape injection or spoofed diagnostic authority",
+    "evidence_required": "Sanitized logs and bounded UI text",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 5,
+    "required_features": [
+      "text_ui"
+    ],
+    "qualified_phase": 5,
+    "variants": []
+  },
+  {
+    "id": "A11Y-04",
+    "stimulus": "Accessibility adapter blocks/disconnects",
+    "expected": "Main loop remains responsive; explicit status, safe restart",
+    "evidence_required": "Worker queue/backpressure fault test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 8,
+    "required_features": [
+      "a11y"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "A11Y-05",
+    "stimulus": "Nested compositor starts alongside accessible host",
+    "expected": "No takeover of host keyboard-monitor/session bus ownership",
+    "evidence_required": "D-Bus names and input-routing evidence",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 8,
+    "required_features": [
+      "a11y"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "A11Y-06",
+    "stimulus": "Enable magnification/reduced motion/high contrast",
+    "expected": "All core actions remain reachable and correctly picked",
+    "evidence_required": "Keyboard-only journey + transformed picking",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 8,
+    "required_features": [
+      "a11y"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "A11Y-07",
+    "stimulus": "Accessible lock/chooser is unavailable",
+    "expected": "Supported session reports blocker; inaccessible fallback not called complete",
+    "evidence_required": "Companion dependency and actual assistive test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 8,
+    "required_features": [
+      "a11y"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "A11Y-08",
+    "stimulus": "Lose every output in accessible full session",
+    "expected": "Announce no displays, keep server/task enumeration, give no app input focus until display returns, then restore discoverable UI",
+    "evidence_required": "Assistive announcement + IPC membership + focus/presentation trace",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 8,
+    "required_features": [
+      "a11y"
+    ],
+    "qualified_phase": 8,
+    "variants": []
+  },
+  {
+    "id": "OPS-01",
+    "stimulus": "24-hour churn with spawn/close/reload/capture",
+    "expected": "No unbounded fd/memory/GPU resource growth after steady-state accounting",
+    "evidence_required": "Raw time series and categorized resource owners",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 10,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "OPS-02",
+    "stimulus": "OOM/fd exhaustion during output creation",
+    "expected": "Fail with explicit bounded fallback; retain safe session if possible",
+    "evidence_required": "Isolated resource-limit test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 10,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "OPS-03",
+    "stimulus": "Package upgrade changes config/IPC schema",
+    "expected": "Old config diagnosed/migrated; incompatible client rejected clearly",
+    "evidence_required": "Clean upgrade/rollback test",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 10,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "OPS-04",
+    "stimulus": "User service environment shared with nested/session processes",
+    "expected": "No host activation variable overwrite from nested mode",
+    "evidence_required": "Environment import log and service ownership",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 10,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "OPS-05",
+    "stimulus": "Shutdown with unreaped helpers and pending frames",
+    "expected": "Bounded orderly cleanup; only supervised children terminated",
+    "evidence_required": "Process/fd/socket lifecycle evidence",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 10,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "OPS-06",
+    "stimulus": "Clean install missing portal/lock/auth companion",
+    "expected": "Dependency preflight names missing contract; no false readiness",
+    "evidence_required": "Fresh distribution install report",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 10,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "OPS-07",
+    "stimulus": "Benchmark under thermal throttling/background load",
+    "expected": "Record conditions/variance; no cherry-picked optimization claim",
+    "evidence_required": "Repeated raw benchmark artifacts",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 10,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "OPS-08",
+    "stimulus": "Dependency update adds protocol global/new unsafe path",
+    "expected": "Inventory diff reviewed; affected gates rerun",
+    "evidence_required": "Source/feature diff and targeted qualification",
+    "status": "specified",
+    "result": null,
+    "introduced_phase": 10,
+    "required_features": [
+      "release"
+    ],
+    "qualified_phase": 10,
+    "variants": []
+  },
+  {
+    "id": "CAP-09",
+    "introduced_phase": 7,
+    "qualified_phase": 7,
+    "required_features": [
+      "capture"
+    ],
+    "stimulus": "Destroy capture destination during delayed copy",
+    "expected": "Retain destination backing until GPU write completes; no ready/message to destroyed object",
+    "evidence_required": "Destination lease/fence and resource destruction trace",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "CAP-10",
+    "introduced_phase": 7,
+    "qualified_phase": 7,
+    "required_features": [
+      "capture",
+      "lock"
+    ],
+    "stimulus": "Lock then unlock an active browser share",
+    "expected": "Same source/session emits black without cursor while locked; resumes only after valid grant recheck; no terminal stopped on lock",
+    "evidence_required": "Session IDs, frame pixels, GPU completion and permission epochs",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "GPU-09",
+    "introduced_phase": 3,
+    "qualified_phase": 9,
+    "required_features": [
+      "explicit_sync"
+    ],
+    "stimulus": "Attach SHM buffer to explicit-sync surface on selected Smithay path",
+    "expected": "Client receives unsupported-buffer protocol error; server and other clients survive",
+    "evidence_required": "Synthetic request/error trace and server liveness",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "SEC-09",
+    "introduced_phase": 2,
+    "qualified_phase": 7,
+    "required_features": [
+      "lock"
+    ],
+    "stimulus": "Idle daemon starts ordinary session locker",
+    "expected": "Trusted host transport permitted; only winning lock object gains current authority",
+    "evidence_required": "Peer/context and lock object trace",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "SEC-10",
+    "introduced_phase": 2,
+    "qualified_phase": 7,
+    "required_features": [
+      "capture"
+    ],
+    "stimulus": "Portal backend activated by D-Bus/systemd",
+    "expected": "Trusted host activation works without inherited-fd prerequisite; selected grant/source enforced",
+    "evidence_required": "Activation log, peer class, chooser/browser share",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "SEC-11",
+    "introduced_phase": 2,
+    "qualified_phase": 7,
+    "required_features": [
+      "desktop",
+      "security_context"
+    ],
+    "stimulus": "Tagged sandbox requests privileged globals/operations",
+    "expected": "No default capture/input/lock/output/data-control authority; untrusted app_id cannot promote it",
+    "evidence_required": "Registry and existing-bound-object denial traces",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "SEC-12",
+    "introduced_phase": 2,
+    "qualified_phase": 7,
+    "required_features": [
+      "config_ipc",
+      "lock"
+    ],
+    "stimulus": "Trusted host edits policy config and sends IPC mutation",
+    "expected": "Applies same trusted-host boundary and immutable lock invariants; no claim of protection against host home/IPC access",
+    "evidence_required": "Config diff/IPC principal and effective security state",
+    "status": "specified",
+    "result": null,
+    "variants": [
+      {
+        "id": "SEC-12:host-control",
+        "qualified_phase": 6,
+        "required_features": [
+          "config_ipc"
+        ],
+        "expected": "Same-user host config/IPC mutation succeeds only through validated commands; no lock implementation claim in this variant",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "A11Y-09",
+    "introduced_phase": 3,
+    "qualified_phase": 5,
+    "required_features": [
+      "text_ui"
+    ],
+    "stimulus": "Minimal install with missing preferred font and emoji title",
+    "expected": "Declared fallback renders legible text or explicit supported fallback; bounded per-scale glyph cache",
+    "evidence_required": "Font inventory, reference images, glyph memory counters",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "SEC-13",
+    "introduced_phase": 3,
+    "qualified_phase": 7,
+    "required_features": [
+      "lock",
+      "desktop"
+    ],
+    "stimulus": "Enter non-Latin password through lock IME and touchscreen OSK",
+    "expected": "Any authenticated trusted-host IME/OSK follows current lock focus; tagged sandbox injection denied; password context absent from capture/global compositor key monitors",
+    "evidence_required": "Lock IME/OSK and capture/observer traces",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "OUT-09",
+    "introduced_phase": 3,
+    "qualified_phase": 7,
+    "required_features": [
+      "lock",
+      "desktop"
+    ],
+    "stimulus": "Request lock with output powered off, then wake/suspend",
+    "expected": "Lock causes no output wake; disabled/plane-cleared state is confirmed; first framebuffer after later wake is lock or black; unprovable backend path fails B08",
+    "evidence_required": "Atomic state/plane completion, no-wake event log, first-wake framebuffer and physical observation",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "SURF-09",
+    "introduced_phase": 4,
+    "qualified_phase": 8,
+    "required_features": [
+      "strip",
+      "canvas",
+      "window_states"
+    ],
+    "stimulus": "Exercise every window-state matrix row at supported interface versions",
+    "expected": "Configured states/caps/bounds match matrix; unsupported version fields absent; hidden state restores",
+    "evidence_required": "Synthetic configure/state traces and version bindings",
+    "status": "specified",
+    "result": null,
+    "variants": [
+      {
+        "id": "SURF-09:strip-native",
+        "qualified_phase": 7,
+        "required_features": [
+          "strip",
+          "window_states",
+          "desktop"
+        ],
+        "expected": "Native and selected X11 strip/floating/maximize/fullscreen/minimize states obey versioned matrix; canvas/overview rows excluded",
+        "status": "specified",
+        "result": null
+      }
+    ]
+  },
+  {
+    "id": "CAP-11",
+    "introduced_phase": 7,
+    "qualified_phase": 9,
+    "required_features": [
+      "capture",
+      "blur_privacy"
+    ],
+    "stimulus": "Share while private IME, notification, thumbnail and magnifier content exists",
+    "expected": "Capture graph inherits privacy to associated content; window capture samples no desktop background",
+    "evidence_required": "Redacted scene/effect graph plus output/window frame pixels",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "LAY-09",
+    "introduced_phase": 4,
+    "qualified_phase": 4,
+    "required_features": [
+      "strip"
+    ],
+    "stimulus": "Fullscreen client submits smaller transparent content during focus transition",
+    "expected": "Centered content with opaque independent backdrop; no unrelated content under fullscreen tree",
+    "evidence_required": "Alpha image fixtures and fullscreen state/transition trace",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  },
+  {
+    "id": "CAP-12",
+    "introduced_phase": 7,
+    "qualified_phase": 7,
+    "required_features": [
+      "capture",
+      "lock"
+    ],
+    "stimulus": "Request new capture session/portal grant while locked",
+    "expected": "Deny new session/grant without exporting lock UI or source metadata; existing preauthorized sessions continue black",
+    "evidence_required": "Protocol/portal denial plus existing-session IDs and black frames",
+    "status": "specified",
+    "result": null,
+    "variants": []
+  }
+]

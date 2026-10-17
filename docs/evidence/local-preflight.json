@@ -1,0 +1,57 @@
+{
+  "scope": "Read-only local development preflight; not native compositor validation",
+  "commands": {
+    "rustc": {
+      "exit_code": 0,
+      "stdout": "rustc 1.99.0 (b940084d7 2026-09-28) (Arch Linux rust 1:1.99.0-1)",
+      "stderr": ""
+    },
+    "cargo": {
+      "exit_code": 0,
+      "stdout": "cargo 1.99.0 (5f94df478 2026-08-27) (Arch Linux rust 1:1.99.0-1)",
+      "stderr": ""
+    },
+    "lua": {
+      "exit_code": 0,
+      "stdout": "Lua 5.5.1  Copyright (C) 1994-2026 Lua.org, PUC-Rio",
+      "stderr": ""
+    },
+    "pkg-config": {
+      "exit_code": 0,
+      "stdout": "1.26.0\n1.13.2\n1.32.0\n262\n26.2.4-arch1.1\n1.5\n3.2\n0.9.3",
+      "stderr": "",
+      "packages_in_output_order": [
+        "wayland-server",
+        "xkbcommon",
+        "libinput",
+        "libudev",
+        "gbm",
+        "egl",
+        "glesv2",
+        "libseat"
+      ]
+    }
+  },
+  "devices": {
+    "dri_nodes": [
+      "by-path",
+      "card2",
+      "renderD129",
+      "card1",
+      "renderD128"
+    ]
+  },
+  "environment_presence": {
+    "WAYLAND_DISPLAY": true,
+    "DISPLAY": true,
+    "XDG_RUNTIME_DIR": true,
+    "XDG_SESSION_TYPE": true
+  },
+  "limitations": [
+    "No DRM/seat device opened",
+    "No kernel modules loaded",
+    "No host session or environment changed",
+    "No FluxWM source exists to compile",
+    "pkg-config resolution alone does not prove runtime compatibility"
+  ]
+}

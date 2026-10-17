@@ -1,0 +1,3 @@
+runtime=Lua 5.4
+mlua_hook_errors=5, caught_by_pcall=5
+Result: this embedding's ordinary hook errors do not force outer evaluation termination.

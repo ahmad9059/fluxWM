@@ -1,0 +1,37 @@
+{
+  "scope": "Narrow hook catchability probe with pinned mlua; not FluxWM supervisor or compositor qualification",
+  "command": [
+    "cargo",
+    "run",
+    "--locked",
+    "--offline",
+    "--manifest-path",
+    "docs/evidence/probes/mlua-hook/Cargo.toml",
+    "--target-dir",
+    "/tmp/fluxwm-mlua-probe-target"
+  ],
+  "exit_code": 0,
+  "stdout": "runtime=Lua 5.4\nmlua_hook_errors=5, caught_by_pcall=5\nResult: this embedding's ordinary hook errors do not force outer evaluation termination.\n",
+  "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s\n     Running `/tmp/fluxwm-mlua-probe-target/debug/fluxwm-evidence-mlua-hook`\n",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28) (Arch Linux rust 1:1.99.0-1)",
+  "files_sha256": {
+    "docs/evidence/probes/mlua-hook/Cargo.toml": "ddf74ce2dbdcebdc534e535732e19593be86da08f6c22e4e9e7f762d02f9a02d",
+    "docs/evidence/probes/mlua-hook/Cargo.lock": "e8ca64b857c53038c627e253d6752060e472804fcd3b388b13252f7d7b9b6d0a",
+    "docs/evidence/probes/mlua-hook/src/main.rs": "42023100f1f3cf3d08a595a966c1f638fcb470700133519b835c045dac4a0b4f"
+  },
+  "limits": [
+    "Only five finite outer iterations",
+    "No proof all instruction-limit implementations are bypassable",
+    "Does not implement parent deadline/kill/reap or config schema",
+    "Does not qualify Smithay or Wayland/DRM stack"
+  ],
+  "execution_kind": "cached locked/offline rerun following initial successful build",
+  "bundled_lua": {
+    "source_package": "lua-src 551.0.2",
+    "feature": "lua54",
+    "selected_directory": "lua-5.4.9",
+    "header_release": "9",
+    "mapping_source_sha256": "811e1ccf8e3d3eb82300d27643d149ae532edf2737dccd3d7db8a91b29e193c5",
+    "header_sha256": "06138352a12f0710bc214eb3a2e134889979cadc9a7a761a4e43dafa926419af"
+  }
+}

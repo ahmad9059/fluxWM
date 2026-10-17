@@ -1,0 +1,68 @@
+{
+  "scope": "Negative documentation-fixture checks for actual schema ambiguities found by review; not hardened FluxWM parser tests",
+  "checker_sha256": "06d19e3fb1ccdea1593c43a6137ebec569c6c5b432e32051d4e855ce6e9ce8e1",
+  "cases": [
+    {
+      "id": "ambiguous-width",
+      "expected_diagnostic": "exactly one width tag",
+      "rejected": true,
+      "exit_code": 1,
+      "observed_first_line": "lua5.4: layout.default_width: exactly one width tag required"
+    },
+    {
+      "id": "legacy-output-string",
+      "expected_diagnostic": "expected table",
+      "rejected": true,
+      "exit_code": 1,
+      "observed_first_line": "lua5.4: outputs[2].match: expected table"
+    },
+    {
+      "id": "ambiguous-key",
+      "expected_diagnostic": "exactly one key tag",
+      "rejected": true,
+      "exit_code": 1,
+      "observed_first_line": "lua5.4: bindings[1]: exactly one key tag required"
+    },
+    {
+      "id": "old-snap-unit",
+      "expected_diagnostic": "unknown field snap_distance",
+      "rejected": true,
+      "exit_code": 1,
+      "observed_first_line": "lua5.4: layout.canvas: unknown field snap_distance"
+    },
+    {
+      "id": "unknown-preset",
+      "expected_diagnostic": "unknown preset",
+      "rejected": true,
+      "exit_code": 1,
+      "observed_first_line": "lua5.4: layout.default_width: unknown preset"
+    },
+    {
+      "id": "unknown-curve",
+      "expected_diagnostic": "unknown curve",
+      "rejected": true,
+      "exit_code": 1,
+      "observed_first_line": "lua5.4: camera: unknown curve"
+    },
+    {
+      "id": "duplicate-chord",
+      "expected_diagnostic": "duplicate chord",
+      "rejected": true,
+      "exit_code": 1,
+      "observed_first_line": "lua5.4: bindings[3]: duplicate chord"
+    },
+    {
+      "id": "old-security-field",
+      "expected_diagnostic": "unknown field capture",
+      "rejected": true,
+      "exit_code": 1,
+      "observed_first_line": "lua5.4: security: unknown field capture"
+    }
+  ],
+  "passed": true,
+  "limits": [
+    "Trusted generated fixtures only",
+    "No GPU/helper/sandbox runtime test",
+    "Does not promote any compositor acceptance case to passed"
+  ]
+}
