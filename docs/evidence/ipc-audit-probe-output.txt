@@ -1,0 +1,12 @@
+   Compiling flux-ipc-audit-probe v0.0.0 (/home/ahmad/Documents/Projects/fluxwm-ipc/docs/evidence/ipc-audit-probe)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s
+     Running `/tmp/flux-ipc-audit-target/debug/flux-ipc-audit-probe`
+half_close: dispatched=0 remaining_connections=0
+batch_sequence: id=mutation sequence=11
+batch_sequence: id=invalid-after-mutation sequence=10
+response_depth: encode_ok=true decode_ok=false
+empty_config_path: accepted=true
+unit_action_unknown_field: name=quit accepted=true
+unit_action_unknown_field: name=lock accepted=true
+unit_action_unknown_field: name=reload-config accepted=true
+unit_action_unknown_field: name=close-window accepted=true
