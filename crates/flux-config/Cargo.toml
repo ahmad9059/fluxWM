@@ -1,0 +1,15 @@
+[package]
+name = "flux-config"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+flux-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+libc.workspace = true
+regex = "1.11"
+serde_path_to_error = "0.1"

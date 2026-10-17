@@ -1,0 +1,11 @@
+[package]
+name = "fluxwm-config"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+flux-config = { path = "../flux-config" }
+serde_json.workspace = true
+mlua = { git = "https://github.com/mlua-rs/mlua", rev = "a186d461c7772aed4cb0a9fa1d1899121c6450e7", default-features = false, features = ["lua54", "vendored"] }
