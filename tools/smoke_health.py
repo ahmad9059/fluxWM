@@ -79,6 +79,7 @@ def run_case(binary, fixture, directory, mode, parent):
         while after['shell_health']['clients'] and time.monotonic() - cleanup_start < .5:
             check(); time.sleep(.01); after = ipc('diagnostics')
         result['disconnect_cleanup_ms'] = round((time.monotonic() - cleanup_start) * 1000, 2)
+        require(result['disconnect_cleanup_ms'] <= 500, 'disconnect observation exceeded 500 ms including IPC wait')
         require(after['shell_health']['clients'] == [] and after['shell_health']['timer_armed'] is False, 'monitor/timer survived client retirement')
         result['after_disconnect'] = after
         result['quit'] = ipc('action', {'name': 'quit'})
