@@ -1,6 +1,7 @@
 // Adapted from Smithay Smallvil, MIT; see LICENSES/Smithay-MIT.txt.
 #![allow(irrefutable_let_patterns)]
 mod actions;
+mod config;
 mod configure;
 mod grabs;
 mod handlers;
@@ -29,6 +30,9 @@ use std::{
 #[derive(Default)]
 struct Options {
     socket: Option<String>,
+    config: Option<PathBuf>,
+    no_config: bool,
+    config_helper: Option<PathBuf>,
     exit_after: Option<Duration>,
     ready: Option<PathBuf>,
     stats: Option<PathBuf>,
@@ -44,7 +48,7 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
         match arg.to_str() {
             Some("--help" | "-h") => {
                 println!(
-                    "fluxwm --backend nested [--socket NAME] [--exit-after-ms N] [--ready-file PATH] [--stats-file PATH] [--screenshot NEW.ppm] [--screenshot-after-ms N] [-- COMMAND ARG...]\nOnly the nested backend is currently implemented. Output files must not already exist."
+                    "fluxwm --backend nested [--config PATH | --no-config] [--config-helper PATH] [--socket NAME] [--exit-after-ms N] [--ready-file PATH] [--stats-file PATH] [--screenshot NEW.ppm] [--screenshot-after-ms N] [-- COMMAND ARG...]\nOnly the nested backend is currently implemented. Output files must not already exist."
                 );
                 return Ok(None);
             }
@@ -52,6 +56,31 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
                 if args.next().as_deref() != Some(std::ffi::OsStr::new("nested")) {
                     return Err("only --backend nested is implemented".into());
                 }
+            }
+            Some("--config") => {
+                if result.config.is_some() || result.no_config {
+                    return Err(
+                        "--config and --no-config are mutually exclusive and must appear once"
+                            .into(),
+                    );
+                }
+                result.config = Some(args.next().ok_or("missing config path")?.into());
+            }
+            Some("--no-config") => {
+                if result.config.is_some() || result.no_config {
+                    return Err(
+                        "--config and --no-config are mutually exclusive and must appear once"
+                            .into(),
+                    );
+                }
+                result.no_config = true;
+            }
+            Some("--config-helper") => {
+                if result.config_helper.is_some() {
+                    return Err("--config-helper must appear once".into());
+                }
+                result.config_helper =
+                    Some(args.next().ok_or("missing config helper path")?.into());
             }
             Some("--socket") => {
                 result.socket = Some(
@@ -116,6 +145,53 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
         return Err("socket name must be 1..64 ASCII letters, digits, '-' or '_'".into());
     }
     Ok(Some(result))
+}
+
+fn absolute_config_path(path: PathBuf) -> std::io::Result<PathBuf> {
+    use std::os::unix::ffi::OsStrExt;
+    let valid = |p: &std::path::Path| {
+        let bytes = p.as_os_str().as_bytes();
+        !bytes.is_empty()
+            && bytes.len() <= flux_config::MAX_SOURCE_PATH_BYTES
+            && !bytes.contains(&0)
+    };
+    if !valid(&path) {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "configuration paths must contain 1..4096 NUL-free bytes",
+        ));
+    }
+    let path = std::path::absolute(path)?;
+    if !valid(&path) {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "absolute configuration path exceeds 4096 bytes",
+        ));
+    }
+    Ok(path)
+}
+fn config_source(
+    explicit: Option<PathBuf>,
+    disabled: bool,
+    xdg: Option<OsString>,
+    home: Option<OsString>,
+) -> std::io::Result<Option<PathBuf>> {
+    if disabled {
+        return Ok(None);
+    }
+    explicit
+        .or_else(|| {
+            xdg.filter(|v| !v.is_empty())
+                .map(PathBuf::from)
+                .filter(|p| p.is_absolute())
+                .or_else(|| {
+                    home.map(|p| PathBuf::from(p).join(".config"))
+                        .filter(|p| p.is_absolute())
+                })
+                .map(|p| p.join("fluxwm/config.lua"))
+        })
+        .map(absolute_config_path)
+        .transpose()
 }
 
 pub(crate) struct SupervisedChild(pub Child);
@@ -227,7 +303,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ])?;
     let signal_dispatcher = calloop::Dispatcher::new(signals, |event, _, state: &mut Fluxwm| {
         if event.signal() != calloop::signals::Signal::SIGCHLD {
-            state.loop_signal.stop();
+            state.stop();
         }
     });
     let mut event_loop: EventLoop<Fluxwm> = EventLoop::try_new()?;
@@ -259,7 +335,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         event_loop
             .handle()
             .insert_source(Timer::from_duration(duration), |_, _, state| {
-                state.loop_signal.stop();
+                state.stop();
                 TimeoutAction::Drop
             })
             .map_err(|e| std::io::Error::other(e.to_string()))?;
@@ -270,6 +346,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options.socket.as_deref().ok_or("missing instance")?,
     )?;
     state.init_processes(&event_loop.handle())?;
+    let source = config_source(
+        options.config,
+        options.no_config,
+        std::env::var_os("XDG_CONFIG_HOME"),
+        std::env::var_os("HOME"),
+    )?;
+    let helper = match options.config_helper {
+        Some(path) => absolute_config_path(path)?,
+        None => absolute_config_path(std::env::current_exe()?.with_file_name("fluxwm-config"))?,
+    };
+    state.init_config(&event_loop.handle(), source, helper)?;
     let mut child = if let Some((command, args)) = options.command.split_first() {
         Some(SupervisedChild(spawn_client(
             command,
@@ -295,6 +382,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     state.finish_dispatch();
     // Join and release process ownership outside event dispatch. Dropping the
     // event loop drains any delivered outcomes still held by its channel.
+    if let Some(mut config) = state.config.take() {
+        config.shutdown()?;
+    }
     if let Some(worker) = state.spawn_worker.take() {
         worker.shutdown()?;
     }
@@ -317,4 +407,62 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err(error.into());
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod option_tests {
+    use super::*;
+    #[test]
+    fn source_discovery_is_explicit_and_ignores_relative_xdg_roots() {
+        let root = Some(OsString::from("/config-root"));
+        let home = Some(OsString::from("/user-home"));
+        assert_eq!(
+            config_source(None, false, root.clone(), home.clone())
+                .unwrap()
+                .unwrap(),
+            PathBuf::from("/config-root/fluxwm/config.lua")
+        );
+        for xdg in [
+            None,
+            Some(OsString::new()),
+            Some(OsString::from("relative")),
+        ] {
+            assert_eq!(
+                config_source(None, false, xdg, home.clone())
+                    .unwrap()
+                    .unwrap(),
+                PathBuf::from("/user-home/.config/fluxwm/config.lua")
+            );
+        }
+        assert_eq!(config_source(None, false, None, None).unwrap(), None);
+        assert_eq!(
+            config_source(None, true, root.clone(), home.clone()).unwrap(),
+            None
+        );
+        assert_eq!(
+            config_source(Some("/explicit.lua".into()), false, root, home)
+                .unwrap()
+                .unwrap(),
+            PathBuf::from("/explicit.lua")
+        );
+    }
+    #[test]
+    fn configuration_paths_reject_empty_nul_and_expansion_beyond_budget() {
+        use std::os::unix::ffi::OsStringExt;
+        for path in [
+            PathBuf::new(),
+            PathBuf::from(OsString::from_vec(b"/config\0suffix".to_vec())),
+            PathBuf::from("x".repeat(4096)),
+        ] {
+            assert_eq!(
+                absolute_config_path(path).unwrap_err().kind(),
+                std::io::ErrorKind::InvalidInput
+            );
+        }
+        assert!(
+            absolute_config_path("relative.lua".into())
+                .unwrap()
+                .is_absolute()
+        );
+    }
 }

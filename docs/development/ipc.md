@@ -127,4 +127,4 @@ The nested runtime uses `poll_controlled` and `Dispatch::Drain` to queue the qui
 
 The nested `windows.list` rows expose [toplevel configure state](configure-stream.md): actual unacknowledged count, pending intent, and separate last-acked/committed serials and size suggestions. These fields do not prove actual buffer size, acquire readiness or presentation.
 
-`diagnostics.keyboard_bindings` reports the development-table source, entry/inactive counts and `runtime_keymap_changes: false`. These counts do not mean user configuration was applied; config check/reload/effective runtime endpoints remain unavailable.
+`diagnostics.keyboard_bindings` reports development/user table source, entry/inactive counts and `runtime_keymap_changes: false`. [Runtime configuration](runtime-config.md) adds requested/prepared/applied generations, manual reload acceptance and concise desired/effective settings. Runtime `config.check` remains unavailable; use the separate helper CLI. A requested generation is not proof of application.

@@ -132,7 +132,7 @@ pub fn init_winit(
                 context.borrow_mut().host_ready = true;
                 state.request_redraw();
             }
-            WinitEvent::CloseRequested => state.loop_signal.stop(),
+            WinitEvent::CloseRequested => state.stop(),
         })
         .map_err(|e| std::io::Error::other(e.to_string()))?;
     state.request_redraw();

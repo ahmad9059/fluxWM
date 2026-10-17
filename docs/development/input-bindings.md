@@ -1,6 +1,6 @@
 # Keymap-qualified input bindings
 
-The nested compositor now compiles its existing development controls into a Rust binding table against the actual seat keymap. The new `flux-input` component prepares schema `Binding` values without retaining a native XKB object, seat, device or Lua VM. Runtime startup/reload of user Lua configurations is still not connected; a successful loader candidate is not an applied configuration.
+The nested compositor now compiles its existing development controls into a Rust binding table against the actual seat keymap. The new `flux-input` component prepares schema `Binding` values without retaining a native XKB object, seat, device or Lua VM. [Runtime startup/manual reload](runtime-config.md) now prepares user bindings against a serialized copy of that same fixed seat map on a worker. Evaluation success remains distinct from publication.
 
 ## Compilation and matching
 
@@ -16,7 +16,7 @@ Starting admission budgets are 4,096 bindings, 4 MiB total binding/action string
 
 ## Runtime and evidence
 
-The development table keeps Alt direction/move, mode, close/quit, spawn and width controls. Diagnostics expose only table source, entry/inactive counts and unavailable runtime keymap changes, not key identities. Runtime config capabilities remain false/not-ready. The binding compiler validates action data; it does not authorize an action or implement currently unavailable window/lock features.
+The development table keeps Alt direction/move, mode, close/quit, spawn and width controls. Diagnostics expose only table source, entry/inactive counts and unavailable runtime keymap changes, not key identities. Runtime config capabilities report manual reload when loading is enabled; unsupported setting categories remain explicit in effective settings. The binding compiler validates action data; it does not authorize an action or implement currently unavailable window/lock features.
 
 The component tests use actual libxkbcommon maps for US, Russian and US/Russian groups, real lock/state updates, alias collisions, physical/symbol ambiguity and synthetic XKB actions. The modifier-trigger regression fails against the earlier compiler and passes after rejection is added. Private authenticated Xvfb regressions exercise real Alt+c/s routing, consumed releases, held keys/buttons and popup cancellation. This is separate from physical code binding end-to-end, full shortcut/menu inhibition or real-device coverage.
 

@@ -5,7 +5,7 @@ impl Fluxwm {
     /// Validate user intent at the live model boundary. Unsupported features fail
     /// explicitly; accepting an action does not promise hardware presentation.
     pub fn apply_action(&mut self, action: Action) -> Result<(), String> {
-        if self.shutdown_deadline.is_some() {
+        if self.stopping || self.shutdown_deadline.is_some() {
             return Err("instance is shutting down".into());
         }
         action.validate().map_err(|e| e.to_string())?;
@@ -88,10 +88,12 @@ impl Fluxwm {
                     Some(deadline.duration_since(started).as_millis() as u64);
                 self.ipc_requested = true;
             }
+            Action::ReloadConfig => {
+                self.request_config_reload().map_err(str::to_owned)?;
+            }
             Action::Fullscreen { .. }
             | Action::Floating { .. }
             | Action::Overview { .. }
-            | Action::ReloadConfig
             | Action::Lock => return Err("action is not implemented in the nested backend".into()),
         }
         self.sequence = next_sequence;

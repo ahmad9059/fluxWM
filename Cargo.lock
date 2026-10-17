@@ -412,6 +412,7 @@ dependencies = [
  "tempfile",
  "tracing",
  "tracing-subscriber",
+ "xkbcommon",
 ]
 
 [[package]]

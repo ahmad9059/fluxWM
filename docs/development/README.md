@@ -10,8 +10,8 @@ See the [current nested runtime milestone](runtime.md) and [bounded nested smoke
 | --- | --- | --- |
 | `flux-core` | Generational IDs, geometry, action vocabulary | Checked owning arena and shared strict actions now drive the nested runtime |
 | [flux-layout](layout.md) | Pure strip/canvas workspace model | Connected to the nested scene/lifecycle; multi-output and complete state remain open |
-| [flux-config / fluxwm-config](config.md) | Schema, isolated Lua helper and asynchronous coordinator | User Lua publication and atomic compositor reload remain unavailable |
-| [flux-input](input-bindings.md) | Real-keymap binding resolution and immutable Rust dispatch tables | Development controls use this path; user-config publication, keymap reload and full device/input policy remain open |
+| [flux-config / fluxwm-config](config.md) | Schema, isolated Lua helper and asynchronous coordinator | Nested gap/mode/binding publication implemented; full device/output transactions remain open |
+| [flux-input](input-bindings.md) | Real-keymap binding resolution and immutable Rust dispatch tables | Development/user controls use this path; keymap replacement and full device/input policy remain open |
 | [flux-ipc / fluxctl](ipc.md) | Unix transport and command-line client | Nested query/action dispatch implemented; subscriptions unavailable |
 | [flux-scene](scene.md) | Immutable checked window geometry and ordered clip/hit candidates | [Runtime scene integration](runtime-scene.md) adds copied Wayland input regions and clipped elements; native/transaction ownership remains open |
 | `fluxwm` | Smithay nested compositor bootstrap | Managed map/unmap, gated capabilities, bounded redraw and cleanup; full protocol/native qualification open |
@@ -52,4 +52,4 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 
 [Bounded toplevel configures](configure-stream.md) limits ordinary unacknowledged traffic, coalesces latest layout intent and verifies ack/commit separation, healthy-sibling progress, remap overlap and pending-role destruction. Full layout transactions and global resource accounting remain open.
 
-[Configuration loader coordination](config.md) now owns one active evaluation, one replaceable pending source and one completion, with explicit last-good commit and cancellation. It was developed on an isolated worktree/branch and integrated with the input compiler; runtime Lua publication remains separate.
+[Configuration loader coordination](config.md) now owns one active evaluation, one replaceable pending source and one completion, with explicit last-good commit and cancellation. It was developed on an isolated worktree/branch and integrated with the input compiler; [Runtime Lua publication](runtime-config.md) now uses this coordinator behind a worker and explicitly limits application to gap/mode/bindings.

@@ -3,7 +3,7 @@
 The source under `crates/flux-config` and `crates/fluxwm-config` implements the initial
 schema and evaluator, including the documentation example in `docs/examples/config.lua`.
 The asynchronous coordinator and real-keymap binding compiler now provide preparation
-components. This does not close phase 6: atomic compositor publication, config-driven
+components. The [nested runtime](runtime-config.md) now publishes gap/mode/binding settings from startup/manual reload. This does not close phase 6: full device/output publication, config-driven
 keymap/device transactions, autostart lifecycle, hot reload and reference generation
 still need implementation.
 The wider documents describe the target contract; this file records current behavior.
@@ -267,6 +267,6 @@ Those remain compositor command/application checks. The earlier configuration au
 warning about direct core Action unit decoding applies to its recorded historical
 snapshot; the current core implementation closes that specific defect for every caller.
 
-The [keymap-qualified input compiler](input-bindings.md) additionally resolves actual symbols, base-level reachability and code/symbol ambiguity. Its tables now drive the built-in development controls. Connecting a loader candidate to this preparation and to one atomic runtime publication is still required; coordinator commit alone does not install bindings or change layout/device state.
+The [keymap-qualified input compiler](input-bindings.md) additionally resolves actual symbols, base-level reachability and code/symbol ambiguity. Its tables now drive built-in controls and [user configuration bindings](runtime-config.md). Coordinator commit alone does not install bindings or change layout/device state; the runtime has its own gap/mode/binding publication boundary and retained successfully applied snapshot.
 
 Runtime integration must also budget retirement of superseded compiled snapshots: request/commit can drop prior completion or last-good ownership. These bounds and component tests do not establish a dispatch-latency budget for allocating or destroying regex/config data.

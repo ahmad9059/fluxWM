@@ -68,6 +68,8 @@ pub struct RuntimeStats {
 }
 
 pub struct Fluxwm {
+    pub config: Option<crate::config::RuntimeConfig>,
+    pub stopping: bool,
     pub bindings: flux_input::BindingSet,
     pub host_focus: Option<bool>,
     pub health: crate::health::Monitor<Fluxwm>,
@@ -191,6 +193,8 @@ impl Fluxwm {
         let loop_signal = event_loop.get_signal();
 
         let mut state = Self {
+            config: None,
+            stopping: false,
             bindings: Default::default(),
             host_focus: None,
             health: crate::health::Monitor::new(&event_loop.handle(), |state| {
@@ -345,10 +349,16 @@ impl Fluxwm {
         }
     }
 
+    /// Seal runtime publication before requesting event-loop termination.
+    pub fn stop(&mut self) {
+        self.stopping = true;
+        self.loop_signal.stop();
+    }
+
     pub fn fail(&mut self, message: String) {
         tracing::error!(%message);
         self.fatal_error = Some(message);
-        self.loop_signal.stop();
+        self.stop();
     }
 
     pub fn window_id(&self, surface: &WlSurface) -> Option<WindowId> {
@@ -808,6 +818,7 @@ impl Fluxwm {
         }
         self.drive_ipc();
         self.cleanup_popup_grab();
+        self.drive_config();
         self.refresh_pointer_focus();
         self.flush_wayland();
     }

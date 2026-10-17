@@ -21,7 +21,7 @@ impl Fluxwm {
         Ok(())
     }
     pub fn drive_ipc(&mut self) {
-        if !self.ipc_requested {
+        if self.stopping || !self.ipc_requested {
             return;
         }
         self.ipc_requested = false;
@@ -52,7 +52,7 @@ impl Fluxwm {
             self.stats.ipc_drain_elapsed_ms = self
                 .shutdown_started
                 .map(|started| started.elapsed().as_millis() as u64);
-            self.loop_signal.stop();
+            self.stop();
         }
         self.ipc = Some(driver);
     }
@@ -70,8 +70,8 @@ impl Fluxwm {
                 json!({"name":"FluxWM", "version":env!("CARGO_PKG_VERSION"), "ipc_version":1, "backend":"nested"}),
             ),
             Method::Capabilities => Ok(json!({
-                "backend":"nested", "subscriptions":false, "config_reload":false,
-                "actions":["focus","move","pan","resize","workspace-mode","close-window","spawn","quit"],
+                "backend":"nested", "subscriptions":false, "config_reload":self.config.is_some(),
+                "actions":["focus","move","pan","resize","workspace-mode","close-window","spawn","reload-config","quit"],
                 "secure_lock":false,"capture":false,"drag_and_drop":false,"native_session":false,"x11_clients":false,
                 "client_responsiveness":"xdg-shell-ping", "unresponsive_clients_killed":false,
                 "frame_clock":"virtual-60hz", "host_presentation_observed":false,
@@ -97,12 +97,10 @@ impl Fluxwm {
                 let outputs:Vec<_> = self.space.outputs().filter_map(|output|self.space.output_geometry(output).map(|g|json!({"id":OutputId::new(0,0),"name":output.name(),"geometry":{"x":g.loc.x,"y":g.loc.y,"width":g.size.w,"height":g.size.h},"scale":1.0}))).collect();
                 Ok(json!({"outputs":outputs}))
             }
-            Method::EffectiveConfig => Err(ErrorBody::new(
-                ErrorCode::NotReady,
-                "Lua configuration is not integrated into the nested runtime",
-            )),
+            Method::EffectiveConfig => Ok(self.effective_config()),
             Method::Diagnostics => Ok(json!({
-                "keyboard_bindings": {"source":"development-defaults", "entries":self.bindings.len(), "inactive":self.bindings.inactive_indices().len(), "runtime_keymap_changes":false},
+                "configuration":self.config.as_ref().map(|c|c.diagnostics()).unwrap_or_else(||json!({"requested_generation":null,"applied_generation":null,"prepared_generation":null,"status":"disabled","last_error":null})),
+                "keyboard_bindings": {"source":if self.config.as_ref().is_some_and(|c|c.applied()) {"user-config"} else {"development-defaults"}, "entries":self.bindings.len(), "inactive":self.bindings.inactive_indices().len(), "runtime_keymap_changes":false},
                 "composed_scene": self.scene.as_ref().map(|scene| {
                     let (surfaces, popup_surfaces) = scene.surface_counts();
                     json!({"surfaces":surfaces, "popup_surfaces":popup_surfaces})
@@ -132,9 +130,10 @@ impl Fluxwm {
                     })
                     .map_err(|error| ErrorBody::new(ErrorCode::NotReady, error))
             }),
-            Method::ConfigCheck | Method::ConfigReload => Err(ErrorBody::new(
+            Method::ConfigReload => self.apply_action(flux_core::Action::ReloadConfig).map(|()| json!({"accepted":true,"generation":self.config.as_ref().unwrap().diagnostics()["requested_generation"]})).map_err(|error|ErrorBody::new(ErrorCode::NotReady,error)),
+            Method::ConfigCheck => Err(ErrorBody::new(
                 ErrorCode::NotReady,
-                "use fluxwm-config --check; runtime reload is not integrated",
+                "use fluxwm-config --check; runtime config.check is not integrated",
             )),
             Method::Unknown => Err(ErrorBody::new(ErrorCode::UnknownMethod, "unknown method")),
         };

@@ -1,6 +1,6 @@
 # Lua configuration contract
 
-This document specifies the target FluxWM schema. A strict subset is now implemented in the isolated Lua **5.4** helper; see [config implementation](development/config.md) and its [production audit](development/config-production-audit.md) for supported fields and remaining integration. The helper manifest pins mlua and its enabled features. Schema acceptance does not apply outputs, install bindings or establish atomic compositor reload.
+This document specifies the target FluxWM schema. A strict subset is now implemented in the isolated Lua **5.4** helper; see [config implementation](development/config.md) and its [production audit](development/config-production-audit.md) for supported fields and remaining integration. The helper manifest pins mlua and its enabled features. Schema acceptance alone does not apply outputs or install bindings. The [nested runtime](development/runtime-config.md) now publishes gap/mode/bindings on startup/manual reload; full device/output transactions remain open.
 
 ## User contract
 
