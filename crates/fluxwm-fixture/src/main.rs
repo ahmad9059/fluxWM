@@ -14,7 +14,7 @@ use wayland_client::{
     Connection, Dispatch, EventQueue, Proxy, QueueHandle, WEnum, delegate_noop,
     protocol::{
         wl_buffer, wl_callback, wl_compositor, wl_keyboard, wl_pointer, wl_registry, wl_seat,
-        wl_shm, wl_shm_pool, wl_surface,
+        wl_shm, wl_shm_pool, wl_subcompositor, wl_subsurface, wl_surface,
     },
 };
 use wayland_protocols::xdg::shell::client::{
@@ -29,6 +29,7 @@ enum Callback {
     Sync(u32),
     Frame(usize),
     PopupFrame(usize),
+    ClipChildFrame,
 }
 struct Window {
     surface: wl_surface::WlSurface,
@@ -85,6 +86,13 @@ struct State {
     keyboard: Option<wl_keyboard::WlKeyboard>,
     keyboard_focus: Option<wl_surface::WlSurface>,
     popup_keyboard_enters: u32,
+    container_mode: bool,
+    subcompositor: Option<wl_subcompositor::WlSubcompositor>,
+    clip_child: Option<wl_surface::WlSurface>,
+    clip_child_frames: u32,
+    clip_child_motions: u32,
+    pointer_focus_surface: Option<wl_surface::WlSurface>,
+    pointer_focus_xy: Option<(f64, f64)>,
 }
 impl State {
     fn new(start: Instant) -> Self {
@@ -118,6 +126,13 @@ impl State {
             keyboard: None,
             keyboard_focus: None,
             popup_keyboard_enters: 0,
+            container_mode: false,
+            subcompositor: None,
+            clip_child: None,
+            clip_child_frames: 0,
+            clip_child_motions: 0,
+            pointer_focus_surface: None,
+            pointer_focus_xy: None,
         }
     }
     fn record(&mut self, event: Json) {
@@ -484,6 +499,9 @@ impl Dispatch<wl_registry::WlRegistry, ()> for State {
                 "wl_compositor" if state.compositor.is_none() => {
                     state.compositor = Some(registry.bind(name, version.min(6), qh, ()))
                 }
+                "wl_subcompositor" if state.container_mode && state.subcompositor.is_none() => {
+                    state.subcompositor = Some(registry.bind(name, 1, qh, ()));
+                }
                 "wl_shm" if state.shm.is_none() => state.shm = Some(registry.bind(name, 1, qh, ())),
                 "xdg_wm_base" if state.wm.is_none() => {
                     state.wm = Some(registry.bind(name, version.min(7), qh, ()))
@@ -583,6 +601,10 @@ impl Dispatch<wl_callback::WlCallback, Callback> for State {
                 Callback::Sync(n) => {
                     state.last_sync = *n;
                     state.sync_done_count += 1;
+                }
+                Callback::ClipChildFrame => {
+                    state.clip_child_frames += 1;
+                    state.record(json!({"clip_child_frame":true}));
                 }
                 Callback::PopupFrame(n) => {
                     state.popups[*n].frames += 1;
@@ -698,6 +720,8 @@ impl Dispatch<xdg_popup::XdgPopup, PopupTag> for State {
     }
 }
 delegate_noop!(State:ignore xdg_positioner::XdgPositioner);
+delegate_noop!(State:ignore wl_subcompositor::WlSubcompositor);
+delegate_noop!(State:ignore wl_subsurface::WlSubsurface);
 impl Dispatch<wl_pointer::WlPointer, ()> for State {
     fn event(
         state: &mut Self,
@@ -707,6 +731,38 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
+        match &event {
+            wl_pointer::Event::Enter {
+                surface,
+                surface_x,
+                surface_y,
+                ..
+            } => {
+                state.pointer_focus_surface = Some(surface.clone());
+                state.pointer_focus_xy = Some((*surface_x, *surface_y));
+                if state.container_mode {
+                    state.record(json!({"clip_pointer_enter_child":state.clip_child.as_ref()==Some(surface),"xy":[surface_x,surface_y]}));
+                }
+            }
+            wl_pointer::Event::Leave { .. } => {
+                if state.container_mode {
+                    state.record(json!({"clip_pointer_leave_child":state.pointer_focus_surface==state.clip_child}));
+                }
+                state.pointer_focus_surface = None;
+                state.pointer_focus_xy = None;
+            }
+            wl_pointer::Event::Motion {
+                surface_x,
+                surface_y,
+                ..
+            } => {
+                state.pointer_focus_xy = Some((*surface_x, *surface_y));
+                if state.clip_child.is_some() && state.pointer_focus_surface == state.clip_child {
+                    state.clip_child_motions += 1;
+                }
+            }
+            _ => {}
+        }
         match event {
             wl_pointer::Event::Enter {
                 surface,
@@ -916,14 +972,14 @@ impl Diagnostics {
             next_id: 0,
         })
     }
-    fn snapshot(&mut self, deadline: Instant) -> Result<Json> {
+    fn call(&mut self, method: &str, params: Json, deadline: Instant) -> Result<Json> {
         let id = format!("fixture-{}", self.next_id);
         self.next_id = self
             .next_id
             .checked_add(1)
             .ok_or("diagnostic request identity capacity exhausted")?;
         let payload =
-            serde_json::to_vec(&json!({"version":1,"id":id,"method":"diagnostics","params":{}}))
+            serde_json::to_vec(&json!({"version":1,"id":id,"method":method,"params":params}))
                 .map_err(|e| e.to_string())?;
         let mut frame = (payload.len() as u32).to_be_bytes().to_vec();
         frame.extend(payload);
@@ -940,10 +996,17 @@ impl Diagnostics {
         if response.get("id") != Some(&json!(id)) {
             return Err("diagnostics response identity mismatch".into());
         }
-        let stats = response
-            .pointer("/result/runtime")
+        response
+            .get("result")
             .cloned()
-            .ok_or_else(|| format!("missing diagnostic runtime counters: {response}"))?;
+            .ok_or_else(|| format!("IPC {method} failed: {response}"))
+    }
+    fn snapshot(&mut self, deadline: Instant) -> Result<Json> {
+        let result = self.call("diagnostics", json!({}), deadline)?;
+        let stats = result
+            .get("runtime")
+            .cloned()
+            .ok_or_else(|| format!("missing diagnostic runtime counters: {result}"))?;
         for name in [
             "wayland_requests",
             "flush_cycles",
@@ -1518,14 +1581,396 @@ fn popup_lifecycle(timeout: Duration) -> Json {
     evidence["popups"]=json!(state.popups.iter().enumerate().map(|(i,p)|json!({"index":i,"configure_acks":p.configures,"geometry_configures":p.geometry_configures,"frames":p.frames,"popup_done":p.done,"destroyed":p.destroyed})).collect::<Vec<_>>());
     evidence
 }
+fn container_pixels() -> Vec<u8> {
+    let mut bytes = Vec::with_capacity(1900 * 240 * 4);
+    for y in 0..240 {
+        for x in 0..1900 {
+            let pixel = if x >= 320 {
+                0xff00ffff_u32
+            } else {
+                match (x < 160, y < 120) {
+                    (true, true) => 0xffff0000,
+                    (false, true) => 0xff00ff00,
+                    (true, false) => 0xff0000ff,
+                    (false, false) => 0xffffff00,
+                }
+            };
+            bytes.extend_from_slice(&pixel.to_ne_bytes());
+        }
+    }
+    bytes
+}
+fn container_clip(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    state.container_mode = true;
+    state.pointer_feedback_enabled = true;
+    let mut evidence = json!({"mode":"container-clip","ok":false,"actual_shm_size":[1900,240],"requested_container_width":280,"settle_ms":1000,"physical_input_injected":false,"pixel_proof_requires_delayed_compositor_screenshot":true,
+        "expected_visible_content_rect":{"x":0,"y":0,"width":280,"height":240},
+        "expected_rgb_counts":{"red":19200,"green":14400,"blue":19200,"yellow":14400,"cyan":0},
+        "expected_cyan_rgb":[0,255,255],"expected_right_clip_x":280});
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        evidence["socket"] = json!(path);
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        connection.display().get_registry(&qh, ());
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "container registry",
+            |s| s.last_sync >= sync,
+        )?;
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "container global binding",
+            |s| s.last_sync >= sync,
+        )?;
+        if state.compositor.is_none() || state.wm.is_none() || state.shm.is_none() {
+            return Err("container fixture globals missing".into());
+        }
+        let ipc =
+            std::env::var_os("FLUXWM_SOCKET").ok_or("container-clip requires FLUXWM_SOCKET")?;
+        let mut control = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let outputs = control.call("outputs.list", json!({}), deadline)?;
+        let output = outputs
+            .pointer("/outputs/0/geometry")
+            .ok_or("missing nested output geometry")?;
+        if output["width"].as_f64().unwrap_or(0.0) < 320.0
+            || output["height"].as_f64().unwrap_or(0.0) < 240.0
+        {
+            return Err("output must fit the fixture's expected 320x240 color region".into());
+        }
+        evidence["output_geometry"] = output.clone();
+        let root = state.create(&qh, "oversized-container-clip");
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "container root configure",
+            |s| s.windows[root].configures >= 1,
+        )?;
+        let mut file = memory_file()?;
+        let bytes = container_pixels();
+        file.set_len(bytes.len() as u64)
+            .map_err(|e| e.to_string())?;
+        file.write_all(&bytes).map_err(|e| e.to_string())?;
+        let pool =
+            state
+                .shm
+                .as_ref()
+                .unwrap()
+                .create_pool(file.as_fd(), bytes.len() as i32, &qh, ());
+        let buffer = pool.create_buffer(0, 1900, 240, 1900 * 4, wl_shm::Format::Xrgb8888, &qh, ());
+        pool.destroy();
+        let w = &mut state.windows[root];
+        w.xdg.set_window_geometry(0, 0, 1900, 240);
+        w.surface.attach(Some(&buffer), 0, 0);
+        w.surface.damage(0, 0, 1900, 240);
+        w.surface.frame(&qh, Callback::Frame(root));
+        w.surface.commit();
+        w.buffer = Some(buffer);
+        w._storage = Some(file);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "oversized mapped frame",
+            |s| s.windows[root].frames >= 1,
+        )?;
+        control.call(
+            "action",
+            json!({"name":"workspace-mode","mode":"canvas"}),
+            deadline,
+        )?;
+        let workspace = control.call("workspaces.list", json!({}), deadline)?;
+        if workspace
+            .pointer("/workspaces/0/mode")
+            .and_then(Json::as_str)
+            != Some("canvas")
+        {
+            return Err(format!("workspace did not enter canvas: {workspace}"));
+        }
+        evidence["workspace_mode"] = json!("canvas");
+        let before = control.call("windows.list", json!({}), deadline)?;
+        let windows = before["windows"]
+            .as_array()
+            .ok_or("windows.list missing array")?;
+        if windows.len() != 1 {
+            return Err("container-clip requires exactly one isolated toplevel".into());
+        }
+        let width = windows[0]["geometry"]["width"]
+            .as_f64()
+            .filter(|v| v.is_finite())
+            .ok_or("missing finite layout width")?;
+        evidence["before_resize"] = before.clone();
+        control.call(
+            "action",
+            json!({"name":"resize","delta":280.0-width}),
+            deadline,
+        )?;
+        let after = control.call("windows.list", json!({}), deadline)?;
+        let geometry = after
+            .pointer("/windows/0/geometry")
+            .ok_or("missing resized target")?;
+        if geometry["width"].as_f64() != Some(280.0)
+            || geometry["x"].as_f64() != Some(0.0)
+            || geometry["y"].as_f64() != Some(0.0)
+        {
+            return Err(format!("unexpected container geometry: {geometry}"));
+        }
+        evidence["after_resize"] = after;
+        evidence["resize_completed_at_ms"] = json!(start.elapsed().as_millis());
+        // Acknowledge new configures but deliberately retain the original1900px
+        // buffer and window geometry throughout the screenshot interval.
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(1000),
+            deadline,
+        )?;
+        evidence["after_settle"] = control.call("windows.list", json!({}), deadline)?;
+        evidence["runtime"] = control.snapshot(deadline)?;
+        if evidence["after_settle"]
+            .pointer("/windows/0/geometry/width")
+            .and_then(Json::as_f64)
+            != Some(280.0)
+        {
+            return Err("container width changed before screenshot interval ended".into());
+        }
+        // Delayed screenshot has completed before this separate input stage.
+        // Keep explicit root window geometry so a negative subsurface cannot
+        // silently shift the root's XDG geometry/scene origin.
+        if state.pointer_focus_surface.as_ref() != Some(&state.windows[root].surface)
+            || state.pointer_focus_xy != Some((0.0, 0.0))
+        {
+            return Err("container input stage requires stationary pointer at root(0,0)".into());
+        }
+        let child = state.compositor.as_ref().unwrap().create_surface(&qh, ());
+        let subsurface = state
+            .subcompositor
+            .as_ref()
+            .ok_or("missing wl_subcompositor for input clip stage")?
+            .get_subsurface(&child, &state.windows[root].surface, &qh, ());
+        subsurface.set_position(-64, 0);
+        subsurface.place_above(&state.windows[root].surface);
+        let mut child_storage = memory_file()?;
+        let child_bytes = 0xffff00ff_u32.to_ne_bytes().repeat(80 * 80);
+        child_storage
+            .set_len(child_bytes.len() as u64)
+            .map_err(|e| e.to_string())?;
+        child_storage
+            .write_all(&child_bytes)
+            .map_err(|e| e.to_string())?;
+        let child_pool = state.shm.as_ref().unwrap().create_pool(
+            child_storage.as_fd(),
+            child_bytes.len() as i32,
+            &qh,
+            (),
+        );
+        let child_buffer =
+            child_pool.create_buffer(0, 80, 80, 80 * 4, wl_shm::Format::Xrgb8888, &qh, ());
+        child_pool.destroy();
+        state.clip_child = Some(child.clone());
+        child.attach(Some(&child_buffer), 0, 0);
+        child.damage(0, 0, 80, 80);
+        child.frame(&qh, Callback::ClipChildFrame);
+        child.commit();
+        state.windows[root].xdg.set_window_geometry(0, 0, 1900, 240);
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "clipped child enter/frame",
+            |s| s.clip_child_frames >= 1 && s.pointer_focus_surface == s.clip_child,
+        )?;
+        if state.pointer_focus_xy != Some((64.0, 0.0)) {
+            return Err(format!(
+                "child pointer entry is not stationary world origin: {:?}",
+                state.pointer_focus_xy
+            ));
+        }
+        evidence["child_enter_xy"] = json!(state.pointer_focus_xy);
+        control.call(
+            "action",
+            json!({"name":"move","direction":"right"}),
+            deadline,
+        )?;
+        let moved = control.call("windows.list", json!({}), deadline)?;
+        if moved
+            .pointer("/windows/0/geometry/x")
+            .and_then(Json::as_f64)
+            != Some(32.0)
+        {
+            return Err(format!("unexpected shifted container: {moved}"));
+        }
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline.min(Instant::now() + Duration::from_millis(400)),
+            "outside-container child pointer leave",
+            |s| s.pointer_focus_surface.is_none(),
+        )?;
+        if state.clip_child_motions != 0 {
+            return Err("pointer changed within child during clipped move; run is contaminated or clip routing is inconsistent".into());
+        }
+        evidence["input_clip_proof"] = json!({"ok":true,"stationary_world_pointer":[0,0],"child_before_world_rect":{"x":-64,"y":0,"width":80,"height":80},"child_after_world_rect":{"x":-32,"y":0,"width":80,"height":80},"container_after_world_rect":{"x":32,"y":0,"width":280},"pointer_still_inside_actual_child":true,"pointer_outside_container":true,"pointer_focus_after_move":null,"child_motion_events":state.clip_child_motions});
+        evidence["after_input_move"] = moved;
+        subsurface.destroy();
+        child.destroy();
+        child_buffer.destroy();
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence
+}
+fn verify_container_ppm(path: &Path) -> Json {
+    let mut evidence = json!({"mode":"verify-container-clip","ok":false,"path":path});
+    let result = (|| -> Result<()> {
+        use std::os::unix::fs::OpenOptionsExt;
+        let file = std::fs::OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NONBLOCK | libc::O_CLOEXEC)
+            .open(path)
+            .map_err(|e| e.to_string())?;
+        if !file.metadata().map_err(|e| e.to_string())?.is_file() {
+            return Err("PPM must be a regular file".into());
+        }
+        const LIMIT: u64 = 64 * 1024 * 1024;
+        let mut data = Vec::new();
+        file.take(LIMIT + 1)
+            .read_to_end(&mut data)
+            .map_err(|e| e.to_string())?;
+        if data.len() as u64 > LIMIT {
+            return Err("PPM exceeds64MiB limit".into());
+        }
+        let mut parts = data.splitn(4, |b| *b == b'\n');
+        let magic = parts.next().ok_or("missing PPM magic")?;
+        let dimensions = parts.next().ok_or("missing PPM dimensions")?;
+        let depth = parts.next().ok_or("missing PPM depth")?;
+        let pixels = parts.next().ok_or("missing PPM pixels")?;
+        if magic != b"P6" || depth != b"255" || dimensions.len() > 64 {
+            return Err("expected bounded P6/8-bit header".into());
+        }
+        let mut dims = std::str::from_utf8(dimensions)
+            .map_err(|e| e.to_string())?
+            .split_whitespace();
+        let width: usize = dims
+            .next()
+            .ok_or("missing width")?
+            .parse::<usize>()
+            .map_err(|e| e.to_string())?;
+        let height: usize = dims
+            .next()
+            .ok_or("missing height")?
+            .parse::<usize>()
+            .map_err(|e| e.to_string())?;
+        if !(320..=8192).contains(&width)
+            || !(240..=8192).contains(&height)
+            || dims.next().is_some()
+        {
+            return Err("PPM dimensions outside320x240..8192x8192".into());
+        }
+        if pixels.len()
+            != width
+                .checked_mul(height)
+                .and_then(|v| v.checked_mul(3))
+                .ok_or("PPM dimension overflow")?
+        {
+            return Err("PPM payload length mismatch".into());
+        }
+        let mut counts = [0_usize; 5];
+        let mut bounds = [[width, height, 0, 0]; 5];
+        for (i, pixel) in pixels.as_chunks::<3>().0.iter().enumerate() {
+            let color = match pixel {
+                [255, 0, 0] => Some(0),
+                [0, 255, 0] => Some(1),
+                [0, 0, 255] => Some(2),
+                [255, 255, 0] => Some(3),
+                [0, 255, 255] => Some(4),
+                _ => None,
+            };
+            if let Some(c) = color {
+                let (x, y) = (i % width, i / width);
+                counts[c] += 1;
+                bounds[c] = [
+                    bounds[c][0].min(x),
+                    bounds[c][1].min(y),
+                    bounds[c][2].max(x),
+                    bounds[c][3].max(y),
+                ];
+            }
+        }
+        evidence["width"] = json!(width);
+        evidence["height"] = json!(height);
+        evidence["rgb_counts"] = json!({"red":counts[0],"green":counts[1],"blue":counts[2],"yellow":counts[3],"cyan":counts[4]});
+        evidence["bounds_rgb_yellow"] = json!(&bounds[..4]);
+        if counts != [19200, 14400, 19200, 14400, 0] {
+            return Err(format!("unexpected clipped RGB counts: {counts:?}"));
+        }
+        if bounds[..4]
+            != [
+                [0, 0, 159, 119],
+                [160, 0, 279, 119],
+                [0, 120, 159, 239],
+                [160, 120, 279, 239],
+            ]
+        {
+            return Err(format!(
+                "unexpected clipped pixel bounds: {:?}",
+                &bounds[..4]
+            ));
+        }
+        let background = &pixels[pixels.len() - 3..];
+        if (0..240).any(|y| &pixels[(y * width + 280) * 3..(y * width + 281) * 3] != background) {
+            return Err("rightclip x280 does not match background".into());
+        }
+        evidence["background_rgb"] = json!(background);
+        evidence["right_edge_x280_matches_background"] = json!(true);
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence
+}
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if let [mode, path] = args.as_slice()
+        && mode == "verify-container-clip"
+    {
+        let result = verify_container_ppm(Path::new(path));
+        println!("{result}");
+        if result["ok"] != json!(true) {
+            std::process::exit(1);
+        }
+        return;
+    }
     let parsed = match args.as_slice() {
         [mode]
             if mode == "lifecycle"
                 || mode == "slow-reader"
                 || mode == "pointer-feedback"
-                || mode == "popup-lifecycle" =>
+                || mode == "popup-lifecycle"
+                || mode == "container-clip" =>
         {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
@@ -1533,7 +1978,8 @@ fn main() {
             if (mode == "lifecycle"
                 || mode == "slow-reader"
                 || mode == "pointer-feedback"
-                || mode == "popup-lifecycle")
+                || mode == "popup-lifecycle"
+                || mode == "container-clip")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -1544,13 +1990,14 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle [--timeout-ms 1..5000]",
+            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip [--timeout-ms 1..5000]",
         ),
     };
     let result = match parsed {
         Ok(("slow-reader", timeout)) => slow_reader(timeout),
         Ok(("pointer-feedback", timeout)) => pointer_feedback(timeout),
         Ok(("popup-lifecycle", timeout)) => popup_lifecycle(timeout),
+        Ok(("container-clip", timeout)) => container_clip(timeout),
         Ok((_, timeout)) => run(timeout),
         Err(error) => json!({"ok":false,"error":error}),
     };
@@ -1650,6 +2097,58 @@ mod tests {
         .unwrap();
         assert!(start.elapsed() >= Duration::from_millis(30));
         assert!(start.elapsed() < Duration::from_secs(1));
+    }
+    #[test]
+    fn oversized_pattern_preserves_original_quadrants_and_distinct_cyan_overflow() {
+        let oversized = container_pixels();
+        let original = pixels(0);
+        assert_eq!(oversized.len(), 1900 * 240 * 4);
+        for y in 0..240 {
+            assert_eq!(
+                &oversized[y * 1900 * 4..y * 1900 * 4 + 320 * 4],
+                &original[y * 320 * 4..(y + 1) * 320 * 4]
+            );
+            assert!(
+                oversized[y * 1900 * 4 + 320 * 4..(y + 1) * 1900 * 4]
+                    .as_chunks::<4>()
+                    .0
+                    .iter()
+                    .all(|p| *p == 0xff00ffff_u32.to_ne_bytes())
+            );
+        }
+    }
+    #[test]
+    fn container_checker_accepts_exact_clip_and_rejects_one_pixel_leak() {
+        let original = pixels(0);
+        let mut ppm = b"P6\n320 240\n255\n".to_vec();
+        for y in 0..240 {
+            for x in 0..320 {
+                let value = if x < 280 {
+                    let at = (y * 320 + x) * 4;
+                    let pixel = u32::from_ne_bytes(original[at..at + 4].try_into().unwrap());
+                    [(pixel >> 16) as u8, (pixel >> 8) as u8, pixel as u8]
+                } else {
+                    [15, 18, 23]
+                };
+                ppm.extend(value);
+            }
+        }
+        let path = std::env::temp_dir().join(format!("fluxwm-clip-checker-{}", std::process::id()));
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+            .unwrap();
+        file.write_all(&ppm).unwrap();
+        drop(file);
+        assert_eq!(verify_container_ppm(&path)["ok"], json!(true));
+        let header = b"P6\n320 240\n255\n".len();
+        ppm[header + 280 * 3..header + 281 * 3].copy_from_slice(&[0, 255, 255]);
+        std::fs::write(&path, &ppm).unwrap();
+        let bad = verify_container_ppm(&path);
+        std::fs::remove_file(path).unwrap();
+        assert_eq!(bad["ok"], json!(false));
+        assert_eq!(bad["rgb_counts"]["cyan"], json!(1));
     }
     #[test]
     fn missing_socket_fails_without_blocking() {
