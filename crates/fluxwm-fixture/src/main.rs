@@ -831,6 +831,10 @@ fn lifecycle(
         return Err("XRGB8888 SHM format not advertised".into());
     }
     let first = state.create(&qh, "quadrants");
+    // This fixture requires all four 160x120 quadrants to be visible. A host
+    // tiled to less than 640 px can otherwise assign a half-width container below
+    // our 320 px buffer and correctly clip it. Declare the actual pixel workload.
+    state.windows[first].toplevel.set_min_size(320, 240);
     let second = state.create(&qh, "disconnect-survivor");
     if let Some(seat) = state.seat.as_ref() {
         state.windows[second].toplevel._move(seat, 0);

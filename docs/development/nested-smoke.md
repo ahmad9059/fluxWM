@@ -81,3 +81,5 @@ Compact historical evidence is committed at [nested milestone evidence](../evide
 The [integrated evidence bundle](../evidence/nested-milestone/2026-10-17-integrated/README.md) records final runtime tests and the complementary [slow-reader fixture](slow-reader-fixture.md).
 
 [Post-review evidence](../evidence/nested-milestone/2026-10-17-post-review/README.md) repeats these checks after independent-review fixes and adds a mapped [stationary pointer feedback regression](pointer-feedback-fixture.md).
+
+The quadrant client declares a 320×240 minimum before its first mapping, because the smoke requires all four 160×120 quadrants. The validator also rejects an output smaller than 320×240 as a missing prerequisite. Do not run multiple graphical suites concurrently when the host tiles/resizes their windows: a 632 px output previously produced a 316 px default container and correctly clipped a fixture that had declared no minimum, yielding 18,720 rather than 19,200 green/yellow pixels. That failed run is preserved; the exact pixel assertion was not relaxed.

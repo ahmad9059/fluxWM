@@ -55,6 +55,7 @@ def check_pixels(path, deadline=None):
         require(len(dimensions) == 2, "PPM requires two dimensions")
         width, height = map(int, dimensions)
         require(0 < width <= 8192 and 0 < height <= 8192, "PPM dimensions outside limit")
+        require(width >= 320 and height >= 240, "host output is too small for the 320x240 quadrant fixture")
         require(source.readline() == b"255\n", "PPM must use 8-bit channels")
         pixels = source.read(PPM_LIMIT + 1)
     require(len(pixels) == width * height * 3, "PPM pixel length mismatch")
