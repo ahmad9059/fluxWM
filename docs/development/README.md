@@ -2,7 +2,7 @@
 
 The initial workspace uses Rust 1.99/edition 2024 and pins Smithay to `023b78b1c5a05ca512767cacc07efca55fae8be4`. See the root manifests, lockfile, [source notices](../../THIRD_PARTY.md) and [current production audit](../24-implementation-readiness-audit.md). The bootstrap is adapted from MIT-licensed Smithay Smallvil; it is not a native-session implementation.
 
-See the [current nested runtime milestone](runtime.md) and [bounded smoke harness](nested-smoke.md) for the integrated executable and its exact limits. The tables below retain component boundaries, not a production support matrix.
+See the [current nested runtime milestone](runtime.md) and [bounded nested smoke harness](nested-smoke.md) and [scene regression harness](scene-smoke.md) for the integrated executable and its exact limits. The tables below retain component boundaries, not a production support matrix.
 
 ## Component boundaries
 

@@ -75,29 +75,19 @@ impl RuntimeScene {
             let origin = checked_sub(location, geo.loc)?;
             let visual_origin = checked_add(origin, bbox.loc)?;
             let clip = state.layout.camera().rect_to_view(placement.clip);
-            let Some(clip) = round_rect_to_i32(clip).map_err(|e| e.to_string())? else {
+            owners.push((id, window.clone(), location, origin));
+            let visual = Rect {
+                x: f64::from(visual_origin.x),
+                y: f64::from(visual_origin.y),
+                width: f64::from(size.w),
+                height: f64::from(size.h),
+            };
+            let Some(mut input) = clipped_root_input(id, visual, clip, viewport)? else {
                 continue;
             };
-            let clip = Rect {
-                x: f64::from(clip.x),
-                y: f64::from(clip.y),
-                width: f64::from(clip.width),
-                height: f64::from(clip.height),
-            };
-            let mut input = SceneInput::new(
-                id,
-                Rect {
-                    x: f64::from(visual_origin.x),
-                    y: f64::from(visual_origin.y),
-                    width: f64::from(size.w),
-                    height: f64::from(size.h),
-                },
-                clip,
-            );
             input.z_index = z as i32;
             input.focused = placement.focused;
             inputs.push(input);
-            owners.push((id, window.clone(), location, origin));
         }
         let geometry = SceneSnapshot::new(viewport, inputs).map_err(|e| e.to_string())?;
         let viewport = rectangle(viewport)?;
@@ -363,4 +353,125 @@ fn still_mapped_in_tree(surface: &WlSurface, anchor: &WlSurface) -> bool {
         current = parent;
     }
     false
+}
+
+// Cull output-invisible roots before applying the snapshot's local coordinate
+// limits. Legal far-away camera positions must not fail a local output build.
+fn clipped_root_input(
+    window: WindowId,
+    visual: Rect,
+    clip: Rect,
+    viewport: Rect,
+) -> Result<Option<SceneInput>, String> {
+    let Some(clip) = flux_scene::intersection(clip, viewport).map_err(|error| error.to_string())?
+    else {
+        return Ok(None);
+    };
+    if flux_scene::intersection(visual, clip)
+        .map_err(|error| error.to_string())?
+        .is_none()
+    {
+        return Ok(None);
+    }
+    let Some(clip) = round_rect_to_i32(clip).map_err(|error| error.to_string())? else {
+        return Ok(None);
+    };
+    Ok(Some(SceneInput::new(
+        window,
+        visual,
+        Rect {
+            x: f64::from(clip.x),
+            y: f64::from(clip.y),
+            width: f64::from(clip.width),
+            height: f64::from(clip.height),
+        },
+    )))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn viewport() -> Rect {
+        Rect {
+            x: 0.0,
+            y: 0.0,
+            width: 1280.0,
+            height: 800.0,
+        }
+    }
+    #[test]
+    fn offscreen_camera_limit_does_not_reject_the_local_scene() {
+        let visual = Rect {
+            x: 1_000_000_000.0,
+            y: 0.0,
+            width: 1900.0,
+            height: 240.0,
+        };
+        let clip = Rect {
+            width: 635.0,
+            height: 800.0,
+            ..visual
+        };
+        // The unprojected rectangle exceeds the strict local snapshot endpoint
+        // bound, but is legal far-away layout content and must simply be culled.
+        assert!(
+            SceneSnapshot::new(
+                viewport(),
+                [SceneInput::new(WindowId::new(0, 0), visual, clip)]
+            )
+            .is_err()
+        );
+        assert!(
+            clipped_root_input(WindowId::new(0, 0), visual, clip, viewport())
+                .unwrap()
+                .is_none()
+        );
+    }
+    #[test]
+    fn container_projection_precedes_integer_conversion() {
+        let visual = Rect {
+            width: 1900.0,
+            height: 240.0,
+            ..viewport()
+        };
+        let clip = Rect {
+            x: -2_000_000_000.0,
+            width: 4_000_000_000.0,
+            ..viewport()
+        };
+        assert!(round_rect_to_i32(clip).is_err());
+        let input = clipped_root_input(WindowId::new(0, 0), visual, clip, viewport())
+            .unwrap()
+            .unwrap();
+        let scene = SceneSnapshot::new(viewport(), [input]).unwrap();
+        assert_eq!(scene.entries()[0].effective_clip(), viewport());
+        assert_eq!(scene.entries()[0].visual_rect(), visual);
+    }
+    #[test]
+    fn snapped_container_edge_has_the_same_half_open_input_boundary() {
+        let visual = Rect {
+            width: 1900.0,
+            height: 240.0,
+            ..viewport()
+        };
+        let clip = Rect {
+            x: 0.4,
+            width: 280.0,
+            ..viewport()
+        };
+        let input = clipped_root_input(WindowId::new(0, 0), visual, clip, viewport())
+            .unwrap()
+            .unwrap();
+        let scene = SceneSnapshot::new(viewport(), [input]).unwrap();
+        assert!(
+            scene
+                .hit_test(ModelPoint {
+                    x: 279.999,
+                    y: 100.0
+                })
+                .is_some()
+        );
+        assert!(scene.hit_test(ModelPoint { x: 280.0, y: 100.0 }).is_none());
+        assert_eq!(scene.entries()[0].visual_rect().width, 1900.0);
+    }
 }

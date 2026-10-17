@@ -4,7 +4,7 @@
 
 ## Capture and publication
 
-The builder takes mapped owners in Space's established stacking order. Root visual bounds come from the committed surface-tree bounding box, positioned using the window geometry offset; target configure sizes are not substituted for the client's current buffer. Container clips come from layout placements transformed into output coordinates. Endpoints are rounded together before intersection with the output, so adjacent half-open clips share their rounded edge.
+The builder takes mapped owners in Space's established stacking order. Root visual bounds come from the committed surface-tree bounding box, positioned using the window geometry offset; target configure sizes are not substituted for the client's current buffer. Container clips come from layout placements transformed into output coordinates. Container clips are intersected with the output before integer conversion, then endpoints are rounded together so adjacent half-open clips share their rounded edge. Fully offscreen roots are culled before the stricter local snapshot limits are applied; a legal far-away layout/camera position must not fail an empty local scene.
 
 For each eligible owner, popup trees precede its root tree, matching the pinned Smithay window render ordering. Popup eligibility follows mapped scene ownership independently of whether the root buffer itself intersects the viewport. Root trees use container∩output clipping; popup trees use output clipping. A root's clip therefore does not cut its menu at the tile edge. Root unmap, scene removal and role retirement separately dismiss popup trees; a popup resource remaining alive after dismissal is not proof that it should receive input.
 
@@ -31,3 +31,5 @@ This option is an explicitly requested compositor-owned debugging readback. It i
 The pure geometry crate tests overlapping/hidden/offscreen windows, clipping, order, integer endpoints and invalid coordinates. The normal nested smoke still checks original pixels/orientation and lifecycle. The container fixture checks actual oversized-buffer clipping and adds stationary subsurface input coverage. The [popup lifecycle fixture](popup-lifecycle-fixture.md) separately checks real parent unmap, invalid background grab rejection and parent-role retirement.
 
 These checks do not close complete buffer-consumer, GPU, input, transaction, popup-chain, resource or native phase gates. In particular authorized grabs, parent/child destruction races, import-failure injection and native scale/transform cases remain required.
+
+The executable also has three focused geometry integration tests: output-invisible content at the layout coordinate limit, clipping before integer conversion, and the shared half-open render/input edge after rounding. These are component tests, not hostile-client or physical-display execution. Run the [scene smoke harness](scene-smoke.md) for real protocol, pixels and pointer routing.
