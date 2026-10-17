@@ -29,21 +29,25 @@ impl CompositorHandler for Fluxwm {
 
     fn commit(&mut self, surface: &WlSurface) {
         on_commit_buffer_handler::<Self>(surface);
+        let mut just_unmapped = false;
         if !is_sync_subsurface(surface) {
             let mut root = surface.clone();
             while let Some(parent) = get_parent(&root) {
                 root = parent;
             }
-            if let Some(window) = self
-                .space
-                .elements()
-                .find(|w| w.toplevel().unwrap().wl_surface() == &root)
-            {
-                window.on_commit();
-            }
+            let id = self.window_id(&root);
+            let was_mapped = id
+                .and_then(|id| self.windows.get(id))
+                .is_some_and(|item| item.mapped);
+            self.commit_window(&root);
+            just_unmapped = was_mapped
+                && !id
+                    .and_then(|id| self.windows.get(id))
+                    .is_some_and(|item| item.mapped);
         };
 
-        xdg_shell::handle_commit(&mut self.popups, &self.space, surface);
+        xdg_shell::handle_commit(self, surface, just_unmapped);
+        self.request_redraw();
         resize_grab::handle_commit(&mut self.space, surface);
     }
 }

@@ -1,7 +1,8 @@
 // Adapted from Smithay Smallvil, MIT; see LICENSES/Smithay-MIT.txt.
 use smithay::{
     desktop::{
-        PopupKind, PopupManager, Space, Window, find_popup_root_surface, get_popup_toplevel_coords,
+        PopupKeyboardGrab, PopupKind, PopupPointerGrab, PopupUngrabStrategy,
+        find_popup_root_surface, get_popup_toplevel_coords,
     },
     input::{
         Seat,
@@ -35,8 +36,7 @@ impl XdgShellHandler for Fluxwm {
     }
 
     fn new_toplevel(&mut self, surface: ToplevelSurface) {
-        let window = Window::new_wayland_window(surface);
-        self.space.map_element(window, (0, 0), false);
+        self.add_toplevel(surface);
     }
 
     fn new_popup(&mut self, surface: PopupSurface, _positioner: PositionerState) {
@@ -60,20 +60,31 @@ impl XdgShellHandler for Fluxwm {
     }
 
     fn move_request(&mut self, surface: ToplevelSurface, seat: wl_seat::WlSeat, serial: Serial) {
-        let seat = Seat::from_resource(&seat).unwrap();
+        let Some(seat) = Seat::from_resource(&seat) else {
+            return;
+        };
 
         let wl_surface = surface.wl_surface();
 
         if let Some(start_data) = check_grab(&seat, wl_surface, serial) {
-            let pointer = seat.get_pointer().unwrap();
+            let Some(pointer) = seat.get_pointer() else {
+                return;
+            };
 
-            let window = self
-                .space
-                .elements()
-                .find(|w| w.toplevel().unwrap().wl_surface() == wl_surface)
-                .unwrap()
-                .clone();
-            let initial_window_location = self.space.element_location(&window).unwrap();
+            let Some(id) = self.window_id(wl_surface) else {
+                return;
+            };
+            let Some(item) = self
+                .windows
+                .get(id)
+                .filter(|item| item.mapped && item.floating)
+            else {
+                return;
+            };
+            let window = item.window.clone();
+            let Some(initial_window_location) = self.space.element_location(&window) else {
+                return;
+            };
 
             let grab = MoveSurfaceGrab {
                 start_data,
@@ -92,20 +103,31 @@ impl XdgShellHandler for Fluxwm {
         serial: Serial,
         edges: xdg_toplevel::ResizeEdge,
     ) {
-        let seat = Seat::from_resource(&seat).unwrap();
+        let Some(seat) = Seat::from_resource(&seat) else {
+            return;
+        };
 
         let wl_surface = surface.wl_surface();
 
         if let Some(start_data) = check_grab(&seat, wl_surface, serial) {
-            let pointer = seat.get_pointer().unwrap();
+            let Some(pointer) = seat.get_pointer() else {
+                return;
+            };
 
-            let window = self
-                .space
-                .elements()
-                .find(|w| w.toplevel().unwrap().wl_surface() == wl_surface)
-                .unwrap()
-                .clone();
-            let initial_window_location = self.space.element_location(&window).unwrap();
+            let Some(id) = self.window_id(wl_surface) else {
+                return;
+            };
+            let Some(item) = self
+                .windows
+                .get(id)
+                .filter(|item| item.mapped && item.floating)
+            else {
+                return;
+            };
+            let window = item.window.clone();
+            let Some(initial_window_location) = self.space.element_location(&window) else {
+                return;
+            };
             let initial_window_size = window.geometry().size;
 
             surface.with_pending_state(|state| {
@@ -125,8 +147,68 @@ impl XdgShellHandler for Fluxwm {
         }
     }
 
-    fn grab(&mut self, _surface: PopupSurface, _seat: wl_seat::WlSeat, _serial: Serial) {
-        // TODO popup grabs
+    fn grab(&mut self, surface: PopupSurface, seat: wl_seat::WlSeat, serial: Serial) {
+        let Some(seat) = Seat::from_resource(&seat) else {
+            return;
+        };
+        // Only an active same-client pointer press authorizes a new popup grab.
+        // Keyboard/touch initiated grabs remain unsupported until their input
+        // serial provenance is tracked explicitly.
+        if check_grab(&seat, surface.wl_surface(), serial).is_none() {
+            surface.send_popup_done();
+            return;
+        }
+        let kind = PopupKind::Xdg(surface);
+        let Ok(root) = find_popup_root_surface(&kind) else {
+            return;
+        };
+        let Some(id) = self.window_id(&root) else {
+            return;
+        };
+        if !self.windows.get(id).is_some_and(|item| item.mapped) {
+            return;
+        }
+        let Ok(mut grab) = self.popups.grab_popup(root, kind, &seat, serial) else {
+            return;
+        };
+        if let Some(keyboard) = seat.get_keyboard() {
+            if keyboard.is_grabbed()
+                && !(keyboard.has_grab(serial)
+                    || keyboard.has_grab(grab.previous_serial().unwrap_or(serial)))
+            {
+                grab.ungrab(PopupUngrabStrategy::All);
+                return;
+            }
+            keyboard.set_focus(self, grab.current_grab(), serial);
+            keyboard.set_grab(self, PopupKeyboardGrab::new(&grab), serial);
+        }
+        if let Some(pointer) = seat.get_pointer() {
+            if pointer.is_grabbed()
+                && !(pointer.has_grab(serial)
+                    || pointer.has_grab(grab.previous_serial().unwrap_or_else(|| grab.serial())))
+            {
+                grab.ungrab(PopupUngrabStrategy::All);
+                return;
+            }
+            pointer.set_grab(self, PopupPointerGrab::new(&grab), serial, Focus::Keep);
+        }
+    }
+
+    fn app_id_changed(&mut self, _surface: ToplevelSurface) {
+        self.bump_sequence();
+    }
+
+    fn title_changed(&mut self, _surface: ToplevelSurface) {
+        self.bump_sequence();
+    }
+
+    fn toplevel_destroyed(&mut self, surface: ToplevelSurface) {
+        self.remove_toplevel(surface.wl_surface());
+    }
+
+    fn popup_destroyed(&mut self, _surface: PopupSurface) {
+        self.popups.cleanup();
+        self.request_redraw();
     }
 }
 
@@ -154,41 +236,32 @@ fn check_grab(
 }
 
 /// Should be called on `WlSurface::commit`
-pub fn handle_commit(popups: &mut PopupManager, space: &Space<Window>, surface: &WlSurface) {
-    // Handle toplevel commits.
-    if let Some(window) = space
-        .elements()
-        .find(|w| w.toplevel().unwrap().wl_surface() == surface)
-        .cloned()
-    {
-        let initial_configure_sent = with_states(surface, |states| {
+pub fn handle_commit(state: &mut Fluxwm, surface: &WlSurface, just_unmapped: bool) {
+    if let Some(id) = state.window_id(surface) {
+        let initial = with_states(surface, |states| {
             states
                 .data_map
                 .get::<XdgToplevelSurfaceData>()
-                .unwrap()
-                .lock()
-                .unwrap()
-                .initial_configure_sent
+                .is_some_and(|data| !data.lock().unwrap().initial_configure_sent)
         });
-
-        if !initial_configure_sent {
-            window.toplevel().unwrap().send_configure();
+        // A null-buffer unmap is not the initial bufferless commit of the
+        // next mapping cycle. Wait for that subsequent commit before configuring.
+        if initial
+            && !just_unmapped
+            && let Some(toplevel) = state
+                .windows
+                .get(id)
+                .and_then(|item| item.window.toplevel())
+        {
+            toplevel.send_configure();
         }
     }
-
-    // Handle popup commits.
-    popups.commit(surface);
-    if let Some(popup) = popups.find_popup(surface) {
-        match popup {
-            PopupKind::Xdg(ref xdg) => {
-                if !xdg.is_initial_configure_sent() {
-                    // NOTE: This should never fail as the initial configure is always
-                    // allowed.
-                    xdg.send_configure().expect("initial configure failed");
-                }
-            }
-            PopupKind::InputMethod(ref _input_method) => {}
-        }
+    state.popups.commit(surface);
+    if let Some(PopupKind::Xdg(xdg)) = state.popups.find_popup(surface)
+        && !xdg.is_initial_configure_sent()
+        && let Err(error) = xdg.send_configure()
+    {
+        tracing::debug!(%error, "popup configure rejected");
     }
 }
 
@@ -205,9 +278,15 @@ impl Fluxwm {
             return;
         };
 
-        let output = self.space.outputs().next().unwrap();
-        let output_geo = self.space.output_geometry(output).unwrap();
-        let window_geo = self.space.element_geometry(window).unwrap();
+        let Some(output) = self.space.outputs().next() else {
+            return;
+        };
+        let Some(output_geo) = self.space.output_geometry(output) else {
+            return;
+        };
+        let Some(window_geo) = self.space.element_geometry(window) else {
+            return;
+        };
 
         // The target geometry for the positioner should be relative to its parent's geometry, so
         // we will compute that here.

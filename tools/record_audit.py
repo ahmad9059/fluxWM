@@ -17,7 +17,7 @@ COMMANDS = [
     ('native-metadata', ['pkg-config', '--modversion', 'wayland-server', 'xkbcommon', 'libudev', 'gbm', 'egl', 'glesv2']),
     ('check', ['cargo', 'check', '--workspace', '--locked']),
     ('tests', ['cargo', 'test', '--workspace', '--locked']),
-    ('ipc-defect-reproduction', ['cargo', 'run', '--locked', '--manifest-path', 'docs/evidence/ipc-audit-probe/Cargo.toml', '--target-dir', '/tmp/flux-ipc-audit-target']),
+    ('ipc-regression-probe', ['cargo', 'run', '--locked', '--manifest-path', 'docs/evidence/ipc-audit-probe/Cargo.toml', '--example', 'current', '--target-dir', '/tmp/flux-ipc-audit-target']),
     ('clippy', ['cargo', 'clippy', '--workspace', '--all-targets', '--locked', '--', '-D', 'warnings']),
     ('format', ['cargo', 'fmt', '--all', '--', '--check']),
     ('docs', ['python3', 'tools/check_docs.py']),

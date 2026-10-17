@@ -1,5 +1,7 @@
 # Production readiness audit of the initial implementation
 
+Historical initial-workspace audit of snapshot `c2abdb5`, with the recorded review disposition appended. Later implementation has changed the code: see the [nested runtime milestone](development/runtime.md) for current behavior and qualification limits. Findings here remain evidence about their named snapshots, not an assertion that every original defect is still present.
+
 Date: 2026-10-17. **Production release is blocked.** This audit covers the current source and executable checks, in addition to the earlier design-only audit. A compiling compositor bootstrap, tested pure layout model, config helper, and IPC transport are useful foundations. They do not demonstrate a working integrated desktop. The evidence bundle in [production-audit-2026-10-17](evidence/production-audit-2026-10-17/) records actual commands and source hashes. Historical review reports are preserved unchanged.
 
 ## What evidence establishes

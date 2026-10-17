@@ -72,8 +72,14 @@ impl WaylandDndGrabHandler for Fluxwm {
     ) {
         match type_ {
             GrabType::Pointer => {
-                let ptr = seat.get_pointer().unwrap();
-                let start_data = ptr.grab_start_data().unwrap();
+                let Some(ptr) = seat.get_pointer() else {
+                    source.cancel();
+                    return;
+                };
+                let Some(start_data) = ptr.grab_start_data() else {
+                    source.cancel();
+                    return;
+                };
 
                 // create a dnd grab to start the operation
                 let grab = DnDGrab::new_pointer(&self.display_handle, start_data, source, seat);

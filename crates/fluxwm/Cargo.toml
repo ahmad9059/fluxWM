@@ -13,3 +13,10 @@ serde.workspace = true
 serde_json.workspace = true
 flux-core.workspace = true
 bitflags = "2.2.1"
+
+flux-layout = { path = "../flux-layout" }
+libc.workspace = true
+calloop = { version = "=0.14.5", features = ["signals"] }
+flux-ipc = { path = "../flux-ipc", features = ["calloop"] }
+tempfile = "3.27"
+flux-process = { path = "../flux-process" }

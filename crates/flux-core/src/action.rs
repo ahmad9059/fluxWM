@@ -73,7 +73,7 @@ impl<'de> Deserialize<'de> for Action {
     }
 }
 /// Shared executable argument admission; no shell splitting or existence check.
-/// Empty arguments after argv[0] are meaningful and permitted.
+/// Empty arguments after `argv[0]` are meaningful and permitted.
 pub fn validate_argv(argv: &[String]) -> Result<(), InvalidAction> {
     if argv.is_empty() || argv.len() > MAX_ARGV_ENTRIES {
         return Err(InvalidAction(format!(
