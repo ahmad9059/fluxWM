@@ -148,29 +148,41 @@ impl XdgShellHandler for Fluxwm {
     }
 
     fn grab(&mut self, surface: PopupSurface, seat: wl_seat::WlSeat, serial: Serial) {
+        self.cleanup_popup_grab();
         let Some(seat) = Seat::from_resource(&seat) else {
+            surface.send_popup_done();
             return;
         };
         // Only an active same-client pointer press authorizes a new popup grab.
         // Keyboard/touch initiated grabs remain unsupported until their input
         // serial provenance is tracked explicitly.
-        if check_grab(&seat, surface.wl_surface(), serial).is_none() {
+        if !self
+            .pointer_presses
+            .values()
+            .any(|pressed| *pressed == serial)
+            || check_grab(&seat, surface.wl_surface(), serial).is_none()
+        {
             surface.send_popup_done();
             return;
         }
-        let kind = PopupKind::Xdg(surface);
+        let kind = PopupKind::Xdg(surface.clone());
         let Ok(root) = find_popup_root_surface(&kind) else {
+            surface.send_popup_done();
             return;
         };
         let Some(id) = self.window_id(&root) else {
+            surface.send_popup_done();
             return;
         };
         if !self.windows.get(id).is_some_and(|item| item.mapped) {
+            surface.send_popup_done();
             return;
         }
         let Ok(mut grab) = self.popups.grab_popup(root, kind, &seat, serial) else {
+            surface.send_popup_done();
             return;
         };
+        self.popup_grab = Some((id, grab.clone()));
         if let Some(keyboard) = seat.get_keyboard() {
             if keyboard.is_grabbed()
                 && !(keyboard.has_grab(serial)
@@ -208,6 +220,7 @@ impl XdgShellHandler for Fluxwm {
 
     fn popup_destroyed(&mut self, _surface: PopupSurface) {
         self.popups.cleanup();
+        self.cleanup_popup_grab();
         self.request_redraw();
     }
 }

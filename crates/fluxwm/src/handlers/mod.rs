@@ -8,8 +8,7 @@ use crate::Fluxwm;
 // Wl Seat
 //
 
-use smithay::input::dnd::{DnDGrab, DndGrabHandler, GrabType, Source};
-use smithay::input::pointer::Focus;
+use smithay::input::dnd::{DndGrabHandler, GrabType, Source};
 use smithay::input::{Seat, SeatHandler, SeatState};
 use smithay::reexports::wayland_server::Resource;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
@@ -66,30 +65,14 @@ impl WaylandDndGrabHandler for Fluxwm {
         &mut self,
         source: S,
         _icon: Option<WlSurface>,
-        seat: Seat<Self>,
-        serial: Serial,
-        type_: GrabType,
+        _seat: Seat<Self>,
+        _serial: Serial,
+        _type_: GrabType,
     ) {
-        match type_ {
-            GrabType::Pointer => {
-                let Some(ptr) = seat.get_pointer() else {
-                    source.cancel();
-                    return;
-                };
-                let Some(start_data) = ptr.grab_start_data() else {
-                    source.cancel();
-                    return;
-                };
-
-                // create a dnd grab to start the operation
-                let grab = DnDGrab::new_pointer(&self.display_handle, start_data, source, seat);
-                ptr.set_grab(self, grab, serial, Focus::Keep);
-            }
-            GrabType::Touch => {
-                // fluxwm lacks touch handling
-                source.cancel();
-            }
-        }
+        // The pinned protocol helper checks a grab serial but this generic
+        // callback does not establish source-client/active-press ownership.
+        // Keep DnD unavailable until that full admission policy is implemented.
+        source.cancel();
     }
 }
 

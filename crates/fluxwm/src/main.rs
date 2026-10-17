@@ -102,9 +102,12 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
 pub(crate) struct SupervisedChild(pub Child);
 impl Drop for SupervisedChild {
     fn drop(&mut self) {
-        if self.0.try_wait().ok().flatten().is_none() {
-            let _ = self.0.kill();
+        match self.0.try_wait() {
+            Ok(Some(_)) => return,
+            Err(error) if error.raw_os_error() == Some(libc::ECHILD) => return,
+            _ => (),
         }
+        let _ = self.0.kill();
         let _ = self.0.wait();
     }
 }

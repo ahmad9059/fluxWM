@@ -27,6 +27,12 @@ impl Fluxwm {
         }
         let location = pointer.current_location();
         let under = self.surface_under(location);
+        if pointer.current_focus() == under.as_ref().map(|(surface, _)| surface.clone())
+            && self.pointer_scene_target == under
+        {
+            return;
+        }
+        self.pointer_scene_target = under.clone();
         pointer.motion(
             self,
             under,
@@ -109,6 +115,7 @@ impl Fluxwm {
                     f64::from(geometry.loc.y) + f64::from(geometry.size.h) - 0.001,
                 );
                 let under = self.surface_under(pos);
+                self.pointer_scene_target = under.clone();
                 pointer.motion(
                     self,
                     under,
@@ -128,13 +135,30 @@ impl Fluxwm {
                     return;
                 };
 
+                if output_geo.size.w <= 0 || output_geo.size.h <= 0 {
+                    return;
+                }
                 let pos = event.position_transformed(output_geo.size) + output_geo.loc.to_f64();
+                if !pos.x.is_finite() || !pos.y.is_finite() {
+                    return;
+                }
+                let pos = smithay::utils::Point::from((
+                    pos.x.clamp(
+                        f64::from(output_geo.loc.x),
+                        f64::from(output_geo.loc.x + output_geo.size.w) - 1.0,
+                    ),
+                    pos.y.clamp(
+                        f64::from(output_geo.loc.y),
+                        f64::from(output_geo.loc.y + output_geo.size.h) - 1.0,
+                    ),
+                ));
 
                 let serial = SERIAL_COUNTER.next_serial();
 
                 let pointer = self.seat.get_pointer().unwrap();
 
                 let under = self.surface_under(pos);
+                self.pointer_scene_target = under.clone();
 
                 pointer.motion(
                     self,
@@ -175,6 +199,7 @@ impl Fluxwm {
                 if !pointer.is_grabbed() {
                     let location = pointer.current_location();
                     let under = self.surface_under(location);
+                    self.pointer_scene_target = under.clone();
                     pointer.motion(
                         self,
                         under,
@@ -184,6 +209,11 @@ impl Fluxwm {
                             time: event.time(),
                         },
                     );
+                }
+                if button_state == ButtonState::Pressed {
+                    self.pointer_presses.insert(button, serial);
+                } else {
+                    self.pointer_presses.remove(&button);
                 }
                 pointer.button(
                     self,

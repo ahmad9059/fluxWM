@@ -99,13 +99,14 @@ def main():
             ipc = Path(published['ipc_socket'])
             replies = exchange([request('version', ident=str(i)) for i in range(17)], half_close=True)
             require(all('result' in v for v in replies), '17-request half-close pipeline failed')
-            changed, invalid = exchange([request('action', {'name': 'workspace-mode', 'mode': 'canvas'}), request('version', version=99)])
+            before, changed, invalid = exchange([request('version'), request('action', {'name': 'workspace-mode', 'mode': 'canvas'}), request('version', version=99)])
+            require(int(changed['state_sequence']) > int(before['state_sequence']), 'action did not advance sequence')
             require('result' in changed and invalid.get('error', {}).get('code') == 'unsupported_version', 'sequence test envelopes failed')
             require(changed['state_sequence'] == invalid['state_sequence'], 'transport error has stale state sequence')
             bad, capability, locked = exchange([request('action', {'name': 'quit', 'unexpected': True}), request('capabilities'), request('action', {'name': 'lock'})])
             require(bad.get('error', {}).get('code') == 'invalid_params', 'unknown action field accepted')
             require(locked.get('error', {}).get('code') == 'not_ready', 'unimplemented lock accepted')
-            require(all(capability['result'][k] is False for k in ('native_session', 'capture', 'secure_lock', 'x11_clients')), 'unsupported capability advertised')
+            require(all(capability['result'][k] is False for k in ('native_session', 'capture', 'secure_lock', 'x11_clients', 'drag_and_drop')), 'unsupported capability advertised')
             # Missing executable completes asynchronously without killing worker.
             missing = exchange([request('action', {'name': 'spawn', 'argv': ['/fluxwm-missing-' + uuid.uuid4().hex]})])[0]
             require('result' in missing, 'launch queue did not accept missing executable job')

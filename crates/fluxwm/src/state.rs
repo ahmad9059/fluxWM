@@ -61,7 +61,10 @@ pub struct Fluxwm {
     flush_retry_pending: bool,
     pub ipc: Option<flux_ipc::EventLoopDriver<Fluxwm>>,
     pub ipc_requested: bool,
+    pub popup_grab: Option<(WindowId, smithay::desktop::PopupGrab<Self>)>,
+    pub pointer_presses: std::collections::BTreeMap<u32, smithay::utils::Serial>,
     pub pointer_focus_dirty: bool,
+    pub pointer_scene_target: Option<(WlSurface, Point<f64, Logical>)>,
     pub suppressed_keys: std::collections::BTreeSet<u32>,
     pub spawned: Vec<flux_process::ManagedChild>,
     pub spawn_worker: Option<flux_process::SpawnWorker>,
@@ -174,7 +177,10 @@ impl Fluxwm {
             flush_retry_pending: false,
             ipc: None,
             ipc_requested: true,
+            popup_grab: None,
+            pointer_presses: Default::default(),
             pointer_focus_dirty: true,
+            pointer_scene_target: None,
             suppressed_keys: Default::default(),
             spawned: Vec::new(),
             spawn_worker: None,
@@ -531,6 +537,85 @@ impl Fluxwm {
         }
     }
 
+    pub fn cleanup_popup_grab(&mut self) {
+        let Some((root, mut grab)) = self.popup_grab.take() else {
+            return;
+        };
+        let visible = self.windows.get(root).is_some_and(|item| item.mapped)
+            && self
+                .layout
+                .placements()
+                .iter()
+                .any(|p| p.window == root && p.visible);
+        if !visible {
+            grab.ungrab(smithay::desktop::PopupUngrabStrategy::All);
+        }
+        if !grab.has_ended() {
+            // Destroying a nested child may leave its parent grab alive. Repair
+            // keyboard focus now, without waiting for another physical event.
+            if let Some(keyboard) = self.seat.get_keyboard()
+                && keyboard
+                    .with_grab(|serial, active| {
+                        (serial == grab.serial() || Some(serial) == grab.previous_serial())
+                            && active.is::<smithay::desktop::PopupKeyboardGrab<Self>>()
+                    })
+                    .unwrap_or(false)
+                && keyboard.current_focus() != grab.current_grab()
+            {
+                keyboard.set_focus(self, grab.current_grab(), SERIAL_COUNTER.next_serial());
+            }
+            self.popup_grab = Some((root, grab));
+            return;
+        }
+        // Release only wrappers installed by this tracked popup chain. Another
+        // subsystem's grab must not be cancelled merely because this chain ended.
+        let matches = |serial| serial == grab.serial() || Some(serial) == grab.previous_serial();
+        if let Some(keyboard) = self.seat.get_keyboard()
+            && keyboard
+                .with_grab(|serial, active| {
+                    matches(serial) && active.is::<smithay::desktop::PopupKeyboardGrab<Self>>()
+                })
+                .unwrap_or(false)
+        {
+            keyboard.unset_grab(self);
+        }
+        if let Some(pointer) = self.seat.get_pointer()
+            && pointer
+                .with_grab(|serial, active| {
+                    matches(serial) && active.is::<smithay::desktop::PopupPointerGrab<Self>>()
+                })
+                .unwrap_or(false)
+        {
+            // Update pending focus before the ended popup wrapper restores it.
+            let location = pointer.current_location();
+            let under = self.surface_under(location);
+            self.pointer_scene_target = under.clone();
+            let serial = SERIAL_COUNTER.next_serial();
+            let time = smithay::backend::input::InputTime::now();
+            pointer.motion(
+                self,
+                under,
+                &smithay::input::pointer::MotionEvent {
+                    location,
+                    serial,
+                    time,
+                },
+            );
+            if pointer
+                .with_grab(|serial, active| {
+                    matches(serial) && active.is::<smithay::desktop::PopupPointerGrab<Self>>()
+                })
+                .unwrap_or(false)
+            {
+                pointer.unset_grab(self, serial, time);
+            }
+            pointer.frame(self);
+        }
+        self.pointer_focus_dirty = true;
+        self.restore_keyboard_focus();
+        self.bump_sequence();
+    }
+
     pub fn finish_dispatch(&mut self) {
         let dead: Vec<_> = self
             .windows
@@ -553,7 +638,9 @@ impl Fluxwm {
         self.reap_children();
         self.space.refresh();
         self.popups.cleanup();
+        self.cleanup_popup_grab();
         self.drive_ipc();
+        self.cleanup_popup_grab();
         self.refresh_pointer_focus();
         self.flush_wayland();
     }

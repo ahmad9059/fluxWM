@@ -45,7 +45,7 @@ impl Fluxwm {
             Method::Capabilities => Ok(json!({
                 "backend":"nested", "subscriptions":false, "config_reload":false,
                 "actions":["focus","move","pan","resize","workspace-mode","close-window","spawn","quit"],
-                "secure_lock":false,"capture":false,"native_session":false,"x11_clients":false,
+                "secure_lock":false,"capture":false,"drag_and_drop":false,"native_session":false,"x11_clients":false,
                 "frame_clock":"virtual-60hz", "host_presentation_observed":false,
             })),
             Method::Windows => {
