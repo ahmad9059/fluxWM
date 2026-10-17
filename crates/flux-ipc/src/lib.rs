@@ -1,4 +1,8 @@
 //! Bounded local IPC. Call `Server::poll` from the compositor event loop.
+#[cfg(feature = "calloop")]
+mod driver;
+#[cfg(feature = "calloop")]
+pub use driver::EventLoopDriver;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{
