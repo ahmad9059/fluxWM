@@ -190,6 +190,12 @@ fn actual_lua_error_text_is_not_retained_in_coordinator_diagnostics() {
 #[test]
 fn coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop() {
     use std::{fs, os::unix::fs::PermissionsExt};
+    let expected_sleep = fs::canonicalize("/bin/sleep").expect("sleep executable is required");
+    let sleep_metadata = fs::metadata(&expected_sleep).unwrap();
+    assert!(
+        sleep_metadata.is_file() && sleep_metadata.permissions().mode() & 0o111 != 0,
+        "sleep must be an existing executable regular file"
+    );
     struct Fixture(PathBuf);
     impl Drop for Fixture {
         fn drop(&mut self) {
@@ -217,9 +223,37 @@ fn coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop() {
         || {},
     )
     .unwrap();
-    loader.request(source(10)).unwrap();
+    let active = loader.request(source(10)).unwrap();
     let pid = await_helper(&loader);
+    let child_exe = PathBuf::from(format!("/proc/{pid}/exe"));
+    let ready_deadline = Instant::now() + Duration::from_secs(1);
+    loop {
+        let status = loader.status();
+        assert_eq!(
+            status.active,
+            Some(active),
+            "helper exited before sleep readiness"
+        );
+        assert_eq!(
+            status.active_helper_pid,
+            Some(pid),
+            "active helper identity changed"
+        );
+        if fs::read_link(&child_exe).is_ok_and(|image| image == expected_sleep) {
+            break;
+        }
+        assert!(
+            Instant::now() < ready_deadline,
+            "owned helper never entered the expected sleep image"
+        );
+        thread::sleep(Duration::from_millis(2));
+    }
     loader.request(source(20)).unwrap();
+    // A spawned PID alone is insufficient: an interpreter/exec failure could
+    // otherwise make shutdown look fast without exercising cancellation.
+    assert_eq!(loader.status().active, Some(active));
+    assert_eq!(loader.status().active_helper_pid, Some(pid));
+    assert_eq!(fs::read_link(&child_exe).unwrap(), expected_sleep);
     let started = Instant::now();
     loader.shutdown().unwrap();
     assert_reaped(pid);
