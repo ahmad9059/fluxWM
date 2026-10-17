@@ -276,11 +276,11 @@ def extra_case(binary, fixture, directory, environment, session, name):
         case.check()
         return session.test(case.process.pid, {'kind': kind, **values})
     try:
-        case.replace(lua(13, 'strip', route=name == 'input-publication'))
+        case.replace(lua(13, 'strip'))
         case.start()
         initial = case.await_status('applied')['configuration']['applied_generation']
         good = case.snapshot('initial')
-        assert_applied(good, initial, 13, 'strip', 4 if name == 'input-publication' else 3)
+        assert_applied(good, initial, 13, 'strip')
         if name == 'path-retention':
             for label in ['missing-path', 'layout-gap-out-of-range']:
                 if label == 'missing-path':
@@ -300,6 +300,7 @@ def extra_case(binary, fixture, directory, environment, session, name):
             case.replace(lua(1025, 'canvas'))
             rejected = case.reload(); failed = case.await_status('failed', rejected)
             require(failed['configuration']['last_error'] == 'layout.gaps exceeds the nested model limit of 1024', 'wrong1025 rejection boundary')
+            require(failed['configuration']['applied_generation'] == accepted, '1025 failure changed applied generation')
             require(case.snapshot('gap1025')['effective']['effective'] == boundary['effective']['effective'], '1025 failure changed effective state')
             case.replace(lua(19, 'canvas'))
             requested = case.reload(); case.await_status('applied', requested)
@@ -329,6 +330,8 @@ def extra_case(binary, fixture, directory, environment, session, name):
             case.replace(lua(8, 'strip'))
             recovered = case.reload(); case.await_status('applied', recovered)
             assert_applied(case.snapshot('geometry-recovered'), recovered, 8, 'strip')
+            recovered_windows = case.ipc('windows.list')['windows']
+            require(len(recovered_windows) == 1 and recovered_windows[0]['id'] == before[0]['id'] and recovered_windows[0]['mapped'] and recovered_windows[0]['geometry']['width'] == 999999984, 'geometry recovery lost live member or width')
             case.wait(lambda: client.poll() is not None, 9)
             report = json.loads((case.directory / 'fixture.stdout.log').read_text())
             require(client.returncode == 0 and report.get('ok') is True and report['ready_frames'] >= 1, 'wide fixture failed')
@@ -351,6 +354,14 @@ def extra_case(binary, fixture, directory, environment, session, name):
             # Observe actual worker completion before checking that held input
             # defers publication; time spent evaluating alone cannot pass this.
             case.wait(lambda: case.configuration()['configuration']['prepared_generation'] == requested)
+            # The initial three-entry table has no Alt+a. While its replacement
+            # is prepared but unapplied, A must still reach the real client.
+            before_new_table = len(events())
+            inject('key', key='a', pressed=True); inject('key', key='a', pressed=False)
+            case.wait(lambda: seen('keyboard.key', since=before_new_table, key=30, state='pressed') and seen('keyboard.key', since=before_new_table, key=30, state='released'))
+            require(case.ipc('workspaces.list')['workspaces'][0]['mode'] == 'strip', 'prepared but unapplied binding became active')
+            require(case.ipc('diagnostics')['keyboard_bindings']['entries'] == 3, 'held initial binding table changed')
+            case.result['before_new_table_event_index'] = before_new_table
             pending_start = time.monotonic()
             samples = []
             while time.monotonic() - pending_start < .35:
@@ -405,7 +416,7 @@ def extra_case(binary, fixture, directory, environment, session, name):
             journal = events()
             counts = {str(key): {state: sum(event.get('type') == 'keyboard.key' and event.get('key') == key and event.get('state') == state for event in journal)
                                  for state in ['pressed', 'released']} for key in [30, 56]}
-            require(counts == {'30': {'pressed': 1, 'released': 1}, '56': {'pressed': 2, 'released': 2}}, 'complete fixture key ownership differs')
+            require(counts == {'30': {'pressed': 2, 'released': 2}, '56': {'pressed': 2, 'released': 2}}, 'complete fixture key ownership differs')
             case.result['complete_key_counts'] = counts
             case.result['fixture_report'] = report
         case.result['ok'] = True

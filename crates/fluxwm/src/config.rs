@@ -453,6 +453,7 @@ mod tests {
             last_error: None,
         };
         assert_eq!(config.request().unwrap(), 2);
+        assert!(config.diagnostics()["prepared_generation"].is_null());
         assert!(config.completion().is_none());
         {
             let c = config.shared.control.lock().unwrap();
