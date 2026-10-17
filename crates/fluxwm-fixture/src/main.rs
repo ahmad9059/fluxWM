@@ -13,11 +13,13 @@ use std::{
 use wayland_client::{
     Connection, Dispatch, EventQueue, Proxy, QueueHandle, WEnum, delegate_noop,
     protocol::{
-        wl_buffer, wl_callback, wl_compositor, wl_pointer, wl_registry, wl_seat, wl_shm,
-        wl_shm_pool, wl_surface,
+        wl_buffer, wl_callback, wl_compositor, wl_keyboard, wl_pointer, wl_registry, wl_seat,
+        wl_shm, wl_shm_pool, wl_surface,
     },
 };
-use wayland_protocols::xdg::shell::client::{xdg_surface, xdg_toplevel, xdg_wm_base};
+use wayland_protocols::xdg::shell::client::{
+    xdg_popup, xdg_positioner, xdg_surface, xdg_toplevel, xdg_wm_base,
+};
 
 type Result<T> = std::result::Result<T, String>;
 const WIDTH: i32 = 320;
@@ -26,6 +28,7 @@ const HEIGHT: i32 = 240;
 enum Callback {
     Sync(u32),
     Frame(usize),
+    PopupFrame(usize),
 }
 struct Window {
     surface: wl_surface::WlSurface,
@@ -36,6 +39,20 @@ struct Window {
     configures: u32,
     frames: u32,
     capabilities: u32,
+    destroyed: bool,
+}
+#[derive(Clone, Copy, Debug)]
+struct PopupTag(usize);
+struct FixturePopup {
+    surface: wl_surface::WlSurface,
+    xdg: xdg_surface::XdgSurface,
+    popup: xdg_popup::XdgPopup,
+    buffer: Option<wl_buffer::WlBuffer>,
+    storage: Option<File>,
+    configures: u32,
+    geometry_configures: u32,
+    frames: u32,
+    done: u32,
     destroyed: bool,
 }
 struct State {
@@ -63,6 +80,11 @@ struct State {
     changing_motions: u32,
     commit_on_motion: bool,
     feedback_commits: u32,
+    popup_mode: bool,
+    popups: Vec<FixturePopup>,
+    keyboard: Option<wl_keyboard::WlKeyboard>,
+    keyboard_focus: Option<wl_surface::WlSurface>,
+    popup_keyboard_enters: u32,
 }
 impl State {
     fn new(start: Instant) -> Self {
@@ -91,6 +113,11 @@ impl State {
             changing_motions: 0,
             commit_on_motion: false,
             feedback_commits: 0,
+            popup_mode: false,
+            popups: Vec::new(),
+            keyboard: None,
+            keyboard_focus: None,
+            popup_keyboard_enters: 0,
         }
     }
     fn record(&mut self, event: Json) {
@@ -127,6 +154,83 @@ impl State {
         });
         self.record(json!({"create":n,"name":name}));
         n
+    }
+    fn create_popup(&mut self, parent: usize, invalid_grab: bool, qh: &QueueHandle<Self>) -> usize {
+        let index = self.popups.len();
+        let surface = self.compositor.as_ref().unwrap().create_surface(qh, ());
+        let xdg = self
+            .wm
+            .as_ref()
+            .unwrap()
+            .get_xdg_surface(&surface, qh, PopupTag(index));
+        let positioner = self.wm.as_ref().unwrap().create_positioner(qh, ());
+        positioner.set_size(64, 48);
+        positioner.set_anchor_rect(20, 20, 1, 1);
+        positioner.set_anchor(xdg_positioner::Anchor::BottomRight);
+        positioner.set_gravity(xdg_positioner::Gravity::BottomRight);
+        let popup = xdg.get_popup(
+            Some(&self.windows[parent].xdg),
+            &positioner,
+            qh,
+            PopupTag(index),
+        );
+        positioner.destroy();
+        if invalid_grab {
+            popup.grab(self.seat.as_ref().unwrap(), 0);
+        }
+        surface.commit();
+        self.popups.push(FixturePopup {
+            surface,
+            xdg,
+            popup,
+            buffer: None,
+            storage: None,
+            configures: 0,
+            geometry_configures: 0,
+            frames: 0,
+            done: 0,
+            destroyed: false,
+        });
+        self.record(json!({"create_popup":index,"parent":parent,"invalid_grab_serial":if invalid_grab {Some(0)} else {None}}));
+        index
+    }
+    fn map_popup(&mut self, index: usize, qh: &QueueHandle<Self>) -> Result<()> {
+        if self.popups[index].configures == 0 || self.popups[index].done > 0 {
+            return Err("popup is not configured/live before mapping".into());
+        }
+        let mut file = memory_file()?;
+        let bytes = 0xffff00ff_u32.to_ne_bytes().repeat(64 * 48);
+        file.set_len(bytes.len() as u64)
+            .map_err(|e| e.to_string())?;
+        file.write_all(&bytes).map_err(|e| e.to_string())?;
+        let pool = self
+            .shm
+            .as_ref()
+            .unwrap()
+            .create_pool(file.as_fd(), bytes.len() as i32, qh, ());
+        let buffer = pool.create_buffer(0, 64, 48, 64 * 4, wl_shm::Format::Xrgb8888, qh, ());
+        pool.destroy();
+        let p = &mut self.popups[index];
+        p.xdg.set_window_geometry(0, 0, 64, 48);
+        p.surface.attach(Some(&buffer), 0, 0);
+        p.surface.damage(0, 0, 64, 48);
+        p.surface.frame(qh, Callback::PopupFrame(index));
+        p.surface.commit();
+        p.buffer = Some(buffer);
+        p.storage = Some(file);
+        self.record(json!({"map_popup_commit":index}));
+        Ok(())
+    }
+    fn destroy_popup(&mut self, index: usize) {
+        let p = &mut self.popups[index];
+        p.popup.destroy();
+        p.xdg.destroy();
+        p.surface.destroy();
+        if let Some(buffer) = p.buffer.take() {
+            buffer.destroy();
+        }
+        p.destroyed = true;
+        self.record(json!({"destroy_popup":index}));
     }
     fn map(&mut self, index: usize, qh: &QueueHandle<Self>) -> Result<()> {
         if self.windows[index].configures == 0 {
@@ -480,6 +584,10 @@ impl Dispatch<wl_callback::WlCallback, Callback> for State {
                     state.last_sync = *n;
                     state.sync_done_count += 1;
                 }
+                Callback::PopupFrame(n) => {
+                    state.popups[*n].frames += 1;
+                    state.record(json!({"popup_frame_done":n,"timestamp":callback_data}));
+                }
                 Callback::Frame(n) => {
                     state.windows[*n].frames += 1;
                     state.record(json!({"frame_done":n,"timestamp":callback_data}));
@@ -504,14 +612,92 @@ impl Dispatch<wl_seat::WlSeat, ()> for State {
         if let wl_seat::Event::Capabilities {
             capabilities: WEnum::Value(capabilities),
         } = event
-            && state.pointer_feedback_enabled
-            && state.pointer.is_none()
-            && capabilities.contains(wl_seat::Capability::Pointer)
         {
-            state.pointer = Some(seat.get_pointer(qh, ()));
+            if state.pointer_feedback_enabled
+                && state.pointer.is_none()
+                && capabilities.contains(wl_seat::Capability::Pointer)
+            {
+                state.pointer = Some(seat.get_pointer(qh, ()));
+            }
+            if state.popup_mode
+                && state.keyboard.is_none()
+                && capabilities.contains(wl_seat::Capability::Keyboard)
+            {
+                state.keyboard = Some(seat.get_keyboard(qh, ()));
+            }
         }
     }
 }
+impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
+    fn event(
+        state: &mut Self,
+        _: &wl_keyboard::WlKeyboard,
+        event: wl_keyboard::Event,
+        _: &(),
+        _: &Connection,
+        _: &QueueHandle<Self>,
+    ) {
+        match event {
+            wl_keyboard::Event::Enter { surface, .. } => {
+                let popup = state.popups.iter().position(|p| p.surface == surface);
+                if popup.is_some() {
+                    state.popup_keyboard_enters += 1;
+                }
+                state.keyboard_focus = Some(surface.clone());
+                state.record(json!({"keyboard_enter_window":state.windows.iter().position(|w|w.surface==surface),"keyboard_enter_popup":popup}));
+            }
+            wl_keyboard::Event::Leave { .. } => {
+                state.keyboard_focus = None;
+                state.record(json!({"keyboard_leave":true}));
+            }
+            _ => {}
+        }
+    }
+}
+impl Dispatch<xdg_surface::XdgSurface, PopupTag> for State {
+    fn event(
+        state: &mut Self,
+        surface: &xdg_surface::XdgSurface,
+        event: xdg_surface::Event,
+        index: &PopupTag,
+        _: &Connection,
+        _: &QueueHandle<Self>,
+    ) {
+        if let xdg_surface::Event::Configure { serial } = event {
+            surface.ack_configure(serial);
+            state.popups[index.0].configures += 1;
+            state.record(json!({"popup_configure_ack":index.0,"serial":serial}));
+        }
+    }
+}
+impl Dispatch<xdg_popup::XdgPopup, PopupTag> for State {
+    fn event(
+        state: &mut Self,
+        _: &xdg_popup::XdgPopup,
+        event: xdg_popup::Event,
+        index: &PopupTag,
+        _: &Connection,
+        _: &QueueHandle<Self>,
+    ) {
+        match event {
+            xdg_popup::Event::Configure {
+                x,
+                y,
+                width,
+                height,
+            } => {
+                state.popups[index.0].geometry_configures += 1;
+                state.record(json!({"popup_geometry":index.0,"rect":[x,y,width,height]}));
+            }
+            xdg_popup::Event::PopupDone => {
+                state.popups[index.0].done += 1;
+                state.record(json!({"popup_done":index.0}));
+            }
+            _ => {}
+        }
+    }
+}
+delegate_noop!(State:ignore xdg_positioner::XdgPositioner);
 impl Dispatch<wl_pointer::WlPointer, ()> for State {
     fn event(
         state: &mut Self,
@@ -1096,14 +1282,258 @@ fn pointer_feedback(timeout: Duration) -> Json {
     evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
     evidence
 }
+fn popup_lifecycle(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    state.popup_mode = true;
+    let mut evidence = json!({"mode":"popup-lifecycle","ok":false,"popup_size":[64,48],"physical_input_injected":false});
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        evidence["socket"] = json!(path);
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        connection.display().get_registry(&qh, ());
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup registry",
+            |s| s.last_sync >= sync,
+        )?;
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup seat binding",
+            |s| s.last_sync >= sync,
+        )?;
+        if state.compositor.is_none()
+            || state.wm.is_none()
+            || state.shm.is_none()
+            || state.seat.is_none()
+            || state.keyboard.is_none()
+        {
+            return Err("popup fixture prerequisites missing".into());
+        }
+        let root = state.create(&qh, "popup-parent");
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup root configure",
+            |s| s.windows[root].configures >= 1,
+        )?;
+        state.map(root, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup root map",
+            |s| s.windows[root].frames >= 1,
+        )?;
+        let popup = state.create_popup(root, false, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "plain popup configure",
+            |s| s.popups[popup].configures >= 1,
+        )?;
+        state.map_popup(popup, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "plain popup frame",
+            |s| s.popups[popup].frames >= 1,
+        )?;
+        state.windows[root].surface.attach(None, 0, 0);
+        state.windows[root].surface.commit();
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "root unmap processed",
+            |s| s.last_sync >= sync,
+        )?;
+        evidence["root_null_unmap_processed"] = json!(true);
+        evidence["stage"] = json!("root-null-unmap-popup-done");
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline.min(Instant::now() + Duration::from_millis(400)),
+            "root-unmap popup_done",
+            |s| s.popups[popup].done >= 1,
+        )?;
+        evidence["non_grabbing_popup_dismissed_on_unmap"] = json!(true);
+        state.destroy_popup(popup);
+        let prior = state.windows[root].configures;
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup root remap configure",
+            |s| s.windows[root].configures > prior,
+        )?;
+        state.map(root, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup root remapped",
+            |s| s.windows[root].frames >= 2,
+        )?;
+        let foreground = state.create(&qh, "foreground-focus-owner");
+        state.windows[foreground].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "foreground configure",
+            |s| s.windows[foreground].configures >= 1,
+        )?;
+        state.map(foreground, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "foreground focus",
+            |s| {
+                s.windows[foreground].frames >= 1
+                    && s.keyboard_focus.as_ref() == Some(&s.windows[foreground].surface)
+            },
+        )?;
+        let popup_enters = state.popup_keyboard_enters;
+        let invalid = state.create_popup(root, true, &qh);
+        evidence["stage"] = json!("invalid-background-popup-grab");
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "invalid popup grab dismissal",
+            |s| s.popups[invalid].done >= 1,
+        )?;
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "invalid popup focus barrier",
+            |s| s.last_sync >= sync,
+        )?;
+        if state.keyboard_focus.as_ref() != Some(&state.windows[foreground].surface)
+            || state.popup_keyboard_enters != popup_enters
+        {
+            return Err("invalid background popup stole keyboard focus".into());
+        }
+        evidence["invalid_serial_zero_popup_dismissed"] = json!(true);
+        evidence["background_keyboard_focus_preserved"] = json!(true);
+        state.destroy_popup(invalid);
+        let last = state.create_popup(foreground, false, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "destroy-case popup configure",
+            |s| s.popups[last].configures >= 1,
+        )?;
+        state.map_popup(last, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "destroy-case popup frame",
+            |s| s.popups[last].frames >= 1,
+        )?;
+        state.windows[foreground].toplevel.destroy();
+        evidence["stage"] = json!("root-role-destroy-popup-done");
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "destroyed-root popup_done",
+            |s| s.popups[last].done >= 1,
+        )?;
+        evidence["popup_dismissed_on_root_role_destroy"] = json!(true);
+        state.destroy_popup(last);
+        state.windows[foreground].xdg.destroy();
+        state.windows[foreground].surface.destroy();
+        state.windows[foreground].destroyed = true;
+        state.windows[root].toplevel.destroy();
+        state.windows[root].xdg.destroy();
+        state.windows[root].surface.destroy();
+        state.windows[root].destroyed = true;
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup cleanup barrier",
+            |s| s.last_sync >= sync,
+        )?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET")
+            .ok_or("popup-lifecycle requires FLUXWM_SOCKET diagnostics")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let stats = diagnostics.snapshot(deadline)?;
+        if counter(&stats, "maps") != 3
+            || counter(&stats, "unmaps") != 1
+            || counter(&stats, "destroyed") != 2
+        {
+            return Err(format!("unexpected popup-root cleanup counters: {stats}"));
+        }
+        evidence["final_runtime"] = stats;
+        evidence["stage"] = json!("complete");
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence["popup_keyboard_enters"] = json!(state.popup_keyboard_enters);
+    evidence["popups"]=json!(state.popups.iter().enumerate().map(|(i,p)|json!({"index":i,"configure_acks":p.configures,"geometry_configures":p.geometry_configures,"frames":p.frames,"popup_done":p.done,"destroyed":p.destroyed})).collect::<Vec<_>>());
+    evidence
+}
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     let parsed = match args.as_slice() {
-        [mode] if mode == "lifecycle" || mode == "slow-reader" || mode == "pointer-feedback" => {
+        [mode]
+            if mode == "lifecycle"
+                || mode == "slow-reader"
+                || mode == "pointer-feedback"
+                || mode == "popup-lifecycle" =>
+        {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
         [mode, flag, value]
-            if (mode == "lifecycle" || mode == "slow-reader" || mode == "pointer-feedback")
+            if (mode == "lifecycle"
+                || mode == "slow-reader"
+                || mode == "pointer-feedback"
+                || mode == "popup-lifecycle")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -1114,12 +1544,13 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback [--timeout-ms 1..5000]",
+            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle [--timeout-ms 1..5000]",
         ),
     };
     let result = match parsed {
         Ok(("slow-reader", timeout)) => slow_reader(timeout),
         Ok(("pointer-feedback", timeout)) => pointer_feedback(timeout),
+        Ok(("popup-lifecycle", timeout)) => popup_lifecycle(timeout),
         Ok((_, timeout)) => run(timeout),
         Err(error) => json!({"ok":false,"error":error}),
     };
