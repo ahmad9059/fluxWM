@@ -19,7 +19,7 @@ Research date: **2026-10-17**. This folder specifies the product, architecture, 
 | [Ten-phase roadmap](10-roadmap.md) | Dependency order and links to ten detailed work packages |
 | [Decisions and risks](decisions/README.md) | Architecture decisions, unresolved choices, risk mitigation |
 | [Example Lua configuration](examples/config.lua) | Complete proposed configuration example |
-| [Nested runtime Lua configuration](development/runtime-config.md) | Implemented startup/manual gap/mode/binding reload, effective settings and runnable nested example |
+| [Nested runtime Lua configuration](development/runtime-config.md) | Implemented startup/manual gap/mode/width/binding reload, asynchronous autostart and effective settings |
 | [Requirement traceability](11-traceability.md) | Requirement → design → phase → verification |
 | [Initial documentation audit](12-documentation-audit.md) | Historical first-pass checks and limits |
 | [Production audit and blockers](13-production-audit.md) | Evidence classification, corrections, unresolved implementation gates |
@@ -32,7 +32,9 @@ Research date: **2026-10-17**. This folder specifies the product, architecture, 
 | [Implementation contracts](20-implementation-contracts.md) | Typed identities, startup readiness, IPC framing, action and snapshot semantics |
 | [Review decisions](21-review-resolutions.md) | Selected trust, capture, helper, ownership and infrastructure contracts |
 | [XDG window-state matrix](22-window-state-matrix.md) | Client flags, bounds, visibility, fullscreen backdrop, version gates |
-| [Current implementation audit](24-implementation-readiness-audit.md) | Source-backed findings, executable evidence and production blockers |
+| [Initial implementation audit](24-implementation-readiness-audit.md) | Historical snapshot findings and executable evidence |
+| [Current production gaps](development/production-status-2026-10-18.md) | Present source boundaries, edge cases and required closure evidence |
+| [Autostart ownership](development/autostart.md) | Stable identity, once/restart behavior, budgets and asynchronous effect diagnostics |
 | [Runnable nested milestone](development/runtime.md) | Actual CLI, controls, IPC, lifecycle and rendering evidence boundaries |
 | [Shared composed scene](development/runtime-scene.md) | Actual buffer geometry, copied input regions and separate root/popup clips |
 | [Runtime findings and remaining gates](development/runtime-findings.md) | Integrated runtime fixes, actual tests and unqualified production behavior |

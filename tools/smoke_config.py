@@ -209,6 +209,7 @@ def exercise(binary, directory, environment, name):
             require(initial['keyboard_bindings']['source'] == 'development-defaults', 'no-config replaced defaults')
             require(initial['configuration']['requested_generation'] is None and initial['configuration']['applied_generation'] is None, 'disabled configuration allocated a generation')
             require(case.ipc('capabilities')['config_reload'] is False, 'disabled instance advertises reload')
+            require(initial['autostart']['settled'] and not initial['autostart']['enabled'] and initial['autostart']['requested_generation'] is None, 'disabled autostart is not idle')
             case.result['reload_rejected'] = case.ipc('config.reload', error=True)
             require(case.result['reload_rejected']['code'] == 'not_ready', 'disabled reload has wrong error code')
             case.result['snapshot'] = case.snapshot('disabled')
@@ -217,6 +218,8 @@ def exercise(binary, directory, environment, name):
             require(initial['keyboard_bindings']['source'] == 'development-defaults', 'failed startup replaced defaults')
             require(initial['configuration']['applied_generation'] is None, 'failed startup published a generation')
             require(initial['configuration']['last_error'], 'failed startup lacks an error')
+            auto = initial['autostart']
+            require(auto['enabled'] and auto['settled'] and auto['requested_generation'] is None and auto['observed_generation'] is None and auto['active_generation'] is None and not auto['active_complete'] and auto['retained_argv_bytes'] == 0 and not auto['entries'], 'failed startup autostart is not idle without a submitted plan')
             case.result['snapshot'] = case.snapshot('failed-startup')
             fallback = case.result['snapshot']['effective']
             require(fallback['generation'] is None and fallback['desired'] is None, 'failed startup published desired config')

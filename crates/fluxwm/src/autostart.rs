@@ -61,7 +61,7 @@ impl Fluxwm {
             "enabled":self.autostart_enabled,"requested_generation":self.autostart_generation.map(|g|g.to_string()),
             "observed_generation":v.requested_generation.map(|g|g.to_string()),"active_generation":v.active_generation.map(|g|g.to_string()),
             "active_complete":v.active_complete,"retained_argv_bytes":v.retained_argv_bytes,
-            "settled":!self.autostart_enabled || (v.settled && (v.closed || v.requested_generation==self.autostart_generation)),
+            "settled":!self.autostart_enabled || self.autostart_generation.is_none() || (v.settled && (v.closed || v.requested_generation==self.autostart_generation)),
             "closed":v.closed,"error":v.error,
             "entries":v.entries.iter().map(|s|json!({"slot":s.slot,"id":s.id,"index":s.index,"desired":s.desired,"attempts":s.attempts.to_string(),"starts":s.starts.to_string(),"pid":s.pid,"state":s.state,"change_deferred":s.change_deferred,"error":s.error,"errno":s.errno,"exit_code":s.exit_code,"exit_signal":s.exit_signal})).collect::<Vec<_>>(),
         })

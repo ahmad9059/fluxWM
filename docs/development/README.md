@@ -1,6 +1,6 @@
 # Initial implementation and development
 
-The initial workspace uses Rust 1.99/edition 2024 and pins Smithay to `023b78b1c5a05ca512767cacc07efca55fae8be4`. See the root manifests, lockfile, [source notices](../../THIRD_PARTY.md) and [current production audit](../24-implementation-readiness-audit.md). The bootstrap is adapted from MIT-licensed Smithay Smallvil; it is not a native-session implementation.
+The initial workspace uses Rust 1.99/edition 2024 and pins Smithay to `023b78b1c5a05ca512767cacc07efca55fae8be4`. See the root manifests, lockfile, [source notices](../../THIRD_PARTY.md) and [historical initial audit](../24-implementation-readiness-audit.md) and [current production gaps](production-status-2026-10-18.md). The bootstrap is adapted from MIT-licensed Smithay Smallvil; it is not a native-session implementation.
 
 See the [current nested runtime milestone](runtime.md) and [bounded nested smoke harness](nested-smoke.md) and [scene regression harness](scene-smoke.md) for the integrated executable and its exact limits. The tables below retain component boundaries, not a production support matrix.
 
@@ -10,10 +10,11 @@ See the [current nested runtime milestone](runtime.md) and [bounded nested smoke
 | --- | --- | --- |
 | `flux-core` | Generational IDs, geometry, action vocabulary | Checked owning arena and shared strict actions now drive the nested runtime |
 | [flux-layout](layout.md) | Pure strip/canvas workspace model | Connected to the nested scene/lifecycle; multi-output and complete state remain open |
-| [flux-config / fluxwm-config](config.md) | Schema, isolated Lua helper and asynchronous coordinator | Nested gap/mode/binding publication implemented; full device/output transactions remain open |
+| [flux-config / fluxwm-config](config.md) | Schema, isolated Lua helper and asynchronous coordinator | Nested gap/mode/default-width/binding publication and asynchronous autostart implemented; full device/output transactions remain open |
 | [flux-input](input-bindings.md) | Real-keymap binding resolution and immutable Rust dispatch tables | Development/user controls use this path; keymap replacement and full device/input policy remain open |
 | [flux-ipc / fluxctl](ipc.md) | Unix transport and command-line client | Nested query/action dispatch implemented; subscriptions unavailable |
 | [flux-scene](scene.md) | Immutable checked window geometry and ordered clip/hit candidates | [Runtime scene integration](runtime-scene.md) adds copied Wayland input regions and clipped elements; native/transaction ownership remains open |
+| [flux-process](autostart.md) | Bounded launch worker and named/positional autostart ownership | Direct children only; session dependencies/readiness/descendants and universal shutdown bounds remain open |
 | `fluxwm` | Smithay nested compositor bootstrap | Managed map/unmap, gated capabilities, bounded redraw and cleanup; full protocol/native qualification open |
 
 ## Reproduce checks

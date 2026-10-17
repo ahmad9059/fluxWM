@@ -3,8 +3,8 @@
 The source under `crates/flux-config` and `crates/fluxwm-config` implements the initial
 schema and evaluator, including the documentation example in `docs/examples/config.lua`.
 The asynchronous coordinator and real-keymap binding compiler now provide preparation
-components. The [nested runtime](runtime-config.md) now publishes gap/mode/binding settings from startup/manual reload. This does not close phase 6: full device/output publication, config-driven
-keymap/device transactions, autostart lifecycle, automatic filesystem reload and reference generation
+components. The [nested runtime](runtime-config.md) now publishes gap/mode/default-width/binding settings from startup/manual reload and schedules [autostart direct-child ownership](autostart.md) afterward. This does not close phase 6: full device/output publication, config-driven
+keymap/device transactions, full session/descendant supervision, automatic filesystem reload and reference generation
 still need implementation.
 The wider documents describe the target contract; this file records current behavior.
 

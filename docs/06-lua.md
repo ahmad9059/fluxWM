@@ -1,6 +1,6 @@
 # Lua configuration contract
 
-This document specifies the target FluxWM schema. A strict subset is now implemented in the isolated Lua **5.4** helper; see [config implementation](development/config.md) and its [production audit](development/config-production-audit.md) for supported fields and remaining integration. The helper manifest pins mlua and its enabled features. Schema acceptance alone does not apply outputs or install bindings. The [nested runtime](development/runtime-config.md) now publishes gap/mode/bindings on startup/manual reload; full device/output transactions remain open.
+This document specifies the target FluxWM schema. A strict subset is now implemented in the isolated Lua **5.4** helper; see [config implementation](development/config.md) and its [production audit](development/config-production-audit.md) for supported fields and remaining integration. The helper manifest pins mlua and its enabled features. Schema acceptance alone does not apply outputs or install bindings. The [nested runtime](development/runtime-config.md) now publishes gap/mode/default-width/bindings on startup/manual reload and schedules [direct-child autostart](development/autostart.md) afterward; full device/output transactions remain open.
 
 ## User contract
 
@@ -18,7 +18,7 @@ Proposed top-level fields:
 | `decoration` | Borders, corners, shadows, blur | Valid colors, finite radii, resource bounds |
 | `bindings` | Chord and action tables | Unique normalized chords, valid action arguments |
 | `rules` | Match predicates and placement/render policies | Compile patterns once, explicit precedence |
-| `autostart` | Argument arrays and lifecycle policy | No shell splitting, bounded entries |
+| `autostart` | Optional stable IDs, argument arrays and lifecycle policy | No shell splitting, unique bounded IDs and bounded entries |
 | `security` | Capture/IPC policy choices | Cannot weaken lock invariants |
 
 Use logical pixels for geometry, milliseconds for durations, Hz for refresh, and dimensionless ratios for scale and opacity. Reject NaN/infinity from computed Lua values. Colors are explicit sRGB `#RRGGBB` or `#RRGGBBAA`; normalize to a typed internal representation.
@@ -42,7 +42,7 @@ No Lua executes in the compositor process or on its render path in this design. 
 7. On output/device application failure preserve or restore the last working hardware state and report actual effective settings.
 8. Publish the new config generation and diagnostics. Retain a last-known-good snapshot.
 
-Do not rerun autostart processes on every reload. Trigger autostart once per session unless an entry explicitly requests restart-on-change with supervised ownership. An invalid startup config should start a usable safe default session and show the error, including a terminal/reload binding. A proposed `fluxctl config check PATH` uses the same evaluation/validation engine without opening display devices or spawning commands.
+Optional `autostart[].id` provides stable identity across reorder; entries without it use list position. The [implemented lifecycle contract](development/autostart.md) defines once-only attempts, failed exec, removal/reintroduction, restart and asynchronous diagnostics. Do not rerun autostart processes on every reload. Trigger autostart once per session unless an entry explicitly requests restart-on-change with supervised ownership. An invalid startup config should start a usable safe default session and show the error, including a terminal/reload binding. A proposed `fluxctl config check PATH` uses the same evaluation/validation engine without opening display devices or spawning commands.
 
 ## Actions and rules
 

@@ -640,9 +640,18 @@ mod tests {
         }
     }
     fn reaped(pid: u32) {
-        let mut status = 0;
+        // WNOWAIT observes ownership without consuming an unrelated test child
+        // if this PID has already been reused in the same test process.
+        let mut info: libc::siginfo_t = unsafe { std::mem::zeroed() };
         assert_eq!(
-            unsafe { libc::waitpid(pid as libc::pid_t, &mut status, libc::WNOHANG) },
+            unsafe {
+                libc::waitid(
+                    libc::P_PID,
+                    pid as libc::id_t,
+                    &mut info,
+                    libc::WEXITED | libc::WNOHANG | libc::WNOWAIT,
+                )
+            },
             -1
         );
         assert_eq!(
@@ -650,6 +659,7 @@ mod tests {
             Some(libc::ECHILD)
         );
     }
+
     #[test]
     fn once_restart_named_reorder_removal_and_reintroduction_own_real_children() {
         let mut worker = AutostartWorker::new(|| {}).unwrap();
@@ -1218,5 +1228,101 @@ mod tests {
                 break;
             }
         }
+    }
+    #[test]
+    fn accepted_near_cap_prefixes_survive_three_restart_removal_readd_supersessions() {
+        let controlled = ControlledWorker::new();
+        let large = |id: &str| AutostartCommand {
+            id: Some(id.into()),
+            argv: std::iter::once("/missing/large".into())
+                .chain((0..255).map(|_| "x".repeat(4096)))
+                .collect(),
+            restart_on_change: false,
+        };
+        let small = |id: &str, restart| AutostartCommand {
+            id: Some(id.into()),
+            argv: vec!["/missing/small".into()],
+            restart_on_change: restart,
+        };
+        controlled
+            .worker
+            .try_install(&plan(1, (0..4).map(|i| large(&format!("a{i}"))).collect()))
+            .unwrap();
+        controlled.settled(1);
+        controlled
+            .worker
+            .try_install(&plan(
+                2,
+                (0..4)
+                    .map(|i| small(&format!("a{i}"), false))
+                    .chain((0..3).map(|i| large(&format!("c{i}"))))
+                    .collect(),
+            ))
+            .unwrap();
+        let before = controlled.settled(2);
+        let p3 = plan(
+            3,
+            std::iter::once(large("b0"))
+                .chain((0..4).map(|i| small(&format!("a{i}"), true)))
+                .chain((0..3).map(|i| small(&format!("c{i}"), true)))
+                .collect(),
+        );
+        let p4 = plan(
+            4,
+            vec![
+                small("d0", false),
+                small("b0", false),
+                small("a0", true),
+                small("a1", true),
+                small("c0", true),
+            ],
+        );
+        let p5 = plan(5, vec![small("a2", false), small("b0", true), large("e0")]);
+        let p6 = plan(6, vec![small("a2", false), small("b0", true), large("e0")]);
+        controlled.worker.try_install(&p3).unwrap();
+        let mut peak = before.retained_argv_bytes;
+        for (generation, id, attempts, next) in
+            [(3, "b0", 1, &p4), (4, "d0", 1, &p5), (5, "b0", 2, &p6)]
+        {
+            loop {
+                let s = controlled.next();
+                peak = peak.max(s.retained_argv_bytes);
+                assert!(s.error.is_none());
+                let prefix = s.requested_generation == Some(generation)
+                    && s.entries
+                        .iter()
+                        .any(|e| e.id.as_deref() == Some(id) && e.attempts == attempts);
+                if prefix {
+                    assert!(!s.active_complete);
+                    controlled.worker.try_install(next).unwrap();
+                    controlled.resume();
+                    break;
+                }
+                controlled.resume();
+            }
+        }
+        let complete = controlled.settled(6);
+        assert!(complete.active_complete && complete.error.is_none());
+        assert!(peak <= MAX_AUTOSTART_HISTORY_BYTES);
+        assert!(
+            peak > MAX_AUTOSTART_HISTORY_BYTES - 1024 * 1024,
+            "accepted prefix should exercise the near-cap boundary"
+        );
+        let a2 = complete
+            .entries
+            .iter()
+            .find(|e| e.id.as_deref() == Some("a2"))
+            .unwrap();
+        assert_eq!(a2.state, "once-suppressed");
+        assert_eq!(a2.attempts, 1);
+        let e0 = complete
+            .entries
+            .iter()
+            .find(|e| e.id.as_deref() == Some("e0"))
+            .unwrap();
+        assert_eq!(
+            e0.attempts, 1,
+            "reserved but never attempted identity must execute once"
+        );
     }
 }
