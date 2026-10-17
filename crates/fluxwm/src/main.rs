@@ -5,6 +5,7 @@ mod grabs;
 mod handlers;
 mod input;
 mod ipc;
+mod scene;
 mod state;
 mod winit;
 
@@ -30,6 +31,7 @@ struct Options {
     ready: Option<PathBuf>,
     stats: Option<PathBuf>,
     screenshot: Option<PathBuf>,
+    screenshot_after: Option<Duration>,
     command: Vec<OsString>,
 }
 
@@ -40,7 +42,7 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
         match arg.to_str() {
             Some("--help" | "-h") => {
                 println!(
-                    "fluxwm --backend nested [--socket NAME] [--exit-after-ms N] [--ready-file PATH] [--stats-file PATH] [--screenshot NEW.ppm] [-- COMMAND ARG...]\nOnly the nested backend is currently implemented. Output files must not already exist."
+                    "fluxwm --backend nested [--socket NAME] [--exit-after-ms N] [--ready-file PATH] [--stats-file PATH] [--screenshot NEW.ppm] [--screenshot-after-ms N] [-- COMMAND ARG...]\nOnly the nested backend is currently implemented. Output files must not already exist."
                 );
                 return Ok(None);
             }
@@ -69,6 +71,18 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
                 }
                 result.exit_after = Some(Duration::from_millis(value));
             }
+            Some("--screenshot-after-ms") => {
+                let value: u64 = args
+                    .next()
+                    .ok_or("missing screenshot delay")?
+                    .to_str()
+                    .ok_or("delay must be UTF-8")?
+                    .parse()?;
+                if value > 86_400_000 {
+                    return Err("screenshot delay must be 0..86400000 milliseconds".into());
+                }
+                result.screenshot_after = Some(Duration::from_millis(value));
+            }
             Some("--ready-file") => {
                 result.ready = Some(args.next().ok_or("missing ready path")?.into())
             }
@@ -84,6 +98,9 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
             }
             _ => return Err(format!("unknown option {arg:?}; use --help").into()),
         }
+    }
+    if result.screenshot_after.is_some() && result.screenshot.is_none() {
+        return Err("--screenshot-after-ms requires --screenshot".into());
     }
     let socket = result
         .socket
@@ -222,7 +239,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         display,
         options.socket.as_deref().ok_or("missing socket")?,
     )?;
-    state.screenshot = options.screenshot;
+    if let Some(delay) = options.screenshot_after {
+        let mut path = options.screenshot;
+        event_loop
+            .handle()
+            .insert_source(Timer::from_duration(delay), move |_, _, state| {
+                state.screenshot = path.take();
+                state.request_redraw();
+                TimeoutAction::Drop
+            })
+            .map_err(|e| std::io::Error::other(e.to_string()))?;
+    } else {
+        state.screenshot = options.screenshot;
+    }
     winit::init_winit(&mut event_loop, &mut state)?;
     if let Some(duration) = options.exit_after {
         event_loop

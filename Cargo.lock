@@ -367,6 +367,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "flux-scene"
+version = "0.1.0-dev"
+dependencies = [
+ "flux-core",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "fluxctl"
 version = "0.1.0-dev"
 dependencies = [
@@ -384,6 +392,7 @@ dependencies = [
  "flux-ipc",
  "flux-layout",
  "flux-process",
+ "flux-scene",
  "libc",
  "serde",
  "serde_json",

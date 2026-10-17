@@ -6,7 +6,6 @@ use smithay::{
         renderer::{
             Bind, Blit, ExportMem, Offscreen, TextureFilter, TextureMapping,
             damage::OutputDamageTracker,
-            element::surface::WaylandSurfaceRenderElement,
             gles::{GlesRenderer, GlesTexture},
         },
         winit::{self, WinitEvent, WinitGraphicsBackend},
@@ -204,25 +203,26 @@ impl RenderContext {
                         .create_buffer(Fourcc::Abgr8888, (size.w, size.h).into())?,
                 );
             }
+            let scene = crate::scene::RuntimeScene::capture(
+                state,
+                flux_core::Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: f64::from(size.w),
+                    height: f64::from(size.h),
+                },
+            )?;
             let damage;
             {
                 let renderer = backend.renderer();
                 let mut framebuffer =
                     renderer.bind(self.texture.as_mut().ok_or("missing composition target")?)?;
-                let result = smithay::desktop::space::render_output::<
-                    _,
-                    WaylandSurfaceRenderElement<GlesRenderer>,
-                    _,
-                    _,
-                >(
-                    &self.output,
+                let elements = scene.render_elements(renderer)?;
+                let result = self.damage_tracker.render_output(
                     renderer,
                     &mut framebuffer,
-                    1.0,
                     age,
-                    [&state.space],
-                    &[],
-                    &mut self.damage_tracker,
+                    &elements,
                     [0.06, 0.07, 0.09, 1.0],
                 )?;
                 damage = result.damage.cloned();
@@ -259,6 +259,10 @@ impl RenderContext {
                     }));
                 }
             }
+            // Input observes exactly this successfully composed virtual scene,
+            // including copied input regions, until the next composition.
+            state.scene = Some(scene);
+            state.pointer_focus_dirty = true;
             if damage.is_some() {
                 self.present_dirty = true;
                 state.stats.compositions += 1;
@@ -287,8 +291,16 @@ impl RenderContext {
             } else if self.present_dirty {
                 backend.window().request_redraw();
             }
-            for window in state.space.elements() {
-                window.send_frame(
+            for id in state
+                .scene
+                .as_ref()
+                .into_iter()
+                .flat_map(|scene| scene.windows())
+            {
+                let Some(item) = state.windows.get(id) else {
+                    continue;
+                };
+                item.window.send_frame(
                     &self.output,
                     state.start_time.elapsed(),
                     Some(Duration::ZERO),

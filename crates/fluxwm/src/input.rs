@@ -182,16 +182,13 @@ impl Fluxwm {
 
                 if ButtonState::Pressed == button_state
                     && !pointer.is_grabbed()
-                    && let Some((window, _loc)) = self
-                        .space
-                        .element_under(pointer.current_location())
-                        .map(|(w, l)| (w.clone(), l))
-                    && let Some(id) = window
-                        .toplevel()
-                        .and_then(|t| self.window_id(t.wl_surface()))
+                    && let Some((id, _, _)) = self
+                        .scene
+                        .as_ref()
+                        .and_then(|scene| scene.hit(pointer.current_location(), self))
                 {
                     self.focus_window_id(id);
-                };
+                }
 
                 // Relayout may change the surface under a stationary pointer.
                 // Refresh the pointer target after focus/relayout and before the

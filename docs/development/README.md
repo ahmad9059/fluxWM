@@ -12,6 +12,7 @@ See the [current nested runtime milestone](runtime.md) and [bounded smoke harnes
 | [flux-layout](layout.md) | Pure strip/canvas workspace model | Connected to the nested scene/lifecycle; multi-output and complete state remain open |
 | [flux-config / fluxwm-config](config.md) | Schema and isolated Lua helper | No compositor atomic reload state machine or keybinding application |
 | [flux-ipc / fluxctl](ipc.md) | Unix transport and command-line client | Nested query/action dispatch implemented; subscriptions unavailable |
+| [flux-scene](scene.md) | Immutable checked window geometry and ordered clip/hit candidates | [Runtime scene integration](runtime-scene.md) adds copied Wayland input regions and clipped elements; native/transaction ownership remains open |
 | `fluxwm` | Smithay nested compositor bootstrap | Managed map/unmap, gated capabilities, bounded redraw and cleanup; full protocol/native qualification open |
 
 ## Reproduce checks

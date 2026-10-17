@@ -20,3 +20,4 @@ calloop = { version = "=0.14.5", features = ["signals"] }
 flux-ipc = { path = "../flux-ipc", features = ["calloop"] }
 tempfile = "3.27"
 flux-process = { path = "../flux-process" }
+flux-scene = { path = "../flux-scene" }

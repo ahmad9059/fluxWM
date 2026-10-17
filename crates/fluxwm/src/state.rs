@@ -4,7 +4,7 @@ use flux_layout::{Layout, SizeConstraints};
 use std::{ffi::OsString, path::PathBuf, sync::Arc};
 
 use smithay::{
-    desktop::{PopupManager, Space, Window, WindowSurfaceType},
+    desktop::{PopupManager, Space, Window},
     input::{Seat, SeatState},
     reexports::{
         calloop::{EventLoop, Interest, LoopSignal, Mode, PostAction, generic::Generic},
@@ -55,6 +55,7 @@ pub struct RuntimeStats {
 }
 
 pub struct Fluxwm {
+    pub scene: Option<crate::scene::RuntimeScene>,
     pub windows: Arena<ManagedWindow>,
     pub sequence: u64,
     flush_retry_ping: smithay::reexports::calloop::ping::Ping,
@@ -171,6 +172,7 @@ impl Fluxwm {
         let loop_signal = event_loop.get_signal();
 
         Ok(Self {
+            scene: None,
             windows: Arena::new(),
             sequence: 0,
             flush_retry_ping,
@@ -717,13 +719,10 @@ impl Fluxwm {
         &self,
         pos: Point<f64, Logical>,
     ) -> Option<(WlSurface, Point<f64, Logical>)> {
-        self.space
-            .element_under(pos)
-            .and_then(|(window, location)| {
-                window
-                    .surface_under(pos - location.to_f64(), WindowSurfaceType::ALL)
-                    .map(|(s, p)| (s, (p + location).to_f64()))
-            })
+        self.scene
+            .as_ref()?
+            .hit(pos, self)
+            .map(|(_, surface, origin)| (surface, origin))
     }
 }
 
