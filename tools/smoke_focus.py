@@ -169,8 +169,21 @@ def run_case(executable, binary, fixture, directory, case):
             inject('key', key='s', pressed=True); inject('key', key='s', pressed=False)
             expect(observe(lambda: seen('popup.stale_grab_requested', popup=1) and seen('popup.done', popup=1)), 'expired_popup_serial_not_rejected')
             expect(not seen('keyboard.enter', popup=1), 'denied_popup_stole_keyboard_focus')
+            denied = ipc('diagnostics'); result['after_stale_grab'] = denied
+            expect(denied['runtime'].get('popup_grabs_denied_missing_press') == after['runtime'].get('popup_grabs_denied_missing_press', 0) + 1, 'stale_grab_denied_for_wrong_reason')
             inject('key', key='a', pressed=False)
             inject('button', button=1, pressed=False)
+            # Positive control: the same root must still authorize a fresh grab.
+            inject('button', button=1, pressed=True)
+            accepted = observe(lambda: seen('popup.frame', popup=2) and seen('keyboard.enter', popup=2))
+            expect(accepted, 'fresh_popup_grab_after_return_failed')
+            if accepted:
+                inject('motion', x=66, y=64); wait(lambda: seen('pointer.enter', popup=2))
+                fresh = ipc('diagnostics'); result['fresh_popup_grab'] = fresh
+                expect(fresh['input_state']['keyboard_grabbed'] and fresh['input_state']['pointer_grabbed'], 'fresh_popup_wrappers_missing')
+                inject('focus', focused=False)
+                expect(observe(lambda: seen('popup.done', popup=2)), 'fresh_popup_not_cancelled')
+                inject('button', button=1, pressed=False, activate=False)
         else:
             inject('button', button=1, pressed=True)
             wait(lambda: seen('pointer.button', root=0, button=272, state='pressed'))
@@ -213,8 +226,20 @@ def run_case(executable, binary, fixture, directory, case):
             result['complete_button_counts'] = counts
             expect(counts == {'0': {'pressed': 1, 'released': 1}, '1': {'pressed': 1, 'released': 1}}, 'complete_button_ownership_counts_differ')
         else:
-            for kind in ['pressed', 'released']:
-                expect(sum(e.get('type') == 'keyboard.key' and e.get('key') == 30 and e.get('popup') == 0 and e.get('state') == kind for e in journal) == 1, 'popup_A_ownership_count_differs')
+            def ownership(kind, code_name, code):
+                found = {}
+                for e in journal:
+                    if e.get('type') != kind or e.get(code_name) != code: continue
+                    owner = 'popup-' + str(e['popup']) if e.get('popup') is not None else 'root-' + str(e.get('root'))
+                    key = owner + ':' + e.get('state', 'unknown'); found[key] = found.get(key, 0) + 1
+                return found
+            keys_a = ownership('keyboard.key', 'key', 30)
+            keys_s = ownership('keyboard.key', 'key', 31)
+            buttons = ownership('pointer.button', 'button', 272)
+            result['popup_complete_ownership'] = {'A': keys_a, 'S': keys_s, 'left_button': buttons}
+            expect(keys_a == {'popup-0:pressed': 1, 'popup-0:released': 1}, 'popup_A_ownership_count_differs')
+            expect(keys_s == {'root-0:pressed': 1, 'root-0:released': 1}, 'popup_S_ownership_count_differs')
+            expect(buttons == {'root-0:pressed': 2, 'popup-0:released': 1, 'popup-2:released': 1}, 'popup_button_ownership_count_differs')
         final_state = ipc('diagnostics').get('input_state', {})
         expect(final_state.get('pressed_keys') == 0 and final_state.get('authorized_buttons') == 0 and final_state.get('suppressed_keys') == 0, 'held_state_remained_after_fixture_completion')
         result['quit'] = ipc('action', {'name': 'quit'})

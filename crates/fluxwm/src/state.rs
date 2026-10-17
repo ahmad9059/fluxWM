@@ -56,6 +56,7 @@ pub struct RuntimeStats {
     pub host_focus_losses: u64,
     pub focus_cancelled_keys: u64,
     pub focus_cancelled_buttons: u64,
+    pub popup_grabs_denied_missing_press: u64,
     pub ipc_dispatches_after_shutdown: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ipc_drain_budget_ms: Option<u64>,

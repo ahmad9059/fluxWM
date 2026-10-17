@@ -876,8 +876,8 @@ impl Dispatch<xdg_surface::XdgSurface, PopupTag> for State {
             state.popups[index.0].configures += 1;
             state.record(json!({"popup_configure_ack":index.0,"serial":serial}));
             if state.focus_popup_probe
-                && index.0 == 0
-                && let Err(error) = state.map_popup(0, qh)
+                && index.0 != 1
+                && let Err(error) = state.map_popup(index.0, qh)
             {
                 state.error = Some(error);
             }
@@ -936,14 +936,19 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
     ) {
         if state.input_probe_mode {
             let root = state.pointer_root();
+            let popup = state
+                .pointer_focus_surface
+                .as_ref()
+                .and_then(|surface| state.popups.iter().position(|p| &p.surface == surface));
             match &event {
                 wl_pointer::Event::Enter {serial,surface,surface_x,surface_y} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.enter","root":root,"popup":state.popups.iter().position(|p|p.surface==*surface),"serial":serial,"x":surface_x,"y":surface_y}));}
                 wl_pointer::Event::Leave {serial,surface} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.leave","root":root,"serial":serial}));}
                 wl_pointer::Event::Motion {time,surface_x,surface_y} => state.record(json!({"type":"pointer.motion","root":root,"time":time,"x":surface_x,"y":surface_y})),
                 wl_pointer::Event::Button {serial,time,button,state:button_state} => {
                     let button_state=match button_state {WEnum::Value(wl_pointer::ButtonState::Pressed)=>"pressed",WEnum::Value(wl_pointer::ButtonState::Released)=>"released",_=>{state.error=Some("unknown pointer button state".into());"unknown"}};
-                    state.record(json!({"type":"pointer.button","root":root,"serial":serial,"time":time,"button":button,"state":button_state}));
-                    if state.focus_popup_probe && state.popups.is_empty() && root == Some(0) && *button == 272 && button_state == "pressed" {
+                    state.record(json!({"type":"pointer.button","root":root,"popup":popup,"serial":serial,"time":time,"button":button,"state":button_state}));
+                    if state.focus_popup_probe && (state.popups.is_empty() || (state.popups.len() == 2 && state.popups.iter().all(|p| p.done > 0))) && root == Some(0) && *button == 272 && button_state == "pressed" {
+                        for index in 0..state.popups.len() { if !state.popups[index].destroyed { state.destroy_popup(index); } }
                         state.focus_popup_serial = Some(*serial);
                         let popup = state.create_popup(0, false, qh);
                         state.popups[popup].popup.grab(state.seat.as_ref().unwrap(), *serial);

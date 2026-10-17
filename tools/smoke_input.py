@@ -361,6 +361,7 @@ def main():
             result['target'] = session.test(compositor.pid)
             event_file = directory / 'input.events.jsonl'
             fixture_environment = dict(environment, WAYLAND_DISPLAY=name, FLUXWM_SOCKET=str(ipc_path), FLUXWM_FIXTURE_EVENT_FILE=str(event_file))
+            fixture_environment.pop('FLUXWM_FIXTURE_GRAB_POPUP', None)
             fixture = subprocess.Popen([str(directory / 'fixture'), 'input-probe', '--timeout-ms', '10000'], env=fixture_environment, stdout=logs[2], stderr=logs[3], start_new_session=True)
             wait(lambda: observed('ready'), 8)
             windows = ipc('windows.list')['windows']

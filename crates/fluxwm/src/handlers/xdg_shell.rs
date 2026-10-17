@@ -182,8 +182,15 @@ impl XdgShellHandler for Fluxwm {
             .pointer_presses
             .values()
             .any(|pressed| *pressed == serial)
-            || check_grab(&seat, surface.wl_surface(), serial).is_none()
         {
+            self.stats.popup_grabs_denied_missing_press = self
+                .stats
+                .popup_grabs_denied_missing_press
+                .saturating_add(1);
+            surface.send_popup_done();
+            return;
+        }
+        if check_grab(&seat, surface.wl_surface(), serial).is_none() {
             surface.send_popup_done();
             return;
         }
