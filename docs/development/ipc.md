@@ -1,36 +1,64 @@
 # IPC implementation and integration
 
-The `flux-ipc` crate supplies IPC v1 transport and DTOs. `fluxctl` supplies a local client. This implements the framing and trust baseline in [implementation contracts](../20-implementation-contracts.md) and [resource security](../17-resource-security.md). It does not prove production readiness or hardware behavior.
+`flux-ipc` supplies Linux IPC v1 framing, request/response DTOs, a nonblocking local server and a deadline-bounded CLI client. `fluxctl` is its command-line frontend. This implements part of the [implementation contracts](../20-implementation-contracts.md) and [resource security](../17-resource-security.md); it does not close phase 6 or qualify a production desktop. The [initial production audit](ipc-production-audit.md) and its original transcripts describe the earlier revision and remain historical evidence.
 
-## Server integration
+## Event-loop integration
 
 ```rust,ignore
 let mut ipc = flux_ipc::Server::bind(runtime_dir, instance_name)?;
-// Export this exact path to children/session activation as FLUXWM_SOCKET.
-let path = ipc.socket_path();
-// Every event-loop iteration; never call blocking operations inside this closure.
+// Export the exact socket_path() to owned session children as FLUXWM_SOCKET.
+// At fd readiness, an armed IPC deadline, or buffered-work continuation:
 ipc.set_state_sequence(state.sequence());
 ipc.poll(std::time::Instant::now(), |request| {
-    // Snapshot query results atomically, or validate/enqueue Action intent.
+    // Snapshot queries, validate state, or enqueue actions without blocking.
+    // Return the EXACT resulting core state_sequence, including any mutation.
     dispatch(request, state)
 });
+let readiness = ipc.readiness(std::time::Instant::now());
+// Reconcile readiness.interests with event-loop registrations.
+// Schedule a continuation when readiness.needs_dispatch is true.
+// Arm readiness.next_deadline even when no fd is ready.
 ```
 
-`poll` performs nonblocking IO and invokes at most 16 requests per connection per call. There are at most 32 connections, 32 accepts per call, 64 KiB reads and 64 KiB writes per connection per call. The event loop must call it regularly; a listener socket alone is not readiness evidence. Native-session readiness and actions remain the compositor's responsibility. Call `set_state_sequence` before polling so transport validation errors report the current snapshot sequence.
+`readiness()` is calloop-neutral. Each `IoInterest` contains an `Endpoint`, borrowed raw fd and readable/writable flags. `Endpoint::Listener` identifies the listener; `Endpoint::Client(u64)` is a per-connection token independent of descriptor reuse. The server owns every fd: adapters must not close them. Reconcile after every poll; remove obsolete registrations before registering replacement fds and ignore stale endpoint events. Do not assume an integer fd identifies the same client forever.
 
-The authenticated principal is the effective Unix UID using Linux `SO_PEERCRED`. Bind requires a real runtime directory owned by this UID with no group/other permissions. Its `fluxwm/` child has mode 0700; sockets have mode 0600. Instance names contain 1..64 ASCII letters, digits, hyphens or underscores. Existing paths are never unlinked on startup. Drop removes a socket only when its recorded device/inode still match. This does not defend against malicious unsandboxed same-UID code; it implements the documented host-session trust model.
+`needs_dispatch` covers complete requests already held in userspace and IO work stopped by a budget. Arrange another bounded dispatch without waiting for a fresh fd edge. A continuously blocked writer has a writable interest, rather than an immediate continuation loop. `next_deadline` is the earliest absolute monotonic deadline for incoming partial frames, pending response, idle connection or accept retry; register or update a timer and clear obsolete timers. Initial readiness includes the listener, so the compositor can sleep without periodic IPC polling while idle. The adapter remains responsible for scheduling IPC fairly with input, Wayland, GPU, lock and device events.
 
-The transport accepts JSON payloads from 1 through 1,048,576 bytes after a four-byte big-endian length. It rejects oversize lengths before allocating the body, duplicate keys recursively, trailing JSON, invalid UTF-8, nesting deeper than 32, unknown request fields, unsupported versions and invalid IDs/params. Request IDs contain 1..128 UTF-8 bytes and remain outstanding until their response flushes. Reusing an outstanding ID closes the connection. Malformed framing or JSON closes the connection without a best-effort reply. Well-formed unsupported versions, methods, and parameters receive typed errors. Partial messages and stalled outbound queues expire after five seconds, independent of trickle progress. Idle clients expire after 60 seconds.
+`poll` accepts at most 32 peers and invokes at most 16 handlers per connection per call. Read/write byte budgets are 64 KiB each per connection per call; each read/flush loop also has a syscall-attempt bound. Interrupted syscalls cannot create an unbounded inner retry loop. Acceptance errors and connection-capacity pressure disable acceptance for 100 ms and expose a retry deadline. `stats()` exposes bounded counters for acceptance, capacity/credential rejection, accept errors, disconnects, protocol errors and timeouts; it does not log payloads. The compositor should export those counters in bounded redacted diagnostics and rate-limit human-readable error messages.
 
-Per-connection receive staging is bounded to one maximum payload plus a four-byte prefix and 64 KiB read budget; outgoing bytes are capped at one maximum payload plus prefix, and 256 messages. Queue overflow disconnects. These admission limits do not describe total RSS: JSON tree expansion, temporary encoded responses and kernel buffers consume additional memory. The handler must bound snapshot construction before returning, and must avoid filesystem work, process waits, Lua evaluation and blocking device operations. A full-state result larger than the transport maximum is a handler error; pagination is future work.
+Call `set_state_sequence` with the current core sequence at poll entry. Every handler response must contain the exact resulting sequence. The server uses that response to advance its sequence before decoding the next request, including requests on another connection; transport-generated validation errors therefore see mutations earlier in that poll. A regressing handler sequence, wrong ID or wrong version is a handler contract violation and closes the connection. External mutations outside the handler must be reflected at the next poll entry. A restarted instance needs a separately specified instance/epoch policy before subscriptions or persistent clients are supported.
 
-## Messages and results
+## Socket ownership and authentication
 
-Methods are `version`, `capabilities`, `windows.list`, `workspaces.list`, `outputs.list`, `config.effective`, `diagnostics`, `config.check`, `config.reload`, and `action`. Queries accept empty object parameters. `config.check` accepts an optional `path` string of at most 4096 bytes. `action` uses the existing `flux_core::Action` tagged enum, including explicit `argv` spawn; this transport never invokes a shell. The compositor must additionally validate state, lock restrictions, numerical policy, stale references and command admission.
+The Linux `SO_PEERCRED` check admits the effective UID only; the client helper also verifies its server has the same UID. Bind requires a real final runtime-directory component owned by that UID with no group/other permissions. Its `fluxwm/` child has mode 0700; sockets have mode 0600. Instance names contain 1..64 ASCII letters, digits, hyphens or underscores. Existing paths are never replaced or unlinked on startup.
 
-A response contains version, matching ID, decimal-string `state_sequence`, and exactly one of `result` or `error`. `Sequence` accepts canonical decimal strings from `0` through `18446744073709551615`; JSON numbers and leading zeros are rejected. Core window/workspace/output IDs preserve `index:generation` strings. The transport provides typed `Window`, `Workspace`, `Output`, `Event` DTOs; compositor snapshots own final query content. An accepted command is not evidence that hardware presentation completed.
+After binding, an inode/device cleanup guard covers later setup failures and normal shutdown. Cleanup removes only the recorded socket identity, preserving a replacement path. This is best-effort filesystem cleanup: if identity lookup itself fails or later filesystem access is denied, an operator may need to handle a stale path. Crash termination does not execute destructors. Use a unique instance name and a session-owned cleanup policy; never unlink a possible live instance just from its filename.
 
-There is currently no subscription method or event broadcaster. `Event` defines serialization only. Capabilities must report subscriptions as unavailable until bounded replay/resync is implemented. There is no native rendering, portal, capture or session readiness claim in this crate.
+These checks implement the documented host-session same-user boundary. They do not defend against malicious unsandboxed same-UID software or an unsafe intermediate runtime-directory path. A sandbox granted this socket retains the corresponding local-control authority. Stronger isolation needs an additional authenticated channel policy.
+
+## Framing, validation and backpressure
+
+Frames contain a four-byte big-endian payload length followed by 1..1,048,576 UTF-8 JSON bytes; the prefix is additional. Incoming framing rejects oversize lengths before body allocation. Strict parsing rejects duplicate keys recursively, trailing JSON, invalid UTF-8, value nesting deeper than 32, invalid envelopes and IDs. Encoding enforces the same byte/depth policy incrementally while serde emits bytes, before unbounded serialization recursion or an oversized encoded buffer; a final bounded strict parse catches inconsistent custom serializers. The server substitutes a small typed `internal_error` if the handler produces an oversized or otherwise invalid reply.
+
+The handler must still bound construction of its `Value` snapshot before calling the encoder. Serializer limits cannot undo memory already allocated by a huge snapshot. Decoding produces a bounded-size JSON tree with memory overhead above raw payload length. Query pagination, cached snapshots and whole-loop CPU/RSS qualification remain required before broad production performance claims.
+
+At most one response is queued per connection. While it is pending, the server suppresses further reads and action dispatch. This reserves capacity for a maximum-size reply before another command can have a side effect. Pipelined incoming frames remain buffered or in kernel socket queues and resume after response flush. Request IDs contain 1..128 UTF-8 bytes and may be reused after the corresponding response has fully flushed; they are not persistent deduplication tokens. This response backpressure is stricter than the originally proposed 256-event subscription ceiling. There are no subscribers yet.
+
+A partial incoming frame has a five-second deadline. Each outgoing response has its own absolute five-second enqueue-to-flush deadline, independent of progress; subsequent responses start new intervals. This bounds individual slow replies without applying a single lifetime deadline to an indefinitely active connection. Idle clients expire after 60 seconds. Per-connection receive staging is bounded by one maximum payload, prefix and read budget; one outgoing frame is bounded by payload plus prefix. These are admission limits, not complete RSS bounds; JSON trees, handler state, temporary buffers and kernel queues add memory.
+
+Input EOF is distinct from a full disconnect. Complete buffered requests are processed and their responses flushed before closure. A truncated trailing frame is discarded and counted as a protocol error after prior complete requests; their acknowledged mutations/responses are preserved. Malformed framing/JSON or an invalid outstanding ID closes after already pending work flushes. Full connection loss or a handler failure can still leave a client uncertain whether an action was applied. There is no exactly-once guarantee across disconnect/restart, and no automatic retry of mutation requests.
+
+## Requests and operation semantics
+
+Methods: `version`, `capabilities`, `windows.list`, `workspaces.list`, `outputs.list`, `config.effective`, `diagnostics`, `config.check`, `config.reload`, `action`. Queries take empty object parameters. `config.check` accepts an optional nonempty NUL-free `path` string of at most 4096 bytes; missing path selects the handler's declared default. Relative paths, allowed roots, symlinks, special files and file snapshots are handler policy and must not cause blocking file operations in `poll`.
+
+`action` uses the shared `flux_core::Action` wire enum and decoder. Core decoding validates exact fields and numerical/argv policy; constructed in-process actions still require core validation before admission. The compositor must additionally enforce lock/permission state, stale references, target availability and command queue limits. Spawn carries explicit argv, and this transport never invokes a shell.
+
+Responses contain version, matching ID, decimal-string `state_sequence`, and exactly one `result` or `error`. `Sequence` accepts canonical strings from `0` through `18446744073709551615`; JSON numbers and leading zeros are rejected. Runtime object IDs retain `index:generation` strings. Typed `Window`, `Workspace`, `Output`, and `Event` DTOs define wire shapes; the compositor owns authoritative query content and capabilities.
+
+An accepted command is not evidence of hardware presentation. Operation IDs, completion queries/events, cancellation and restart recovery still need a complete contract before asynchronous device/config operations are advertised as complete. An `internal_error` after a handler applies a mutation does not prove the mutation was rolled back. On an ambiguous disconnect or error, refetch authoritative state where meaningful; blindly retrying spawn, toggles or relative moves can repeat side effects.
+
+There is no subscription method or broadcaster. `Event` defines serialization only; capabilities must report subscriptions unavailable until bounded replay/resync is implemented. The transport has no native rendering, portal, capture or session readiness authority. Additional response fields/error codes can break strict v1 clients; define compatibility/versioning before freezing the public interface.
 
 ## Client
 
@@ -41,14 +69,12 @@ fluxctl --socket "$FLUXWM_SOCKET" config-check /absolute/path/config.lua
 fluxctl --socket "$FLUXWM_SOCKET" reload
 ```
 
-Use `--socket` or `FLUXWM_SOCKET`; ambiguous socket discovery is intentionally absent. Exit codes: 0 success; 2 invalid arguments; 3 connection/readiness failure; 4 server rejection; 5 malformed protocol. Full JSON responses are printed to stdout; diagnostics go to stderr. The client helper is blocking and belongs only in CLI/worker contexts, with five-second socket read/write timeouts and bounded reply length. It does not impose a total transaction wall deadline against a continuously trickling server.
+Use `--socket` or `FLUXWM_SOCKET`; ambiguous socket discovery is absent. Exit codes: 0 success, 2 invalid arguments, 3 connection/readiness failure, 4 server rejection, 5 malformed protocol. Full JSON responses go to stdout; diagnostics go to stderr.
 
-## Evidence
+`call()` uses a single five-second monotonic transaction deadline. `call_with_timeout()` permits another bounded duration for workers/tests. Encoding, nonblocking connect (including a full AF_UNIX listen backlog), request writes, fragmented prefix/body reads and final validation all share that deadline. Peer credentials are checked after connection. This helper waits for IO and belongs only in CLI/worker contexts. The deadline limits transport wait; it neither cancels an already accepted server action nor waits for hardware completion.
 
-Run `cargo test -p flux-ipc -p fluxctl` and `cargo clippy -p flux-ipc -p fluxctl --all-targets -- -D warnings`. Tests exercise bytewise fragmentation, coalescing, duplicate JSON keys, depth/UTF-8/trailing input, oversize prefixes, stale versions, string counters, restrictive permissions, startup collisions, socket cleanup, partial-frame deadlines, duplicate outstanding IDs, queue overflow, connection admission, CLI success, readiness errors and rejection exit codes. They do not qualify hostile same-user directory races, other operating systems, or compositor runtime integration.
+## Verification and remaining limits
 
-## Review-added event-loop and backpressure blockers
+Run `cargo test -p flux-ipc -p fluxctl` and `cargo clippy -p flux-ipc -p fluxctl --all-targets -- -D warnings`. Tests cover bytewise fragmentation/coalescing, duplicate keys, depth/UTF-8/trailing data, oversize prefixes, stale versions, string counters, permissions/collisions, setup-failure cleanup, replacement inode preservation, EOF with complete/truncated frames, large reply flush after half-close, same/cross-client sequence freshness, output backpressure/per-message expiry, buffered-work continuation, accept backoff, bounded recursion/encoding and total client deadlines under trickle replies/full connect backlog. CLI integration covers successful queries and readiness/rejection exit codes.
 
-The current server has no public listener/connection readiness handles, pending-user-space-work indicator or next-deadline API. Calling `poll` only on unrelated compositor activity can strand decoded frames and deadlines; continuously polling conflicts with idle efficiency. Before compositor integration, provide a calloop event source or explicit readiness/deadline contract, schedule another bounded turn when decoded work remains, and back off accepts on EMFILE. Test 17 complete requests in one write followed by silence, timeout expiry with no further I/O and isolated descriptor exhaustion. See N3 in the [Claude disposition](../reviews/implementation-disposition.md).
-
-Receive staging currently keeps reading before decoding at most 16 requests. Bound outstanding requests explicitly and apply read backpressure when complete buffered frames can be serviced. Test valid pipelines within the documented admission window, then exceed that window to verify deliberate overflow behavior and mutation/reply ambiguity. There is no promise that arbitrary 10,000-request pipelines fit every configured resource limit. N4 remains open; the current staging cap alone is not a complete admission/backpressure contract.
+These tests do not establish whole-compositor calloop registration correctness, latency under floods, measured global memory bounds, subscriber resync, hostile same-UID races, physical lock/capture safety or production session readiness. Retain the audit's unrun qualification cases. The historical defect probe/transcript is preserved under `docs/evidence/ipc-audit-probe`; the `current` example checks the corrected invariants against the integrated core/IPC revision without overwriting those historical observations.
