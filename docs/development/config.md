@@ -114,3 +114,21 @@ and retain the last working generation on every error.
 ## Embedding signal policy
 
 The supervisor writes to child pipes and relies on the normal Rust executable signal policy that ignores SIGPIPE, so a closed pipe becomes an I/O error. Embedders that change SIGPIPE disposition must provide an equivalent reviewed thread/signal policy. Do not change a host process's signal disposition implicitly from this library; qualify EPIPE behavior and cleanup in that embedding environment. This is source-derived integration guidance, not a tested guarantee for arbitrary non-Rust hosts.
+
+## Shared command validation
+
+Strict action decoding now lives in `flux-core::Action`, rather than a configuration-only
+wrapper. All action variants reject unknown/duplicate fields during serde decoding,
+including the wire-unit variants (`lock`, `quit`, `reload-config`, `close-window`).
+The serialized `{name=...}` shape stays unchanged. Decoding also checks the shared
+`Action::validate()` scalar/argv admission policy: finite pan deltas within ±1,000,000,
+finite resize delta within ±65,536, 1–256 argv entries, at most 4,096 UTF-8 bytes per
+argument, no NUL and a nonempty executable. Later empty arguments remain valid.
+`flux_core::validate_argv()` supplies the same argv policy for autostart validation.
+
+Code constructing `Action` variants directly must call `validate()` at admission;
+serialization alone is not validation. This shared policy does not authorize commands,
+check a window's lifetime, enforce lock restrictions or prove an executable exists.
+Those remain compositor command/application checks. The earlier configuration audit's
+warning about direct core Action unit decoding applies to its recorded historical
+snapshot; the current core implementation closes that specific defect for every caller.

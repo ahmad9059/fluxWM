@@ -1,4 +1,8 @@
 //! Device-independent identities, commands, and logical geometry for FluxWM.
+mod action;
+mod arena;
+pub use action::*;
+pub use arena::*;
 use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
 
@@ -112,25 +116,6 @@ pub enum Direction {
 pub enum LayoutMode {
     Strip,
     Canvas,
-}
-
-/// Validated user intent. No command carries a raw GPU or Wayland object.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "name", rename_all = "kebab-case", deny_unknown_fields)]
-pub enum Action {
-    Focus { direction: Direction },
-    Move { direction: Direction },
-    Pan { dx: f64, dy: f64 },
-    Resize { delta: f64 },
-    WorkspaceMode { mode: LayoutMode },
-    Fullscreen { toggle: bool },
-    Floating { toggle: bool },
-    Overview { toggle: bool },
-    CloseWindow,
-    ReloadConfig,
-    Lock,
-    Spawn { argv: Vec<String> },
-    Quit,
 }
 
 #[cfg(test)]
