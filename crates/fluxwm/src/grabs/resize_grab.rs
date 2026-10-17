@@ -145,7 +145,7 @@ impl PointerGrab<Fluxwm> for ResizeSurfaceGrab {
             state.size = Some(self.last_window_size);
         });
 
-        xdg.send_pending_configure();
+        crate::configure::send_pending(xdg);
     }
 
     fn relative_motion(
@@ -180,7 +180,7 @@ impl PointerGrab<Fluxwm> for ResizeSurfaceGrab {
                 state.size = Some(self.last_window_size);
             });
 
-            xdg.send_pending_configure();
+            crate::configure::send_pending(xdg);
 
             ResizeSurfaceState::with(xdg.wl_surface(), |state| {
                 *state = ResizeSurfaceState::WaitingForLastCommit {

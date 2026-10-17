@@ -14,7 +14,7 @@ import uuid
 from smoke_nested import require, sha256, write_json
 
 
-def run_case(binary, fixture, directory, mode, parent):
+def run_case(binary, fixture, directory, mode, parent, fixture_timeout_ms=12000):
     directory.mkdir(mode=0o700)
     instance = 'fluxhealth-' + uuid.uuid4().hex[:16]
     ready, stats = directory / 'ready.json', directory / 'stats.json'
@@ -54,7 +54,8 @@ def run_case(binary, fixture, directory, mode, parent):
         for name in ['compositor.stdout.log', 'compositor.stderr.log', 'fixture.stdout.log', 'fixture.stderr.log']:
             streams.append((directory / name).open('wb'))
         command = [str(binary), '--socket', instance, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '18000']
-        write_json(directory / 'command.json', {'compositor': command, 'fixture': [str(fixture), mode, '--timeout-ms', '12000']})
+        fixture_command = [str(fixture), mode, '--timeout-ms', str(fixture_timeout_ms)]
+        write_json(directory / 'command.json', {'compositor': command, 'fixture': fixture_command})
         process = subprocess.Popen(command, env=parent, stdout=streams[0], stderr=streams[1], start_new_session=True)
         while not ready.exists():
             check(); require(process.poll() is None, 'compositor exited before ready'); time.sleep(.01)
@@ -67,7 +68,7 @@ def run_case(binary, fixture, directory, mode, parent):
         require(before['shell_health']['clients'] == [] and before['shell_health']['timer_armed'] is False, 'empty monitor not idle')
         child_environment = dict(parent, WAYLAND_DISPLAY=instance, FLUXWM_SOCKET=str(ipc_path))
         child_environment.pop('WAYLAND_SOCKET', None)
-        client = subprocess.Popen([str(fixture), mode, '--timeout-ms', '12000'], env=child_environment, stdout=streams[2], stderr=streams[3], start_new_session=True)
+        client = subprocess.Popen(fixture_command, env=child_environment, stdout=streams[2], stderr=streams[3], start_new_session=True)
         while client.poll() is None:
             check(); require(process.poll() is None, 'compositor died while client tested health'); time.sleep(.01)
         require((directory / 'fixture.stdout.log').stat().st_size <= 1024 * 1024, 'fixture JSON bound exceeded')

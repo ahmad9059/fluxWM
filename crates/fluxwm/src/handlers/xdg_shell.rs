@@ -19,8 +19,8 @@ use smithay::{
     wayland::{
         compositor::with_states,
         shell::xdg::{
-            PopupSurface, PositionerState, ShellClient, ToplevelSurface, XdgShellHandler,
-            XdgShellState, XdgToplevelSurfaceData,
+            Configure, PopupSurface, PositionerState, ShellClient, ToplevelSurface,
+            XdgShellHandler, XdgShellState, XdgToplevelSurfaceData,
         },
     },
 };
@@ -51,6 +51,19 @@ impl XdgShellHandler for Fluxwm {
 
     fn new_toplevel(&mut self, surface: ToplevelSurface) {
         self.add_toplevel(surface);
+    }
+
+    fn ack_configure(&mut self, surface: WlSurface, _configure: Configure) {
+        // Smithay has already accepted this serial and retired its predecessors.
+        // Only mapped roles have layout intent to flush. In particular an old
+        // ack after unmap must not send the next cycle's initial configure.
+        if let Some(item) = self.window_id(&surface).and_then(|id| self.windows.get(id))
+            && item.mapped
+            && let Some(toplevel) = item.window.toplevel()
+        {
+            crate::configure::send_pending(toplevel);
+        }
+        self.bump_sequence();
     }
 
     fn new_popup(&mut self, surface: PopupSurface, _positioner: PositionerState) {
@@ -156,7 +169,7 @@ impl XdgShellHandler for Fluxwm {
                 state.states.set(xdg_toplevel::State::Resizing);
             });
 
-            surface.send_pending_configure();
+            crate::configure::send_pending(&surface);
 
             let grab = ResizeSurfaceGrab::start(
                 start_data,

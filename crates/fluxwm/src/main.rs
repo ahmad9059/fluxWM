@@ -1,6 +1,7 @@
 // Adapted from Smithay Smallvil, MIT; see LICENSES/Smithay-MIT.txt.
 #![allow(irrefutable_let_patterns)]
 mod actions;
+mod configure;
 mod grabs;
 mod handlers;
 mod health;

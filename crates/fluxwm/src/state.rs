@@ -484,7 +484,7 @@ impl Fluxwm {
                     if placement.focused { s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Activated); }
                     else { s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Activated); }
                 });
-                toplevel.send_pending_configure();
+                crate::configure::send_pending(toplevel);
             }
             if placement.visible {
                 let rect = self.layout.camera().rect_to_view(placement.rect);

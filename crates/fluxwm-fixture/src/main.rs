@@ -38,6 +38,10 @@ struct Window {
     buffer: Option<wl_buffer::WlBuffer>,
     _storage: Option<File>,
     configures: u32,
+    ack_configures: bool,
+    configure_serials: Vec<u32>,
+    configure_sizes: Vec<[i32; 2]>,
+    pending_size: [i32; 2],
     frames: u32,
     capabilities: u32,
     destroyed: bool,
@@ -205,6 +209,10 @@ impl State {
             buffer: None,
             _storage: None,
             configures: 0,
+            ack_configures: true,
+            configure_serials: Vec::new(),
+            configure_sizes: Vec::new(),
+            pending_size: [0, 0],
             frames: 0,
             capabilities: 0,
             destroyed: false,
@@ -665,9 +673,21 @@ impl Dispatch<xdg_surface::XdgSurface, usize> for State {
         _: &QueueHandle<Self>,
     ) {
         if let xdg_surface::Event::Configure { serial } = event {
-            surface.ack_configure(serial);
-            state.windows[*index].configures += 1;
-            state.record(json!({"configure_ack":index,"serial":serial}));
+            let window = &mut state.windows[*index];
+            if window.configure_serials.len() >= 512 {
+                state.error = Some("toplevel configure evidence limit exceeded".into());
+                return;
+            }
+            let size = window.pending_size;
+            window.configure_serials.push(serial);
+            window.configure_sizes.push(size);
+            window.configures += 1;
+            if window.ack_configures {
+                surface.ack_configure(serial);
+                state.record(json!({"configure_ack":index,"serial":serial,"size":size}));
+            } else {
+                state.record(json!({"configure_held":index,"serial":serial,"size":size}));
+            }
         }
     }
 }
@@ -681,6 +701,9 @@ impl Dispatch<xdg_toplevel::XdgToplevel, usize> for State {
         _: &QueueHandle<Self>,
     ) {
         match event {
+            xdg_toplevel::Event::Configure { width, height, .. } => {
+                state.windows[*index].pending_size = [width, height];
+            }
             xdg_toplevel::Event::WmCapabilities { capabilities } => {
                 state.windows[*index].capabilities += 1;
                 state.record(json!({"wm_capabilities":index,"bytes":capabilities}));
@@ -2510,7 +2533,7 @@ fn input_probe(timeout: Duration) -> Json {
     evidence["events"] = json!(state.events);
     evidence
 }
-fn health_roundtrip(
+fn protocol_roundtrip(
     connection: &Connection,
     queue: &mut EventQueue<State>,
     state: &mut State,
@@ -2522,7 +2545,7 @@ fn health_roundtrip(
         queue,
         state,
         deadline,
-        "health roundtrip",
+        "protocol roundtrip",
         |s| s.last_sync >= sync,
     )
 }
@@ -2533,8 +2556,8 @@ fn health_registry(
     deadline: Instant,
 ) -> Result<wl_registry::WlRegistry> {
     let registry = connection.display().get_registry(&queue.handle(), ());
-    health_roundtrip(connection, queue, state, deadline)?;
-    health_roundtrip(connection, queue, state, deadline)?;
+    protocol_roundtrip(connection, queue, state, deadline)?;
+    protocol_roundtrip(connection, queue, state, deadline)?;
     if state.wm.is_none() {
         return Err("missing XDG shell".into());
     }
@@ -2564,6 +2587,353 @@ fn health_no_redraw(before: &Json, after: &Json) -> Result<()> {
     }
     Ok(())
 }
+fn configure_window(diagnostics: &mut Diagnostics, title: &str, deadline: Instant) -> Result<Json> {
+    diagnostics.call("windows.list", json!({}), deadline)?["windows"]
+        .as_array()
+        .ok_or("window list missing")?
+        .iter()
+        .find(|w| w["title"] == title || w["id"] == title)
+        .cloned()
+        .ok_or_else(|| format!("window {title} missing"))
+}
+
+/// Deliberately read configures without acknowledging them. A separate healthy
+/// Wayland connection continues frame/roundtrip work during the resize burst.
+fn configure_stream(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut evidence = json!({"ok":false,"mode":"configure-stream"});
+    let mut state = State::new(start);
+    let mut healthy = State::new(start);
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let root = state.create(&qh, "configure-slow");
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "slow initial configure",
+            |s| s.windows[root].configures > 0,
+        )?;
+        state.map(root, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "slow initial frame",
+            |s| s.windows[root].frames > 0,
+        )?;
+
+        let sibling = connect(&path, deadline)?;
+        let mut sibling_queue = sibling.new_event_queue::<State>();
+        let sibling_qh = sibling_queue.handle();
+        health_registry(&sibling, &mut sibling_queue, &mut healthy, deadline)?;
+        let other = healthy.create(&sibling_qh, "configure-healthy");
+        healthy.windows[other].surface.commit();
+        until(
+            &sibling,
+            &mut sibling_queue,
+            &mut healthy,
+            deadline,
+            "healthy initial configure",
+            |s| s.windows[other].configures > 0,
+        )?;
+        healthy.map(other, &sibling_qh)?;
+        until(
+            &sibling,
+            &mut sibling_queue,
+            &mut healthy,
+            deadline,
+            "healthy initial frame",
+            |s| s.windows[other].frames > 0,
+        )?;
+
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit FLUXWM_SOCKET required")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        diagnostics.call(
+            "action",
+            json!({"name":"focus","direction":"left"}),
+            deadline,
+        )?;
+        // Ack and commit setup state so subsequent ack-without-commit checks
+        // compare against a known earlier committed serial.
+        for _ in 0..3 {
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&sibling, &mut sibling_queue, &mut healthy, deadline)?;
+            state.windows[root].surface.commit();
+            healthy.windows[other].surface.commit();
+        }
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let before = configure_window(&mut diagnostics, "FluxWM fixture configure-slow", deadline)?;
+        if before["focused"] != true {
+            return Err("slow root not selected for resize".into());
+        }
+        let old_id = before["id"].clone();
+        let identity = old_id.as_str().ok_or("missing window ID")?;
+        let old_committed = before["configure"]["committed_serial"].clone();
+        evidence["before"] = before;
+        let received_before = state.windows[root].configure_serials.len();
+        let healthy_frames = healthy.windows[other].frames;
+        state.windows[root].ack_configures = false;
+        diagnostics.call("action", json!({"name":"resize","delta":32.0}), deadline)?;
+        for i in 0..128 {
+            let delta = if i % 2 == 0 { 16.0 } else { -16.0 };
+            diagnostics.call("action", json!({"name":"resize","delta":delta}), deadline)?;
+            if i % 16 == 15 {
+                protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+                let frames = healthy.windows[other].frames;
+                healthy.windows[other].surface.damage(0, 0, 1, 1);
+                healthy.windows[other]
+                    .surface
+                    .frame(&sibling_qh, Callback::Frame(other));
+                healthy.windows[other].surface.commit();
+                until(
+                    &sibling,
+                    &mut sibling_queue,
+                    &mut healthy,
+                    deadline,
+                    "healthy frame during stalled configure",
+                    |s| s.windows[other].frames > frames,
+                )?;
+            }
+        }
+        diagnostics.call("action", json!({"name":"resize","delta":64.0}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let stalled = configure_window(&mut diagnostics, identity, deadline)?;
+        let received_after = state.windows[root].configure_serials.len();
+        evidence["resize_actions"] = json!(130);
+        evidence["wire_configures_during_stall"] = json!(received_after - received_before);
+        evidence["healthy_frames_during_stall"] =
+            json!(healthy.windows[other].frames - healthy_frames);
+        evidence["stalled"] = stalled.clone();
+        if received_after - received_before != 1 {
+            return Err("unacknowledged resize stream emitted more than one wire configure".into());
+        }
+        if stalled["configure"]["unacknowledged"] != 1 || stalled["configure"]["deferred"] != true {
+            return Err(
+                "stalled stream must retain one wire state and a deferred latest state".into(),
+            );
+        }
+        let serial = *state.windows[root].configure_serials.last().unwrap();
+        state.windows[root].xdg.ack_configure(serial);
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let flushed = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["after_old_ack_without_commit"] = flushed.clone();
+        if state.windows[root].configure_serials.len() != received_after + 1
+            || json!(state.windows[root].configure_sizes.last())
+                != stalled["configure"]["desired_size"]
+            || flushed["configure"]["unacknowledged"] != 1
+            || flushed["configure"]["deferred"] != false
+            || flushed["configure"]["last_acked_serial"] != serial
+            || flushed["configure"]["committed_serial"] != old_committed
+        {
+            return Err(
+                "ack did not flush exactly the latest state while preserving committed ownership"
+                    .into(),
+            );
+        }
+        let latest = *state.windows[root].configure_serials.last().unwrap();
+        state.windows[root].xdg.ack_configure(latest);
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let acked = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["after_latest_ack_without_commit"] = acked.clone();
+        if acked["configure"]["unacknowledged"] != 0
+            || acked["configure"]["last_acked_serial"] != latest
+            || acked["configure"]["committed_serial"] != old_committed
+        {
+            return Err("ack was incorrectly treated as a surface commit".into());
+        }
+        state.windows[root].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let committed = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["after_commit"] = committed.clone();
+        if committed["configure"]["committed_serial"] != latest
+            || committed["configure"]["committed_size"] != stalled["configure"]["desired_size"]
+        {
+            return Err("buffer-preserving commit failed to apply the accepted configure".into());
+        }
+
+        // Pending changes can return to the already-sent state. Freeing the
+        // slot must not echo an identical configure and create an ack loop.
+        let count = state.windows[root].configure_serials.len();
+        for delta in [16.0, 16.0, -16.0] {
+            diagnostics.call("action", json!({"name":"resize","delta":delta}), deadline)?;
+        }
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let reverted = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["returned_to_sent_state"] = reverted.clone();
+        if reverted["configure"]["unacknowledged"] != 1
+            || reverted["configure"]["deferred"] != false
+        {
+            return Err(
+                "returning to the sent state retained a redundant deferred configure".into(),
+            );
+        }
+        let serial = *state.windows[root].configure_serials.last().unwrap();
+        state.windows[root].xdg.ack_configure(serial);
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        if state.windows[root].configure_serials.len() != count + 1 {
+            return Err("unchanged pending state echoed another configure on ack".into());
+        }
+        state.windows[root].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+
+        // Old ack after null unmap must not create a fresh initial configure.
+        diagnostics.call("action", json!({"name":"resize","delta":16.0}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let in_flight = *state.windows[root].configure_serials.last().unwrap();
+        state.windows[root].surface.attach(None, 0, 0);
+        state.windows[root].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let count = state.windows[root].configure_serials.len();
+        state.windows[root].xdg.ack_configure(in_flight);
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let unmapped = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["old_ack_after_unmap"] = unmapped.clone();
+        if state.windows[root].configure_serials.len() != count
+            || unmapped["configure"]["initial_sent"] != false
+            || unmapped["mapped"] != false
+        {
+            return Err("old ack sent an early remap configure".into());
+        }
+        state.windows[root].ack_configures = true;
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "fresh remap configure",
+            |s| s.windows[root].configure_serials.len() > count,
+        )?;
+        let frames = state.windows[root].frames;
+        state.map(root, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "first remap frame",
+            |s| s.windows[root].frames > frames,
+        )?;
+        for _ in 0..3 {
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        }
+
+        // A remap handshake may coexist with one older in-flight configure.
+        // Acking the new initial serial consumes both through Smithay's rules.
+        state.windows[root].ack_configures = false;
+        diagnostics.call("action", json!({"name":"resize","delta":16.0}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.windows[root].surface.attach(None, 0, 0);
+        state.windows[root].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let count = state.windows[root].configure_serials.len();
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "remap with old configure in flight",
+            |s| s.windows[root].configure_serials.len() > count,
+        )?;
+        let overlap = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["remap_overlap"] = overlap.clone();
+        if overlap["configure"]["unacknowledged"] != 2 || overlap["mapped"] != false {
+            return Err(
+                "remap must admit one initial configure alongside the old in-flight configure"
+                    .into(),
+            );
+        }
+        let initial = *state.windows[root].configure_serials.last().unwrap();
+        state.windows[root].xdg.ack_configure(initial);
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let consumed = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["remap_latest_ack"] = consumed.clone();
+        if consumed["configure"]["unacknowledged"] != 0 {
+            return Err("new initial ack did not retire the older serial".into());
+        }
+        state.windows[root].ack_configures = true;
+        let frames = state.windows[root].frames;
+        state.map(root, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "overlap remap frame",
+            |s| s.windows[root].frames > frames,
+        )?;
+        for _ in 0..3 {
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        }
+
+        state.windows[root].ack_configures = false;
+        diagnostics.call("action", json!({"name":"resize","delta":16.0}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let retiring = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["before_destroy"] = retiring.clone();
+        if retiring["configure"]["unacknowledged"] != 1 {
+            return Err("destruction case lacks outstanding configure".into());
+        }
+        health_destroy_windows(&mut state);
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let after_destroy = diagnostics.call("windows.list", json!({}), deadline)?;
+        evidence["after_destroy"] = after_destroy.clone();
+        if after_destroy["windows"]
+            .as_array()
+            .ok_or("missing windows")?
+            .len()
+            != 1
+        {
+            return Err("destroyed configure owner remained live".into());
+        }
+        let replacement = state.create(&qh, "configure-replacement");
+        state.windows[replacement].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "replacement initial configure",
+            |s| s.windows[replacement].configures > 0,
+        )?;
+        state.map(replacement, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "replacement frame",
+            |s| s.windows[replacement].frames > 0,
+        )?;
+        let new = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture configure-replacement",
+            deadline,
+        )?;
+        evidence["replacement"] = new.clone();
+        if new["id"] == old_id || new["mapped"] != true {
+            return Err("replacement reused a stale window identity".into());
+        }
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence["healthy_events"] = json!(healthy.events);
+    evidence
+}
+
 fn shell_health(timeout: Duration, mode: &str) -> Json {
     let capacity = mode == "shell-health-capacity";
     let disconnect = mode == "shell-health-disconnect";
@@ -2640,10 +3010,10 @@ fn shell_health(timeout: Duration, mode: &str) -> Json {
             for _ in 0..1025 {
                 extra.push(registry.bind(name, version, &qh, ()));
             }
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             // Dispatch/flush the ping burst, then order the diagnostics after all
             // pongs with an explicit display roundtrip.
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             let capped = diagnostics.call("diagnostics", json!({}), deadline)?;
             let health = &capped["shell_health"];
             if health["capacity"] != json!(1024)
@@ -2686,7 +3056,7 @@ fn shell_health(timeout: Duration, mode: &str) -> Json {
             }
             original.destroy();
             state.wm = None;
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
         } else {
             until(
                 &connection,
@@ -2701,10 +3071,10 @@ fn shell_health(timeout: Duration, mode: &str) -> Json {
             // A second binding on this connection responds normally. Monitor
             // ownership is xdg_wm_base resource, not just connection identity.
             let extra: xdg_wm_base::XdgWmBase = registry.bind(name, version, &qh, ());
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             wm.pong(serial.wrapping_add(1));
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             let before = diagnostics.call("diagnostics", json!({}), deadline)?;
             let states = before["shell_health"]["clients"]
                 .as_array()
@@ -2793,7 +3163,7 @@ fn shell_health(timeout: Duration, mode: &str) -> Json {
             evidence["sibling_frame_while_primary_unresponsive"] =
                 json!(state.windows[window].frames);
             health_destroy_windows(&mut state);
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             observe_for(
                 &connection,
                 &mut queue,
@@ -2807,7 +3177,7 @@ fn shell_health(timeout: Duration, mode: &str) -> Json {
             }
             evidence["before_recovery"] = before_recovery.clone();
             wm.pong(serial);
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             let recovered = diagnostics.call("diagnostics", json!({}), deadline)?;
             if recovered["shell_health"]["stats"]["recoveries"] != json!(1)
                 || recovered["shell_health"]["stats"]["pongs"] != json!(2)
@@ -2824,7 +3194,7 @@ fn shell_health(timeout: Duration, mode: &str) -> Json {
             evidence["recovered"] = recovered;
             // A replay is ignored; the next periodic ping needs its new serial.
             wm.pong(serial);
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             let replay = diagnostics.call("diagnostics", json!({}), deadline)?;
             if replay["shell_health"]["stats"]["pongs"] != json!(2) {
                 return Err("replayed pong accepted".into());
@@ -2848,7 +3218,7 @@ fn shell_health(timeout: Duration, mode: &str) -> Json {
                 Duration::from_millis(500),
                 deadline,
             )?;
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
             let periodic = diagnostics.call("diagnostics", json!({}), deadline)?;
             if state.health_serials.len() != 2
                 || state.health_serials[0] == state.health_serials[1]
@@ -2865,7 +3235,7 @@ fn shell_health(timeout: Duration, mode: &str) -> Json {
             extra.destroy();
             wm.destroy();
             state.wm = None;
-            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
         }
         let retired = diagnostics.call("diagnostics", json!({}), deadline)?;
         if retired["shell_health"]["clients"] != json!([])
@@ -2928,7 +3298,8 @@ fn main() {
                 || mode == "pointer-feedback"
                 || mode == "popup-lifecycle"
                 || mode == "container-clip"
-                || mode == "popup-clip" =>
+                || mode == "popup-clip"
+                || mode == "configure-stream" =>
         {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
@@ -2938,7 +3309,8 @@ fn main() {
                 || mode == "pointer-feedback"
                 || mode == "popup-lifecycle"
                 || mode == "container-clip"
-                || mode == "popup-clip")
+                || mode == "popup-clip"
+                || mode == "configure-stream")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -2949,10 +3321,11 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|configure-stream|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
+        Ok(("configure-stream", timeout)) => configure_stream(timeout),
         Ok(("slow-reader", timeout)) => slow_reader(timeout),
         Ok(("pointer-feedback", timeout)) => pointer_feedback(timeout),
         Ok(("popup-lifecycle", timeout)) => popup_lifecycle(timeout),
