@@ -1,0 +1,747 @@
+{
+  "M1_pending_focus_repaired_without_motion": true,
+  "before_press_scene": 3,
+  "case": "held-motion",
+  "composition_oracle": {
+    "after_observation": 3,
+    "before_press": 3,
+    "held": 3
+  },
+  "elapsed_seconds": 8.084202718999222,
+  "fixture_horizontal_delta": 648.0,
+  "fixture_report": {
+    "buffer_size": [
+      320,
+      240
+    ],
+    "elapsed_ms": 7028,
+    "error": null,
+    "event_file": {
+      "Unix": [
+        47,
+        116,
+        109,
+        112,
+        47,
+        102,
+        108,
+        117,
+        120,
+        119,
+        109,
+        45,
+        114,
+        101,
+        108,
+        101,
+        97,
+        115,
+        101,
+        45,
+        102,
+        105,
+        110,
+        97,
+        108,
+        45,
+        105,
+        110,
+        112,
+        117,
+        116,
+        45,
+        109,
+        111,
+        116,
+        105,
+        111,
+        110,
+        47,
+        105,
+        110,
+        112,
+        117,
+        116,
+        46,
+        101,
+        118,
+        101,
+        110,
+        116,
+        115,
+        46,
+        106,
+        115,
+        111,
+        110,
+        108
+      ]
+    },
+    "event_file_bytes": 3587,
+    "events": [
+      {
+        "at_ms": 0,
+        "event": {
+          "create": 0,
+          "name": "input-A"
+        }
+      },
+      {
+        "at_ms": 0,
+        "event": {
+          "create": 1,
+          "name": "input-B"
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "bytes": [],
+          "wm_capabilities": 0
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "configure_ack": 0,
+          "serial": 1
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "bytes": [],
+          "wm_capabilities": 1
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "configure_ack": 1,
+          "serial": 2
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "configure_ack": 0,
+          "serial": 3
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "configure_ack": 0,
+          "serial": 5
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "configure_ack": 1,
+          "serial": 6
+        }
+      },
+      {
+        "at_ms": 22,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 255
+        }
+      },
+      {
+        "at_ms": 22,
+        "event": {
+          "frame_done": 1,
+          "timestamp": 255
+        }
+      },
+      {
+        "at_ms": 22,
+        "event": {
+          "root": 0,
+          "serial": 8,
+          "type": "pointer.enter",
+          "x": 8.0,
+          "y": 0.0
+        }
+      },
+      {
+        "at_ms": 22,
+        "event": {
+          "pointer_enter_primary": [
+            8.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "at_ms": 22,
+        "event": {
+          "root": 0,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 22,
+        "event": {
+          "observation_ms": 7000,
+          "root": null,
+          "roots": [
+            {
+              "root": 0,
+              "title": "input-A"
+            },
+            {
+              "root": 1,
+              "title": "input-B"
+            }
+          ],
+          "type": "ready"
+        }
+      },
+      {
+        "at_ms": 30,
+        "event": {
+          "configure_ack": 0,
+          "serial": 9
+        }
+      },
+      {
+        "at_ms": 30,
+        "event": {
+          "configure_ack": 1,
+          "serial": 10
+        }
+      },
+      {
+        "at_ms": 36,
+        "event": {
+          "root": 0,
+          "time": 15520494,
+          "type": "pointer.motion",
+          "x": 0.0,
+          "y": 0.0
+        }
+      },
+      {
+        "at_ms": 36,
+        "event": {
+          "root": 0,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 107,
+        "event": {
+          "root": 0,
+          "serial": 13,
+          "type": "pointer.leave"
+        }
+      },
+      {
+        "at_ms": 107,
+        "event": {
+          "root": null,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 107,
+        "event": {
+          "root": 0,
+          "serial": 14,
+          "type": "pointer.enter",
+          "x": 64.0,
+          "y": 64.0
+        }
+      },
+      {
+        "at_ms": 107,
+        "event": {
+          "pointer_enter_primary": [
+            64.0,
+            64.0
+          ]
+        }
+      },
+      {
+        "at_ms": 107,
+        "event": {
+          "root": 0,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 194,
+        "event": {
+          "root": 0,
+          "time": 15520650,
+          "type": "pointer.motion",
+          "x": 64.0,
+          "y": 64.0
+        }
+      },
+      {
+        "at_ms": 194,
+        "event": {
+          "button": 272,
+          "root": 0,
+          "serial": 15,
+          "state": "pressed",
+          "time": 15520650,
+          "type": "pointer.button"
+        }
+      },
+      {
+        "at_ms": 194,
+        "event": {
+          "root": 0,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 279,
+        "event": {
+          "root": 0,
+          "time": 15520735,
+          "type": "pointer.motion",
+          "x": 712.0,
+          "y": 64.0
+        }
+      },
+      {
+        "at_ms": 279,
+        "event": {
+          "root": 0,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 561,
+        "event": {
+          "axis": "vertical",
+          "root": 0,
+          "time": 15521018,
+          "type": "pointer.axis",
+          "value": -15.0
+        }
+      },
+      {
+        "at_ms": 561,
+        "event": {
+          "root": 0,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 724,
+        "event": {
+          "button": 272,
+          "root": 0,
+          "serial": 18,
+          "state": "released",
+          "time": 15521181,
+          "type": "pointer.button"
+        }
+      },
+      {
+        "at_ms": 724,
+        "event": {
+          "root": 0,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 724,
+        "event": {
+          "root": 0,
+          "serial": 19,
+          "type": "pointer.leave"
+        }
+      },
+      {
+        "at_ms": 724,
+        "event": {
+          "root": null,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 724,
+        "event": {
+          "root": 1,
+          "serial": 19,
+          "type": "pointer.enter",
+          "x": 64.0,
+          "y": 64.0
+        }
+      },
+      {
+        "at_ms": 724,
+        "event": {
+          "root": 1,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 807,
+        "event": {
+          "axis": "vertical",
+          "root": 1,
+          "time": 15521264,
+          "type": "pointer.axis",
+          "value": -15.0
+        }
+      },
+      {
+        "at_ms": 807,
+        "event": {
+          "root": 1,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 981,
+        "event": {
+          "root": 1,
+          "time": 15521437,
+          "type": "pointer.motion",
+          "x": 66.0,
+          "y": 67.0
+        }
+      },
+      {
+        "at_ms": 981,
+        "event": {
+          "root": 1,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 1069,
+        "event": {
+          "configure_ack": 0,
+          "serial": 22
+        }
+      },
+      {
+        "at_ms": 1069,
+        "event": {
+          "configure_ack": 1,
+          "serial": 23
+        }
+      },
+      {
+        "at_ms": 1069,
+        "event": {
+          "root": 1,
+          "time": 15521526,
+          "type": "pointer.motion",
+          "x": 66.0,
+          "y": 67.0
+        }
+      },
+      {
+        "at_ms": 1069,
+        "event": {
+          "button": 272,
+          "root": 1,
+          "serial": 21,
+          "state": "pressed",
+          "time": 15521526,
+          "type": "pointer.button"
+        }
+      },
+      {
+        "at_ms": 1069,
+        "event": {
+          "root": 1,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 1152,
+        "event": {
+          "button": 272,
+          "root": 1,
+          "serial": 25,
+          "state": "released",
+          "time": 15521609,
+          "type": "pointer.button"
+        }
+      },
+      {
+        "at_ms": 1152,
+        "event": {
+          "root": 1,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 1152,
+        "event": {
+          "root": 1,
+          "time": 15521609,
+          "type": "pointer.motion",
+          "x": 74.0,
+          "y": 67.0
+        }
+      },
+      {
+        "at_ms": 1152,
+        "event": {
+          "root": 1,
+          "type": "pointer.frame"
+        }
+      },
+      {
+        "at_ms": 7028,
+        "event": {
+          "mapped_through_observation": true,
+          "root": null,
+          "type": "complete"
+        }
+      }
+    ],
+    "mapped_through_observation": true,
+    "mode": "input-probe",
+    "observation_ms": 7000,
+    "ok": true,
+    "physical_input_injected_by_fixture": false,
+    "ready_at_ms": 22,
+    "socket": "/tmp/fluxwm-release-final-input-motion/runtime/fluxwm-input-763915b6bf7a"
+  },
+  "fixture_sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+  "fluxwm_sha256": "703716141bc47e08383bf9227b26f6734b0bf748d247c617320041db8abd7793",
+  "harness_sha256": "d1a0749563a074b1dc8610cc1c64ea329b42c497240f0640b9a5f92f14dc7c3a",
+  "held_axis_owner": 0,
+  "held_motion_scene": 3,
+  "invocation": [
+    "/usr/bin/python3",
+    "tools/smoke_input.py",
+    "--bundle",
+    "/tmp/fluxwm-xvfb-verified-h8kd45_1",
+    "--artifacts",
+    "/tmp/fluxwm-release-final-input-motion",
+    "--case",
+    "held-motion"
+  ],
+  "ok": true,
+  "package": {
+    "bundle": "/tmp/fluxwm-xvfb-verified-h8kd45_1",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "pan_dx": 0,
+  "parent_environment_unchanged": true,
+  "private_display": {
+    "auth_mode": "0600",
+    "auth_path": "/tmp/fluxwm-release-final-input-motion/private.Xauthority",
+    "authenticated": true,
+    "display": ":19237",
+    "server_pid": 273751,
+    "tcp_disabled": true
+  },
+  "release_event_index": 31,
+  "release_order": {
+    "enter": 35,
+    "leave": 33,
+    "release": 31
+  },
+  "released_axis_owner": 1,
+  "responses": [
+    {
+      "id": "f86e89149078484f99bbdb04e2a900a5",
+      "result": {
+        "windows": [
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "title": "input-A",
+            "workspace": "0:0"
+          },
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 648.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "title": "input-B",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "12",
+      "version": 1
+    },
+    {
+      "id": "3e7354f728d243d1b9a908747a25ab91",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "13",
+      "version": 1
+    },
+    {
+      "id": "2630e8c0bb914d2695f7492317e4fb69",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "14",
+      "version": 1
+    },
+    {
+      "id": "d83ada9c7aee402a846d6138f2247e6f",
+      "result": {
+        "windows": [
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 0.0,
+              "y": 0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "title": "input-A",
+            "workspace": "0:0"
+          },
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 648.0,
+              "y": 0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "title": "input-B",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "14",
+      "version": 1
+    },
+    {
+      "id": "6243aa2bb5e34974ac6f6cdb25803bf6",
+      "result": {
+        "backend": "nested",
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 3,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 19,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "frames_sent": 4,
+          "maps": 2,
+          "redraws": 4,
+          "submissions": 2,
+          "unmaps": 0,
+          "wayland_requests": 49
+        }
+      },
+      "state_sequence": "14",
+      "version": 1
+    },
+    {
+      "id": "608c00039d264de5a71ba99dc5c0ee13",
+      "result": {
+        "backend": "nested",
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 3,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 23,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "frames_sent": 4,
+          "maps": 2,
+          "redraws": 4,
+          "submissions": 2,
+          "unmaps": 0,
+          "wayland_requests": 49
+        }
+      },
+      "state_sequence": "14",
+      "version": 1
+    },
+    {
+      "id": "8a5741a7cfe5436bb3cce9e26b1df2b2",
+      "result": {
+        "backend": "nested",
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 3,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 28,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "frames_sent": 4,
+          "maps": 2,
+          "redraws": 4,
+          "submissions": 2,
+          "unmaps": 0,
+          "wayland_requests": 49
+        }
+      },
+      "state_sequence": "14",
+      "version": 1
+    }
+  ],
+  "scope": "private authenticated X11 host -> nested FluxWM -> owned Wayland input-probe; no host-session injection",
+  "target": {
+    "height": 800,
+    "ok": true,
+    "pid": 273755,
+    "width": 1280,
+    "window": 2097154
+  }
+}

@@ -1,0 +1,117 @@
+diff --git a/crates/fluxwm/src/input.rs b/crates/fluxwm/src/input.rs
+index 6c49c3f..8517d45 100644
+--- a/crates/fluxwm/src/input.rs
++++ b/crates/fluxwm/src/input.rs
+@@ -192,9 +192,9 @@ impl Fluxwm {
+                     self.focus_window_id(id);
+                 }
+ 
+-                // Relayout may change the surface under a stationary pointer.
+-                // Refresh the pointer target after focus/relayout and before the
+-                // button; an active grab retains its own routing.
++                // Route through the last composed scene after focus handling.
++                // Any queued relayout becomes eligible only after composition;
++                // an active grab retains its own routing.
+                 if !pointer.is_grabbed() {
+                     let location = pointer.current_location();
+                     let under = self.surface_under(location);
+diff --git a/crates/fluxwm/src/state.rs b/crates/fluxwm/src/state.rs
+index 66a9ff6..4d82963 100644
+--- a/crates/fluxwm/src/state.rs
++++ b/crates/fluxwm/src/state.rs
+@@ -488,6 +488,11 @@ impl Fluxwm {
+         if self.seat.get_keyboard().is_some_and(|k| k.is_grabbed()) {
+             return;
+         }
++        if self.layout.focused() == Some(id) {
++            // Reassert keyboard ownership without publishing an unchanged scene.
++            self.restore_keyboard_focus();
++            return;
++        }
+         if self.layout.focus_window(id).is_ok() {
+             self.relayout();
+             self.restore_keyboard_focus();
+diff --git a/tools/smoke_input.py b/tools/smoke_input.py
+index e775ad1..c1a3c59 100644
+--- a/tools/smoke_input.py
++++ b/tools/smoke_input.py
+@@ -216,19 +216,25 @@ class Session:
+         cookie = secrets.token_bytes(16)
+         record = struct.pack('>H', 65535)
+         for value in (b'', str(self.number).encode(), b'MIT-MAGIC-COOKIE-1', cookie): record += struct.pack('>H', len(value)) + value
+-        with os.fdopen(os.open(self.auth, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'wb') as target: target.write(record)
+-        self.log = (directory / 'xvfb.log').open('wb')
+-        self.server = subprocess.Popen([str(executable), self.display, '-screen', '0', '1600x1000x24', '-nolisten', 'tcp', '-auth', str(self.auth), '-noreset'], stdout=self.log, stderr=self.log, start_new_session=True)
++        self.log = self.server = None
++        try:
++            with os.fdopen(os.open(self.auth, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'wb') as target: target.write(record)
++            self.log = (directory / 'xvfb.log').open('wb')
++            self.server = subprocess.Popen([str(executable), self.display, '-screen', '0', '1600x1000x24', '-nolisten', 'tcp', '-auth', str(self.auth), '-noreset'], stdout=self.log, stderr=self.log, start_new_session=True)
++        except BaseException:
++            if self.log is not None: self.log.close()
++            self.auth.unlink(missing_ok=True)
++            raise
+         self.environment = dict(self.parent, DISPLAY=self.display, XAUTHORITY=str(self.auth), WINIT_UNIX_BACKEND='x11', LIBGL_ALWAYS_SOFTWARE='1')
+         self.environment.pop('WAYLAND_DISPLAY', None); self.environment.pop('WAYLAND_SOCKET', None)
+     def ready(self):
+         return self.server.poll() is None and Path(f'/tmp/.X{self.number}-lock').exists() and Path(f'/tmp/.X11-unix/X{self.number}').exists()
+-    def test(self, pid, action=None):
++    def test(self, pid, action=None, timeout=2):
+         require(self.server.poll() is None, 'owned Xvfb exited')
+         request = {'display_number': self.number, 'server_pid': self.server.pid, 'auth_file': str(self.auth), 'target_pid': pid, 'action': action}
+         # Cookie stays in the 0600 file, never argv/evidence. Native Xlib calls
+         # are isolated here so a hung X call is killed by the parent deadline.
+-        completed = subprocess.run([sys.executable, str(Path(__file__).resolve()), '_xtest'], input=json.dumps(request), capture_output=True, text=True, timeout=2, env=self.environment)
++        completed = subprocess.run([sys.executable, str(Path(__file__).resolve()), '_xtest'], input=json.dumps(request), capture_output=True, text=True, timeout=timeout, env=self.environment)
+         require(completed.returncode == 0, 'private XTEST helper failed: ' + completed.stderr[-2000:])
+         return json.loads(completed.stdout)
+     def close(self):
+@@ -296,7 +302,7 @@ def main():
+         responses.append(response); return response['result']
+     def action(name, **values): return ipc('action', {'name': name, **values})
+     def inject(kind, **values):
+-        check(); return session.test(compositor.pid, {'kind': kind, **values})
++        check(); return session.test(compositor.pid, {'kind': kind, **values}, timeout=min(2, max(.001, deadline - time.monotonic())))
+     try:
+         executable, verification = prepare_xvfb(args.bundle, directory)
+         result['package'] = verification
+@@ -337,6 +343,8 @@ def main():
+             require(100 < delta < 1200, 'fixture horizontal displacement outside controlled test range')
+             inject('motion', x=64, y=64)
+             wait(lambda: observed('pointer.enter', 0))
++            before_press_scene = ipc('diagnostics')['runtime']['compositions']
++            result['before_press_scene'] = before_press_scene
+             press = len(events())
+             inject('button', button=1, pressed=True)
+             wait(lambda: observed('pointer.button', 0, button=272, state='pressed'))
+@@ -356,6 +364,8 @@ def main():
+                 time.sleep(.2)
+                 check()
+                 result['held_motion_scene'] = ipc('diagnostics')['runtime']['compositions']
++            if args.case == 'held-motion':
++                require(result['held_motion_scene'] == before_press_scene, 'composition during held motion invalidates release-specific oracle', 'oracle_composition_changed')
+             held = len(events())
+             inject('button', button=4, pressed=True); inject('button', button=4, pressed=False)
+             wait(lambda: observed('pointer.axis', 0, since=held, axis='vertical'))
+@@ -367,7 +377,21 @@ def main():
+             stop = time.monotonic() + 1
+             while not observed('pointer.enter', 1, since=release) and time.monotonic() < stop:
+                 check(); time.sleep(.01)
++            if args.case == 'held-motion':
++                after_enter_scene = ipc('diagnostics')['runtime']['compositions']
++                result['composition_oracle'] = {'before_press': before_press_scene, 'held': result['held_motion_scene'], 'after_observation': after_enter_scene}
++                require(before_press_scene == after_enter_scene, 'composition during observation invalidates release-specific oracle', 'oracle_composition_changed')
+             require(observed('pointer.enter', 1, since=release), 'stationary button release did not restore pending focus to input-B', 'M1_missing_focus_after_release')
++            journal = events()
++            def event_index(kind, owner, **values):
++                return next(i for i, record in enumerate(journal[release:], release)
++                            if (e := record.get('event', {})).get('type') == kind
++                            and e.get('root') == owner and all(e.get(k) == v for k, v in values.items()))
++            release_i = event_index('pointer.button', 0, button=272, state='released')
++            leave_i = event_index('pointer.leave', 0)
++            enter_i = event_index('pointer.enter', 1)
++            require(release_i < leave_i < enter_i, 'release/leave/enter journal order differs', 'oracle_event_order')
++            result['release_order'] = {'release': release_i, 'leave': leave_i, 'enter': enter_i}
+             after_release = len(events())
+             inject('button', button=4, pressed=True); inject('button', button=4, pressed=False)
+             wait(lambda: observed('pointer.axis', 1, since=after_release, axis='vertical'))

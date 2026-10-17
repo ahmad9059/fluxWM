@@ -1,0 +1,84 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxscene-3ca1232ec5b3412fa958a184",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/tmp/fluxwm-release-final-scene/popup-clip/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-release-final-scene/popup-clip/stats.json",
+    "--screenshot",
+    "/tmp/fluxwm-release-final-scene/popup-clip/scene.ppm",
+    "--screenshot-after-ms",
+    "700",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "popup-clip",
+    "--timeout-ms",
+    "4500"
+  ],
+  "elapsed_ms": 6132,
+  "environment": {
+    "DISPLAY": ":1",
+    "WAYLAND_DISPLAY": "wayland-1",
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": null,
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "leaked_endpoints_before_harness_cleanup": [],
+  "mode": "popup-clip",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "pixels": {
+    "background_rgb": [
+      15,
+      18,
+      23
+    ],
+    "expected_rgb_counts": {
+      "blue": 19200,
+      "cyan": 0,
+      "green": 14400,
+      "magenta": 4800,
+      "red": 16320,
+      "yellow": 14400
+    },
+    "height": 1396,
+    "pixel_validation": "exact-row-equality",
+    "popup_paints_above_own_root": true,
+    "popup_visible_outside_root_clip": true,
+    "right_edge_x312_matches_background": true,
+    "sha256": "b19d2bcb89f5c080affaea928d3c73ebc5549a584533131483cb7e32e69367a3",
+    "width": 1270
+  },
+  "readiness": {
+    "backend": "nested",
+    "ipc_socket": "/run/user/1000/fluxwm/fluxscene-3ca1232ec5b3412fa958a184.sock",
+    "pid": 273332,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxscene-3ca1232ec5b3412fa958a184"
+  },
+  "returncode": 0,
+  "socket": "fluxscene-3ca1232ec5b3412fa958a184",
+  "stats": {
+    "compositions": 6,
+    "destroyed": 1,
+    "final_windows": 0,
+    "flush_cycles": 50,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "frames_sent": 5,
+    "maps": 1,
+    "redraws": 9,
+    "submissions": 5,
+    "unmaps": 0,
+    "wayland_requests": 46
+  }
+}

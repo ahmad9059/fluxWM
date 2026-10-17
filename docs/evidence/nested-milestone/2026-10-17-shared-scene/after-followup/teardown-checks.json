@@ -1,0 +1,20 @@
+[
+  {
+    "run": "input-pan",
+    "pid_absent": true,
+    "socket_absent": true,
+    "cookie_absent": true
+  },
+  {
+    "run": "input-motion",
+    "pid_absent": true,
+    "socket_absent": true,
+    "cookie_absent": true
+  },
+  {
+    "run": "release-only-mutant",
+    "pid_absent": true,
+    "socket_absent": true,
+    "cookie_absent": true
+  }
+]

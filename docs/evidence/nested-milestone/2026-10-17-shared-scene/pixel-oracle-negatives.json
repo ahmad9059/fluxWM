@@ -1,0 +1,38 @@
+{
+  "valid": {
+    "width": 320,
+    "height": 240,
+    "sha256": "f2156138d5eee8b45984400170ab1c88469d4694abc57c22320b827c11d61abf",
+    "rgb_counts": {
+      "red": 19200,
+      "green": 14400,
+      "blue": 19200,
+      "yellow": 14400,
+      "cyan": 0
+    },
+    "background_rgb": [
+      15,
+      18,
+      23
+    ],
+    "right_edge_x280_matches_background": true
+  },
+  "negative": [
+    {
+      "case": "leak",
+      "rejected": true,
+      "error": "container screenshot differs from exact clipped scene at row 0"
+    },
+    {
+      "case": "truncated",
+      "rejected": true,
+      "error": "PPM payload length mismatch"
+    },
+    {
+      "case": "symlink",
+      "rejected": true,
+      "error": "[Errno 40] Too many levels of symbolic links: '/tmp/fluxwm-scene-oracle-58mvfcl6/symlink.ppm'"
+    }
+  ],
+  "ok": true
+}

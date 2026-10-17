@@ -12,7 +12,7 @@ The builder traverses each mapped tree in the same front-to-back order used by S
 
 Rendering creates an element for each captured surface and applies its corresponding crop. Import errors propagate, and a captured mapped surface that produces no render element fails this owned nested instance. The scene is published only after successful offscreen rendering; failed import/composition cannot publish input for an omitted surface. The current failure policy needs per-client/fallback qualification before production. It is not a guarantee that every driver failure can be recovered.
 
-`surface_under` and click-to-focus use the published scene. A queued layout action does not immediately move the pick target ahead of the composed pixels. Publishing marks pointer focus for refresh; unchanged surface/origin does not emit a synthetic motion. The published scene represents the compositor-owned virtual output, not the host's last physical scanout or a presentation feedback timestamp. Frame callbacks are sent to owners with captured surface bounds intersecting their clip.
+`surface_under` and click-to-focus use the published scene. A queued layout action does not immediately move the pick target ahead of the composed pixels. Publishing marks pointer focus for refresh; that request is retained while a grab is active, and button release also schedules focus repair. Unchanged surface/origin does not emit a synthetic motion. A zero-size/suspended output clears its old published scene. The published scene represents the compositor-owned virtual output, not the host's last physical scanout or a presentation feedback timestamp. Frame callbacks are sent to owners with captured surface bounds intersecting their clip.
 
 ## Bounds and limits
 
@@ -33,3 +33,7 @@ The pure geometry crate tests overlapping/hidden/offscreen windows, clipping, or
 These checks do not close complete buffer-consumer, GPU, input, transaction, popup-chain, resource or native phase gates. In particular authorized grabs, parent/child destruction races, import-failure injection and native scale/transform cases remain required.
 
 The executable also has three focused geometry integration tests: output-invisible content at the layout coordinate limit, clipping before integer conversion, and the shared half-open render/input edge after rounding. These are component tests, not hostile-client or physical-display execution. Run the [scene smoke harness](scene-smoke.md) for real protocol, pixels and pointer routing.
+
+The [popup clip fixture](popup-clip-fixture.md) and fourth scene-smoke case separately prove popup pixels and pointer entry outside the owner container and painting above the root. Higher-owner occlusion, nested popup ordering and entirely culled-owner popup cases remain separate missing oracles. Read the [focused Claude review and author disposition](../reviews/scene-2026-10-17/disposition.md) for exact scope and later changes.
+
+The [private-display input harness](private-input.md) qualifies two real implicit-grab release regressions with failed/passing binary comparisons, client event journals and axis/button checks. Its owned authenticated Xvfb isolates input from the host desktop. This remains nested X11/software-rendering evidence.

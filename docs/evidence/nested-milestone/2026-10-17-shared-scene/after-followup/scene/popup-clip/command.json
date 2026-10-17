@@ -1,0 +1,37 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxscene-3ca1232ec5b3412fa958a184",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/tmp/fluxwm-release-final-scene/popup-clip/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-release-final-scene/popup-clip/stats.json",
+    "--screenshot",
+    "/tmp/fluxwm-release-final-scene/popup-clip/scene.ppm",
+    "--screenshot-after-ms",
+    "700",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "popup-clip",
+    "--timeout-ms",
+    "4500"
+  ],
+  "environment": {
+    "DISPLAY": ":1",
+    "WAYLAND_DISPLAY": "wayland-1",
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": null,
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "mode": "popup-clip",
+  "ok": false,
+  "socket": "fluxscene-3ca1232ec5b3412fa958a184"
+}

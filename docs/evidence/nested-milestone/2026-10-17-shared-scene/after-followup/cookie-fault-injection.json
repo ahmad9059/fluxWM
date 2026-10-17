@@ -1,0 +1,12 @@
+[
+  {
+    "fault": "log-open",
+    "cookie_removed": true,
+    "server_started": false
+  },
+  {
+    "fault": "popen",
+    "cookie_removed": true,
+    "server_started": false
+  }
+]

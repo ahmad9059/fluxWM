@@ -1,0 +1,8 @@
+{
+  "base_commit": "adfa7a7",
+  "additional_changes": "Unchanged-focus skips redundant relayout; comment corrected; source patch archived in final bundle",
+  "mutation": "Remove only ButtonState::Released pointer_focus_dirty assignment block; retain grab dirty preservation",
+  "binary_sha256": "e46abb9927abb3514c5bc49ddeaf829d5dd4a999280536cd2e5d57ea680c0c0a",
+  "source_before_sha256": "61f399144fa330b81165820c782909e8bb54a7d37e36f6bbaa2d856da03a726d",
+  "mutated_input_sha256": "dec91b569f41cd66b23d03c3829839945a3dbbdffee30a74ce27fba303c9d1dc"
+}

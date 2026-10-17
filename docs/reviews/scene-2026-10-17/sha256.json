@@ -1,0 +1,13 @@
+{
+  "claude-report.md": "373c137eccbc18fc066b21d1f853757383318b27508467104b30d3ad98f973b6",
+  "disposition.md": "727e5fea1321550796f448f8f70199d5b7e176cc9736b463e3575710df686bc3",
+  "execution.json": "268a7865ffe99f0fa741035c1b8cf1391ff111c01ea4abdb24c6dfdd0ca4f7ea",
+  "input-manifest.json": "b5de01abec4f65eedfcd654516769bd48d4f12c739d26d1dfff31b557a8a6894",
+  "post-review-changes.json": "28250708f2198bf71d933abe347382ba1746d76c6b04fd8ce1df6ff43096dd6e",
+  "post-review-implementation.patch": "4bfdea07251d47b7901bd98aa0d4114a654b9752224a5125ebb14cb7d1bab8e5",
+  "prompt.txt": "f2efab7e8a9745b631f12c12807b41b5af85242d1dc4e3454935bf647198b0c1",
+  "snapshot.json": "12f125816c96fe764ecd01a4fdc98417ebf4ec6114f9483a216ca5ffd032cc06",
+  "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout.json": "2d1ffa5c056e74d93fcd950f7c5b9083b82d85b89115ca60737faf91480cca5d",
+  "verified-execution.json": "9e1b03e71596e5e89d3a8b5ecbabd0b5e4355c57504232a121be30c99b8f0749"
+}

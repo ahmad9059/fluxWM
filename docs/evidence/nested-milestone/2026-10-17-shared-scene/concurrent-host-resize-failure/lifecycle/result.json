@@ -1,0 +1,61 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxsmoke-e7e1420ea1fe44c4a23a7a83",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/41c49c7f768048dd87902696475b14e8/lifecycle/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/41c49c7f768048dd87902696475b14e8/lifecycle/stats.json",
+    "--screenshot",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/41c49c7f768048dd87902696475b14e8/lifecycle/first-map.ppm",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "lifecycle",
+    "--timeout-ms",
+    "4500"
+  ],
+  "elapsed_ms": 6179,
+  "environment": {
+    "DISPLAY": ":1",
+    "WAYLAND_DISPLAY": "wayland-1",
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": null,
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "error": "green: expected 19200 exact pixels, got 18720",
+  "leaked_socket_paths_before_harness_cleanup": [],
+  "name": "lifecycle",
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "readiness": {
+    "backend": "nested",
+    "ipc_socket": "/run/user/1000/fluxwm/fluxsmoke-e7e1420ea1fe44c4a23a7a83.sock",
+    "pid": 237194,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxsmoke-e7e1420ea1fe44c4a23a7a83"
+  },
+  "returncode": 0,
+  "socket": "fluxsmoke-e7e1420ea1fe44c4a23a7a83",
+  "stats": {
+    "compositions": 6,
+    "destroyed": 2,
+    "final_windows": 0,
+    "flush_cycles": 51,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "frames_sent": 6,
+    "maps": 3,
+    "redraws": 7,
+    "submissions": 5,
+    "unmaps": 1,
+    "wayland_requests": 64
+  }
+}

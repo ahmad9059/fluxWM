@@ -1,0 +1,117 @@
+{
+  "source_commit": "adfa7a7ad503ce8c795b3d3000ed1094edb7f2d5",
+  "source_status": "Only author documentation/review records uncommitted during checks; runtime and harness source committed",
+  "distinct_tests": 113,
+  "raw_pass_sum": 116,
+  "nested_process_fixture_repeats": 3,
+  "commands": [
+    {
+      "command": "cargo test --workspace --all-targets",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build -p fluxwm -p fluxwm-fixture",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m py_compile tools/smoke_input.py tools/smoke_scene.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_scene.py --artifacts /tmp/fluxwm-final-scene",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_nested.py --artifacts /tmp/fluxwm-final-nested",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_ipc_runtime.py --artifacts /tmp/fluxwm-final-ipc",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_input.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --artifacts /tmp/fluxwm-final-input-pan --case scene-pan",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_input.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --artifacts /tmp/fluxwm-final-input-motion --case held-motion",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/check_docs.py --report /tmp/fluxwm-scene-final-docs.json",
+      "exit_code": 0
+    }
+  ],
+  "binary_sha256": "f65dee2e46b43ac1ff9d9dcd4d65e4f72bc918942c77d0859868602db4b92fc5",
+  "fixture_sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+  "lockfile_sha256": "178ca789a8185f772e39e53f013ac536f7724148f4c55cf740554b87576675dd",
+  "origins": [
+    {
+      "original": "/tmp/fluxwm-final-scene",
+      "archived": "scene"
+    },
+    {
+      "original": "/tmp/fluxwm-final-nested",
+      "archived": "nested"
+    },
+    {
+      "original": "/tmp/fluxwm-final-ipc",
+      "archived": "ipc"
+    },
+    {
+      "original": "/tmp/fluxwm-input-before-evidence2",
+      "archived": "input-pan-before"
+    },
+    {
+      "original": "/tmp/fluxwm-input-after-evidence",
+      "archived": "input-pan-first-fixed"
+    },
+    {
+      "original": "/tmp/fluxwm-input-motion-before",
+      "archived": "input-motion-before"
+    },
+    {
+      "original": "/tmp/fluxwm-input-motion-after",
+      "archived": "input-motion-first-fixed"
+    },
+    {
+      "original": "/tmp/fluxwm-final-input-pan",
+      "archived": "input-pan-final"
+    },
+    {
+      "original": "/tmp/fluxwm-final-input-motion",
+      "archived": "input-motion-final"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm-layout/target/popup-lifecycle/9447774c9ebc49e68cae4cb3ce0f9091",
+      "archived": "popup-before"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm-layout/target/popup-lifecycle/d783969b4801429381bb79f74f8078b3",
+      "archived": "popup-after"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/41c49c7f768048dd87902696475b14e8",
+      "archived": "concurrent-host-resize-failure"
+    }
+  ],
+  "limits": [
+    "Local populated-cache builds, no clean-machine or hosted CI execution",
+    "Nested virtual output; no physical presentation or native/hardware qualification",
+    "Input artifacts copied only by explicit public filename allowlist; no cookies, keyrings or full environment",
+    "Original PPMs omitted; scene/nested summaries preserve paths, dimensions and hashes",
+    "Historical failed comparisons are intentional failures; final source suites pass"
+  ]
+}

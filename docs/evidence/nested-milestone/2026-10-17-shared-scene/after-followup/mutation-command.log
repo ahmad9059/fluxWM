@@ -1,0 +1,1 @@
+{"ok": false, "failure_code": "M1_missing_focus_after_release", "error": "stationary button release did not restore pending focus to input-B", "artifacts": "/tmp/fluxwm-release-mutant-input"}

@@ -1,0 +1,1345 @@
+diff --git a/crates/fluxwm-fixture/src/main.rs b/crates/fluxwm-fixture/src/main.rs
+index d367edd..cd7ceab 100644
+--- a/crates/fluxwm-fixture/src/main.rs
++++ b/crates/fluxwm-fixture/src/main.rs
+@@ -52,6 +52,7 @@ struct FixturePopup {
+     storage: Option<File>,
+     configures: u32,
+     geometry_configures: u32,
++    geometry: Option<[i32; 4]>,
+     frames: u32,
+     done: u32,
+     destroyed: bool,
+@@ -87,6 +88,10 @@ struct State {
+     keyboard_focus: Option<wl_surface::WlSurface>,
+     popup_keyboard_enters: u32,
+     container_mode: bool,
++    popup_clip_mode: bool,
++    input_probe_mode: bool,
++    event_file: Option<File>,
++    event_file_bytes: usize,
+     subcompositor: Option<wl_subcompositor::WlSubcompositor>,
+     clip_child: Option<wl_surface::WlSurface>,
+     clip_child_frames: u32,
+@@ -127,6 +132,10 @@ impl State {
+             keyboard_focus: None,
+             popup_keyboard_enters: 0,
+             container_mode: false,
++            popup_clip_mode: false,
++            input_probe_mode: false,
++            event_file: None,
++            event_file_bytes: 0,
+             subcompositor: None,
+             clip_child: None,
+             clip_child_frames: 0,
+@@ -136,12 +145,33 @@ impl State {
+         }
+     }
+     fn record(&mut self, event: Json) {
+-        if self.events.len() < 1024 {
+-            self.events
+-                .push(json!({"at_ms":self.start.elapsed().as_millis(),"event":event}));
+-        } else {
++        if self.events.len() >= 1024 {
+             self.error = Some("event evidence limit exceeded".into());
++            return;
++        }
++        let record = json!({"at_ms":self.start.elapsed().as_millis(),"event":event});
++        if let Some(file) = self.event_file.as_mut() {
++            let result = (|| -> std::io::Result<()> {
++                let mut bytes = serde_json::to_vec(&record)?;
++                bytes.push(b'\n');
++                if self.event_file_bytes + bytes.len() > 1024 * 1024 {
++                    return Err(std::io::Error::other("event file exceeds1MiB budget"));
++                }
++                file.write_all(&bytes)?;
++                file.flush()?;
++                self.event_file_bytes += bytes.len();
++                Ok(())
++            })();
++            if let Err(error) = result {
++                self.error = Some(format!("event stream write failed: {error}"));
++            }
+         }
++        self.events.push(record);
++    }
++    fn pointer_root(&self) -> Option<usize> {
++        self.pointer_focus_surface
++            .as_ref()
++            .and_then(|surface| self.windows.iter().position(|w| &w.surface == surface))
+     }
+     fn sync(&mut self, connection: &Connection, qh: &QueueHandle<Self>) -> u32 {
+         let n = self.next_sync;
+@@ -171,6 +201,15 @@ impl State {
+         n
+     }
+     fn create_popup(&mut self, parent: usize, invalid_grab: bool, qh: &QueueHandle<Self>) -> usize {
++        self.create_popup_kind(parent, invalid_grab, false, qh)
++    }
++    fn create_popup_kind(
++        &mut self,
++        parent: usize,
++        invalid_grab: bool,
++        viewport_crossing: bool,
++        qh: &QueueHandle<Self>,
++    ) -> usize {
+         let index = self.popups.len();
+         let surface = self.compositor.as_ref().unwrap().create_surface(qh, ());
+         let xdg = self
+@@ -179,10 +218,22 @@ impl State {
+             .unwrap()
+             .get_xdg_surface(&surface, qh, PopupTag(index));
+         let positioner = self.wm.as_ref().unwrap().create_positioner(qh, ());
+-        positioner.set_size(64, 48);
+-        positioner.set_anchor_rect(20, 20, 1, 1);
+-        positioner.set_anchor(xdg_positioner::Anchor::BottomRight);
+-        positioner.set_gravity(xdg_positioner::Gravity::BottomRight);
++        if viewport_crossing {
++            positioner.set_size(80, 60);
++            positioner.set_anchor_rect(0, 0, 1, 1);
++            positioner.set_anchor(xdg_positioner::Anchor::TopLeft);
++            positioner.set_gravity(xdg_positioner::Gravity::BottomRight);
++            positioner.set_offset(-64, 0);
++            positioner.set_constraint_adjustment(
++                xdg_positioner::ConstraintAdjustment::SlideX
++                    | xdg_positioner::ConstraintAdjustment::SlideY,
++            );
++        } else {
++            positioner.set_size(64, 48);
++            positioner.set_anchor_rect(20, 20, 1, 1);
++            positioner.set_anchor(xdg_positioner::Anchor::BottomRight);
++            positioner.set_gravity(xdg_positioner::Gravity::BottomRight);
++        }
+         let popup = xdg.get_popup(
+             Some(&self.windows[parent].xdg),
+             &positioner,
+@@ -202,6 +253,7 @@ impl State {
+             storage: None,
+             configures: 0,
+             geometry_configures: 0,
++            geometry: None,
+             frames: 0,
+             done: 0,
+             destroyed: false,
+@@ -210,11 +262,25 @@ impl State {
+         index
+     }
+     fn map_popup(&mut self, index: usize, qh: &QueueHandle<Self>) -> Result<()> {
++        self.map_popup_sized(index, 64, 48, qh)
++    }
++    fn map_popup_sized(
++        &mut self,
++        index: usize,
++        width: i32,
++        height: i32,
++        qh: &QueueHandle<Self>,
++    ) -> Result<()> {
++        if !(1..=512).contains(&width) || !(1..=512).contains(&height) {
++            return Err("popup buffer dimensions outside fixture bounds".into());
++        }
+         if self.popups[index].configures == 0 || self.popups[index].done > 0 {
+             return Err("popup is not configured/live before mapping".into());
+         }
+         let mut file = memory_file()?;
+-        let bytes = 0xffff00ff_u32.to_ne_bytes().repeat(64 * 48);
++        let bytes = 0xffff00ff_u32
++            .to_ne_bytes()
++            .repeat((width * height) as usize);
+         file.set_len(bytes.len() as u64)
+             .map_err(|e| e.to_string())?;
+         file.write_all(&bytes).map_err(|e| e.to_string())?;
+@@ -223,12 +289,20 @@ impl State {
+             .as_ref()
+             .unwrap()
+             .create_pool(file.as_fd(), bytes.len() as i32, qh, ());
+-        let buffer = pool.create_buffer(0, 64, 48, 64 * 4, wl_shm::Format::Xrgb8888, qh, ());
++        let buffer = pool.create_buffer(
++            0,
++            width,
++            height,
++            width * 4,
++            wl_shm::Format::Xrgb8888,
++            qh,
++            (),
++        );
+         pool.destroy();
+         let p = &mut self.popups[index];
+-        p.xdg.set_window_geometry(0, 0, 64, 48);
++        p.xdg.set_window_geometry(0, 0, width, height);
+         p.surface.attach(Some(&buffer), 0, 0);
+-        p.surface.damage(0, 0, 64, 48);
++        p.surface.damage(0, 0, width, height);
+         p.surface.frame(qh, Callback::PopupFrame(index));
+         p.surface.commit();
+         p.buffer = Some(buffer);
+@@ -247,6 +321,29 @@ impl State {
+         p.destroyed = true;
+         self.record(json!({"destroy_popup":index}));
+     }
++    fn map_container_root(&mut self, root: usize, qh: &QueueHandle<Self>) -> Result<()> {
++        let mut file = memory_file()?;
++        let bytes = container_pixels();
++        file.set_len(bytes.len() as u64)
++            .map_err(|e| e.to_string())?;
++        file.write_all(&bytes).map_err(|e| e.to_string())?;
++        let pool = self
++            .shm
++            .as_ref()
++            .unwrap()
++            .create_pool(file.as_fd(), bytes.len() as i32, qh, ());
++        let buffer = pool.create_buffer(0, 1900, 240, 1900 * 4, wl_shm::Format::Xrgb8888, qh, ());
++        pool.destroy();
++        let w = &mut self.windows[root];
++        w.xdg.set_window_geometry(0, 0, 1900, 240);
++        w.surface.attach(Some(&buffer), 0, 0);
++        w.surface.damage(0, 0, 1900, 240);
++        w.surface.frame(qh, Callback::Frame(root));
++        w.surface.commit();
++        w.buffer = Some(buffer);
++        w._storage = Some(file);
++        Ok(())
++    }
+     fn map(&mut self, index: usize, qh: &QueueHandle<Self>) -> Result<()> {
+         if self.windows[index].configures == 0 {
+             return Err("attempted map before configure acknowledgement".into());
+@@ -709,6 +806,7 @@ impl Dispatch<xdg_popup::XdgPopup, PopupTag> for State {
+                 height,
+             } => {
+                 state.popups[index.0].geometry_configures += 1;
++                state.popups[index.0].geometry = Some([x, y, width, height]);
+                 state.record(json!({"popup_geometry":index.0,"rect":[x,y,width,height]}));
+             }
+             xdg_popup::Event::PopupDone => {
+@@ -722,6 +820,13 @@ impl Dispatch<xdg_popup::XdgPopup, PopupTag> for State {
+ delegate_noop!(State:ignore xdg_positioner::XdgPositioner);
+ delegate_noop!(State:ignore wl_subcompositor::WlSubcompositor);
+ delegate_noop!(State:ignore wl_subsurface::WlSubsurface);
++fn pointer_axis_name(axis: WEnum<wl_pointer::Axis>) -> &'static str {
++    match axis {
++        WEnum::Value(wl_pointer::Axis::VerticalScroll) => "vertical",
++        WEnum::Value(wl_pointer::Axis::HorizontalScroll) => "horizontal",
++        _ => "unknown",
++    }
++}
+ impl Dispatch<wl_pointer::WlPointer, ()> for State {
+     fn event(
+         state: &mut Self,
+@@ -731,6 +836,22 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
+         _: &Connection,
+         _: &QueueHandle<Self>,
+     ) {
++        if state.input_probe_mode {
++            let root = state.pointer_root();
++            match &event {
++                wl_pointer::Event::Enter {serial,surface,surface_x,surface_y} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.enter","root":root,"serial":serial,"x":surface_x,"y":surface_y}));}
++                wl_pointer::Event::Leave {serial,surface} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.leave","root":root,"serial":serial}));}
++                wl_pointer::Event::Motion {time,surface_x,surface_y} => state.record(json!({"type":"pointer.motion","root":root,"time":time,"x":surface_x,"y":surface_y})),
++                wl_pointer::Event::Button {serial,time,button,state:button_state} => {
++                    let button_state=match button_state {WEnum::Value(wl_pointer::ButtonState::Pressed)=>"pressed",WEnum::Value(wl_pointer::ButtonState::Released)=>"released",_=>{state.error=Some("unknown pointer button state".into());"unknown"}};
++                    state.record(json!({"type":"pointer.button","root":root,"serial":serial,"time":time,"button":button,"state":button_state}));
++                }
++                wl_pointer::Event::Axis {time,axis,value} => {let axis=pointer_axis_name(*axis);state.record(json!({"type":"pointer.axis","root":root,"time":time,"axis":axis,"value":value}));}
++                wl_pointer::Event::AxisStop {time,axis}=>state.record(json!({"type":"pointer.axis_stop","root":root,"time":time,"axis":pointer_axis_name(*axis)})),
++                wl_pointer::Event::Frame=>state.record(json!({"type":"pointer.frame","root":root})),
++                _=>{}
++            }
++        }
+         match &event {
+             wl_pointer::Event::Enter {
+                 surface,
+@@ -740,6 +861,9 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
+             } => {
+                 state.pointer_focus_surface = Some(surface.clone());
+                 state.pointer_focus_xy = Some((*surface_x, *surface_y));
++                if state.popup_clip_mode {
++                    state.record(json!({"popup_clip_pointer_enter":state.popups.iter().position(|p|p.surface==*surface),"xy":[surface_x,surface_y]}));
++                }
+                 if state.container_mode {
+                     state.record(json!({"clip_pointer_enter_child":state.clip_child.as_ref()==Some(surface),"xy":[surface_x,surface_y]}));
+                 }
+@@ -831,6 +955,10 @@ fn lifecycle(
+         return Err("XRGB8888 SHM format not advertised".into());
+     }
+     let first = state.create(&qh, "quadrants");
++    // This fixture requires all four 160x120 quadrants to be visible. A host
++    // tiled to less than 640 px can otherwise assign a half-width container below
++    // our 320 px buffer and correctly clip it. Declare the actual pixel workload.
++    state.windows[first].toplevel.set_min_size(320, 240);
+     let second = state.create(&qh, "disconnect-survivor");
+     if let Some(seat) = state.seat.as_ref() {
+         state.windows[second].toplevel._move(seat, 0);
+@@ -1661,27 +1789,7 @@ fn container_clip(timeout: Duration) -> Json {
+             "container root configure",
+             |s| s.windows[root].configures >= 1,
+         )?;
+-        let mut file = memory_file()?;
+-        let bytes = container_pixels();
+-        file.set_len(bytes.len() as u64)
+-            .map_err(|e| e.to_string())?;
+-        file.write_all(&bytes).map_err(|e| e.to_string())?;
+-        let pool =
+-            state
+-                .shm
+-                .as_ref()
+-                .unwrap()
+-                .create_pool(file.as_fd(), bytes.len() as i32, &qh, ());
+-        let buffer = pool.create_buffer(0, 1900, 240, 1900 * 4, wl_shm::Format::Xrgb8888, &qh, ());
+-        pool.destroy();
+-        let w = &mut state.windows[root];
+-        w.xdg.set_window_geometry(0, 0, 1900, 240);
+-        w.surface.attach(Some(&buffer), 0, 0);
+-        w.surface.damage(0, 0, 1900, 240);
+-        w.surface.frame(&qh, Callback::Frame(root));
+-        w.surface.commit();
+-        w.buffer = Some(buffer);
+-        w._storage = Some(file);
++        state.map_container_root(root, &qh)?;
+         until(
+             &connection,
+             &mut queue,
+@@ -1952,6 +2060,333 @@ fn verify_container_ppm(path: &Path) -> Json {
+     evidence["error"] = json!(result.err());
+     evidence
+ }
++fn popup_clip(timeout: Duration) -> Json {
++    let start = Instant::now();
++    let deadline = start + timeout;
++    let mut state = State::new(start);
++    state.pointer_feedback_enabled = true;
++    state.popup_clip_mode = true;
++    let mut evidence = json!({"mode":"popup-clip","ok":false,"actual_shm_size":[1900,240],"settle_ms":1000,"physical_input_injected":false,"popup_request_offset":[-64,0],"popup_requested_size":[80,60],"expected_rgb_counts":{"magenta":4800,"red":16320,"green":14400,"blue":19200,"yellow":14400,"cyan":0},"expected_image_regions":{"popup":{"x":0,"y":0,"width":80,"height":60},"root_container":{"x":32,"y":0,"width":280},"root_visible_content":{"x":32,"y":0,"width":280,"height":240}},"pixel_proof_requires_delayed_compositor_screenshot":true});
++    let result = (|| -> Result<()> {
++        let path = display_path()?;
++        evidence["socket"] = json!(path);
++        let connection = connect(&path, deadline)?;
++        let mut queue = connection.new_event_queue::<State>();
++        let qh = queue.handle();
++        connection.display().get_registry(&qh, ());
++        let sync = state.sync(&connection, &qh);
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "popupclip registry",
++            |s| s.last_sync >= sync,
++        )?;
++        let sync = state.sync(&connection, &qh);
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "popupclip bound globals",
++            |s| s.last_sync >= sync,
++        )?;
++        if state.compositor.is_none()
++            || state.shm.is_none()
++            || state.wm.is_none()
++            || state.pointer.is_none()
++        {
++            return Err("popupclip prerequisites missing".into());
++        }
++        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("popupclip requires FLUXWM_SOCKET")?;
++        let mut control = Diagnostics::new(Path::new(&ipc), deadline)?;
++        let outputs = control.call("outputs.list", json!({}), deadline)?;
++        let output = outputs
++            .pointer("/outputs/0/geometry")
++            .ok_or("missing output geometry")?;
++        if output["width"].as_f64().unwrap_or(0.0) < 320.0
++            || output["height"].as_f64().unwrap_or(0.0) < 240.0
++        {
++            return Err("popupclip requires output at least320x240".into());
++        }
++        evidence["output_geometry"] = output.clone();
++        let root = state.create(&qh, "popup-clip-owner");
++        state.windows[root].surface.commit();
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "popupclip root configure",
++            |s| s.windows[root].configures >= 1,
++        )?;
++        state.map_container_root(root, &qh)?;
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "popupclip root frame/pointer",
++            |s| {
++                s.windows[root].frames >= 1
++                    && s.pointer_focus_surface.as_ref() == Some(&s.windows[root].surface)
++            },
++        )?;
++        if state.pointer_focus_xy != Some((0.0, 0.0)) {
++            return Err("popupclip requires stationary root pointer at0,0".into());
++        }
++        evidence["initial_root_pointer_xy"] = json!(state.pointer_focus_xy);
++        control.call(
++            "action",
++            json!({"name":"workspace-mode","mode":"canvas"}),
++            deadline,
++        )?;
++        let workspace = control.call("workspaces.list", json!({}), deadline)?;
++        if workspace
++            .pointer("/workspaces/0/mode")
++            .and_then(Json::as_str)
++            != Some("canvas")
++        {
++            return Err("workspace did not enter canvas".into());
++        }
++        evidence["workspace_mode"] = json!("canvas");
++        let before = control.call("windows.list", json!({}), deadline)?;
++        let windows = before["windows"].as_array().ok_or("missing root list")?;
++        if windows.len() != 1 {
++            return Err("popupclip requires one isolated root".into());
++        }
++        let width = windows[0]["geometry"]["width"]
++            .as_f64()
++            .filter(|v| v.is_finite())
++            .ok_or("missing root width")?;
++        control.call(
++            "action",
++            json!({"name":"resize","delta":280.0-width}),
++            deadline,
++        )?;
++        control.call(
++            "action",
++            json!({"name":"move","direction":"right"}),
++            deadline,
++        )?;
++        let moved = control.call("windows.list", json!({}), deadline)?;
++        let geometry = moved
++            .pointer("/windows/0/geometry")
++            .ok_or("missing moved root")?;
++        if geometry["x"].as_f64() != Some(32.0)
++            || geometry["y"].as_f64() != Some(0.0)
++            || geometry["width"].as_f64() != Some(280.0)
++        {
++            return Err(format!("unexpected popup owner geometry: {geometry}"));
++        }
++        evidence["root_after_move"] = moved;
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "pointer outside moved root",
++            |s| s.pointer_focus_surface.is_none(),
++        )?;
++        evidence["pointer_outside_root_before_popup"] = json!(true);
++        let popup = state.create_popup_kind(root, false, true, &qh);
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "popupclip popup configure",
++            |s| s.popups[popup].configures >= 1,
++        )?;
++        let actual = state.popups[popup]
++            .geometry
++            .ok_or("missing actual popup geometry event")?;
++        evidence["actual_popup_configure"] = json!(actual);
++        let world = [32 + actual[0], actual[1], actual[2], actual[3]];
++        evidence["actual_popup_world_rect"] =
++            json!({"x":world[0],"y":world[1],"width":world[2],"height":world[3]});
++        if actual != [-32, 0, 80, 60] || world != [0, 0, 80, 60] {
++            return Err(format!(
++                "popup did not constrain to required viewport-crossing geometry: {actual:?}"
++            ));
++        }
++        state.map_popup_sized(popup, 80, 60, &qh)?;
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "popupclip actual popup frame/enter",
++            |s| {
++                s.popups[popup].frames >= 1
++                    && s.pointer_focus_surface.as_ref() == Some(&s.popups[popup].surface)
++            },
++        )?;
++        if state.pointer_focus_xy != Some((0.0, 0.0)) {
++            return Err("popupclip pointer entry was not at world origin".into());
++        }
++        evidence["popup_pointer_enter_xy"] = json!(state.pointer_focus_xy);
++        evidence["popup_receives_pointer_outside_owner_clip"] = json!(true);
++        evidence["popup_ready_at_ms"] = json!(start.elapsed().as_millis());
++        observe_for(
++            &connection,
++            &mut queue,
++            &mut state,
++            Duration::from_millis(1000),
++            deadline,
++        )?;
++        if state.pointer_focus_surface.as_ref() != Some(&state.popups[popup].surface)
++            || state.pointer_focus_xy != Some((0.0, 0.0))
++            || state.popups[popup].done != 0
++            || state.popups[popup].geometry != Some(actual)
++        {
++            return Err("popup/focus/geometry changed during screenshot interval; contaminated or invalid scene".into());
++        }
++        evidence["after_settle"] = control.call("windows.list", json!({}), deadline)?;
++        evidence["popup_frame_callbacks"] = json!(state.popups[popup].frames);
++        evidence["popup_done_before_cleanup"] = json!(state.popups[popup].done);
++        state.destroy_popup(popup);
++        Ok(())
++    })();
++    evidence["ok"] = json!(result.is_ok());
++    evidence["error"] = json!(result.err());
++    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
++    evidence["events"] = json!(state.events);
++    evidence
++}
++fn input_probe(timeout: Duration) -> Json {
++    const OBSERVE_MS: u64 = 7000;
++    let start = Instant::now();
++    let deadline = start + timeout;
++    let mut state = State::new(start);
++    state.pointer_feedback_enabled = true;
++    state.input_probe_mode = true;
++    let mut evidence = json!({"mode":"input-probe","ok":false,"observation_ms":OBSERVE_MS,"buffer_size":[320,240],"physical_input_injected_by_fixture":false});
++    let result = (|| -> Result<()> {
++        use std::os::unix::fs::OpenOptionsExt;
++        let path = std::env::var_os("FLUXWM_FIXTURE_EVENT_FILE")
++            .ok_or("input-probe requires explicit FLUXWM_FIXTURE_EVENT_FILE new regular path")?;
++        let file = std::fs::OpenOptions::new()
++            .write(true)
++            .create_new(true)
++            .mode(0o600)
++            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
++            .open(&path)
++            .map_err(|e| format!("event file: {e}"))?;
++        if !file.metadata().map_err(|e| e.to_string())?.is_file() {
++            return Err("event file is not regular".into());
++        }
++        state.event_file = Some(file);
++        evidence["event_file"] = json!(path);
++        let socket = display_path()?;
++        evidence["socket"] = json!(socket);
++        let connection = connect(&socket, deadline)?;
++        let mut queue = connection.new_event_queue::<State>();
++        let qh = queue.handle();
++        connection.display().get_registry(&qh, ());
++        let sync = state.sync(&connection, &qh);
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "input probe registry",
++            |s| s.last_sync >= sync,
++        )?;
++        let sync = state.sync(&connection, &qh);
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "input probe bindings",
++            |s| s.last_sync >= sync,
++        )?;
++        if state.compositor.is_none()
++            || state.shm.is_none()
++            || state.wm.is_none()
++            || state.pointer.is_none()
++        {
++            return Err("input probe globals/pointer missing".into());
++        }
++        for title in ["input-A", "input-B"] {
++            let index = state.create(&qh, title);
++            state.windows[index].toplevel.set_title(title.into());
++            state.windows[index]
++                .toplevel
++                .set_app_id("org.fluxwm.InputProbe".into());
++            state.windows[index].toplevel.set_min_size(320, 240);
++            state.windows[index].surface.commit();
++        }
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "input probe both configures",
++            |s| s.windows.len() == 2 && s.windows.iter().all(|w| w.configures >= 1),
++        )?;
++        for index in 0..2 {
++            let mut file = memory_file()?;
++            let color = if index == 0 {
++                0xffff0000_u32
++            } else {
++                0xff00ff00_u32
++            };
++            let bytes = color.to_ne_bytes().repeat(320 * 240);
++            file.set_len(bytes.len() as u64)
++                .map_err(|e| e.to_string())?;
++            file.write_all(&bytes).map_err(|e| e.to_string())?;
++            let pool =
++                state
++                    .shm
++                    .as_ref()
++                    .unwrap()
++                    .create_pool(file.as_fd(), bytes.len() as i32, &qh, ());
++            let buffer =
++                pool.create_buffer(0, 320, 240, 320 * 4, wl_shm::Format::Xrgb8888, &qh, ());
++            pool.destroy();
++            let w = &mut state.windows[index];
++            w.xdg.set_window_geometry(0, 0, 320, 240);
++            w.surface.attach(Some(&buffer), 0, 0);
++            w.surface.damage(0, 0, 320, 240);
++            w.surface.frame(&qh, Callback::Frame(index));
++            w.surface.commit();
++            w.buffer = Some(buffer);
++            w._storage = Some(file);
++        }
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "input probe both frames",
++            |s| s.windows.iter().all(|w| w.frames >= 1),
++        )?;
++        state.record(json!({"type":"ready","root":null,"roots":[{"root":0,"title":"input-A"},{"root":1,"title":"input-B"}],"observation_ms":OBSERVE_MS}));
++        evidence["ready_at_ms"] = json!(start.elapsed().as_millis());
++        observe_for(
++            &connection,
++            &mut queue,
++            &mut state,
++            Duration::from_millis(OBSERVE_MS),
++            deadline,
++        )?;
++        state.record(json!({"type":"complete","root":null,"mapped_through_observation":true}));
++        if let Some(error) = state.error.take() {
++            return Err(error);
++        }
++        evidence["mapped_through_observation"] = json!(true);
++        Ok(())
++    })();
++    evidence["ok"] = json!(result.is_ok());
++    evidence["error"] = json!(result.err());
++    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
++    evidence["event_file_bytes"] = json!(state.event_file_bytes);
++    evidence["events"] = json!(state.events);
++    evidence
++}
+ fn main() {
+     let args = std::env::args().skip(1).collect::<Vec<_>>();
+     if let [mode, path] = args.as_slice()
+@@ -1965,12 +2400,20 @@ fn main() {
+         return;
+     }
+     let parsed = match args.as_slice() {
++        [mode] if mode == "input-probe" => Ok((mode.as_str(), Duration::from_millis(10000))),
++        [mode, flag, value] if mode == "input-probe" && flag == "--timeout-ms" => value
++            .parse::<u64>()
++            .ok()
++            .filter(|n| (1..=10000).contains(n))
++            .map(|n| (mode.as_str(), Duration::from_millis(n)))
++            .ok_or("input-probe timeout must be1..10000ms"),
+         [mode]
+             if mode == "lifecycle"
+                 || mode == "slow-reader"
+                 || mode == "pointer-feedback"
+                 || mode == "popup-lifecycle"
+-                || mode == "container-clip" =>
++                || mode == "container-clip"
++                || mode == "popup-clip" =>
+         {
+             Ok((mode.as_str(), Duration::from_secs(5)))
+         }
+@@ -1979,7 +2422,8 @@ fn main() {
+                 || mode == "slow-reader"
+                 || mode == "pointer-feedback"
+                 || mode == "popup-lifecycle"
+-                || mode == "container-clip")
++                || mode == "container-clip"
++                || mode == "popup-clip")
+                 && flag == "--timeout-ms" =>
+         {
+             value
+@@ -1990,7 +2434,7 @@ fn main() {
+                 .ok_or("timeout must be 1..=5000 ms")
+         }
+         _ => Err(
+-            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip [--timeout-ms 1..5000]",
++            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip [--timeout-ms 1..5000]",
+         ),
+     };
+     let result = match parsed {
+@@ -1998,6 +2442,8 @@ fn main() {
+         Ok(("pointer-feedback", timeout)) => pointer_feedback(timeout),
+         Ok(("popup-lifecycle", timeout)) => popup_lifecycle(timeout),
+         Ok(("container-clip", timeout)) => container_clip(timeout),
++        Ok(("popup-clip", timeout)) => popup_clip(timeout),
++        Ok(("input-probe", timeout)) => input_probe(timeout),
+         Ok((_, timeout)) => run(timeout),
+         Err(error) => json!({"ok":false,"error":error}),
+     };
+@@ -2151,6 +2597,41 @@ mod tests {
+         assert_eq!(bad["rgb_counts"]["cyan"], json!(1));
+     }
+     #[test]
++    fn input_event_file_is_live_private_and_matches_retained_records() {
++        use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
++        let path =
++            std::env::temp_dir().join(format!("fluxwm-input-event-test-{}", std::process::id()));
++        let file = std::fs::OpenOptions::new()
++            .write(true)
++            .create_new(true)
++            .mode(0o600)
++            .open(&path)
++            .unwrap();
++        let mut state = State::new(Instant::now());
++        state.event_file = Some(file);
++        state.record(json!({"type":"pointer.enter","root":0,"x":1.0,"y":2.0}));
++        let first = std::fs::read_to_string(&path).unwrap();
++        assert!(first.ends_with('\n'));
++        assert_eq!(
++            serde_json::from_str::<Json>(first.trim()).unwrap(),
++            state.events[0]
++        );
++        state.record(json!({"type":"pointer.button","root":0,"button":272,"state":"pressed","serial":1,"time":1}));
++        let all = std::fs::read_to_string(&path).unwrap();
++        let records: Vec<Json> = all
++            .lines()
++            .map(|line| serde_json::from_str(line).unwrap())
++            .collect();
++        assert_eq!(records, state.events);
++        assert_eq!(state.event_file_bytes, all.len());
++        assert_eq!(
++            std::fs::metadata(&path).unwrap().permissions().mode() & 0o777,
++            0o600
++        );
++        drop(state);
++        std::fs::remove_file(path).unwrap();
++    }
++    #[test]
+     fn missing_socket_fails_without_blocking() {
+         let deadline = Instant::now() + Duration::from_millis(100);
+         assert!(connect(Path::new("/no-such-fluxwm-fixture-socket"), deadline).is_err());
+diff --git a/crates/fluxwm/src/input.rs b/crates/fluxwm/src/input.rs
+index 88fca2c..6c49c3f 100644
+--- a/crates/fluxwm/src/input.rs
++++ b/crates/fluxwm/src/input.rs
+@@ -18,13 +18,15 @@ impl Fluxwm {
+         if !self.pointer_focus_dirty {
+             return;
+         }
+-        self.pointer_focus_dirty = false;
+         let Some(pointer) = self.seat.get_pointer() else {
+             return;
+         };
+         if pointer.is_grabbed() {
++            // Keep the pending refresh until the grab ends. A composition while
++            // an implicit click grab is active must not lose enter/leave repair.
+             return;
+         }
++        self.pointer_focus_dirty = false;
+         let location = pointer.current_location();
+         let under = self.surface_under(location);
+         if pointer.current_focus() == under.as_ref().map(|(surface, _)| surface.clone())
+@@ -221,6 +223,11 @@ impl Fluxwm {
+                         time: event.time(),
+                     },
+                 );
++                if button_state == ButtonState::Released {
++                    // ClickGrab ends without restoring pending focus, including
++                    // a drag across surfaces with no intervening scene redraw.
++                    self.pointer_focus_dirty = true;
++                }
+                 pointer.frame(self);
+             }
+             InputEvent::PointerAxis { event, .. } => {
+diff --git a/crates/fluxwm/src/winit.rs b/crates/fluxwm/src/winit.rs
+index 3b5f681..deba38d 100644
+--- a/crates/fluxwm/src/winit.rs
++++ b/crates/fluxwm/src/winit.rs
+@@ -98,6 +98,10 @@ pub fn init_winit(
+             WinitEvent::Resized { size, .. } => {
+                 state.bump_sequence();
+                 state.render_suspended = size.w <= 0 || size.h <= 0;
++                if state.render_suspended {
++                    state.scene = None;
++                    state.pointer_focus_dirty = true;
++                }
+                 if !state.render_suspended {
+                     output.change_current_state(
+                         Some(Mode {
+@@ -189,6 +193,8 @@ impl RenderContext {
+             let backend = &mut self.backend;
+             let size = backend.window_size();
+             if size.w <= 0 || size.h <= 0 {
++                state.scene = None;
++                state.pointer_focus_dirty = true;
+                 return Ok(());
+             }
+             if size.w > 8192 || size.h > 8192 || i64::from(size.w) * i64::from(size.h) > 16_777_216
+diff --git a/tools/smoke_input.py b/tools/smoke_input.py
+new file mode 100644
+index 0000000..e775ad1
+--- /dev/null
++++ b/tools/smoke_input.py
+@@ -0,0 +1,412 @@
++#!/usr/bin/env python3
++"""Real pointer/grab regression on an authenticated, owned private Xvfb only."""
++from __future__ import annotations
++import argparse
++import ctypes as C
++import hashlib
++import json
++import os
++from pathlib import Path
++import re
++import secrets
++import socket
++import struct
++import subprocess
++import sys
++import time
++import urllib.request
++import uuid
++
++SIGNER = 'ADC8A1FCC15E01D45310419E94657AB20F2A092B'
++MIRROR = 'https://geo.mirror.pkgbuild.com/extra/os/x86_64/'
++KEYRING = Path('/usr/share/pacman/keyrings/archlinux.gpg')
++REVOKED = Path('/usr/share/pacman/keyrings/archlinux-revoked')
++
++class Failure(Exception):
++    def __init__(self, code, message):
++        super().__init__(message)
++        self.code = code
++
++def require(value, message, code='infrastructure'):
++    if not value:
++        raise Failure(code, message)
++
++def digest(path):
++    h = hashlib.sha256()
++    with Path(path).open('rb') as source:
++        for block in iter(lambda: source.read(1024 * 1024), b''):
++            h.update(block)
++    return h.hexdigest()
++
++def write_json(path, value):
++    Path(path).write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
++
++def run(command, timeout=10, **kwargs):
++    return subprocess.run(command, timeout=timeout, check=True, **kwargs)
++
++def download(url, path, maximum):
++    start = time.monotonic()
++    total = 0
++    with urllib.request.urlopen(url, timeout=12) as response, path.open('xb') as target:
++        require(response.geturl().startswith('https://'), 'download redirected outside HTTPS')
++        while block := response.read(128 * 1024):
++            total += len(block)
++            require(total <= maximum and time.monotonic() - start < 30, 'download budget exceeded')
++            target.write(block)
++
++def prepare_xvfb(bundle, directory):
++    """Never execute extracted code before hash AND pinned trusted signature pass."""
++    if bundle is None:
++        bundle = directory / 'package'
++        bundle.mkdir(mode=0o700)
++        download('https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/', bundle / 'official.json', 128 * 1024)
++        metadata = json.loads((bundle / 'official.json').read_text())
++        require((metadata['pkgname'], metadata['repo'], metadata['arch']) == ('xorg-server-xvfb', 'extra', 'x86_64'), 'unexpected official package identity')
++        filename = metadata['filename']
++        require(re.fullmatch(r'xorg-server-xvfb-[0-9A-Za-z.+_-]+-x86_64\.pkg\.tar\.zst', filename), 'unsafe package filename')
++        download(MIRROR + filename, bundle / filename, 16 * 1024 * 1024)
++        download(MIRROR + filename + '.sig', bundle / (filename + '.sig'), 64 * 1024)
++        download(MIRROR + 'extra.db', bundle / 'extra.db', 32 * 1024 * 1024)
++    files = list(bundle.glob('xorg-server-xvfb-*-x86_64.pkg.tar.zst'))
++    require(len(files) == 1, 'bundle must contain exactly one official Xvfb package')
++    package = files[0]
++    require(re.fullmatch(r'xorg-server-xvfb-[0-9A-Za-z.+_-]+-x86_64\.pkg\.tar\.zst', package.name), 'unsafe package filename')
++    entry = package.name.removesuffix('-x86_64.pkg.tar.zst') + '/desc'
++    desc = run(['bsdtar', '-xOf', str(bundle / 'extra.db'), entry], capture_output=True).stdout.decode()
++    fields = {lines[0].strip('%'): '\n'.join(lines[1:]) for block in desc.strip().split('\n\n') if (lines := block.splitlines())}
++    require(fields['NAME'] == 'xorg-server-xvfb' and fields['ARCH'] == 'x86_64' and fields['FILENAME'] == package.name, 'repository package metadata mismatch')
++    sha = digest(package)
++    require(sha == fields['SHA256SUM'], 'package SHA256 differs from repository metadata')
++    require(SIGNER not in REVOKED.read_text().splitlines(), 'pinned package signer is revoked')
++    keyring = directory / 'archlinux-binary.gpg'
++    run(['gpg', '--homedir', str(directory), '--batch', '--dearmor', '--output', str(keyring), str(KEYRING)], capture_output=True)
++    verification = run(['gpgv', '--homedir', str(directory), '--keyring', str(keyring), '--status-fd', '1', str(package) + '.sig', str(package)], capture_output=True)
++    status = verification.stdout.decode()
++    require('[GNUPG:] VALIDSIG ' + SIGNER + ' ' in status, 'signature signer differs from reviewed official packager')
++    require(not any(word in status for word in ('REVKEYSIG', 'EXPKEYSIG', 'EXPSIG', 'BADSIG')), 'signature status is not acceptable')
++    pkginfo = run(['bsdtar', '-xOf', str(package), '.PKGINFO'], capture_output=True).stdout.decode()
++    require('pkgname = xorg-server-xvfb\n' in pkginfo and 'arch = x86_64\n' in pkginfo, 'signed package identity differs')
++    executable = directory / 'Xvfb'
++    with executable.open('xb') as output:
++        run(['bsdtar', '-xOf', str(package), 'usr/bin/Xvfb'], stdout=output)
++    executable.chmod(0o700)
++    evidence = {'filename': package.name, 'sha256': sha, 'repository_sha256': fields['SHA256SUM'], 'signer': SIGNER,
++                'signature_verified': True, 'keyring': str(KEYRING), 'keyring_sha256': digest(KEYRING),
++                'metadata_url': 'https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/', 'repository_url': MIRROR + 'extra.db', 'package_url': MIRROR + package.name,
++                'signature_status': status, 'executable_sha256': digest(executable), 'bundle': str(bundle)}
++    write_json(directory / 'package-verification.json', evidence)
++    return executable, evidence
++
++class PrivateX:
++    """Only instantiated in a deadline-bounded helper process; no default display."""
++    def __init__(self, request):
++        self.request = request
++        number = request['display_number']
++        require(isinstance(number, int) and 4000 <= number < 20000, 'refusing nonprivate display range')
++        require(Path(f'/tmp/.X{number}-lock').read_text().strip() == str(request['server_pid']), 'X display does not belong to owned Xvfb PID')
++        require(os.getpgid(request['server_pid']) == request['server_pid'], 'X server is not the owned private session leader')
++        auth = Path(request['auth_file'])
++        require(auth.stat().st_mode & 0o077 == 0 and auth.stat().st_uid == os.geteuid(), 'unsafe private authority permissions')
++        raw = auth.read_bytes()
++        require(len(raw) < 1024, 'oversized private authority')
++        offset = 2
++        pieces = []
++        for _ in range(4):
++            size, = struct.unpack_from('>H', raw, offset); offset += 2
++            pieces.append(raw[offset:offset + size]); offset += size
++        require(offset == len(raw) and pieces[2] == b'MIT-MAGIC-COOKIE-1' and len(pieces[3]) == 16, 'invalid private authority')
++        self.x = C.CDLL('libX11.so.6')
++        self.t = C.CDLL('libXtst.so.6')
++        signatures = {
++            'XSetAuthorization': ([C.c_char_p, C.c_int, C.c_char_p, C.c_int], None),
++            'XOpenDisplay': ([C.c_char_p], C.c_void_p), 'XCloseDisplay': ([C.c_void_p], C.c_int),
++            'XDefaultRootWindow': ([C.c_void_p], C.c_ulong),
++            'XInternAtom': ([C.c_void_p, C.c_char_p, C.c_int], C.c_ulong),
++            'XGetWindowProperty': ([C.c_void_p, C.c_ulong, C.c_ulong, C.c_long, C.c_long, C.c_int, C.c_ulong, C.POINTER(C.c_ulong), C.POINTER(C.c_int), C.POINTER(C.c_ulong), C.POINTER(C.c_ulong), C.POINTER(C.POINTER(C.c_ubyte))], C.c_int),
++            'XQueryTree': ([C.c_void_p, C.c_ulong, C.POINTER(C.c_ulong), C.POINTER(C.c_ulong), C.POINTER(C.POINTER(C.c_ulong)), C.POINTER(C.c_uint)], C.c_int),
++            'XFree': ([C.c_void_p], C.c_int), 'XFetchName': ([C.c_void_p, C.c_ulong, C.POINTER(C.c_char_p)], C.c_int),
++            'XGetGeometry': ([C.c_void_p, C.c_ulong, C.POINTER(C.c_ulong), C.POINTER(C.c_int), C.POINTER(C.c_int), C.POINTER(C.c_uint), C.POINTER(C.c_uint), C.POINTER(C.c_uint), C.POINTER(C.c_uint)], C.c_int),
++            'XTranslateCoordinates': ([C.c_void_p, C.c_ulong, C.c_ulong, C.c_int, C.c_int, C.POINTER(C.c_int), C.POINTER(C.c_int), C.POINTER(C.c_ulong)], C.c_int),
++            'XSetInputFocus': ([C.c_void_p, C.c_ulong, C.c_int, C.c_ulong], C.c_int), 'XRaiseWindow': ([C.c_void_p, C.c_ulong], C.c_int),
++            'XSync': ([C.c_void_p, C.c_int], C.c_int),
++        }
++        for name, (arguments, result) in signatures.items():
++            function = getattr(self.x, name); function.argtypes = arguments; function.restype = result
++        for name, arguments in [('XTestQueryExtension', [C.c_void_p] + [C.POINTER(C.c_int)] * 4), ('XTestFakeMotionEvent', [C.c_void_p, C.c_int, C.c_int, C.c_int, C.c_ulong]), ('XTestFakeButtonEvent', [C.c_void_p, C.c_uint, C.c_int, C.c_ulong])]:
++            function = getattr(self.t, name); function.argtypes = arguments; function.restype = C.c_int
++        self.x.XSetAuthorization(pieces[2], len(pieces[2]), pieces[3], len(pieces[3]))
++        self.d = self.x.XOpenDisplay(f':{number}'.encode())
++        require(self.d, 'could not authenticate to private Xvfb')
++        self.root = self.x.XDefaultRootWindow(self.d)
++        event, error, major, minor = (C.c_int() for _ in range(4))
++        require(self.t.XTestQueryExtension(self.d, C.byref(event), C.byref(error), C.byref(major), C.byref(minor)), 'private X server has no XTEST extension')
++    def owner(self, window):
++        atom = self.x.XInternAtom(self.d, b'_NET_WM_PID', 1)
++        actual, fmt, count, after = C.c_ulong(), C.c_int(), C.c_ulong(), C.c_ulong()
++        data = C.POINTER(C.c_ubyte)()
++        status = self.x.XGetWindowProperty(self.d, window, atom, 0, 1, 0, 6, C.byref(actual), C.byref(fmt), C.byref(count), C.byref(after), C.byref(data))
++        try:
++            return C.cast(data, C.POINTER(C.c_ulong))[0] if status == 0 and fmt.value == 32 and count.value == 1 and data else None
++        finally:
++            if data: self.x.XFree(data)
++    def target(self):
++        root, parent, children, count = C.c_ulong(), C.c_ulong(), C.POINTER(C.c_ulong)(), C.c_uint()
++        require(self.x.XQueryTree(self.d, self.root, C.byref(root), C.byref(parent), C.byref(children), C.byref(count)), 'private root query failed')
++        matches = []
++        try:
++            require(count.value <= 4096, 'private window count exceeds bound')
++            for index in range(count.value):
++                window = children[index]
++                if self.owner(window) != self.request['target_pid']: continue
++                name = C.c_char_p()
++                if self.x.XFetchName(self.d, window, C.byref(name)) and name:
++                    try:
++                        if name.value.decode() == 'FluxWM (nested)': matches.append(window)
++                    finally: self.x.XFree(name)
++        finally:
++            if children: self.x.XFree(children)
++        require(len(matches) == 1, 'exact owned FluxWM X window not found', 'target_not_ready')
++        return matches[0]
++    def geometry(self, window):
++        root, x, y, w, h, border, depth = C.c_ulong(), C.c_int(), C.c_int(), C.c_uint(), C.c_uint(), C.c_uint(), C.c_uint()
++        require(self.x.XGetGeometry(self.d, window, C.byref(root), C.byref(x), C.byref(y), C.byref(w), C.byref(h), C.byref(border), C.byref(depth)), 'target geometry unavailable')
++        require(320 <= w.value <= 1600 and 240 <= h.value <= 1000, 'target size outside private screen bounds')
++        return {'width': w.value, 'height': h.value}
++    def inject(self, window, action):
++        self.x.XRaiseWindow(self.d, window)
++        self.x.XSetInputFocus(self.d, window, 1, 0)
++        if action['kind'] == 'motion':
++            geometry = self.geometry(window); x, y = action['x'], action['y']
++            require(0 <= x < geometry['width'] and 0 <= y < geometry['height'], 'motion outside exact owned target')
++            rx, ry, child = C.c_int(), C.c_int(), C.c_ulong()
++            require(self.x.XTranslateCoordinates(self.d, window, self.root, x, y, C.byref(rx), C.byref(ry), C.byref(child)), 'target coordinate conversion failed')
++            require(self.t.XTestFakeMotionEvent(self.d, 0, rx.value, ry.value, 0), 'XTEST motion failed')
++        else:
++            require(action['button'] in (1, 4, 5, 6, 7), 'unsupported private test button')
++            require(self.t.XTestFakeButtonEvent(self.d, action['button'], int(action['pressed']), 0), 'XTEST button failed')
++        self.x.XSync(self.d, 0)
++    def close(self):
++        self.x.XCloseDisplay(self.d)
++
++def xtest_helper():
++    request = json.load(sys.stdin)
++    connection = PrivateX(request)
++    try:
++        target = connection.target()
++        geometry = connection.geometry(target)
++        if request.get('action'):
++            connection.inject(target, request['action'])
++        print(json.dumps({'ok': True, 'window': target, 'pid': request['target_pid'], **geometry}))
++    finally:
++        connection.close()
++
++class Session:
++    def __init__(self, executable, directory):
++        self.directory = directory
++        self.parent = dict(os.environ)
++        self.number = None
++        for _ in range(100):
++            number = 4000 + secrets.randbelow(16000)
++            if not Path(f'/tmp/.X11-unix/X{number}').exists() and not Path(f'/tmp/.X{number}-lock').exists() and self.parent.get('DISPLAY') not in (f':{number}', f':{number}.0'):
++                self.number = number
++                break
++        require(self.number is not None, 'no unused private display number found')
++        self.display = f':{self.number}'
++        self.auth = directory / 'private.Xauthority'
++        cookie = secrets.token_bytes(16)
++        record = struct.pack('>H', 65535)
++        for value in (b'', str(self.number).encode(), b'MIT-MAGIC-COOKIE-1', cookie): record += struct.pack('>H', len(value)) + value
++        with os.fdopen(os.open(self.auth, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'wb') as target: target.write(record)
++        self.log = (directory / 'xvfb.log').open('wb')
++        self.server = subprocess.Popen([str(executable), self.display, '-screen', '0', '1600x1000x24', '-nolisten', 'tcp', '-auth', str(self.auth), '-noreset'], stdout=self.log, stderr=self.log, start_new_session=True)
++        self.environment = dict(self.parent, DISPLAY=self.display, XAUTHORITY=str(self.auth), WINIT_UNIX_BACKEND='x11', LIBGL_ALWAYS_SOFTWARE='1')
++        self.environment.pop('WAYLAND_DISPLAY', None); self.environment.pop('WAYLAND_SOCKET', None)
++    def ready(self):
++        return self.server.poll() is None and Path(f'/tmp/.X{self.number}-lock').exists() and Path(f'/tmp/.X11-unix/X{self.number}').exists()
++    def test(self, pid, action=None):
++        require(self.server.poll() is None, 'owned Xvfb exited')
++        request = {'display_number': self.number, 'server_pid': self.server.pid, 'auth_file': str(self.auth), 'target_pid': pid, 'action': action}
++        # Cookie stays in the 0600 file, never argv/evidence. Native Xlib calls
++        # are isolated here so a hung X call is killed by the parent deadline.
++        completed = subprocess.run([sys.executable, str(Path(__file__).resolve()), '_xtest'], input=json.dumps(request), capture_output=True, text=True, timeout=2, env=self.environment)
++        require(completed.returncode == 0, 'private XTEST helper failed: ' + completed.stderr[-2000:])
++        return json.loads(completed.stdout)
++    def close(self):
++        if self.server.poll() is None:
++            self.server.terminate()
++            try: self.server.wait(timeout=2)
++            except subprocess.TimeoutExpired: self.server.kill(); self.server.wait(timeout=2)
++        self.log.close()
++        # Secrets have no role in evidence reproduction. Remove cookie after all
++        # owned X clients/server have stopped; retain only path/mode metadata.
++        self.auth.unlink(missing_ok=True)
++
++def main():
++    root = Path(__file__).resolve().parents[1]
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--binary', type=Path, default=root / 'target/debug/fluxwm')
++    parser.add_argument('--fixture', type=Path, default=root / 'target/debug/fluxwm-fixture')
++    parser.add_argument('--bundle', type=Path, help='cached official package + detached signature + matching extra.db; all reverified')
++    parser.add_argument('--artifacts', type=Path)
++    parser.add_argument('--prepare-only', action='store_true')
++    parser.add_argument('--case', choices=('scene-pan', 'held-motion'), default='scene-pan')
++    args = parser.parse_args()
++    directory = (args.artifacts or root / 'target/smoke-input' / uuid.uuid4().hex).resolve()
++    directory.mkdir(mode=0o700, parents=True, exist_ok=False)
++    result = {'ok': False, 'case': args.case, 'harness_sha256': digest(Path(__file__)), 'invocation': [sys.executable, *sys.argv], 'scope': 'private authenticated X11 host -> nested FluxWM -> owned Wayland input-probe; no host-session injection'}
++    session = compositor = fixture = None
++    logs = []
++    started = time.monotonic()
++    deadline = None
++    responses = []
++    def check():
++        require(time.monotonic() < deadline, 'runtime suite deadline exceeded')
++        require(compositor is None or compositor.poll() is None, 'nested compositor exited early')
++        require(session.server.poll() is None, 'private Xvfb exited early')
++    def wait(predicate, maximum=3):
++        stop = min(deadline, time.monotonic() + maximum)
++        while not predicate():
++            check(); require(time.monotonic() < stop, 'event observation deadline exceeded')
++            time.sleep(.01)
++    def events():
++        if not event_file.exists(): return []
++        require(event_file.stat().st_size <= 1024 * 1024, 'fixture event evidence too large')
++        text = event_file.read_text()
++        lines = text.splitlines()
++        if text and not text.endswith('\n'):
++            lines = lines[:-1] # A final append may still be in progress.
++        data = [json.loads(line) for line in lines]
++        require(len(data) <= 1024, 'fixture event count exceeds bound')
++        return data
++    def observed(kind, owner=None, since=0, **values):
++        return any(e.get('type') == kind and (owner is None or e.get('root') == owner) and all(e.get(k) == v for k, v in values.items()) for record in events()[since:] if (e := record.get('event', {})))
++    def ipc(method, params=None):
++        check(); ident = uuid.uuid4().hex
++        message = json.dumps({'version': 1, 'id': ident, 'method': method, 'params': params or {}}).encode()
++        with socket.socket(socket.AF_UNIX) as connection:
++            connection.settimeout(min(2, max(.01, deadline - time.monotonic())))
++            connection.connect(str(ipc_path)); connection.sendall(struct.pack('>I', len(message)) + message)
++            def exact(count):
++                data = b''
++                while len(data) < count:
++                    check(); part = connection.recv(count - len(data)); require(part, 'unexpected IPC EOF'); data += part
++                return data
++            size, = struct.unpack('>I', exact(4)); require(0 < size <= 1024 * 1024, 'invalid reply length')
++            response = json.loads(exact(size)); require(response['id'] == ident and 'result' in response, 'IPC rejected test operation')
++        responses.append(response); return response['result']
++    def action(name, **values): return ipc('action', {'name': name, **values})
++    def inject(kind, **values):
++        check(); return session.test(compositor.pid, {'kind': kind, **values})
++    try:
++        executable, verification = prepare_xvfb(args.bundle, directory)
++        result['package'] = verification
++        if args.prepare_only:
++            result['ok'] = True
++        else:
++            # Copy stable executable identities before launching any process.
++            for source, name in [(args.binary.resolve(), 'fluxwm'), (args.fixture.resolve(), 'fixture')]:
++                before = digest(source)
++                import shutil
++                shutil.copyfile(source, directory / name); (directory / name).chmod(0o700)
++                require(digest(source) == before == digest(directory / name), 'binary changed while taking evidence snapshot')
++                result[name + '_sha256'] = before
++            session = Session(executable, directory)
++            deadline = time.monotonic() + 30
++            wait(session.ready)
++            runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
++            environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime))
++            name = 'fluxwm-input-' + uuid.uuid4().hex[:12]
++            ready = directory / 'ready.json'
++            for log_name in ('compositor.stdout', 'compositor.stderr', 'fixture.stdout', 'fixture.stderr'): logs.append((directory / log_name).open('wb'))
++            compositor = subprocess.Popen([str(directory / 'fluxwm'), '--socket', name, '--ready-file', str(ready), '--exit-after-ms', '18000'], env=environment, stdout=logs[0], stderr=logs[1], start_new_session=True)
++            wait(ready.exists, 8)
++            publication = json.loads(ready.read_text()); require(publication['pid'] == compositor.pid, 'ready process mismatch'); ipc_path = Path(publication['ipc_socket'])
++            result['private_display'] = {'display': session.display, 'server_pid': session.server.pid, 'authenticated': True, 'auth_path': str(session.auth), 'auth_mode': '0600', 'tcp_disabled': True}
++            result['target'] = session.test(compositor.pid)
++            event_file = directory / 'input.events.jsonl'
++            fixture_environment = dict(environment, WAYLAND_DISPLAY=name, FLUXWM_SOCKET=str(ipc_path), FLUXWM_FIXTURE_EVENT_FILE=str(event_file))
++            fixture = subprocess.Popen([str(directory / 'fixture'), 'input-probe', '--timeout-ms', '10000'], env=fixture_environment, stdout=logs[2], stderr=logs[3], start_new_session=True)
++            wait(lambda: observed('ready'), 8)
++            windows = ipc('windows.list')['windows']
++            owners = {w['title']: w for w in windows}
++            require(set(owners) == {'input-A', 'input-B'}, 'isolated fixture window inventory differs')
++            if not owners['input-A']['focused']: action('focus', direction='left')
++            action('workspace-mode', mode='canvas')
++            windows = {w['title']: w for w in ipc('windows.list')['windows']}
++            delta = windows['input-B']['geometry']['x'] - windows['input-A']['geometry']['x']
++            require(100 < delta < 1200, 'fixture horizontal displacement outside controlled test range')
++            inject('motion', x=64, y=64)
++            wait(lambda: observed('pointer.enter', 0))
++            press = len(events())
++            inject('button', button=1, pressed=True)
++            wait(lambda: observed('pointer.button', 0, button=272, state='pressed'))
++            if args.case == 'scene-pan':
++                before_pan = ipc('diagnostics')['runtime']['compositions']
++                action('pan', dx=delta, dy=0)
++                wait(lambda: ipc('diagnostics')['runtime']['compositions'] > before_pan)
++                target_x = 64
++            else:
++                # Keep the scene fixed. Motion updates the pending target during
++                # the implicit grab; release must repair it without later motion.
++                moved = len(events())
++                target_x = int(delta + 64)
++                require(target_x == delta + 64, 'fixture displacement is not an exact test pixel')
++                inject('motion', x=target_x, y=64)
++                wait(lambda: observed('pointer.motion', 0, since=moved))
++                time.sleep(.2)
++                check()
++                result['held_motion_scene'] = ipc('diagnostics')['runtime']['compositions']
++            held = len(events())
++            inject('button', button=4, pressed=True); inject('button', button=4, pressed=False)
++            wait(lambda: observed('pointer.axis', 0, since=held, axis='vertical'))
++            require(not observed('pointer.enter', 1, since=press), 'implicit grab retargeted before button release', 'grab_routing')
++            release = len(events())
++            result['release_event_index'] = release
++            inject('button', button=1, pressed=False)
++            wait(lambda: observed('pointer.button', 0, since=release, button=272, state='released'))
++            stop = time.monotonic() + 1
++            while not observed('pointer.enter', 1, since=release) and time.monotonic() < stop:
++                check(); time.sleep(.01)
++            require(observed('pointer.enter', 1, since=release), 'stationary button release did not restore pending focus to input-B', 'M1_missing_focus_after_release')
++            after_release = len(events())
++            inject('button', button=4, pressed=True); inject('button', button=4, pressed=False)
++            wait(lambda: observed('pointer.axis', 1, since=after_release, axis='vertical'))
++            inject('motion', x=target_x + 2, y=67)
++            wait(lambda: observed('pointer.motion', 1, since=after_release))
++            inject('button', button=1, pressed=True); inject('button', button=1, pressed=False)
++            wait(lambda: observed('pointer.button', 1, since=after_release, button=272, state='released'))
++            wait(lambda: fixture.poll() is not None, 9)
++            require(fixture.returncode == 0, 'input fixture reported an instrumentation/protocol failure')
++            fixture_report = json.loads((directory / 'fixture.stdout').read_text())
++            require(fixture_report.get('ok') is True, 'fixture terminal report is not successful')
++            result['fixture_report'] = fixture_report
++            result.update({'ok': True, 'M1_pending_focus_repaired_without_motion': True, 'held_axis_owner': 0, 'released_axis_owner': 1, 'fixture_horizontal_delta': delta, 'pan_dx': delta if args.case == 'scene-pan' else 0, 'release_event_index': release})
++    except Exception as error:
++        result.update({'error': str(error), 'failure_code': getattr(error, 'code', 'infrastructure')})
++    finally:
++        if session is not None:
++            # Release any test-held button on the owned private server before teardown.
++            if compositor is not None and compositor.poll() is None:
++                try: session.test(compositor.pid, {'kind': 'button', 'button': 1, 'pressed': False})
++                except Exception: pass
++        for process in (fixture, compositor):
++            if process is not None and process.poll() is None:
++                process.terminate()
++                try: process.wait(timeout=2)
++                except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=2)
++        if session is not None: session.close()
++        for log in logs: log.close()
++        result['elapsed_seconds'] = time.monotonic() - started
++        result['responses'] = responses
++        result['parent_environment_unchanged'] = dict(os.environ) == (session.parent if session else dict(os.environ))
++        write_json(directory / 'result.json', result)
++    print(json.dumps({'ok': result['ok'], 'failure_code': result.get('failure_code'), 'error': result.get('error'), 'artifacts': str(directory)}))
++    return 0 if result['ok'] else 1
++
++if __name__ == '__main__':
++    if sys.argv[1:] == ['_xtest']:
++        try: xtest_helper()
++        except Exception as error:
++            print(str(error), file=sys.stderr); sys.exit(2)
++    else:
++        sys.exit(main())
+diff --git a/tools/smoke_nested.py b/tools/smoke_nested.py
+index 36b33af..11c19f8 100644
+--- a/tools/smoke_nested.py
++++ b/tools/smoke_nested.py
+@@ -55,6 +55,7 @@ def check_pixels(path, deadline=None):
+         require(len(dimensions) == 2, "PPM requires two dimensions")
+         width, height = map(int, dimensions)
+         require(0 < width <= 8192 and 0 < height <= 8192, "PPM dimensions outside limit")
++        require(width >= 320 and height >= 240, "host output is too small for the 320x240 quadrant fixture")
+         require(source.readline() == b"255\n", "PPM must use 8-bit channels")
+         pixels = source.read(PPM_LIMIT + 1)
+     require(len(pixels) == width * height * 3, "PPM pixel length mismatch")
+diff --git a/tools/smoke_scene.py b/tools/smoke_scene.py
+index 374ec55..9adf652 100644
+--- a/tools/smoke_scene.py
++++ b/tools/smoke_scene.py
+@@ -30,8 +30,8 @@ def read_json(path):
+     return json.loads(bounded_read(path, JSON_LIMIT))
+ 
+ 
+-def check_pixels(path, deadline):
+-    """Compare aligned RGB rows against the controlled, pre-input scene."""
++def read_ppm(path):
++    """Read the bounded, strict P6 format written by the compositor."""
+     data = bounded_read(path, PPM_LIMIT)
+     header = data.split(b"\n", 3)
+     require(len(header) == 4 and header[0] == b"P6" and header[2] == b"255", "expected strict P6/255 image")
+@@ -42,6 +42,12 @@ def check_pixels(path, deadline):
+     require(320 <= width <= 8192 and 240 <= height <= 8192, "unsupported image dimensions")
+     pixels = header[3]
+     require(len(pixels) == width * height * 3, "PPM payload length mismatch")
++    return width, height, pixels
++
++
++def check_pixels(path, deadline):
++    """Compare aligned RGB rows against the controlled, pre-input scene."""
++    width, height, pixels = read_ppm(path)
+     background = bytes([15, 18, 23])
+     red, green, blue, yellow = (bytes(rgb) for rgb in ([255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0]))
+     top = red * 160 + green * 120 + background * (width - 280)
+@@ -52,11 +58,32 @@ def check_pixels(path, deadline):
+         expected = top if y < 120 else bottom if y < 240 else clear
+         actual = pixels[y * width * 3:(y + 1) * width * 3]
+         require(actual == expected, f"container screenshot differs from exact clipped scene at row {y}")
+-    return {"width": width, "height": height, "sha256": sha256(path),
+-            "rgb_counts": {"red": 19200, "green": 14400, "blue": 19200, "yellow": 14400, "cyan": 0},
++    return {"width": width, "height": height, "sha256": sha256(path), "pixel_validation": "exact-row-equality",
++            "expected_rgb_counts": {"red": 19200, "green": 14400, "blue": 19200, "yellow": 14400, "cyan": 0},
+             "background_rgb": [15, 18, 23], "right_edge_x280_matches_background": True}
+ 
+ 
++def check_popup_pixels(path, deadline):
++    """Validate popup paint outside the root clip and above its own root."""
++    width, height, pixels = read_ppm(path)
++    background = bytes([15, 18, 23])
++    red, green, blue, yellow, magenta = (bytes(rgb) for rgb in (
++        [255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [255, 0, 255]))
++    popup_row = magenta * 80 + red * 112 + green * 120 + background * (width - 312)
++    root_top = background * 32 + red * 160 + green * 120 + background * (width - 312)
++    root_bottom = background * 32 + blue * 160 + yellow * 120 + background * (width - 312)
++    clear = background * width
++    for y in range(height):
++        require(time.monotonic() < deadline, "deadline expired during popup pixel validation")
++        expected = popup_row if y < 60 else root_top if y < 120 else root_bottom if y < 240 else clear
++        require(pixels[y * width * 3:(y + 1) * width * 3] == expected,
++                f"popup screenshot differs from independently clipped scene at row {y}")
++    return {"width": width, "height": height, "sha256": sha256(path), "pixel_validation": "exact-row-equality",
++            "expected_rgb_counts": {"red": 16320, "green": 14400, "blue": 19200, "yellow": 14400, "magenta": 4800, "cyan": 0},
++            "popup_visible_outside_root_clip": True, "popup_paints_above_own_root": True,
++            "background_rgb": [15, 18, 23], "right_edge_x312_matches_background": True}
++
++
+ def check_fixture(mode, value):
+     require(value.get("mode") == mode and value.get("ok") is True, f"{mode}: fixture failed: {value.get('error')}")
+     if mode == "popup-lifecycle":
+@@ -70,7 +97,7 @@ def check_fixture(mode, value):
+         for key in ("stationary_motions_after_seed", "feedback_commits"):
+             require(type(value.get(key)) is int and 0 <= value[key] <= 1, f"pointer feedback exceeds bound: {key}")
+         require(value.get("changing_motions_after_seed") == 0 and value.get("initial_pointer_xy") == [0, 0], "stationary pointer precondition failed")
+-    else:
++    elif mode == "container-clip":
+         require(value.get("workspace_mode") == "canvas" and value.get("actual_shm_size") == [1900, 240], "container scene preconditions missing")
+         require(value.get("requested_container_width") == 280, "wrong allocated width")
+         for phase in ("after_resize", "after_settle"):
+@@ -95,6 +122,30 @@ def check_fixture(mode, value):
+         enters = [i for i, event in enumerate(events) if event.get("clip_pointer_enter_child") is True]
+         leaves = [i for i, event in enumerate(events) if event.get("clip_pointer_leave_child") is True]
+         require(enters and leaves and enters[0] < leaves[-1], "ordered child enter then leave evidence missing")
++    elif mode == "popup-clip":
++        require(value.get("workspace_mode") == "canvas" and value.get("actual_shm_size") == [1900, 240], "popup scene preconditions missing")
++        for phase in ("root_after_move", "after_settle"):
++            windows = value.get(phase, {}).get("windows", [])
++            require(len(windows) == 1, f"{phase}: expected one popup owner")
++            geometry = windows[0].get("geometry", {})
++            require([geometry.get(k) for k in ("x", "y", "width")] == [32, 0, 280], f"{phase}: wrong popup owner placement")
++        require(value.get("initial_root_pointer_xy") == [0, 0] and value.get("pointer_outside_root_before_popup") is True, "popup pointer preconditions missing")
++        require(value.get("actual_popup_configure") == [-32, 0, 80, 60], "wrong popup configure geometry")
++        require(value.get("actual_popup_world_rect") == {"x": 0, "y": 0, "width": 80, "height": 60}, "wrong popup world geometry")
++        require(value.get("popup_receives_pointer_outside_owner_clip") is True and value.get("popup_pointer_enter_xy") == [0, 0], "popup did not receive actual outside-owner pointer enter")
++        require(value.get("popup_frame_callbacks", 0) >= 1 and value.get("popup_done_before_cleanup") == 0, "popup frame/liveness evidence missing")
++        ready_at = value.get("popup_ready_at_ms")
++        require(type(ready_at) is int and 0 <= ready_at < 700, "popup was not ready before delayed screenshot threshold")
++        events = [entry.get("event", {}) for entry in value.get("events", [])]
++        positions = {}
++        for key in ("popup_geometry", "popup_configure_ack", "map_popup_commit", "popup_frame_done", "popup_clip_pointer_enter"):
++            found = [i for i, event in enumerate(events) if type(event.get(key)) is int and event[key] == 0]
++            require(found, f"missing popup event: {key}")
++            positions[key] = found[0]
++        require(positions["popup_geometry"] < positions["popup_configure_ack"] < positions["map_popup_commit"], "popup configure/map ordering invalid")
++        require(all(positions["map_popup_commit"] < positions[key] for key in ("popup_frame_done", "popup_clip_pointer_enter")), "popup frame/enter preceded mapping")
++    else:
++        raise Failure(f"unrecognized fixture mode: {mode}")
+ 
+ 
+ class Runner:
+@@ -116,7 +167,7 @@ class Runner:
+         require(all(not path.exists() and not path.is_symlink() for path in endpoints), "unique endpoint collision")
+         ready, stats, image = (directory / name for name in ("ready.json", "stats.json", "scene.ppm"))
+         command = [str(self.binary), "--backend", "nested", "--socket", socket, "--exit-after-ms", "6000", "--ready-file", str(ready), "--stats-file", str(stats)]
+-        if mode == "container-clip":
++        if mode in ("container-clip", "popup-clip"):
+             command += ["--screenshot", str(image), "--screenshot-after-ms", "700"]
+         command += ["--", str(self.fixture), mode, "--timeout-ms", "4500"]
+         result = {"mode": mode, "command": command, "ok": False, "socket": socket,
+@@ -160,8 +211,9 @@ class Runner:
+             check_fixture(mode, fixture_value)
+             result["stats"] = read_json(stats)
+             require(result["stats"].get("final_windows") == 0, "managed window remained after fixture disconnect")
+-            if mode == "container-clip":
+-                result["pixels"] = check_pixels(image, self.deadline)
++            if mode in ("container-clip", "popup-clip"):
++                validator = check_popup_pixels if mode == "popup-clip" else check_pixels
++                result["pixels"] = validator(image, self.deadline)
+             require(time.monotonic() < self.deadline, "whole-suite deadline expired during evidence validation")
+             result["ok"] = True
+         except Exception as error:
+@@ -213,7 +265,7 @@ def main():
+                "binary": str(binary), "fixture": str(fixture), "binary_sha256": sha256(binary), "fixture_sha256": sha256(fixture),
+                "scope": "nested synthetic SHM scene/input regressions; excludes physical input, native backend and host presentation qualification"}
+     errors = []
+-    for mode in ("popup-lifecycle", "pointer-feedback", "container-clip"):
++    for mode in ("popup-lifecycle", "pointer-feedback", "container-clip", "popup-clip"):
+         try:
+             runner.run(mode)
+         except Exception as error:

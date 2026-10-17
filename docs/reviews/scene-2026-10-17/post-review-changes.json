@@ -1,0 +1,19 @@
+{
+  "reviewed_commit": "e7059a7e4c0a0d4c55632364105964a3a3758394",
+  "later_source_commit": "adfa7a7ad503ce8c795b3d3000ed1094edb7f2d5",
+  "patch_sha256": "4bfdea07251d47b7901bd98aa0d4114a654b9752224a5125ebb14cb7d1bab8e5",
+  "classification": "Author changes after original review; separate follow-up review tracked independently",
+  "changed_files": [
+    "crates/fluxwm-fixture/src/main.rs",
+    "crates/fluxwm/src/input.rs",
+    "crates/fluxwm/src/winit.rs",
+    "docs/development/input-probe-fixture.md",
+    "docs/development/nested-smoke.md",
+    "docs/development/popup-clip-fixture.md",
+    "docs/development/private-input.md",
+    "docs/development/scene-smoke.md",
+    "tools/smoke_input.py",
+    "tools/smoke_nested.py",
+    "tools/smoke_scene.py"
+  ]
+}

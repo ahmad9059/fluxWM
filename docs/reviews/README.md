@@ -1,8 +1,16 @@
 # Independent Claude review
 
-## Latest runtime implementation review
+## Latest follow-up
 
-[Claude Opus 5.5 runtime report](runtime-2026-10-17/claude-report.md) reviews frozen `4a87922` using 29 read/search calls. The [author disposition](runtime-2026-10-17/disposition.md) checks its four medium findings, records an actual pointer-feedback failure/pass and later source fixes, and preserves unqualified popup cases. All185frozen file hashes match. Neither review nor subsequent tests certify production readiness.
+[Claude’s follow-up report](scene-followup-2026-10-17/claude-report.md) reviews frozen `adfa7a7`. Its [disposition](scene-followup-2026-10-17/disposition.md) records a real oracle gap, a release-only mutation that exposes it after correction, and constructor cleanup fixes. Author hashes of all 331 frozen files match. Later corrections and test results are explicitly author work.
+
+## Shared-scene review
+
+[Claude’s focused scene report](scene-2026-10-17/claude-report.md) reviews frozen `e7059a7` using 12 read/search calls. The [author disposition](scene-2026-10-17/disposition.md) records a reproduced pointer-focus bug, a missing popup clip/paint/picking oracle, later fixes and exact real-test limits. All 327 frozen input hashes match. This review does not certify the complete compositor.
+
+## Earlier runtime implementation review
+
+[Claude Opus 5.5 runtime report](runtime-2026-10-17/claude-report.md) reviews frozen `4a87922` using 29 read/search calls. The [author disposition](runtime-2026-10-17/disposition.md) checks its four medium findings, records an actual pointer-feedback failure/pass and later source fixes, and preserves unqualified popup cases. All 185 frozen file hashes match. Neither review nor subsequent tests certify production readiness.
 
 ## Earlier implementation audit
 

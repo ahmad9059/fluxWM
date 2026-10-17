@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/run/user/1000/fluxwm/fluxpopup-b5fafd667e6e4aecaa.sock",
+  "pid": 218706,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxpopup-b5fafd667e6e4aecaa"
+}

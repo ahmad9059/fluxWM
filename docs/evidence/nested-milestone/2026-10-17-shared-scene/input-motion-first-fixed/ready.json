@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/tmp/fluxwm-input-motion-after/runtime/fluxwm/fluxwm-input-4cae966ea513.sock",
+  "pid": 264083,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxwm-input-4cae966ea513"
+}

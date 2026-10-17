@@ -1,0 +1,45 @@
+I found one medium-severity problem: the `held-motion` test doesn't prove what the docs say it proves. I found no new high-severity bugs. I read the source only. I ran no commands, tests or hash checks, so I can't confirm any runtime result, including the author's before/after results.
+
+## What I inspected, and limits
+- **Read in full or in the relevant parts:** `crates/fluxwm/src/input.rs` (all), `crates/fluxwm/src/winit.rs:85-314`, `crates/fluxwm/src/state.rs:610-726`, `tools/smoke_input.py` (all), `docs/development/private-input.md` (all), and the `input-probe` parts of `crates/fluxwm-fixture/src/main.rs` (836-934, 2259-2383, plus a grep for `commit_on_motion` and `pointer_root`).
+- **Checked by search only:** callers of `refresh_pointer_focus`, the main loop's `finish_dispatch` (`main.rs:282-293`), and the pinned Smithay rev `023b78b1` (`Cargo.lock:1456`).
+- **Not inspected:** `tools/smoke_scene.py` (popup exact-row check). I ran out of the read budget. `RuntimeScene::hit`, `focus_window_id` and `bump_sequence` beyond line 295.
+- **Smithay isn't in the snapshot.** Anything I say about how `ClickGrab` or `unset_grab` behave is inference, not checked against source.
+
+## New medium finding
+
+**M-1: `held-motion` can pass without the release fix (line 229)**
+- **Where:** `tools/smoke_input.py` `main()` lines 349-358 and 383; doc lines 78 and 107; `input.rs:226-230`; `winit.rs:271`.
+- **From the source:**
+  - `RenderContext::draw` sets `pointer_focus_dirty = true` after every composition (`winit.rs:271`).
+  - `refresh_pointer_focus` keeps that flag while a grab is active (`input.rs:24-28`).
+  - So any composition between the press and the release leaves a pending refresh. `finish_dispatch` then applies it after the release (`state.rs:688`), even without the release-time `pointer_focus_dirty = true` at `input.rs:229`.
+- **The gap:** the harness records `held_motion_scene` (the composition count after the held motion) but never compares it to anything. It takes no count before the press and none at or after the release. The docs say the scene "receives no pan/action afterward" (line 78) and the result sets `M1_pending_focus_repaired_without_motion`. But the test never shows that no composition happened while the button was held.
+- **Plausible trigger (inference):** `PointerButton` calls `focus_window_id(id)` on press (`input.rs:192`). If that queues a redraw even when input-A already has focus, a composition lands during the grab.
+- **So:** a binary with the hold-while-grabbed fix but without line 229 might also pass `held-motion`. The two fixes aren't tested separately. `scene-pan` can't test line 229 at all, because its pan forces a composition during the grab.
+- **Fix to close it:** read `diagnostics.runtime.compositions` right after the press is observed and again after B's enter. Require both to equal `held_motion_scene`. Otherwise fail as an oracle failure, not an infrastructure failure. Ideally, also run once against a build without line 229 and record that it fails.
+
+## Lower-severity notes (not blocking)
+- **Event order isn't checked.** Doc line 77 says "A receives release, then B receives enter". The harness only checks that each event appears after `release_event_index`. It doesn't check that B's enter comes after A's release, or that A gets a `pointer.leave`. A journal-index comparison would fix this.
+- **Cookie cleanup has a gap.** If `Session.__init__` fails after writing `private.Xauthority` (for example, `Popen` or the log open raises), `session` stays `None`. Then `close()` never runs, and the cookie file stays in the 0700 artifact directory. That contradicts "removes its cookie" (doc line 67).
+- **The bounded-runtime claim is slightly loose.** `inject`/`Session.test` uses a fixed 2-second subprocess timeout that isn't clipped to the 30-second deadline, so the run can overshoot by up to about 2 seconds.
+- **The comment at `input.rs:195-197` doesn't match the code.** It says relayout may change the surface under the pointer. But `surface_under` uses the last composed `state.scene` (`state.rs:722`), so a relayout from `focus_window_id` can't change the hit result until the next draw. The behaviour is consistent with "input observes the composed scene". Only the comment is misleading.
+
+## Checked and found consistent
+- **Focus refresh held during grabs:** `input.rs:24-29` returns before clearing the flag while grabbed. `PointerAxis` calls the refresh first (`input.rs:234`), so a wheel event during the grab keeps the grab's owner.
+- **Release triggers a refresh:** `input.rs:229` sets the flag after `pointer.button`. `finish_dispatch` runs after every event-loop dispatch (`main.rs:282-283`). An axis event in the same batch refreshes first.
+- **Zero-sized output clears the scene:** both the `Resized` handler (`winit.rs:100-104`) and `draw` (`winit.rs:195-198`) set `scene = None` and mark focus dirty. With no scene, `surface_under` returns `None`, so the pointer leaves the window when it isn't grabbed. `schedule` stops on `render_suspended`. A non-zero resize calls `relayout`.
+- **Private display ownership:** the display number is in the 4000-19999 range and checked for the owned lock PID and session leader. The authority file is checked to be 0600 and user-owned, with an MIT cookie of exactly 16 bytes. The display is opened explicitly. The window must have exactly one `_NET_WM_PID` match plus the title `FluxWM (nested)`. Motion must stay within its bounds. Only buttons 1, 4, 5, 6 and 7 are allowed. `-nolisten tcp` is set. The cookie is passed by file path, never in argv. Wayland variables are removed from the child environment.
+- **No host input:** I found no code path that injects into the inherited display.
+- **Held-axis owner:** the axis event must arrive with `root` 0 and B must get no enter between press and release (`smoke_input.py:360-362`). `root` is the fixture's last-entered surface (`fixture main.rs:171-175`), which makes this a fair proxy.
+- **Routing after release:** wheel, motion and a full click on B are each required after `after_release`. The fixture must then exit 0 with `ok:true`.
+- **No commits triggered by input:** `input-probe` doesn't set `commit_on_motion` (it's only set at `fixture main.rs:1434`). I saw no frame-driven re-commit loop, so the fixture itself doesn't cause compositions.
+- **Doc bounds match the code:** 7000 ms observation, 10 s fixture timeout, 18 s compositor exit, 30 s runtime deadline, 1024 events / 1 MiB limits.
+
+## Not verified
+- Whether Smithay at rev `023b78b1` restores pending focus when `ClickGrab` ends (the claim in the comment at `input.rs:227`).
+- Whether `focus_window_id` queues a redraw for a window that already has focus. This decides how likely M-1 is to hide a regression.
+- All runtime results, evidence paths and SHA256 values in the doc (lines 87-122).
+- The popup exact-row check in `tools/smoke_scene.py`.
+
+This is not a certification.

@@ -1,0 +1,162 @@
+{
+  "case": "held-motion",
+  "elapsed_seconds": 2.744402110998635,
+  "error": "stationary button release did not restore pending focus to input-B",
+  "failure_code": "M1_missing_focus_after_release",
+  "fixture_sha256": "48bd92e0c38631e58202a40ca3ca52565063a1efadf2e5a8ebf675ed430f472a",
+  "fluxwm_sha256": "a47f2df60790425a06f2f64176f27ebbffc41d6c4f02d3cda5a17eea6f9ad239",
+  "held_motion_scene": 3,
+  "ok": false,
+  "package": {
+    "bundle": "/tmp/fluxwm-xvfb-verified-h8kd45_1",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "parent_environment_unchanged": true,
+  "private_display": {
+    "auth_mode": "0600",
+    "auth_path": "/tmp/fluxwm-input-motion-before/private.Xauthority",
+    "authenticated": true,
+    "display": ":9520",
+    "server_pid": 263952,
+    "tcp_disabled": true
+  },
+  "responses": [
+    {
+      "id": "3fcbd75ddf704ed490309f0c39957f6b",
+      "result": {
+        "windows": [
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "title": "input-A",
+            "workspace": "0:0"
+          },
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 648.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "title": "input-B",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "12",
+      "version": 1
+    },
+    {
+      "id": "3ed88b81db3c427785ea30fa366bb043",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "13",
+      "version": 1
+    },
+    {
+      "id": "8eaf406a2ed24ad4b2c848d1e28d0aee",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "14",
+      "version": 1
+    },
+    {
+      "id": "e3936b6639fe411ab37fc151d5c10506",
+      "result": {
+        "windows": [
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 0.0,
+              "y": 0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "title": "input-A",
+            "workspace": "0:0"
+          },
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 648.0,
+              "y": 0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "title": "input-B",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "14",
+      "version": 1
+    },
+    {
+      "id": "0ca69142f2a844c599e92f5db3eda008",
+      "result": {
+        "backend": "nested",
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 3,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 22,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "frames_sent": 6,
+          "maps": 2,
+          "redraws": 5,
+          "submissions": 2,
+          "unmaps": 0,
+          "wayland_requests": 49
+        }
+      },
+      "state_sequence": "15",
+      "version": 1
+    }
+  ],
+  "scope": "private authenticated X11 host -> nested FluxWM -> owned Wayland input-probe; no host-session injection",
+  "target": {
+    "height": 800,
+    "ok": true,
+    "pid": 263953,
+    "width": 1280,
+    "window": 2097154
+  }
+}

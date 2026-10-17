@@ -44,7 +44,7 @@ The harness selects an unused display in `:4000` through `:19999`, excluding the
 inherited display. Xvfb disables TCP and uses a newly generated 16-byte
 MIT-MAGIC-COOKIE-1 secret in a mode0600 authority file. The artifact and runtime
 directories are mode0700. The cookie never enters argv, JSON evidence, or logs.
-It is deleted after owned clients and Xvfb stop. A subprocess-only environment
+It is deleted after owned clients and Xvfb stop; constructor failures after cookie creation also remove it. A subprocess-only environment
 sets the private `DISPLAY`, `XAUTHORITY`, and `XDG_RUNTIME_DIR`, removes inherited
 Wayland connection variables, and forces the nested X11 software-rendering path.
 The parent environment is checked unchanged.
@@ -58,7 +58,7 @@ deadline. The test never opens the default display or injects into the user's
 existing desktop. `_NET_WM_PID` and titles are ownership checks within this
 controlled server, not an authentication mechanism for arbitrary hostile X clients.
 
-The runtime test deadline is 30 seconds after package preparation. The compositor
+The runtime test deadline is 30 seconds after package preparation; each input helper clips its timeout to the remaining runtime budget. The compositor
 also has an 18-second exit timer. The fixture observes seven seconds after ready
 and has a ten-second timeout. The JSONL journal is limited to 1024 events/1MiB;
 IPC replies to 1MiB. Downloads have size/time budgets; package verification helpers
@@ -77,9 +77,11 @@ held. Two fixtures are mapped; their actual IPC geometry determines displacement
 | `scene-pan` | IPC pans the canvas by the measured A-to-B displacement; composition counter must advance | A receives release, then B receives enter without further motion |
 | `held-motion` | Real pointer motion moves from A to B; the scene receives no pan/action afterward | A receives release, then B receives enter without further motion |
 
+For `held-motion`, the composition count before the press, after held motion and after stationary release observation must be identical. A changed count fails with `oracle_composition_changed`; a redraw cannot stand in for the release-specific repair. The runtime avoids redundant relayout when the requested window already owns layout focus, while reasserting keyboard ownership.
+
 A wheel event during the grab must reach A; B must not receive an enter during
 the held interval. After stationary left-button release, B must receive enter
-within one second, then receive wheel, motion, and a complete left click. The
+within one second, with journal indices ordered A release < A leave < B enter, then receive wheel, motion, and a complete left click. The
 fixture must finish with `ok:true`. Its own `ok` confirms instrumentation and
 protocol completion; the harness supplies the routing oracle. No window close
 operation is used, because the fixture treats unexpected close as failure.
@@ -133,3 +135,9 @@ It does not qualify DRM/libinput devices, native host Wayland input, multiple
 buttons/devices, touch, tablet, gestures, pointer constraints, relative pointer,
 interactive XDG move/resize, client destruction during a grab, keyboard grabs,
 or the full production input matrix. Those remain separate tests.
+
+## Follow-up oracle qualification
+
+A [second independent Claude review](../reviews/scene-followup-2026-10-17/disposition.md) correctly challenged the original held-motion oracle: it recorded a composition count but did not assert it, so redraw during press could mask a missing release-time refresh. The harness now rejects any composition from before press through stationary release observation and checks event ordering. Runtime focus of an already-focused window reasserts keyboard focus without redundant relayout.
+
+An explicit mutation removed only the release-time `pointer_focus_dirty = true` block while retaining the grab-preservation fix. It fails `M1_missing_focus_after_release`, with counts **3 / 3 / 3** before press, held and after observation. Thus the test detects this particular missing fix independently of scene publication. The repaired build passes. The [shared-scene evidence bundle](../evidence/nested-milestone/2026-10-17-shared-scene/README.md) contains the mutation metadata, public journal and final results; older runs above remain historical evidence from the earlier weaker oracle. Fault injection at log-open and `Popen` startup failures verifies cookie deletion without starting a server. This qualification does not extend the production input matrix.

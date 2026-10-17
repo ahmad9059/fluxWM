@@ -40,3 +40,5 @@ The ten-phase plan still governs qualification. Independent branches implement o
 See [Linux build setup and CI](build.md), [runtime behavior](runtime.md) and [application launch ownership](processes.md) for current implementation boundaries.
 
 [Runtime findings and production gates](runtime-findings.md) distinguish addressed defects, live evidence and source-only fixes that still need closure tests.
+
+The [private-display pointer regression](private-input.md) checks real button/axis routing and stationary grab release through an authenticated owned Xvfb. The [shared-scene evidence bundle](../evidence/nested-milestone/2026-10-17-shared-scene/README.md) retains failure/pass comparisons and exact source/binary identities.

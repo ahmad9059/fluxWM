@@ -1,0 +1,74 @@
+{
+  "source_commit": "62ca6ed7536ef76f99524470104be7f35ed9049a",
+  "distinct_tests": 113,
+  "raw_pass_sum": 116,
+  "nested_filtered_fixture_repeats": 3,
+  "binary_sha256": "703716141bc47e08383bf9227b26f6734b0bf748d247c617320041db8abd7793",
+  "fixture_sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+  "lockfile_sha256": "178ca789a8185f772e39e53f013ac536f7724148f4c55cf740554b87576675dd",
+  "patch_sha256": "b3d68d608ee7452698c01fcbeba826c57ec5e4710d027f1a1c52e6cb1ed2e9cb",
+  "commands": [
+    {
+      "command": "cargo test --workspace --all-targets",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m py_compile tools/smoke_input.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/check_docs.py --report /tmp/fluxwm-release-final-docs.json",
+      "exit_code": 0
+    }
+  ],
+  "runtime_commands": [
+    {
+      "command": "fluxwm-release-final-scene-command.log",
+      "actual_invocation": "python3 tools/smoke_scene.py --artifacts /tmp/fluxwm-release-final-scene",
+      "exit_code": 0
+    },
+    {
+      "command": "fluxwm-release-final-nested-command.log",
+      "actual_invocation": "python3 tools/smoke_nested.py --artifacts /tmp/fluxwm-release-final-nested",
+      "exit_code": 0
+    },
+    {
+      "command": "fluxwm-release-final-ipc-command.log",
+      "actual_invocation": "python3 tools/smoke_ipc_runtime.py --artifacts /tmp/fluxwm-release-final-ipc",
+      "exit_code": 0
+    },
+    {
+      "command": "fluxwm-release-final-input-pan-command.log",
+      "actual_invocation": "python3 tools/smoke_input.py --artifacts /tmp/fluxwm-release-final-input-pan --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --case scene-pan",
+      "exit_code": 0
+    },
+    {
+      "command": "fluxwm-release-final-input-motion-command.log",
+      "actual_invocation": "python3 tools/smoke_input.py --artifacts /tmp/fluxwm-release-final-input-motion --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --case held-motion",
+      "exit_code": 0
+    }
+  ],
+  "mutation_expected_exit_code": 1,
+  "mutation_failure_code": "M1_missing_focus_after_release",
+  "limits": [
+    "Local populated-cache builds, no clean-machine or hosted CI execution",
+    "Nested virtual output; no physical presentation or native/hardware qualification",
+    "Input artifacts copied only by explicit public filename allowlist; no cookies, keyrings or full environment",
+    "Original PPMs omitted; scene/nested summaries preserve paths, dimensions and hashes",
+    "Historical failed comparisons are intentional failures; final source suites pass"
+  ],
+  "initial_execution": "initial-execution.json",
+  "final_artifacts": "after-followup"
+}
