@@ -55,6 +55,7 @@ def run(binary, directory, environment, shutdown):
     missing = ('missing', ['/missing/SECRET_AUTOSTART_ARGV'], True)
     case = Case(binary, directory / 'lifecycle', environment, source([a, b, fast, missing]))
     owned = {}
+    original = {}
     stages = []
     shutdown_started = None
     def settle(g):
@@ -138,7 +139,7 @@ def run(binary, directory, environment, shutdown):
             final = json.loads(case.stats.read_text())['autostart']
             case.result['final_autostart'] = final
             rows = {e['id']: e for e in final['entries']}
-            case.result['term_ignoring_child_killed'] = rows.get('b', {}).get('exit_signal') == 9 and (folder / (str(original['b']) + '-term.json')).exists()
+            case.result['term_ignoring_child_killed'] = rows.get('b', {}).get('exit_signal') == 9 and (folder / (str(original.get('b')) + '-term.json')).exists()
             case.result['ok'] &= case.result['term_ignoring_child_killed']
             case.result['ok'] &= final['closed'] and final['settled'] and all(e['pid'] is None for e in final['entries'])
         else:
