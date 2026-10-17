@@ -356,38 +356,7 @@ pub enum Key {
 #[serde(deny_unknown_fields)]
 pub struct Binding {
     pub key: Key,
-    #[serde(deserialize_with = "deserialize_action")]
     pub action: Action,
-}
-fn deserialize_action<'de, D: serde::Deserializer<'de>>(
-    de: D,
-) -> std::result::Result<Action, D::Error> {
-    let value = serde_json::Value::deserialize(de)?;
-    let object = value
-        .as_object()
-        .ok_or_else(|| serde::de::Error::custom("action: expected object"))?;
-    let name = object
-        .get("name")
-        .and_then(|n| n.as_str())
-        .ok_or_else(|| serde::de::Error::custom("action.name: expected string"))?;
-    let allowed: &[&str] = match name {
-        "focus" | "move" => &["name", "direction"],
-        "pan" => &["name", "dx", "dy"],
-        "resize" => &["name", "delta"],
-        "workspace-mode" => &["name", "mode"],
-        "fullscreen" | "floating" | "overview" => &["name", "toggle"],
-        "spawn" => &["name", "argv"],
-        "close-window" | "reload-config" | "lock" | "quit" => &["name"],
-        _ => return Err(serde::de::Error::custom("action.name: unsupported action")),
-    };
-    for key in object.keys() {
-        if !allowed.contains(&key.as_str()) {
-            return Err(serde::de::Error::custom(format!(
-                "action: unknown field {key}"
-            )));
-        }
-    }
-    serde_json::from_value(value).map_err(serde::de::Error::custom)
 }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
@@ -482,14 +451,9 @@ fn text(s: &str, path: &str, empty: bool) -> Result<()> {
     Ok(())
 }
 fn argv(a: &[String], path: &str) -> Result<()> {
-    if a.is_empty() || a.len() > 256 {
-        return Err(invalid(format!("{path}: expected 1..=256 arguments")));
-    }
-    for (i, s) in a.iter().enumerate() {
-        text(s, &format!("{path}[{i}]"), i > 0)?;
-    }
-    Ok(())
+    flux_core::validate_argv(a).map_err(|error| invalid(format!("{path}: {error}")))
 }
+
 fn pattern(p: &Option<String>, path: &str, engine_limit: usize) -> Result<Option<Regex>> {
     p.as_ref()
         .map(|s| {
@@ -721,15 +685,9 @@ impl Config {
                 )));
             }
             binding_identities.push(id);
-            match &b.action {
-                Action::Spawn { argv: a } => argv(a, &format!("bindings[{i}].action.argv"))?,
-                Action::Pan { dx, dy } => {
-                    range(*dx, -1e6, 1e6, "action.pan.dx")?;
-                    range(*dy, -1e6, 1e6, "action.pan.dy")?;
-                }
-                Action::Resize { delta } => range(*delta, -65536., 65536., "action.resize.delta")?,
-                _ => (),
-            }
+            b.action
+                .validate()
+                .map_err(|error| invalid(format!("bindings[{i}].action: {error}")))?;
         }
         if self.rules.len() > 1024 {
             return Err(invalid("rules: maximum 1024"));
