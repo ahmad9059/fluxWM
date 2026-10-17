@@ -1,0 +1,131 @@
+{
+  "reviewed_source": "a9035088df76475689b7277bf5fd3443b2cf467b",
+  "final_source": "9a78026b638a8b4d978c8b0e2e0a58625dd73db6",
+  "runtime_source": "d40a947",
+  "distinct_tests": 119,
+  "raw_passing_results": 122,
+  "nested_fixture_repeats": 3,
+  "binary_sha256": "184655687dd986d6f3535172f9a1c4bc0a007e631d1baf8c32f9e0f7ef7547a3",
+  "fixture_sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+  "lockfile_sha256": "178ca789a8185f772e39e53f013ac536f7724148f4c55cf740554b87576675dd",
+  "post_review_patch_sha256": "37d5f05d9f6d72e53ac5b1b0b314a89ba7925b13069498bd6c4895986dc213b7",
+  "checks": [
+    {
+      "command": "cargo test --workspace --all-targets",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m py_compile tools/smoke_private.py tools/smoke_input.py tools/smoke_shutdown.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/check_docs.py --report /tmp/fluxwm-shutdown-docs.json",
+      "exit_code": 0
+    }
+  ],
+  "runtime_invocations": [
+    {
+      "command": "python3 tools/smoke_private.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --artifacts /tmp/fluxwm-shutdown-isolated-final",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_private.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --binary /tmp/fluxwm-shutdown-before/fluxwm --suites shutdown --artifacts /tmp/fluxwm-shutdown-baseline-final",
+      "exit_code": 1,
+      "expected_failure": "both mutating pipeline tails returned after quit on preserved binary"
+    },
+    {
+      "command": "python3 tools/smoke_private.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --suites shutdown --artifacts /tmp/fluxwm-shutdown-isolated-guard-final",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_input.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --case scene-pan --artifacts /tmp/fluxwm-shutdown-input-pan",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_input.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --case held-motion --artifacts /tmp/fluxwm-shutdown-input-motion",
+      "exit_code": 0
+    }
+  ],
+  "origins": [
+    {
+      "original": "/tmp/fluxwm-shutdown-before-evidence",
+      "archive": "before-harness-aborted"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-before-evidence2",
+      "archive": "before-natural-exit"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-after-evidence",
+      "archive": "initial-after"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-final",
+      "archive": "initial-final"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-regression-scene",
+      "archive": "host-scene-failure"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-isolated",
+      "archive": "isolated-null-stats-failure"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-isolated/scene",
+      "archive": "isolated-null-stats-failure/scene"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-isolated/nested",
+      "archive": "isolated-null-stats-failure/nested"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-isolated-final",
+      "archive": "isolated-final"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-isolated-final/scene",
+      "archive": "isolated-final/scene"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-isolated-final/nested",
+      "archive": "isolated-final/nested"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-isolated-final/shutdown",
+      "archive": "isolated-final/shutdown"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-isolated-final/ipc",
+      "archive": "isolated-final/ipc"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-baseline-final",
+      "archive": "isolated-baseline"
+    },
+    {
+      "original": "/tmp/fluxwm-shutdown-baseline-final/shutdown",
+      "archive": "isolated-baseline/shutdown"
+    }
+  ],
+  "limits": [
+    "Local populated caches; no clean installation or hosted CI proof",
+    "Private X11/software rendering only for final graphical suites",
+    "Large PPMs omitted; original summaries retain image paths/hashes",
+    "Private wrapper root files copied only by allowlist; no auth cookies or keyring/cache directories",
+    "250 ms drain budget plus 500 ms measured local scheduling tolerance; whole process teardown is not universally bounded",
+    "Claude read source; author executed tests and later corrections not re-reviewed"
+  ]
+}

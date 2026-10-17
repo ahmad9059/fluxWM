@@ -1,0 +1,42 @@
+{
+  "binary_sha256": "703716141bc47e08383bf9227b26f6734b0bf748d247c617320041db8abd7793",
+  "binary_unchanged": true,
+  "case": "pipeline",
+  "controller_eof_ms": 6.5,
+  "elapsed_seconds": 0.101,
+  "error": "pipeline after quit executed or acknowledgement missing",
+  "exit_code": -15,
+  "ok": false,
+  "responses": [
+    {
+      "id": "before",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "1",
+      "version": 1
+    },
+    {
+      "id": "quit",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "2",
+      "version": 1
+    },
+    {
+      "id": "tail",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "2",
+      "version": 1
+    }
+  ]
+}

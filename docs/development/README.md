@@ -42,3 +42,5 @@ See [Linux build setup and CI](build.md), [runtime behavior](runtime.md) and [ap
 [Runtime findings and production gates](runtime-findings.md) distinguish addressed defects, live evidence and source-only fixes that still need closure tests.
 
 The [private-display pointer regression](private-input.md) checks real button/axis routing and stationary grab release through an authenticated owned Xvfb. The [shared-scene evidence bundle](../evidence/nested-milestone/2026-10-17-shared-scene/README.md) retains failure/pass comparisons and exact source/binary identities.
+
+The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boundary and a fixed response-drain deadline with an unread peer. Full process/session teardown remains separately qualified work.

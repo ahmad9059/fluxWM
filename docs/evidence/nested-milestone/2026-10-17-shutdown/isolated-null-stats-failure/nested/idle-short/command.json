@@ -1,0 +1,28 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxsmoke-8ca998ad7e5d49af8c9ca9d6",
+    "--exit-after-ms",
+    "600",
+    "--ready-file",
+    "/tmp/fluxwm-shutdown-isolated/nested/idle-short/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-shutdown-isolated/nested/idle-short/stats.json"
+  ],
+  "environment": {
+    "DISPLAY": ":14475",
+    "WAYLAND_DISPLAY": null,
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": "x11",
+    "XDG_RUNTIME_DIR": "/tmp/fluxwm-shutdown-isolated/runtime"
+  },
+  "name": "idle-short",
+  "ok": false,
+  "socket": "fluxsmoke-8ca998ad7e5d49af8c9ca9d6"
+}

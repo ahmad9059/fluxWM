@@ -1,0 +1,58 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxsmoke-8ca998ad7e5d49af8c9ca9d6",
+    "--exit-after-ms",
+    "600",
+    "--ready-file",
+    "/tmp/fluxwm-shutdown-isolated/nested/idle-short/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-shutdown-isolated/nested/idle-short/stats.json"
+  ],
+  "elapsed_ms": 690,
+  "environment": {
+    "DISPLAY": ":14475",
+    "WAYLAND_DISPLAY": null,
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": "x11",
+    "XDG_RUNTIME_DIR": "/tmp/fluxwm-shutdown-isolated/runtime"
+  },
+  "error": "idle-short: stats must be nonnegative integer counters",
+  "leaked_socket_paths_before_harness_cleanup": [],
+  "name": "idle-short",
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "readiness": {
+    "backend": "nested",
+    "ipc_socket": "/tmp/fluxwm-shutdown-isolated/runtime/fluxwm/fluxsmoke-8ca998ad7e5d49af8c9ca9d6.sock",
+    "pid": 328306,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxsmoke-8ca998ad7e5d49af8c9ca9d6"
+  },
+  "returncode": 0,
+  "socket": "fluxsmoke-8ca998ad7e5d49af8c9ca9d6",
+  "stats": {
+    "compositions": 1,
+    "destroyed": 0,
+    "final_windows": 0,
+    "flush_cycles": 3,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "frames_sent": 0,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_budget_ms": null,
+    "ipc_drain_elapsed_ms": null,
+    "ipc_drain_timed_out": 0,
+    "maps": 0,
+    "redraws": 1,
+    "submissions": 1,
+    "unmaps": 0,
+    "wayland_requests": 0
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/tmp/fluxwm-shutdown-before/fluxwm",
+    "--socket",
+    "fluxwm-shutdown-2fa0a745541f",
+    "--ready-file",
+    "/tmp/fluxwm-shutdown-before-evidence/pipeline/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-shutdown-before-evidence/pipeline/stats.json",
+    "--exit-after-ms",
+    "10000"
+  ],
+  "host_environment_saved": false
+}

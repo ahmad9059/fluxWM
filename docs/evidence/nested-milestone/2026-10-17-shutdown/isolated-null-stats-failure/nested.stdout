@@ -1,0 +1,1 @@
+{"ok": false, "artifacts": "/tmp/fluxwm-shutdown-isolated/nested", "error": "lifecycle: stats must be nonnegative integer counters; idle-short: stats must be nonnegative integer counters; idle-long: stats must be nonnegative integer counters; sigterm: stats must be nonnegative integer counters"}

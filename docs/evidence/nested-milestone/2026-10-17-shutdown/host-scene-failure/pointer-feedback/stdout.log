@@ -1,0 +1,1 @@
+{"allowed_stationary_motions_after_seed":1,"elapsed_ms":4504,"error":"pointer enter and mapped frame: fixture deadline expired","maximum_feedback_commits":32,"mode":"pointer-feedback","observation_ms":400,"ok":false,"settle_ms":200,"socket":"/run/user/1000/fluxscene-1dc63790c08e440b9251e3ce"}

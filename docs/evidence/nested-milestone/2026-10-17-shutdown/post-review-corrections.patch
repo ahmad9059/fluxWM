@@ -1,0 +1,362 @@
+diff --git a/crates/flux-ipc/src/driver.rs b/crates/flux-ipc/src/driver.rs
+index a6f1c8d..a04c727 100644
+--- a/crates/flux-ipc/src/driver.rs
++++ b/crates/flux-ipc/src/driver.rs
+@@ -609,10 +609,22 @@ mod tests {
+                 .all(|r| !r.readable && r.writable)
+         );
+         let bound = Instant::now() + Duration::from_secs(1);
++        let mut saw_timer = false;
+         while fixture.driver.drain_state() != DrainState::Drained {
+             assert!(Instant::now() < bound);
+-            fixture.dispatch(Duration::from_millis(50));
++            fixture
++                .event_loop
++                .dispatch(Duration::from_millis(50), &mut fixture.state)
++                .unwrap();
++            saw_timer |= fixture.driver.deadline_fired.get();
++            if std::mem::take(&mut fixture.state.pending) {
++                fixture
++                    .driver
++                    .poll(Instant::now(), 1, |_| panic!("drain handler"))
++                    .unwrap();
++            }
+         }
++        assert!(saw_timer, "deadline callback must actually fire");
+         assert_eq!(fixture.state.handled, 0);
+         assert_eq!(fixture.driver.stats().drain_timed_out, 1);
+         assert!(fixture.driver.registrations.is_empty());
+diff --git a/crates/flux-ipc/src/lib.rs b/crates/flux-ipc/src/lib.rs
+index 3b5883d..0af6ce9 100644
+--- a/crates/flux-ipc/src/lib.rs
++++ b/crates/flux-ipc/src/lib.rs
+@@ -996,6 +996,11 @@ fn process(
+             Dispatch::Continue(response) => (response, None),
+             Dispatch::Drain { response, deadline } => (response, Some(deadline)),
+         };
++        if let Some(deadline) = requested_drain {
++            // Preserve the global dispatch seal even if a faulty handler returns
++            // an invalid/unencodable response after applying shutdown effects.
++            *drain_deadline = Some(deadline);
++        }
+         if response.id != id
+             || response.version != VERSION
+             || response.state_sequence.0 < *state_sequence
+@@ -1023,9 +1028,8 @@ fn process(
+             id,
+             enqueued: now,
+         });
+-        if let Some(deadline) = requested_drain {
+-            *drain_deadline = Some(deadline);
+-            // Publish shutdown globally before inspecting another pipeline frame.
++        if requested_drain.is_some() {
++            // Response is queued; never inspect another pipeline frame.
+             flush(c, &mut write_budget)?;
+             break;
+         }
+@@ -1843,4 +1847,61 @@ mod tests {
+         assert_eq!(server.drain_state(), DrainState::Drained);
+         assert_eq!(server.stats().drain_timed_out, 1);
+     }
++    #[test]
++    fn drain_seals_dispatch_even_if_handler_response_is_invalid() {
++        let temp = Temp::new();
++        let mut server = Server::bind(&temp.0, "bad-drain").unwrap();
++        let mut a = UnixStream::connect(server.socket_path()).unwrap();
++        let mut b = UnixStream::connect(server.socket_path()).unwrap();
++        a.write_all(&encode(&Request::new("a", Method::Version)).unwrap())
++            .unwrap();
++        b.write_all(&encode(&Request::new("b", Method::Version)).unwrap())
++            .unwrap();
++        let now = Instant::now();
++        let mut handled = 0;
++        server.poll_controlled(now, |_| {
++            handled += 1;
++            Dispatch::Drain {
++                response: Response::success("wrong-id", 1, Value::Null),
++                deadline: now + Duration::from_millis(250),
++            }
++        });
++        assert_eq!(handled, 1);
++        assert_eq!(server.drain_state(), DrainState::Drained);
++    }
++    #[test]
++    fn drain_discards_later_peers_previously_buffered_complete_request() {
++        let temp = Temp::new();
++        let mut server = Server::bind(&temp.0, "buffered-drain").unwrap();
++        let mut a = UnixStream::connect(server.socket_path()).unwrap();
++        let mut b = UnixStream::connect(server.socket_path()).unwrap();
++        let bytes: Vec<_> = (0..17)
++            .flat_map(|i| encode(&Request::new(i.to_string(), Method::Version)).unwrap())
++            .collect();
++        b.write_all(&bytes).unwrap();
++        let now = Instant::now();
++        let mut calls = 0;
++        server.poll(now, |r| {
++            calls += 1;
++            Response::success(r.id, 0, Value::Null)
++        });
++        assert_eq!(calls, 16);
++        assert!(server.connections[1].decoder.has_complete_frame());
++        a.write_all(&encode(&Request::new("quit", Method::Version)).unwrap())
++            .unwrap();
++        server.poll_controlled(now, |r| {
++            assert_eq!(r.id, "quit");
++            Dispatch::Drain {
++                response: Response::success(r.id, 1, Value::Null),
++                deadline: now + Duration::from_millis(250),
++            }
++        });
++        assert_eq!(receive(&mut a).id, "quit");
++        for i in 0..16 {
++            assert_eq!(receive(&mut b).id, i.to_string());
++        }
++        let mut last = [0];
++        assert_eq!(b.read(&mut last).unwrap(), 0);
++        assert_eq!(server.drain_state(), DrainState::Drained);
++    }
+ }
+diff --git a/crates/fluxwm/src/actions.rs b/crates/fluxwm/src/actions.rs
+index 5ae13bf..a604ec8 100644
+--- a/crates/fluxwm/src/actions.rs
++++ b/crates/fluxwm/src/actions.rs
+@@ -80,8 +80,12 @@ impl Fluxwm {
+                 self.pending_spawns += 1;
+             }
+             Action::Quit => {
+-                self.shutdown_deadline =
+-                    Some(std::time::Instant::now() + std::time::Duration::from_millis(250));
++                let started = std::time::Instant::now();
++                let deadline = started + std::time::Duration::from_millis(250);
++                self.shutdown_started = Some(started);
++                self.shutdown_deadline = Some(deadline);
++                self.stats.ipc_drain_budget_ms =
++                    Some(deadline.duration_since(started).as_millis() as u64);
+                 self.ipc_requested = true;
+             }
+             Action::Fullscreen { .. }
+diff --git a/crates/fluxwm/src/ipc.rs b/crates/fluxwm/src/ipc.rs
+index c682070..2d6ecb2 100644
+--- a/crates/fluxwm/src/ipc.rs
++++ b/crates/fluxwm/src/ipc.rs
+@@ -49,11 +49,22 @@ impl Fluxwm {
+         }
+         self.stats.ipc_drain_timed_out = driver.stats().drain_timed_out;
+         if driver.drain_state() == DrainState::Drained {
++            self.stats.ipc_drain_elapsed_ms = self
++                .shutdown_started
++                .map(|started| started.elapsed().as_millis() as u64);
+             self.loop_signal.stop();
+         }
+         self.ipc = Some(driver);
+     }
+     fn dispatch_ipc(&mut self, request: Request) -> Response {
++        if self.shutdown_deadline.is_some() {
++            self.stats.ipc_dispatches_after_shutdown += 1;
++            return Response::error(
++                request.id,
++                self.sequence,
++                ErrorBody::new(ErrorCode::NotReady, "instance is shutting down"),
++            );
++        }
+         let result: Result<Value, ErrorBody> = match request.method {
+             Method::Version => Ok(
+                 json!({"name":"FluxWM", "version":env!("CARGO_PKG_VERSION"), "ipc_version":1, "backend":"nested"}),
+diff --git a/crates/fluxwm/src/state.rs b/crates/fluxwm/src/state.rs
+index b82da3f..cf4da85 100644
+--- a/crates/fluxwm/src/state.rs
++++ b/crates/fluxwm/src/state.rs
+@@ -53,6 +53,11 @@ pub struct RuntimeStats {
+     pub flush_would_block: u64,
+     pub flush_retry_timer_fired: u64,
+     pub ipc_drain_timed_out: u64,
++    pub ipc_dispatches_after_shutdown: u64,
++    #[serde(skip_serializing_if = "Option::is_none")]
++    pub ipc_drain_budget_ms: Option<u64>,
++    #[serde(skip_serializing_if = "Option::is_none")]
++    pub ipc_drain_elapsed_ms: Option<u64>,
+ }
+ 
+ pub struct Fluxwm {
+@@ -64,6 +69,7 @@ pub struct Fluxwm {
+     pub ipc: Option<flux_ipc::EventLoopDriver<Fluxwm>>,
+     pub ipc_requested: bool,
+     pub shutdown_deadline: Option<std::time::Instant>,
++    pub shutdown_started: Option<std::time::Instant>,
+     pub popup_grab: Option<(WindowId, smithay::desktop::PopupGrab<Self>)>,
+     pub pointer_presses: std::collections::BTreeMap<u32, smithay::utils::Serial>,
+     pub pointer_focus_dirty: bool,
+@@ -182,6 +188,7 @@ impl Fluxwm {
+             ipc: None,
+             ipc_requested: true,
+             shutdown_deadline: None,
++            shutdown_started: None,
+             popup_grab: None,
+             pointer_presses: Default::default(),
+             pointer_focus_dirty: true,
+diff --git a/tools/smoke_input.py b/tools/smoke_input.py
+index c1a3c59..48cddd2 100644
+--- a/tools/smoke_input.py
++++ b/tools/smoke_input.py
+@@ -201,7 +201,8 @@ def xtest_helper():
+         connection.close()
+ 
+ class Session:
+-    def __init__(self, executable, directory):
++    def __init__(self, executable, directory, screen="1600x1000x24"):
++        require(screen in ("1600x1000x24", "3000x2000x24"), 'unsupported private screen size')
+         self.directory = directory
+         self.parent = dict(os.environ)
+         self.number = None
+@@ -220,7 +221,7 @@ class Session:
+         try:
+             with os.fdopen(os.open(self.auth, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'wb') as target: target.write(record)
+             self.log = (directory / 'xvfb.log').open('wb')
+-            self.server = subprocess.Popen([str(executable), self.display, '-screen', '0', '1600x1000x24', '-nolisten', 'tcp', '-auth', str(self.auth), '-noreset'], stdout=self.log, stderr=self.log, start_new_session=True)
++            self.server = subprocess.Popen([str(executable), self.display, '-screen', '0', screen, '-nolisten', 'tcp', '-auth', str(self.auth), '-noreset'], stdout=self.log, stderr=self.log, start_new_session=True)
+         except BaseException:
+             if self.log is not None: self.log.close()
+             self.auth.unlink(missing_ok=True)
+diff --git a/tools/smoke_private.py b/tools/smoke_private.py
+new file mode 100644
+index 0000000..bf6a56b
+--- /dev/null
++++ b/tools/smoke_private.py
+@@ -0,0 +1,82 @@
++#!/usr/bin/env python3
++"""Run owned nested regression suites on an authenticated isolated Xvfb."""
++import argparse
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import time
++import uuid
++
++from smoke_input import Session, prepare_xvfb
++from smoke_nested import require, sha256, write_json
++
++
++def main():
++    root = Path(__file__).resolve().parents[1]
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--bundle', type=Path)
++    parser.add_argument('--artifacts', type=Path)
++    parser.add_argument('--binary', type=Path, default=root / 'target/debug/fluxwm')
++    parser.add_argument('--fixture', type=Path, default=root / 'target/debug/fluxwm-fixture')
++    parser.add_argument('--suites', nargs='+', choices=['scene', 'nested', 'shutdown', 'ipc'], default=['scene', 'nested', 'shutdown', 'ipc'])
++    args = parser.parse_args()
++    directory = (args.artifacts or root / 'target/smoke-private' / uuid.uuid4().hex).resolve()
++    directory.mkdir(mode=0o700, parents=True, exist_ok=False)
++    parent = dict(os.environ)
++    result = {'ok': False, 'scope': 'owned authenticated X11 software-rendered nested suites; no host input injection', 'harness_sha256': sha256(Path(__file__)), 'suites': []}
++    session = process = None
++    try:
++        executable, verification = prepare_xvfb(args.bundle, directory)
++        result['package'] = verification
++        # Default Xvfb cursor starts at screen center. Keep it outside the default
++        # 1280x800 test window without injecting input; the scene fixtures observe
++        # the compositor's unchanged initial pointer at (0,0).
++        session = Session(executable, directory, screen='3000x2000x24')
++        deadline = time.monotonic() + 8
++        while not session.ready():
++            require(session.server.poll() is None and time.monotonic() < deadline, 'private server readiness failed')
++            time.sleep(.01)
++        require(Path('/tmp/.X' + str(session.number) + '-lock').read_text().strip() == str(session.server.pid), 'private display lock PID mismatch')
++        require(os.getpgid(session.server.pid) == session.server.pid, 'private server session ownership mismatch')
++        runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
++        environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime))
++        result['private_server_pid'] = session.server.pid
++        result['private_display'] = session.display
++        for suite in args.suites:
++            script = {'scene': 'smoke_scene.py', 'nested': 'smoke_nested.py', 'shutdown': 'smoke_shutdown.py', 'ipc': 'smoke_ipc_runtime.py'}[suite]
++            command = [sys.executable, str(root / 'tools' / script), '--binary', str(args.binary.resolve()), '--artifacts', str(directory / suite)]
++            if suite in ('scene', 'nested'): command += ['--fixture', str(args.fixture.resolve())]
++            stdout, stderr = directory / (suite + '.stdout'), directory / (suite + '.stderr')
++            start = time.monotonic()
++            with stdout.open('wb') as out, stderr.open('wb') as err:
++                process = subprocess.Popen(command, stdout=out, stderr=err, env=environment, start_new_session=True)
++                while process.poll() is None:
++                    require(time.monotonic() - start < 65, 'suite exceeded 65-second deadline')
++                    require(all(p.stat().st_size < 4 * 1024 * 1024 for p in (stdout, stderr)), 'suite output budget exceeded')
++                    time.sleep(.02)
++            result['suites'].append({'suite': suite, 'command': command, 'exit_code': process.returncode, 'elapsed_seconds': round(time.monotonic() - start, 3)})
++            require(process.returncode == 0, suite + ' failed; inspect retained suite artifacts')
++            process = None
++        result['ok'] = True
++    except Exception as error:
++        result['error'] = str(error)
++    finally:
++        if process is not None and process.poll() is None:
++            process.terminate()
++            try: process.wait(timeout=3)
++            except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=2)
++        if session is not None:
++            session.close()
++            result['authority_removed'] = not session.auth.exists()
++            result['server_reaped'] = session.server.poll() is not None
++            result['x_socket_removed'] = not Path('/tmp/.X11-unix/X' + str(session.number)).exists()
++        result['parent_environment_unchanged'] = parent == dict(os.environ)
++        write_json(directory / 'result.json', result)
++    print(json.dumps({'ok': result['ok'], 'artifacts': str(directory), 'error': result.get('error')}))
++    return 0 if result['ok'] else 1
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/tools/smoke_shutdown.py b/tools/smoke_shutdown.py
+index 1c9c462..8c2c79a 100644
+--- a/tools/smoke_shutdown.py
++++ b/tools/smoke_shutdown.py
+@@ -74,8 +74,23 @@ def run_case(binary, directory, case, environment):
+                 # No receives on slow: the final drain timeout counter proves
+                 # a pending frame survived to the absolute deadline.
+                 time.sleep(.2)
++            later = None
++            if case == 'slow-peer':
++                later = connect(ipc)
++                later.sendall(frame('admission-probe', 'version'))
++                def exact(count):
++                    raw = b''
++                    while len(raw) < count:
++                        check()
++                        part = later.recv(count - len(raw))
++                        require(part, 'later-peer admission EOF')
++                        raw += part
++                    return raw
++                length, = struct.unpack('>I', exact(4))
++                require(0 < length <= 1024 * 1024, 'admission reply size')
++                require(json.loads(exact(length))['id'] == 'admission-probe', 'later-peer admission mismatch')
+             controller = connect(ipc)
+-            controller.sendall(frame('before', 'version') + frame('quit', 'action', {'name': 'quit'}) + frame('tail', 'version'))
++            controller.sendall(frame('before', 'version') + frame('quit', 'action', {'name': 'quit'}) + frame('tail', 'action', {'name': 'workspace-mode', 'mode': 'canvas'}))
+             quit_sent = time.monotonic()
+             captured = bytearray()
+             while True:
+@@ -100,6 +115,12 @@ def run_case(binary, directory, case, environment):
+                 responses.append(json.loads(captured[offset:offset + length]))
+                 offset += length
+             result['responses'] = responses
++            if later is not None:
++                try:
++                    later.sendall(frame('after-quit-peer', 'action', {'name': 'workspace-mode', 'mode': 'canvas'}))
++                    result['post_quit_peer_send'] = 'sent'
++                except (BrokenPipeError, ConnectionResetError):
++                    result['post_quit_peer_send'] = 'already closed'
+             # Collect natural shutdown and cleanup evidence even if the response
+             # oracle fails; do not turn an observed defect into harness SIGTERM.
+             process.wait(timeout=min(3, max(.001, deadline - time.monotonic())))
+@@ -110,6 +131,12 @@ def run_case(binary, directory, case, environment):
+             require(int(responses[1]['state_sequence']) == int(responses[0]['state_sequence']) + 1, 'quit sequence mismatch')
+             require(process.returncode == 0, 'compositor failed during shutdown')
+             require(result['process_exit_ms'] < 2000, 'shutdown exceeded local two-second test tolerance')
++            require(result['stats'].get('ipc_dispatches_after_shutdown') == 0, 'handler invoked after quit')
++            require(result['stats'].get('ipc_drain_budget_ms') == 250, 'configured drain budget differs from 250 ms')
++            elapsed = result['stats'].get('ipc_drain_elapsed_ms')
++            require(isinstance(elapsed, int) and elapsed <= 750, 'drain exceeded 250 ms plus 500 ms scheduling tolerance')
++            if case == 'slow-peer':
++                require(elapsed >= 240, 'unread peer drain expired before budget minus 10 ms measurement tolerance')
+             timed_out = result['stats'].get('ipc_drain_timed_out', 0)
+             require(timed_out >= 1 if case == 'slow-peer' else timed_out == 0, 'pending-frame deadline oracle failed')
+             require(all(not path.exists() and not path.is_symlink() for path, _, _ in paths), 'owned endpoint survived shutdown')

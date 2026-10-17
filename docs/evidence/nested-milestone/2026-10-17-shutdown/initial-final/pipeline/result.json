@@ -1,0 +1,48 @@
+{
+  "binary_sha256": "20164845a28934f0e56cd3acb65f80f7e7e610943d64da32e42c059e455fc2bd",
+  "binary_unchanged": true,
+  "case": "pipeline",
+  "controller_eof_ms": 0.25,
+  "elapsed_seconds": 0.098,
+  "endpoints_removed": true,
+  "endpoints_removed_after_cleanup": true,
+  "exit_code": 0,
+  "ok": true,
+  "process_exit_ms": 15.68,
+  "responses": [
+    {
+      "id": "before",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "3",
+      "version": 1
+    },
+    {
+      "id": "quit",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "4",
+      "version": 1
+    }
+  ],
+  "stats": {
+    "compositions": 1,
+    "destroyed": 0,
+    "final_windows": 0,
+    "flush_cycles": 5,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "frames_sent": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 0,
+    "redraws": 1,
+    "submissions": 1,
+    "unmaps": 0,
+    "wayland_requests": 0
+  }
+}

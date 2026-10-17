@@ -1,0 +1,4 @@
+2026-10-17T13:32:12.426672Z  INFO fluxwm::state: window_mapped id=0:0
+2026-10-17T13:32:12.426944Z  INFO fluxwm::state: window_mapped id=1:0
+2026-10-17T13:32:19.452346Z  INFO fluxwm::state: toplevel_destroyed id=0:0
+2026-10-17T13:32:19.452474Z  INFO fluxwm::state: toplevel_destroyed id=1:0

@@ -1,0 +1,30 @@
+[
+  {
+    "original": "/tmp/fluxwm-shutdown-isolated-final",
+    "authority_removed": true,
+    "server_pid_absent": true,
+    "x_socket_removed": true,
+    "parent_environment_unchanged": true
+  },
+  {
+    "original": "/tmp/fluxwm-shutdown-isolated-guard-final",
+    "authority_removed": true,
+    "server_pid_absent": true,
+    "x_socket_removed": true,
+    "parent_environment_unchanged": true
+  },
+  {
+    "original": "/tmp/fluxwm-shutdown-baseline-final",
+    "authority_removed": true,
+    "server_pid_absent": true,
+    "x_socket_removed": true,
+    "parent_environment_unchanged": true
+  },
+  {
+    "original": "/tmp/fluxwm-shutdown-isolated",
+    "authority_removed": true,
+    "server_pid_absent": true,
+    "x_socket_removed": true,
+    "parent_environment_unchanged": true
+  }
+]

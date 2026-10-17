@@ -1,0 +1,6 @@
+    Checking flux-ipc v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-ipc)
+ Documenting flux-ipc v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-ipc)
+ Documenting fluxctl v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxctl)
+ Documenting fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.89s
+   Generated /home/ahmad/Documents/Projects/fluxwm/target/doc/flux_config/index.html and 9 other files

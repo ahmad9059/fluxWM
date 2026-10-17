@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/tmp/fluxwm-shutdown-isolated/runtime/fluxwm/fluxscene-fdc7554a84264e5fbe302cbf.sock",
+  "pid": 327904,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxscene-fdc7554a84264e5fbe302cbf"
+}

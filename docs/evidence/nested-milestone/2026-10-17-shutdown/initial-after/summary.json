@@ -1,0 +1,103 @@
+{
+  "cases": [
+    {
+      "binary_sha256": "e3d642fc4b65707da119aa31a218cf1d7e92a58200ddb9c26f191067e5a05a9d",
+      "binary_unchanged": true,
+      "case": "pipeline",
+      "controller_eof_ms": 0.25,
+      "elapsed_seconds": 0.109,
+      "endpoints_removed": true,
+      "exit_code": 0,
+      "ok": true,
+      "process_exit_ms": 15.8,
+      "responses": [
+        {
+          "id": "before",
+          "result": {
+            "backend": "nested",
+            "ipc_version": 1,
+            "name": "FluxWM",
+            "version": "0.1.0-dev"
+          },
+          "state_sequence": "3",
+          "version": 1
+        },
+        {
+          "id": "quit",
+          "result": {
+            "accepted": true
+          },
+          "state_sequence": "4",
+          "version": 1
+        }
+      ],
+      "stats": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 5,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 0
+      }
+    },
+    {
+      "binary_sha256": "e3d642fc4b65707da119aa31a218cf1d7e92a58200ddb9c26f191067e5a05a9d",
+      "binary_unchanged": true,
+      "case": "slow-peer",
+      "controller_eof_ms": 0.31,
+      "elapsed_seconds": 1.024,
+      "endpoints_removed": true,
+      "exit_code": 0,
+      "ok": true,
+      "process_exit_ms": 314.71,
+      "responses": [
+        {
+          "id": "before",
+          "result": {
+            "backend": "nested",
+            "ipc_version": 1,
+            "name": "FluxWM",
+            "version": "0.1.0-dev"
+          },
+          "state_sequence": "3",
+          "version": 1
+        },
+        {
+          "id": "quit",
+          "result": {
+            "accepted": true
+          },
+          "state_sequence": "4",
+          "version": 1
+        }
+      ],
+      "stats": {
+        "compositions": 2,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 49,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 0,
+        "ipc_drain_timed_out": 1,
+        "maps": 0,
+        "redraws": 2,
+        "submissions": 2,
+        "unmaps": 0,
+        "wayland_requests": 0
+      },
+      "unread_peer_request_bytes_sent": 219264
+    }
+  ],
+  "harness_sha256": "b2c3037bad09fd0f0bb110a0d29a68a6be6178ed1dde95ee598c30344d48f1d6",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "scope": "nested IPC quit response, pipeline admission and unread-peer deadline; no native or universal teardown bound"
+}

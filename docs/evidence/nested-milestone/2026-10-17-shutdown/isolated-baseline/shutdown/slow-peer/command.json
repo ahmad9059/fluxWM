@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/tmp/fluxwm-shutdown-before/fluxwm",
+    "--socket",
+    "fluxwm-shutdown-93cb0909c3fe",
+    "--ready-file",
+    "/tmp/fluxwm-shutdown-baseline-final/shutdown/slow-peer/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-shutdown-baseline-final/shutdown/slow-peer/stats.json",
+    "--exit-after-ms",
+    "10000"
+  ],
+  "host_environment_saved": false
+}

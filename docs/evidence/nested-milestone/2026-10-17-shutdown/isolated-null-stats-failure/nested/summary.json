@@ -1,0 +1,253 @@
+{
+  "artifacts": "/tmp/fluxwm-shutdown-isolated/nested",
+  "binary_sha256": "d0ed6446b3f794bb23988ca4b753b749e86b6ce0d60d8ca22fb3175b35095de7",
+  "binary_sha256_after": "d0ed6446b3f794bb23988ca4b753b749e86b6ce0d60d8ca22fb3175b35095de7",
+  "cases": [
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--socket",
+        "fluxsmoke-3653927641574e5bb7293755",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/tmp/fluxwm-shutdown-isolated/nested/lifecycle/ready.json",
+        "--stats-file",
+        "/tmp/fluxwm-shutdown-isolated/nested/lifecycle/stats.json",
+        "--screenshot",
+        "/tmp/fluxwm-shutdown-isolated/nested/lifecycle/first-map.ppm",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+        "lifecycle",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6086,
+      "environment": {
+        "DISPLAY": ":14475",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxwm-shutdown-isolated/runtime"
+      },
+      "error": "lifecycle: stats must be nonnegative integer counters",
+      "leaked_socket_paths_before_harness_cleanup": [],
+      "name": "lifecycle",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxwm-shutdown-isolated/runtime/fluxwm/fluxsmoke-3653927641574e5bb7293755.sock",
+        "pid": 328210,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxsmoke-3653927641574e5bb7293755"
+      },
+      "returncode": 0,
+      "socket": "fluxsmoke-3653927641574e5bb7293755",
+      "stats": {
+        "compositions": 5,
+        "destroyed": 2,
+        "final_windows": 0,
+        "flush_cycles": 38,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 6,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_budget_ms": null,
+        "ipc_drain_elapsed_ms": null,
+        "ipc_drain_timed_out": 0,
+        "maps": 3,
+        "redraws": 8,
+        "submissions": 4,
+        "unmaps": 1,
+        "wayland_requests": 63
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--socket",
+        "fluxsmoke-8ca998ad7e5d49af8c9ca9d6",
+        "--exit-after-ms",
+        "600",
+        "--ready-file",
+        "/tmp/fluxwm-shutdown-isolated/nested/idle-short/ready.json",
+        "--stats-file",
+        "/tmp/fluxwm-shutdown-isolated/nested/idle-short/stats.json"
+      ],
+      "elapsed_ms": 690,
+      "environment": {
+        "DISPLAY": ":14475",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxwm-shutdown-isolated/runtime"
+      },
+      "error": "idle-short: stats must be nonnegative integer counters",
+      "leaked_socket_paths_before_harness_cleanup": [],
+      "name": "idle-short",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxwm-shutdown-isolated/runtime/fluxwm/fluxsmoke-8ca998ad7e5d49af8c9ca9d6.sock",
+        "pid": 328306,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxsmoke-8ca998ad7e5d49af8c9ca9d6"
+      },
+      "returncode": 0,
+      "socket": "fluxsmoke-8ca998ad7e5d49af8c9ca9d6",
+      "stats": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 3,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 0,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_budget_ms": null,
+        "ipc_drain_elapsed_ms": null,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 0
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--socket",
+        "fluxsmoke-e12d6a38198040dcbbc2000d",
+        "--exit-after-ms",
+        "1600",
+        "--ready-file",
+        "/tmp/fluxwm-shutdown-isolated/nested/idle-long/ready.json",
+        "--stats-file",
+        "/tmp/fluxwm-shutdown-isolated/nested/idle-long/stats.json"
+      ],
+      "elapsed_ms": 1701,
+      "environment": {
+        "DISPLAY": ":14475",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxwm-shutdown-isolated/runtime"
+      },
+      "error": "idle-long: stats must be nonnegative integer counters",
+      "leaked_socket_paths_before_harness_cleanup": [],
+      "name": "idle-long",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxwm-shutdown-isolated/runtime/fluxwm/fluxsmoke-e12d6a38198040dcbbc2000d.sock",
+        "pid": 328349,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxsmoke-e12d6a38198040dcbbc2000d"
+      },
+      "returncode": 0,
+      "socket": "fluxsmoke-e12d6a38198040dcbbc2000d",
+      "stats": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 3,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 0,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_budget_ms": null,
+        "ipc_drain_elapsed_ms": null,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 0
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--socket",
+        "fluxsmoke-4152f7d0788d495bad290876",
+        "--exit-after-ms",
+        "10000",
+        "--ready-file",
+        "/tmp/fluxwm-shutdown-isolated/nested/sigterm/ready.json",
+        "--stats-file",
+        "/tmp/fluxwm-shutdown-isolated/nested/sigterm/stats.json"
+      ],
+      "elapsed_ms": 142,
+      "environment": {
+        "DISPLAY": ":14475",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxwm-shutdown-isolated/runtime"
+      },
+      "error": "sigterm: stats must be nonnegative integer counters",
+      "leaked_socket_paths_before_harness_cleanup": [],
+      "name": "sigterm",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxwm-shutdown-isolated/runtime/fluxwm/fluxsmoke-4152f7d0788d495bad290876.sock",
+        "pid": 328403,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxsmoke-4152f7d0788d495bad290876"
+      },
+      "returncode": 0,
+      "socket": "fluxsmoke-4152f7d0788d495bad290876",
+      "stats": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 3,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 0,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_budget_ms": null,
+        "ipc_drain_elapsed_ms": null,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 0
+      }
+    }
+  ],
+  "error": "lifecycle: stats must be nonnegative integer counters; idle-short: stats must be nonnegative integer counters; idle-long: stats must be nonnegative integer counters; sigterm: stats must be nonnegative integer counters",
+  "fixture_sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+  "fixture_sha256_after": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+  "ok": false,
+  "parent_display_environment_unchanged": true,
+  "scope": "nested SHM lifecycle, copied offscreen GLES scene framebuffer, idle scheduling, SIGTERM and socket cleanup; no native/hardware/host-presentation qualification",
+  "started_utc": "2026-10-17T13:29:36Z"
+}

@@ -1,0 +1,86 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxscene-9b427545074649da8289d3d6",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/tmp/fluxwm-shutdown-isolated-final/scene/popup-clip/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-shutdown-isolated-final/scene/popup-clip/stats.json",
+    "--screenshot",
+    "/tmp/fluxwm-shutdown-isolated-final/scene/popup-clip/scene.ppm",
+    "--screenshot-after-ms",
+    "700",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "popup-clip",
+    "--timeout-ms",
+    "4500"
+  ],
+  "elapsed_ms": 6101,
+  "environment": {
+    "DISPLAY": ":12812",
+    "WAYLAND_DISPLAY": null,
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": "x11",
+    "XDG_RUNTIME_DIR": "/tmp/fluxwm-shutdown-isolated-final/runtime"
+  },
+  "leaked_endpoints_before_harness_cleanup": [],
+  "mode": "popup-clip",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "pixels": {
+    "background_rgb": [
+      15,
+      18,
+      23
+    ],
+    "expected_rgb_counts": {
+      "blue": 19200,
+      "cyan": 0,
+      "green": 14400,
+      "magenta": 4800,
+      "red": 16320,
+      "yellow": 14400
+    },
+    "height": 800,
+    "pixel_validation": "exact-row-equality",
+    "popup_paints_above_own_root": true,
+    "popup_visible_outside_root_clip": true,
+    "right_edge_x312_matches_background": true,
+    "sha256": "242256d40e68581fa5c61525af9677f8bbd12719ce97c12f66da0c5c0f89c2c5",
+    "width": 1280
+  },
+  "readiness": {
+    "backend": "nested",
+    "ipc_socket": "/tmp/fluxwm-shutdown-isolated-final/runtime/fluxwm/fluxscene-9b427545074649da8289d3d6.sock",
+    "pid": 329562,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxscene-9b427545074649da8289d3d6"
+  },
+  "returncode": 0,
+  "socket": "fluxscene-9b427545074649da8289d3d6",
+  "stats": {
+    "compositions": 5,
+    "destroyed": 1,
+    "final_windows": 0,
+    "flush_cycles": 37,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "frames_sent": 5,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 1,
+    "redraws": 9,
+    "submissions": 4,
+    "unmaps": 0,
+    "wayland_requests": 46
+  }
+}

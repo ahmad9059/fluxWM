@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxwm-shutdown-80c9d89673d8",
+    "--ready-file",
+    "/tmp/fluxwm-shutdown-isolated-guard-final/shutdown/pipeline/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-shutdown-isolated-guard-final/shutdown/pipeline/stats.json",
+    "--exit-after-ms",
+    "10000"
+  ],
+  "host_environment_saved": false
+}

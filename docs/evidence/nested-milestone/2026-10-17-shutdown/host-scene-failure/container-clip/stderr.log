@@ -1,0 +1,3 @@
+2026-10-17T13:24:58.386867Z  INFO fluxwm::state: window_mapped id=0:0
+2026-10-17T13:24:59.393938Z  INFO fluxwm::state: toplevel_destroyed id=0:0
+Error: "supervised command failed: exit status: 1"

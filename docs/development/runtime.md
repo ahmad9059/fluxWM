@@ -63,7 +63,7 @@ Run [the nested smoke harness](nested-smoke.md) for bounded lifecycle, pixels, i
 
 The [shared composed scene](runtime-scene.md) now supplies immutable surface geometry/input-region picking and root container clipping with independent popup clipping. Remaining production work includes transaction/animation/native scene ownership and full failure qualification, configure/commit transactions, full activation and window-state policy, multi-output/native lifecycle, Lua atomic application, motion/gestures, protocol conformance, desktop/lock/capture/X11/IME/accessibility, resource/fuzz/soak and clean packaging/support-matrix evidence.
 
-See [runtime findings and remaining production gates](runtime-findings.md) for source-confirmed fixes, exact evidence boundaries and the still-open acknowledged-shutdown contract.
+See [runtime findings and remaining production gates](runtime-findings.md) for source-confirmed fixes, exact evidence boundaries and the bounded IPC drain with remaining full shutdown gates.
 
 The [latest independent runtime review and author disposition](../reviews/runtime-2026-10-17/disposition.md) preserve the frozen review, four medium findings, real pointer-feedback reproduction, later fixes and still-unqualified popup cases.
 

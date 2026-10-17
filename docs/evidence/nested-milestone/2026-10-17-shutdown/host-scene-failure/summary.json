@@ -1,0 +1,221 @@
+{
+  "artifacts": "/tmp/fluxwm-shutdown-regression-scene",
+  "binary": "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+  "binary_sha256": "20164845a28934f0e56cd3acb65f80f7e7e610943d64da32e42c059e455fc2bd",
+  "binary_sha256_after": "20164845a28934f0e56cd3acb65f80f7e7e610943d64da32e42c059e455fc2bd",
+  "cases": [
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--socket",
+        "fluxscene-aeb248ab5f3f421b9b7b7c8e",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/tmp/fluxwm-shutdown-regression-scene/popup-lifecycle/ready.json",
+        "--stats-file",
+        "/tmp/fluxwm-shutdown-regression-scene/popup-lifecycle/stats.json",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+        "popup-lifecycle",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6096,
+      "environment": {
+        "DISPLAY": ":1",
+        "WAYLAND_DISPLAY": "wayland-1",
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": null,
+        "XDG_RUNTIME_DIR": "/run/user/1000"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "popup-lifecycle",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/run/user/1000/fluxwm/fluxscene-aeb248ab5f3f421b9b7b7c8e.sock",
+        "pid": 322973,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-aeb248ab5f3f421b9b7b7c8e"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-aeb248ab5f3f421b9b7b7c8e",
+      "stats": {
+        "compositions": 7,
+        "destroyed": 2,
+        "final_windows": 0,
+        "flush_cycles": 80,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 7,
+        "ipc_drain_timed_out": 0,
+        "maps": 3,
+        "redraws": 9,
+        "submissions": 5,
+        "unmaps": 1,
+        "wayland_requests": 122
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--socket",
+        "fluxscene-1dc63790c08e440b9251e3ce",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/tmp/fluxwm-shutdown-regression-scene/pointer-feedback/ready.json",
+        "--stats-file",
+        "/tmp/fluxwm-shutdown-regression-scene/pointer-feedback/stats.json",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+        "pointer-feedback",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6096,
+      "environment": {
+        "DISPLAY": ":1",
+        "WAYLAND_DISPLAY": "wayland-1",
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": null,
+        "XDG_RUNTIME_DIR": "/run/user/1000"
+      },
+      "error": "pointer-feedback: compositor exit 1; inspect stderr.log",
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "pointer-feedback",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/run/user/1000/fluxwm/fluxscene-1dc63790c08e440b9251e3ce.sock",
+        "pid": 323050,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-1dc63790c08e440b9251e3ce"
+      },
+      "returncode": 1,
+      "socket": "fluxscene-1dc63790c08e440b9251e3ce"
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--socket",
+        "fluxscene-9c3a35fd77674aac8724c0c2",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/tmp/fluxwm-shutdown-regression-scene/container-clip/ready.json",
+        "--stats-file",
+        "/tmp/fluxwm-shutdown-regression-scene/container-clip/stats.json",
+        "--screenshot",
+        "/tmp/fluxwm-shutdown-regression-scene/container-clip/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+        "container-clip",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6097,
+      "environment": {
+        "DISPLAY": ":1",
+        "WAYLAND_DISPLAY": "wayland-1",
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": null,
+        "XDG_RUNTIME_DIR": "/run/user/1000"
+      },
+      "error": "container-clip: compositor exit 1; inspect stderr.log",
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "container-clip",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/run/user/1000/fluxwm/fluxscene-9c3a35fd77674aac8724c0c2.sock",
+        "pid": 323144,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-9c3a35fd77674aac8724c0c2"
+      },
+      "returncode": 1,
+      "socket": "fluxscene-9c3a35fd77674aac8724c0c2"
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--socket",
+        "fluxscene-b96902508f69439ca01e0616",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/tmp/fluxwm-shutdown-regression-scene/popup-clip/ready.json",
+        "--stats-file",
+        "/tmp/fluxwm-shutdown-regression-scene/popup-clip/stats.json",
+        "--screenshot",
+        "/tmp/fluxwm-shutdown-regression-scene/popup-clip/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+        "popup-clip",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6094,
+      "environment": {
+        "DISPLAY": ":1",
+        "WAYLAND_DISPLAY": "wayland-1",
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": null,
+        "XDG_RUNTIME_DIR": "/run/user/1000"
+      },
+      "error": "popup-clip: compositor exit 1; inspect stderr.log",
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "popup-clip",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/run/user/1000/fluxwm/fluxscene-b96902508f69439ca01e0616.sock",
+        "pid": 323220,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-b96902508f69439ca01e0616"
+      },
+      "returncode": 1,
+      "socket": "fluxscene-b96902508f69439ca01e0616"
+    }
+  ],
+  "errors": [
+    "pointer-feedback: pointer-feedback: compositor exit 1; inspect stderr.log",
+    "container-clip: container-clip: compositor exit 1; inspect stderr.log",
+    "popup-clip: popup-clip: compositor exit 1; inspect stderr.log"
+  ],
+  "fixture": "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+  "fixture_sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+  "fixture_sha256_after": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "scope": "nested synthetic SHM scene/input regressions; excludes physical input, native backend and host presentation qualification"
+}

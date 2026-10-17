@@ -1,0 +1,60 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxscene-7ffbc969945c4d45af89449b",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/tmp/fluxwm-shutdown-isolated-final/scene/pointer-feedback/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-shutdown-isolated-final/scene/pointer-feedback/stats.json",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "pointer-feedback",
+    "--timeout-ms",
+    "4500"
+  ],
+  "elapsed_ms": 6102,
+  "environment": {
+    "DISPLAY": ":12812",
+    "WAYLAND_DISPLAY": null,
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": "x11",
+    "XDG_RUNTIME_DIR": "/tmp/fluxwm-shutdown-isolated-final/runtime"
+  },
+  "leaked_endpoints_before_harness_cleanup": [],
+  "mode": "pointer-feedback",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "readiness": {
+    "backend": "nested",
+    "ipc_socket": "/tmp/fluxwm-shutdown-isolated-final/runtime/fluxwm/fluxscene-7ffbc969945c4d45af89449b.sock",
+    "pid": 329366,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxscene-7ffbc969945c4d45af89449b"
+  },
+  "returncode": 0,
+  "socket": "fluxscene-7ffbc969945c4d45af89449b",
+  "stats": {
+    "compositions": 3,
+    "destroyed": 1,
+    "final_windows": 0,
+    "flush_cycles": 25,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "frames_sent": 3,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 1,
+    "redraws": 7,
+    "submissions": 3,
+    "unmaps": 0,
+    "wayland_requests": 26
+  }
+}

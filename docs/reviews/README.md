@@ -1,6 +1,10 @@
 # Independent Claude review
 
-## Latest follow-up
+## Latest shutdown review
+
+[Claude’s shutdown report](shutdown-2026-10-17/claude-report.md) inspects frozen `a903508`. The [disposition](shutdown-2026-10-17/disposition.md) records two accepted oracle gaps, author corrections and remaining teardown limits. All 632 input hashes match; actual tool trace records 14 calls. Claude executed no tests.
+
+## Scene follow-up
 
 [Claude’s follow-up report](scene-followup-2026-10-17/claude-report.md) reviews frozen `adfa7a7`. Its [disposition](scene-followup-2026-10-17/disposition.md) records a real oracle gap, a release-only mutation that exposes it after correction, and constructor cleanup fixes. Author hashes of all 331 frozen files match. Later corrections and test results are explicitly author work.
 

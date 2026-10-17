@@ -1,0 +1,4 @@
+    Checking flux-ipc v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-ipc)
+    Checking fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Checking fluxctl v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxctl)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.14s
