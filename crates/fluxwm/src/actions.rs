@@ -5,6 +5,9 @@ impl Fluxwm {
     /// Validate user intent at the live model boundary. Unsupported features fail
     /// explicitly; accepting an action does not promise hardware presentation.
     pub fn apply_action(&mut self, action: Action) -> Result<(), String> {
+        if self.shutdown_deadline.is_some() {
+            return Err("instance is shutting down".into());
+        }
         action.validate().map_err(|e| e.to_string())?;
         let next_sequence = self
             .sequence
@@ -76,7 +79,11 @@ impl Fluxwm {
                     .map_err(|e| e.to_string())?;
                 self.pending_spawns += 1;
             }
-            Action::Quit => self.loop_signal.stop(),
+            Action::Quit => {
+                self.shutdown_deadline =
+                    Some(std::time::Instant::now() + std::time::Duration::from_millis(250));
+                self.ipc_requested = true;
+            }
             Action::Fullscreen { .. }
             | Action::Floating { .. }
             | Action::Overview { .. }

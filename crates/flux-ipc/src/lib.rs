@@ -483,6 +483,26 @@ impl Decoder {
     }
 }
 
+/// Handler control is applied globally before another request can execute.
+pub enum Dispatch {
+    Continue(Response),
+    /// Queue this response, then flush only already-queued frames until deadline.
+    Drain {
+        response: Response,
+        deadline: Instant,
+    },
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DrainState {
+    Accepting,
+    Pending {
+        connections: usize,
+        bytes: usize,
+        deadline: Instant,
+    },
+    Drained,
+}
+
 struct Pending {
     bytes: Vec<u8>,
     offset: usize,
@@ -531,6 +551,8 @@ pub struct ServerStats {
     pub disconnected: u64,
     pub protocol_errors: u64,
     pub timed_out: u64,
+    /// Pending frames abandoned at the absolute drain deadline.
+    pub drain_timed_out: u64,
 }
 struct SocketCleanup {
     path: PathBuf,
@@ -552,6 +574,7 @@ pub struct Server {
     state_sequence: u64,
     next_token: u64,
     accept_retry_at: Option<Instant>,
+    drain_deadline: Option<Instant>,
     stats: ServerStats,
 }
 impl Server {
@@ -601,6 +624,7 @@ impl Server {
             state_sequence: 0,
             next_token: 1,
             accept_retry_at: None,
+            drain_deadline: None,
             stats: ServerStats::default(),
         })
     }
@@ -618,10 +642,65 @@ impl Server {
     pub fn stats(&self) -> ServerStats {
         self.stats
     }
+    /// Stop admitting/dispatching requests. Repeated calls may shorten but never
+    /// extend the absolute deadline. Kernel-accepted bytes are not peer receipts.
+    pub fn begin_drain(&mut self, deadline: Instant) {
+        self.drain_deadline = Some(
+            self.drain_deadline
+                .map_or(deadline, |old| old.min(deadline)),
+        );
+        self.accept_retry_at = None;
+        self.connections.retain_mut(|c| {
+            c.decoder = Decoder::default();
+            c.partial_since = None;
+            c.eof = true;
+            c.close_after_flush = true;
+            if c.out.is_none() {
+                self.stats.disconnected += 1;
+                false
+            } else {
+                true
+            }
+        });
+    }
+    pub fn drain_state(&self) -> DrainState {
+        match self.drain_deadline {
+            None => DrainState::Accepting,
+            Some(_) if self.connections.is_empty() => DrainState::Drained,
+            Some(deadline) => DrainState::Pending {
+                connections: self.connections.len(),
+                bytes: self
+                    .connections
+                    .iter()
+                    .filter_map(|c| c.out.as_ref())
+                    .map(|p| p.bytes.len() - p.offset)
+                    .sum(),
+                deadline,
+            },
+        }
+    }
     /// Snapshot registration interests after every poll. Reconcile by Endpoint,
     /// never raw fd alone; drop removed registrations before adding reused fds.
     pub fn readiness(&self, now: Instant) -> Readiness {
         let mut interests = Vec::with_capacity(self.connections.len() + 1);
+        if let Some(deadline) = self.drain_deadline {
+            for c in &self.connections {
+                if c.out.is_some() {
+                    interests.push(IoInterest {
+                        endpoint: Endpoint::Client(c.token),
+                        fd: c.stream.as_raw_fd(),
+                        readable: false,
+                        writable: true,
+                    });
+                }
+            }
+            return Readiness {
+                interests,
+                needs_dispatch: !self.connections.is_empty()
+                    && (now >= deadline || self.connections.iter().any(|c| c.io_continue)),
+                next_deadline: (!self.connections.is_empty()).then_some(deadline),
+            };
+        }
         let mut next_deadline = self.accept_retry_at;
         if self.accept_retry_at.is_none_or(|at| now >= at) {
             interests.push(IoInterest {
@@ -665,7 +744,13 @@ impl Server {
     /// Nonblocking, bounded IO and at most 16 handler calls per client. Handler
     /// must snapshot or enqueue commands without blocking and report current sequence.
     pub fn poll(&mut self, now: Instant, mut handler: impl FnMut(Request) -> Response) {
-        if self.accept_retry_at.is_none_or(|at| now >= at) {
+        self.poll_controlled(now, |request| Dispatch::Continue(handler(request)));
+    }
+    /// Like `poll`, with an atomic global drain decision after a response is
+    /// queued. No handler is invoked again after that decision, including other
+    /// peers later in this poll. Only frames already queued may drain.
+    pub fn poll_controlled(&mut self, now: Instant, mut handler: impl FnMut(Request) -> Dispatch) {
+        if self.drain_deadline.is_none() && self.accept_retry_at.is_none_or(|at| now >= at) {
             self.accept_retry_at = None;
             for _ in 0..MAX_CONNECTIONS {
                 match self.listener.accept() {
@@ -719,6 +804,7 @@ impl Server {
                 &mut self.state_sequence,
                 &mut handler,
                 &mut self.stats,
+                &mut self.drain_deadline,
             ) {
                 Ok(()) => true,
                 Err(e) => {
@@ -730,6 +816,9 @@ impl Server {
                 }
             }
         });
+        if let Some(deadline) = self.drain_deadline {
+            self.begin_drain(deadline);
+        }
     }
 }
 fn check_directory(path: &Path) -> io::Result<()> {
@@ -795,9 +884,26 @@ fn process(
     c: &mut Connection,
     now: Instant,
     state_sequence: &mut u64,
-    handler: &mut impl FnMut(Request) -> Response,
+    handler: &mut impl FnMut(Request) -> Dispatch,
     stats: &mut ServerStats,
+    drain_deadline: &mut Option<Instant>,
 ) -> io::Result<()> {
+    if let Some(deadline) = *drain_deadline {
+        c.io_continue = false;
+        if now >= deadline {
+            if c.out.is_some() {
+                stats.drain_timed_out += 1;
+            }
+            return Err(timeout());
+        }
+        let mut budget = IO_BUDGET;
+        flush(c, &mut budget)?;
+        return if c.out.is_none() {
+            Err(io::ErrorKind::ConnectionAborted.into())
+        } else {
+            Ok(())
+        };
+    }
     if now.saturating_duration_since(c.last_activity) >= IDLE_DEADLINE
         || c.partial_since
             .is_some_and(|t| now.saturating_duration_since(t) >= DEADLINE)
@@ -882,9 +988,13 @@ fn process(
             break;
         }
         let id = request.id.clone();
-        let response = match request.validate() {
+        let decision = match request.validate() {
             Ok(()) => handler(request),
-            Err(error) => Response::error(&id, *state_sequence, error),
+            Err(error) => Dispatch::Continue(Response::error(&id, *state_sequence, error)),
+        };
+        let (response, requested_drain) = match decision {
+            Dispatch::Continue(response) => (response, None),
+            Dispatch::Drain { response, deadline } => (response, Some(deadline)),
         };
         if response.id != id
             || response.version != VERSION
@@ -913,6 +1023,12 @@ fn process(
             id,
             enqueued: now,
         });
+        if let Some(deadline) = requested_drain {
+            *drain_deadline = Some(deadline);
+            // Publish shutdown globally before inspecting another pipeline frame.
+            flush(c, &mut write_budget)?;
+            break;
+        }
         flush(c, &mut write_budget)?;
     }
     if c.decoder.is_empty() {
@@ -1623,5 +1739,108 @@ mod tests {
                 }
             ));
         }
+    }
+    #[test]
+    fn controlled_drain_stops_pipeline_and_other_peer_dispatch() {
+        let temp = Temp::new();
+        let mut server = Server::bind(&temp.0, "drain").unwrap();
+        let mut first = UnixStream::connect(server.socket_path()).unwrap();
+        let mut other = UnixStream::connect(server.socket_path()).unwrap();
+        let mut pipeline = encode(&Request::new("quit", Method::Version)).unwrap();
+        pipeline.extend(encode(&Request::new("tail", Method::Version)).unwrap());
+        first.write_all(&pipeline).unwrap();
+        other
+            .write_all(&encode(&Request::new("peer", Method::Version)).unwrap())
+            .unwrap();
+        let now = Instant::now();
+        let mut calls = Vec::new();
+        server.poll_controlled(now, |r| {
+            calls.push(r.id.clone());
+            Dispatch::Drain {
+                response: Response::success(r.id, 1, Value::Null),
+                deadline: now + Duration::from_millis(250),
+            }
+        });
+        assert_eq!(calls, ["quit"]);
+        assert_eq!(receive(&mut first).id, "quit");
+        assert_eq!(server.drain_state(), DrainState::Drained);
+        assert!(server.readiness(now).interests.is_empty());
+        server.poll(now, |_| panic!("draining server dispatched"));
+        assert!(server.readiness(now).next_deadline.is_none());
+    }
+    #[test]
+    fn queued_drain_preserves_full_response_and_never_dispatches_tail() {
+        let temp = Temp::new();
+        let mut server = Server::bind(&temp.0, "large-drain").unwrap();
+        let mut client = UnixStream::connect(server.socket_path()).unwrap();
+        let mut pipeline = encode(&Request::new("quit", Method::Version)).unwrap();
+        pipeline.extend(encode(&Request::new("tail", Method::Version)).unwrap());
+        client.write_all(&pipeline).unwrap();
+        client.set_nonblocking(true).unwrap();
+        let now = Instant::now();
+        let value = Value::String("x".repeat(IO_BUDGET * 4));
+        server.poll_controlled(now, |r| Dispatch::Drain {
+            response: Response::success(r.id, 1, value.clone()),
+            deadline: now + Duration::from_secs(1),
+        });
+        assert!(matches!(server.drain_state(), DrainState::Pending { .. }));
+        let readiness = server.readiness(now);
+        assert!(
+            readiness
+                .interests
+                .iter()
+                .all(|i| i.writable && !i.readable && i.endpoint != Endpoint::Listener)
+        );
+        let mut captured = Vec::new();
+        for _ in 0..100 {
+            let mut buf = [0; 8192];
+            loop {
+                match client.read(&mut buf) {
+                    Ok(0) => break,
+                    Ok(n) => captured.extend_from_slice(&buf[..n]),
+                    Err(e) if e.kind() == io::ErrorKind::WouldBlock => break,
+                    Err(e) => panic!("{e}"),
+                }
+            }
+            server.poll(now, |_| panic!("tail dispatched"));
+            if server.drain_state() == DrainState::Drained {
+                client.read_to_end(&mut captured).unwrap();
+                break;
+            }
+        }
+        assert_eq!(server.drain_state(), DrainState::Drained);
+        let mut decoder = Decoder::default();
+        decoder.push(&captured).unwrap();
+        let response: Response = decode(&decoder.next_frame().unwrap().unwrap()).unwrap();
+        assert_eq!(response.id, "quit");
+        assert_eq!(
+            serde_json::to_value(response.outcome).unwrap(),
+            serde_json::to_value(Response::success("quit", 1, value).outcome).unwrap()
+        );
+        assert!(decoder.is_empty());
+        assert_eq!(server.stats().drain_timed_out, 0);
+    }
+    #[test]
+    fn drain_absolute_deadline_cannot_be_extended_by_slow_reader() {
+        let temp = Temp::new();
+        let mut server = Server::bind(&temp.0, "timeout-drain").unwrap();
+        let mut client = UnixStream::connect(server.socket_path()).unwrap();
+        client
+            .write_all(&encode(&Request::new("large", Method::Version)).unwrap())
+            .unwrap();
+        let now = Instant::now();
+        let deadline = now + Duration::from_millis(250);
+        server.poll(now, |r| {
+            Response::success(r.id, 1, Value::String("x".repeat(MAX_PAYLOAD / 2)))
+        });
+        server.begin_drain(deadline);
+        server.begin_drain(deadline + Duration::from_secs(30));
+        assert!(
+            matches!(server.drain_state(), DrainState::Pending { deadline: actual, .. } if actual == deadline)
+        );
+        assert_eq!(server.readiness(now).next_deadline, Some(deadline));
+        server.poll(deadline, |_| panic!("drain callback"));
+        assert_eq!(server.drain_state(), DrainState::Drained);
+        assert_eq!(server.stats().drain_timed_out, 1);
     }
 }

@@ -1,5 +1,5 @@
 //! Optional calloop ownership/registration adapter. No compositor policy lives here.
-use crate::{Endpoint, IoInterest, Request, Response, Server, ServerStats};
+use crate::{Dispatch, DrainState, Endpoint, IoInterest, Request, Response, Server, ServerStats};
 use calloop::{
     Interest, LoopHandle, Mode, PostAction, RegistrationToken,
     generic::Generic,
@@ -99,6 +99,30 @@ impl<D: 'static> EventLoopDriver<D> {
         self.server.set_state_sequence(sequence);
         self.server.poll(now, handler);
         self.reconcile(&handle, now)
+    }
+
+    pub fn poll_controlled(
+        &mut self,
+        now: Instant,
+        sequence: u64,
+        handler: impl FnMut(Request) -> Dispatch,
+    ) -> io::Result<()> {
+        let handle = (self.handle)().ok_or_else(|| {
+            io::Error::new(io::ErrorKind::BrokenPipe, "IPC event loop was dropped")
+        })?;
+        self.server.set_state_sequence(sequence);
+        self.server.poll_controlled(now, handler);
+        self.reconcile(&handle, now)
+    }
+    pub fn begin_drain(&mut self, deadline: Instant) -> io::Result<()> {
+        let handle = (self.handle)().ok_or_else(|| {
+            io::Error::new(io::ErrorKind::BrokenPipe, "IPC event loop was dropped")
+        })?;
+        self.server.begin_drain(deadline);
+        self.reconcile(&handle, Instant::now())
+    }
+    pub fn drain_state(&self) -> DrainState {
+        self.server.drain_state()
     }
 
     pub fn socket_path(&self) -> &Path {
@@ -552,5 +576,46 @@ mod tests {
         let response: Response = decode(&decoder.next_frame().unwrap().unwrap()).unwrap();
         assert_eq!(response.id, "large");
         assert!(decoder.is_empty());
+    }
+    #[test]
+    fn drain_deadline_wakes_without_reader_and_removes_all_socket_sources() {
+        let mut fixture = Fixture::new();
+        let mut client = fixture.client();
+        client
+            .write_all(&encode(&Request::new("quit", Method::Version)).unwrap())
+            .unwrap();
+        let now = Instant::now();
+        let deadline = now + Duration::from_millis(30);
+        fixture
+            .driver
+            .poll_controlled(now, 0, |r| Dispatch::Drain {
+                response: Response::success(
+                    r.id,
+                    1,
+                    serde_json::Value::String("x".repeat(crate::MAX_PAYLOAD / 2)),
+                ),
+                deadline,
+            })
+            .unwrap();
+        assert!(matches!(
+            fixture.driver.drain_state(),
+            DrainState::Pending { .. }
+        ));
+        assert!(
+            fixture
+                .driver
+                .registrations
+                .values()
+                .all(|r| !r.readable && r.writable)
+        );
+        let bound = Instant::now() + Duration::from_secs(1);
+        while fixture.driver.drain_state() != DrainState::Drained {
+            assert!(Instant::now() < bound);
+            fixture.dispatch(Duration::from_millis(50));
+        }
+        assert_eq!(fixture.state.handled, 0);
+        assert_eq!(fixture.driver.stats().drain_timed_out, 1);
+        assert!(fixture.driver.registrations.is_empty());
+        assert!(fixture.driver.deadline.is_none());
     }
 }

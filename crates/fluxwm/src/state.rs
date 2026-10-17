@@ -52,6 +52,7 @@ pub struct RuntimeStats {
     pub flush_cycles: u64,
     pub flush_would_block: u64,
     pub flush_retry_timer_fired: u64,
+    pub ipc_drain_timed_out: u64,
 }
 
 pub struct Fluxwm {
@@ -62,6 +63,7 @@ pub struct Fluxwm {
     flush_retry_pending: bool,
     pub ipc: Option<flux_ipc::EventLoopDriver<Fluxwm>>,
     pub ipc_requested: bool,
+    pub shutdown_deadline: Option<std::time::Instant>,
     pub popup_grab: Option<(WindowId, smithay::desktop::PopupGrab<Self>)>,
     pub pointer_presses: std::collections::BTreeMap<u32, smithay::utils::Serial>,
     pub pointer_focus_dirty: bool,
@@ -179,6 +181,7 @@ impl Fluxwm {
             flush_retry_pending: false,
             ipc: None,
             ipc_requested: true,
+            shutdown_deadline: None,
             popup_grab: None,
             pointer_presses: Default::default(),
             pointer_focus_dirty: true,

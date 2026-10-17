@@ -1,6 +1,6 @@
 use crate::Fluxwm;
 use flux_core::{OutputId, WorkspaceId};
-use flux_ipc::{ErrorBody, ErrorCode, Method, Request, Response};
+use flux_ipc::{Dispatch, DrainState, ErrorBody, ErrorCode, Method, Request, Response};
 use serde_json::{Value, json};
 use std::{path::Path, time::Instant};
 
@@ -30,10 +30,26 @@ impl Fluxwm {
         let Some(mut driver) = self.ipc.take() else {
             return;
         };
-        if let Err(error) = driver.poll(Instant::now(), self.sequence, |request| {
-            self.dispatch_ipc(request)
+        // A keyboard quit is requested outside this driver's handler. IPC quit
+        // instead transitions atomically through Dispatch::Drain below, after its
+        // response is queued and before another request can execute.
+        if let Some(deadline) = self.shutdown_deadline
+            && let Err(error) = driver.begin_drain(deadline)
+        {
+            self.fail(format!("IPC drain integration: {error}"));
+        }
+        if let Err(error) = driver.poll_controlled(Instant::now(), self.sequence, |request| {
+            let response = self.dispatch_ipc(request);
+            match self.shutdown_deadline {
+                Some(deadline) => Dispatch::Drain { response, deadline },
+                None => Dispatch::Continue(response),
+            }
         }) {
             self.fail(format!("IPC event integration: {error}"));
+        }
+        self.stats.ipc_drain_timed_out = driver.stats().drain_timed_out;
+        if driver.drain_state() == DrainState::Drained {
+            self.loop_signal.stop();
         }
         self.ipc = Some(driver);
     }
