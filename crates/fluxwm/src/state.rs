@@ -673,7 +673,9 @@ impl Fluxwm {
             }
             pointer.frame(self);
         }
-        self.pointer_focus_dirty = true;
+        // A dismissed-but-alive popup must disappear without waiting for the
+        // client to destroy its role or for unrelated damage to trigger a frame.
+        self.request_redraw();
         self.restore_keyboard_focus();
         self.bump_sequence();
     }

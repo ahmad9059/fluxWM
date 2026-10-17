@@ -10,7 +10,7 @@ Logical selected window and virtual keyboard focus persist across host activatio
 
 ## Diagnostics
 
-`diagnostics.input_state` reports the last observed `host_focus`, held/suppressed key counts, held button count and current keyboard/pointer grab flags. It does not expose key identities. Final runtime counters add `host_focus_losses`, `focus_cancelled_keys` and `focus_cancelled_buttons`. Repeated identical focus notifications do not repeat cancellation. Actual transitions advance the IPC state sequence without requiring a scene redraw.
+`diagnostics.input_state` reports the last observed `host_focus`, held/suppressed key counts, held button count and current keyboard/pointer grab flags. It does not expose key identities. Final runtime counters add `host_focus_losses`, `focus_cancelled_keys` and `focus_cancelled_buttons`. Repeated identical focus notifications do not repeat cancellation. Actual transitions advance the IPC state sequence. Ordinary held-state cancellation does not require pixel changes; ending a tracked popup chain schedules composition so its removal does not wait for client destruction. Valid popup-grab dismissal pixels remain separately unqualified.
 
 ## Reproduce
 
@@ -31,3 +31,5 @@ Omit `--bundle` to use the existing verified official package preparation. The [
 Both cases additionally require zero held/suppressed state and no pointer grab after loss, successful normal fixture completion and owned client/server cleanup. The test checks real client events, not successful XTest calls alone. Before/after results and exact hashes are preserved in [the focus evidence bundle](../evidence/nested-milestone/2026-10-17-host-focus/README.md).
 
 The preserved pre-change executable genuinely fails: no Alt cancellation release, plain S becomes a stale-Alt workspace shortcut, and a pointer click grab survives loss. The first corrected run passes both cases with cancelled-key/button counts 2/0 and 0/1 respectively. A strengthened run adds held-through-return key and modifier oracles; the original runs remain separate observations. These are nested X11/software-rendering results. Host Wayland, native devices, all layouts/locks/grabs, multiple buttons/devices and full application compatibility remain open.
+
+Pinned-backend note: Smithay’s private winit `key_counter` updates only on non-synthetic key events and is not reset by its focus callback. It can therefore diverge after outside releases. FluxWM does not use `KeyboardKeyEvent::count`; diagnostics use the actual Smithay keyboard pressed set. Upstream counter reconciliation/overflow remains a recorded backend qualification concern rather than an assertion that this application reset repairs private backend counters.
