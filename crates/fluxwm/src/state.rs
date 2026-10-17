@@ -68,6 +68,7 @@ pub struct RuntimeStats {
 }
 
 pub struct Fluxwm {
+    pub bindings: flux_input::BindingSet,
     pub host_focus: Option<bool>,
     pub health: crate::health::Monitor<Fluxwm>,
     pub health_requested: bool,
@@ -189,7 +190,8 @@ impl Fluxwm {
         // Get the loop signal, used to stop the event loop
         let loop_signal = event_loop.get_signal();
 
-        Ok(Self {
+        let mut state = Self {
+            bindings: Default::default(),
             host_focus: None,
             health: crate::health::Monitor::new(&event_loop.handle(), |state| {
                 state.health_requested = true
@@ -240,7 +242,26 @@ impl Fluxwm {
             data_device_state,
             popups,
             seat,
-        })
+        };
+        let keyboard = state.seat.get_keyboard().expect("keyboard added above");
+        let defaults = crate::input::development_bindings();
+        state.bindings = keyboard.with_xkb_state(&mut state, |context| {
+            let xkb = context.xkb().lock().unwrap();
+            // SAFETY: compile only borrows the keymap while this Xkb guard is
+            // held. It retains pure Rust tables, no native object or refcount.
+            flux_input::BindingSet::compile(
+                &defaults,
+                unsafe { xkb.keymap() },
+                flux_input::UnmappedPolicy::RetainInactive,
+            )
+        })?;
+        if !state.bindings.inactive_indices().is_empty() {
+            tracing::info!(
+                inactive = state.bindings.inactive_indices().len(),
+                "development bindings absent from selected keymap"
+            );
+        }
+        Ok(state)
     }
 
     fn init_wayland_listener(

@@ -143,7 +143,30 @@ impl Fluxwm {
                             if state.suppressed_keys.contains(&code.raw()) {
                                 return FilterResult::Intercept(None);
                             }
-                            if let Some(action) = shortcut(modifiers, handle.modified_sym()) {
+                            // Smithay's actual backend/KeysymHandle code is XKB
+                            // (+8), despite the backend trait's evdev wording.
+                            let evdev = handle
+                                .raw_code()
+                                .raw()
+                                .checked_sub(8)
+                                .and_then(|code| u16::try_from(code).ok());
+                            let action = evdev
+                                .and_then(|code| {
+                                    state.bindings.action(
+                                        code,
+                                        &handle.raw_syms(),
+                                        flux_input::Modifiers {
+                                            ctrl: modifiers.ctrl,
+                                            alt: modifiers.alt,
+                                            shift: modifiers.shift,
+                                            logo: modifiers.logo,
+                                            level3: modifiers.iso_level3_shift,
+                                            level5: modifiers.iso_level5_shift,
+                                        },
+                                    )
+                                })
+                                .cloned();
+                            if let Some(action) = action {
                                 state.suppressed_keys.insert(code.raw());
                                 FilterResult::Intercept(Some(action))
                             } else {
@@ -351,43 +374,56 @@ impl Fluxwm {
 
 // Temporary nested development controls. Configuration binding integration is a
 // separate phase; Alt avoids the usual host compositor's Super bindings.
-fn shortcut(
-    modifiers: &smithay::input::keyboard::ModifiersState,
-    symbol: smithay::input::keyboard::Keysym,
-) -> Option<flux_core::Action> {
+pub fn development_bindings() -> Vec<flux_config::Binding> {
     use flux_core::{Action, Direction, LayoutMode};
-    use smithay::input::keyboard::Keysym;
-    if !modifiers.alt || modifiers.ctrl || modifiers.logo {
-        return None;
-    }
-    let direction = match symbol {
-        Keysym::Left | Keysym::h | Keysym::H => Some(Direction::Left),
-        Keysym::Right | Keysym::l | Keysym::L => Some(Direction::Right),
-        Keysym::Up | Keysym::k | Keysym::K => Some(Direction::Up),
-        Keysym::Down | Keysym::j | Keysym::J => Some(Direction::Down),
-        _ => None,
+    let mut bindings = Vec::new();
+    let mut add = |chord: String, action| {
+        bindings.push(flux_config::Binding {
+            key: flux_config::Key::Sym { sym: chord },
+            action,
+        })
     };
-    if let Some(direction) = direction {
-        return Some(if modifiers.shift {
-            Action::Move { direction }
-        } else {
-            Action::Focus { direction }
-        });
+    for (symbol, direction) in [
+        ("Left", Direction::Left),
+        ("h", Direction::Left),
+        ("Right", Direction::Right),
+        ("l", Direction::Right),
+        ("Up", Direction::Up),
+        ("k", Direction::Up),
+        ("Down", Direction::Down),
+        ("j", Direction::Down),
+    ] {
+        add(format!("Alt+{symbol}"), Action::Focus { direction });
+        add(format!("Alt+Shift+{symbol}"), Action::Move { direction });
     }
-    Some(match symbol {
-        Keysym::Return => Action::Spawn {
-            argv: vec!["foot".into()],
-        },
-        Keysym::q | Keysym::Q if modifiers.shift => Action::Quit,
-        Keysym::q | Keysym::Q => Action::CloseWindow,
-        Keysym::c | Keysym::C => Action::WorkspaceMode {
-            mode: LayoutMode::Canvas,
-        },
-        Keysym::s | Keysym::S => Action::WorkspaceMode {
-            mode: LayoutMode::Strip,
-        },
-        Keysym::equal | Keysym::plus => Action::Resize { delta: 32.0 },
-        Keysym::minus => Action::Resize { delta: -32.0 },
-        _ => return None,
-    })
+    for shift in ["", "Shift+"] {
+        for (symbol, action) in [
+            (
+                "Return",
+                Action::Spawn {
+                    argv: vec!["foot".into()],
+                },
+            ),
+            (
+                "c",
+                Action::WorkspaceMode {
+                    mode: LayoutMode::Canvas,
+                },
+            ),
+            (
+                "s",
+                Action::WorkspaceMode {
+                    mode: LayoutMode::Strip,
+                },
+            ),
+            ("equal", Action::Resize { delta: 32.0 }),
+        ] {
+            add(format!("Alt+{shift}{symbol}"), action);
+        }
+    }
+    add("Alt+minus".into(), Action::Resize { delta: -32.0 });
+    add("Alt+plus".into(), Action::Resize { delta: 32.0 });
+    add("Alt+q".into(), Action::CloseWindow);
+    add("Alt+Shift+q".into(), Action::Quit);
+    bindings
 }

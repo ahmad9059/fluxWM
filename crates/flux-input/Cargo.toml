@@ -1,0 +1,12 @@
+[package]
+name = "flux-input"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+flux-core.workspace = true
+flux-config = { path = "../flux-config" }
+thiserror.workspace = true
+xkbcommon = "=0.9.0"

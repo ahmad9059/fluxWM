@@ -102,6 +102,7 @@ impl Fluxwm {
                 "Lua configuration is not integrated into the nested runtime",
             )),
             Method::Diagnostics => Ok(json!({
+                "keyboard_bindings": {"source":"development-defaults", "entries":self.bindings.len(), "inactive":self.bindings.inactive_indices().len(), "runtime_keymap_changes":false},
                 "composed_scene": self.scene.as_ref().map(|scene| {
                     let (surfaces, popup_surfaces) = scene.surface_counts();
                     json!({"surfaces":surfaces, "popup_surfaces":popup_surfaces})

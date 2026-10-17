@@ -21,3 +21,5 @@ flux-ipc = { path = "../flux-ipc", features = ["calloop"] }
 tempfile = "3.27"
 flux-process = { path = "../flux-process" }
 flux-scene = { path = "../flux-scene" }
+flux-config = { path = "../flux-config" }
+flux-input = { path = "../flux-input" }

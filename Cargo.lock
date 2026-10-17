@@ -338,6 +338,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "flux-input"
+version = "0.1.0-dev"
+dependencies = [
+ "flux-config",
+ "flux-core",
+ "thiserror 2.0.21",
+ "xkbcommon",
+]
+
+[[package]]
 name = "flux-ipc"
 version = "0.1.0-dev"
 dependencies = [
@@ -388,7 +398,9 @@ version = "0.1.0-dev"
 dependencies = [
  "bitflags",
  "calloop",
+ "flux-config",
  "flux-core",
+ "flux-input",
  "flux-ipc",
  "flux-layout",
  "flux-process",
