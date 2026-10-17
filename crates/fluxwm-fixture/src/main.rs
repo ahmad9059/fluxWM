@@ -13,8 +13,8 @@ use std::{
 use wayland_client::{
     Connection, Dispatch, EventQueue, Proxy, QueueHandle, WEnum, delegate_noop,
     protocol::{
-        wl_buffer, wl_callback, wl_compositor, wl_registry, wl_seat, wl_shm, wl_shm_pool,
-        wl_surface,
+        wl_buffer, wl_callback, wl_compositor, wl_pointer, wl_registry, wl_seat, wl_shm,
+        wl_shm_pool, wl_surface,
     },
 };
 use wayland_protocols::xdg::shell::client::{xdg_surface, xdg_toplevel, xdg_wm_base};
@@ -53,6 +53,16 @@ struct State {
     next_sync: u32,
     error: Option<String>,
     invalid_move_attempted: bool,
+    pointer_feedback_enabled: bool,
+    pointer: Option<wl_pointer::WlPointer>,
+    pointer_on_primary: bool,
+    pointer_xy: Option<(f64, f64)>,
+    pointer_enters: u32,
+    pointer_leaves: u32,
+    stationary_motions: u32,
+    changing_motions: u32,
+    commit_on_motion: bool,
+    feedback_commits: u32,
 }
 impl State {
     fn new(start: Instant) -> Self {
@@ -71,6 +81,16 @@ impl State {
             next_sync: 1,
             error: None,
             invalid_move_attempted: false,
+            pointer_feedback_enabled: false,
+            pointer: None,
+            pointer_on_primary: false,
+            pointer_xy: None,
+            pointer_enters: 0,
+            pointer_leaves: 0,
+            stationary_motions: 0,
+            changing_motions: 0,
+            commit_on_motion: false,
+            feedback_commits: 0,
         }
     }
     fn record(&mut self, event: Json) {
@@ -192,7 +212,9 @@ fn poll_fd(fd: i32, events: i16, deadline: Instant) -> Result<i16> {
             return Ok(descriptor.revents);
         }
         if result == 0 {
-            return Err("fixture event deadline expired".into());
+            // poll's millisecond timeout can round down; recheck the absolute
+            // deadline rather than reporting an early timeout.
+            continue;
         }
         let error = std::io::Error::last_os_error();
         if error.kind() != std::io::ErrorKind::Interrupted {
@@ -470,7 +492,80 @@ delegate_noop!(State:ignore wl_compositor::WlCompositor);
 delegate_noop!(State:ignore wl_surface::WlSurface);
 delegate_noop!(State:ignore wl_shm_pool::WlShmPool);
 delegate_noop!(State:ignore wl_buffer::WlBuffer);
-delegate_noop!(State:ignore wl_seat::WlSeat);
+impl Dispatch<wl_seat::WlSeat, ()> for State {
+    fn event(
+        state: &mut Self,
+        seat: &wl_seat::WlSeat,
+        event: wl_seat::Event,
+        _: &(),
+        _: &Connection,
+        qh: &QueueHandle<Self>,
+    ) {
+        if let wl_seat::Event::Capabilities {
+            capabilities: WEnum::Value(capabilities),
+        } = event
+            && state.pointer_feedback_enabled
+            && state.pointer.is_none()
+            && capabilities.contains(wl_seat::Capability::Pointer)
+        {
+            state.pointer = Some(seat.get_pointer(qh, ()));
+        }
+    }
+}
+impl Dispatch<wl_pointer::WlPointer, ()> for State {
+    fn event(
+        state: &mut Self,
+        _: &wl_pointer::WlPointer,
+        event: wl_pointer::Event,
+        _: &(),
+        _: &Connection,
+        _: &QueueHandle<Self>,
+    ) {
+        match event {
+            wl_pointer::Event::Enter {
+                surface,
+                surface_x,
+                surface_y,
+                ..
+            } => {
+                state.pointer_on_primary =
+                    state.windows.first().is_some_and(|w| w.surface == surface);
+                if state.pointer_on_primary {
+                    state.pointer_enters += 1;
+                    state.pointer_xy = Some((surface_x, surface_y));
+                    state.record(json!({"pointer_enter_primary":[surface_x,surface_y]}));
+                }
+            }
+            wl_pointer::Event::Leave { .. } => {
+                if state.pointer_on_primary {
+                    state.pointer_leaves += 1;
+                }
+                state.pointer_on_primary = false;
+            }
+            wl_pointer::Event::Motion {
+                surface_x,
+                surface_y,
+                ..
+            } if state.pointer_on_primary => {
+                let xy = (surface_x, surface_y);
+                if state.pointer_xy == Some(xy) {
+                    state.stationary_motions += 1;
+                } else {
+                    state.changing_motions += 1;
+                }
+                state.pointer_xy = Some(xy);
+                // Reproduce cursor-updating clients while bounding this fixture's
+                // feedback-generated requests even against a broken compositor.
+                if state.commit_on_motion && state.feedback_commits < 32 {
+                    state.windows[0].surface.damage(0, 0, 1, 1);
+                    state.windows[0].surface.commit();
+                    state.feedback_commits += 1;
+                }
+            }
+            _ => {}
+        }
+    }
+}
 fn lifecycle(
     connection: &Connection,
     queue: &mut EventQueue<State>,
@@ -838,14 +933,178 @@ fn slow_reader(timeout: Duration) -> Json {
     evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
     evidence
 }
+fn observe_for(
+    connection: &Connection,
+    queue: &mut EventQueue<State>,
+    state: &mut State,
+    duration: Duration,
+    deadline: Instant,
+) -> Result<()> {
+    let stop = Instant::now()
+        .checked_add(duration)
+        .ok_or("observation deadline overflow")?;
+    if stop > deadline {
+        return Err("insufficient fixture deadline for observation interval".into());
+    }
+    loop {
+        queue.dispatch_pending(state).map_err(|e| e.to_string())?;
+        if let Some(error) = state.error.take() {
+            return Err(error);
+        }
+        flush_without_reading(connection, queue, deadline)?;
+        if Instant::now() >= stop {
+            return Ok(());
+        }
+        let Some(guard) = queue.prepare_read() else {
+            continue;
+        };
+        match poll_fd(connection.as_fd().as_raw_fd(), libc::POLLIN, stop) {
+            Ok(events) if events & libc::POLLIN != 0 => match guard.read() {
+                Ok(_) => {}
+                Err(wayland_client::backend::WaylandError::Io(e))
+                    if e.kind() == std::io::ErrorKind::WouldBlock => {}
+                Err(e) => return Err(e.to_string()),
+            },
+            Ok(events) => return Err(format!("observation socket error {events}")),
+            Err(_) if Instant::now() >= stop => return Ok(()),
+            Err(error) => return Err(error),
+        }
+    }
+}
+fn pointer_feedback(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut evidence = json!({"mode":"pointer-feedback","ok":false,"settle_ms":200,"observation_ms":400,"maximum_feedback_commits":32,"allowed_stationary_motions_after_seed":1});
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        evidence["socket"] = json!(path);
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        let mut state = State::new(start);
+        state.pointer_feedback_enabled = true;
+        connection.display().get_registry(&qh, ());
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pointer registry",
+            |s| s.last_sync >= sync,
+        )?;
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pointer seat binding",
+            |s| s.last_sync >= sync,
+        )?;
+        if state.compositor.is_none()
+            || state.wm.is_none()
+            || state.shm.is_none()
+            || state.pointer.is_none()
+        {
+            return Err("missing pointer/compositor/SHM/XDG fixture prerequisites".into());
+        }
+        let first = state.create(&qh, "stationary-pointer-feedback");
+        state.windows[first].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pointer configure",
+            |s| s.windows[first].configures >= 1,
+        )?;
+        state.map(first, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pointer enter and mapped frame",
+            |s| s.pointer_on_primary && s.windows[first].frames >= 1,
+        )?;
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(200),
+            deadline,
+        )?;
+        if state.pointer_xy != Some((0.0, 0.0)) || !state.pointer_on_primary {
+            return Err(format!(
+                "initial pointer is not stationary at fixture origin: {:?}; run without host pointer interaction",
+                state.pointer_xy
+            ));
+        }
+        let ipc = std::env::var_os("FLUXWM_SOCKET")
+            .ok_or("pointer-feedback requires FLUXWM_SOCKET diagnostics")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let before = diagnostics.snapshot(deadline)?;
+        let baseline = (
+            state.stationary_motions,
+            state.changing_motions,
+            state.pointer_enters,
+            state.pointer_leaves,
+        );
+        evidence["before"] = before.clone();
+        evidence["initial_pointer_xy"] = json!(state.pointer_xy);
+        evidence["baseline_stationary_motions"] = json!(baseline.0);
+        state.commit_on_motion = true;
+        state.windows[first].surface.damage(0, 0, 1, 1);
+        state.windows[first].surface.commit();
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(400),
+            deadline,
+        )?;
+        state.commit_on_motion = false;
+        let after = diagnostics.snapshot(deadline)?;
+        let stationary = state.stationary_motions - baseline.0;
+        evidence["after"] = after.clone();
+        evidence["stationary_motions_after_seed"] = json!(stationary);
+        evidence["feedback_commits"] = json!(state.feedback_commits);
+        evidence["changing_motions_after_seed"] = json!(state.changing_motions - baseline.1);
+        evidence["redraw_delta"] =
+            json!(counter(&after, "redraws").saturating_sub(counter(&before, "redraws")));
+        evidence["composition_delta"] =
+            json!(counter(&after, "compositions").saturating_sub(counter(&before, "compositions")));
+        evidence["events"] = json!(state.events);
+        if state.changing_motions != baseline.1
+            || state.pointer_enters != baseline.2
+            || state.pointer_leaves != baseline.3
+        {
+            return Err(
+                "pointer moved or focus changed during no-input interval; contaminated run".into(),
+            );
+        }
+        if stationary > 1 {
+            return Err(format!(
+                "stationary pointer feedback: {stationary} repeated motions after one seed commit (maximum 1)"
+            ));
+        }
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence
+}
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     let parsed = match args.as_slice() {
-        [mode] if mode == "lifecycle" || mode == "slow-reader" => {
+        [mode] if mode == "lifecycle" || mode == "slow-reader" || mode == "pointer-feedback" => {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
         [mode, flag, value]
-            if (mode == "lifecycle" || mode == "slow-reader") && flag == "--timeout-ms" =>
+            if (mode == "lifecycle" || mode == "slow-reader" || mode == "pointer-feedback")
+                && flag == "--timeout-ms" =>
         {
             value
                 .parse::<u64>()
@@ -854,10 +1113,13 @@ fn main() {
                 .map(|n| (mode.as_str(), Duration::from_millis(n)))
                 .ok_or("timeout must be 1..=5000 ms")
         }
-        _ => Err("usage: fluxwm-fixture lifecycle|slow-reader [--timeout-ms 1..5000]"),
+        _ => Err(
+            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback [--timeout-ms 1..5000]",
+        ),
     };
     let result = match parsed {
         Ok(("slow-reader", timeout)) => slow_reader(timeout),
+        Ok(("pointer-feedback", timeout)) => pointer_feedback(timeout),
         Ok((_, timeout)) => run(timeout),
         Err(error) => json!({"ok":false,"error":error}),
     };
@@ -938,6 +1200,24 @@ mod tests {
             .snapshot(start + Duration::from_millis(30))
             .unwrap_err();
         assert!(error.contains("deadline"));
+        assert!(start.elapsed() < Duration::from_secs(1));
+    }
+    #[test]
+    fn idle_observation_waits_for_its_interval_without_false_timeout() {
+        let (client, _server) = UnixStream::pair().unwrap();
+        let connection = Connection::from_socket(client).unwrap();
+        let mut queue = connection.new_event_queue::<State>();
+        let start = Instant::now();
+        let mut state = State::new(start);
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(30),
+            start + Duration::from_secs(1),
+        )
+        .unwrap();
+        assert!(start.elapsed() >= Duration::from_millis(30));
         assert!(start.elapsed() < Duration::from_secs(1));
     }
     #[test]
