@@ -2827,6 +2827,7 @@ mod tests {
         let mut diagnostics = Diagnostics {
             socket: client,
             next_id: 0,
+            last_sequence: None,
         };
         let error = diagnostics
             .snapshot(Instant::now() + Duration::from_millis(100))
@@ -2840,6 +2841,7 @@ mod tests {
         let mut diagnostics = Diagnostics {
             socket: client,
             next_id: 0,
+            last_sequence: None,
         };
         let start = Instant::now();
         let error = diagnostics
