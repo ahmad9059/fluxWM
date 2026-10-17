@@ -1,0 +1,91 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxsmoke-56218957a64949ad919edad0",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm-layout/target/smoke-nested/3b6331f5f771427fb54a00c85527103d/lifecycle/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm-layout/target/smoke-nested/3b6331f5f771427fb54a00c85527103d/lifecycle/stats.json",
+    "--screenshot",
+    "/home/ahmad/Documents/Projects/fluxwm-layout/target/smoke-nested/3b6331f5f771427fb54a00c85527103d/lifecycle/first-map.ppm",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "lifecycle",
+    "--timeout-ms",
+    "4500"
+  ],
+  "elapsed_ms": 6358,
+  "environment": {
+    "DISPLAY": ":1",
+    "WAYLAND_DISPLAY": "wayland-1",
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": null,
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "leaked_socket_paths_before_harness_cleanup": [],
+  "name": "lifecycle",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "readiness": {
+    "backend": "nested",
+    "pid": 170923,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxsmoke-56218957a64949ad919edad0"
+  },
+  "returncode": 0,
+  "screenshot": {
+    "format": "P6",
+    "height": 1396,
+    "quadrants": {
+      "blue": [
+        0,
+        120,
+        159,
+        239,
+        19200
+      ],
+      "green": [
+        160,
+        0,
+        319,
+        119,
+        19200
+      ],
+      "red": [
+        0,
+        0,
+        159,
+        119,
+        19200
+      ],
+      "yellow": [
+        160,
+        120,
+        319,
+        239,
+        19200
+      ]
+    },
+    "sha256": "0f8c1632038dd9e0b4ef32efe605380cdaa38f82d9112614e6c7cbac26f10e47",
+    "width": 1270
+  },
+  "socket": "fluxsmoke-56218957a64949ad919edad0",
+  "stats": {
+    "compositions": 5,
+    "destroyed": 2,
+    "final_windows": 0,
+    "frames_sent": 6,
+    "maps": 3,
+    "redraws": 7,
+    "submissions": 4,
+    "unmaps": 1
+  }
+}

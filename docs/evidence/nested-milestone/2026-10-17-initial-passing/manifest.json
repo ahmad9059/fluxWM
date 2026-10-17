@@ -1,0 +1,27 @@
+{
+  "copied_artifacts_sha256": {
+    "fixture.stdout.json": "b5526a3a268c0c2882bf9d394f7c7fea19411efbed2d23b7ede469adc3de86c1",
+    "idle-long/ready.json": "6feab972ab5c0665e2c14fde83e626f9ca97e265b45aaaa0a6aa7143de644e2e",
+    "idle-long/result.json": "2886bf25865374cb20787a74abfd007a3879d5028f383164f072443a60438bb4",
+    "idle-long/stats.json": "19b0f653ad0fae2b433f84f9e4e3b6e051abec11a4d40ddd53b583b11a91a5ae",
+    "idle-short/ready.json": "24bb66931103207000c6184ba9f8e0d3e656388d3416853352c361377360fe2b",
+    "idle-short/result.json": "d0d5dac24ebf25b55e7133ec63c8275c8fa5d2633b7402a6224847c55896dd32",
+    "idle-short/stats.json": "19b0f653ad0fae2b433f84f9e4e3b6e051abec11a4d40ddd53b583b11a91a5ae",
+    "lifecycle/ready.json": "dcfb371c0cda0b91e55e86b5ceabd043af170394721bb7b3516cea47e0eb5705",
+    "lifecycle/result.json": "e55814da1f5b130809f7e3714e058140d4d753f2e6aef28dee7c9210a1d7e3e3",
+    "lifecycle/stats.json": "ed419d6118198416d18469358219ed53e4d90ef3b762cda90c130ef64a2bdf11",
+    "sigterm/ready.json": "1844feb622cf5c1987cc762fff859fb1f0649bf392c24f98988e6082349c4613",
+    "sigterm/result.json": "d2b77e707a8bb9c2d06fa3b1daf7dd9b9cc8016178d68f68a5f996a48a2cee4b",
+    "sigterm/stats.json": "9acff3bec591953b829ae61369ed9bd54be61d7e929cf4983a154ea0a96fbefe",
+    "summary.json": "916a5a1c4544aaffb6a7151efa32d206a92f4d1c3c33c80f8cf1fad576583849"
+  },
+  "framebuffer": {
+    "committed": false,
+    "evidence_scope": "offscreen GLES virtual scene composition readback; host presentation and physical hardware qualification are not established",
+    "original_path": "/home/ahmad/Documents/Projects/fluxwm-layout/target/smoke-nested/3b6331f5f771427fb54a00c85527103d/lifecycle/first-map.ppm",
+    "sha256": "0f8c1632038dd9e0b4ef32efe605380cdaa38f82d9112614e6c7cbac26f10e47"
+  },
+  "original_artifacts": "/home/ahmad/Documents/Projects/fluxwm-layout/target/smoke-nested/3b6331f5f771427fb54a00c85527103d",
+  "source_snapshot": "Root worktree in progress; identified by tested executable SHA-256, not a committed release revision.",
+  "status": "historical-passing-nested-milestone"
+}
