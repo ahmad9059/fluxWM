@@ -2,7 +2,7 @@
 use serde_json::{Value as Json, json};
 use std::{
     fs::File,
-    io::Write,
+    io::{Read, Write},
     os::{
         fd::{AsFd, AsRawFd, FromRawFd, OwnedFd},
         unix::{ffi::OsStrExt, net::UnixStream},
@@ -49,6 +49,7 @@ struct State {
     formats: Vec<u32>,
     windows: Vec<Window>,
     last_sync: u32,
+    sync_done_count: u32,
     next_sync: u32,
     error: Option<String>,
     invalid_move_attempted: bool,
@@ -66,6 +67,7 @@ impl State {
             formats: vec![],
             windows: vec![],
             last_sync: 0,
+            sync_done_count: 0,
             next_sync: 1,
             error: None,
             invalid_move_attempted: false,
@@ -213,7 +215,7 @@ fn display_path() -> Result<PathBuf> {
         Ok(PathBuf::from(runtime).join(display))
     }
 }
-fn connect(path: &Path, deadline: Instant) -> Result<Connection> {
+fn connect_stream(path: &Path, deadline: Instant) -> Result<UnixStream> {
     let bytes = path.as_os_str().as_bytes();
     // SAFETY: sockaddr_un is an ordinary zero-initializable C record.
     let mut address: libc::sockaddr_un = unsafe { std::mem::zeroed() };
@@ -271,7 +273,10 @@ fn connect(path: &Path, deadline: Instant) -> Result<Connection> {
             return Err(std::io::Error::from_raw_os_error(error).to_string());
         }
     }
-    Connection::from_socket(UnixStream::from(fd)).map_err(|e| e.to_string())
+    Ok(UnixStream::from(fd))
+}
+fn connect(path: &Path, deadline: Instant) -> Result<Connection> {
+    Connection::from_socket(connect_stream(path, deadline)?).map_err(|e| e.to_string())
 }
 fn until(
     connection: &Connection,
@@ -449,7 +454,10 @@ impl Dispatch<wl_callback::WlCallback, Callback> for State {
     ) {
         if let wl_callback::Event::Done { callback_data } = event {
             match kind {
-                Callback::Sync(n) => state.last_sync = *n,
+                Callback::Sync(n) => {
+                    state.last_sync = *n;
+                    state.sync_done_count += 1;
+                }
                 Callback::Frame(n) => {
                     state.windows[*n].frames += 1;
                     state.record(json!({"frame_done":n,"timestamp":callback_data}));
@@ -613,20 +621,244 @@ fn run(timeout: Duration) -> Json {
         "globals":state.globals,"events":state.events,"windows":state.windows.iter().enumerate().map(|(i,w)|json!({"index":i,"configure_acks":w.configures,"frame_callbacks":w.frames,"wm_capability_events":w.capabilities,"explicitly_destroyed":w.destroyed})).collect::<Vec<_>>(),
         "expected_primary_quadrants_rgb":[[255,0,0],[0,255,0],[0,0,255],[255,255,0]],"expected_sibling_rgb":[255,0,255]})
 }
+
+/// A persistent out-of-band channel. No connection close/request is generated
+/// while the slow Wayland connection is draining its final marker.
+struct Diagnostics {
+    socket: UnixStream,
+    next_id: u32,
+}
+impl Diagnostics {
+    fn new(path: &Path, deadline: Instant) -> Result<Self> {
+        Ok(Self {
+            socket: connect_stream(path, deadline)?,
+            next_id: 0,
+        })
+    }
+    fn snapshot(&mut self, deadline: Instant) -> Result<Json> {
+        let id = format!("fixture-{}", self.next_id);
+        self.next_id = self
+            .next_id
+            .checked_add(1)
+            .ok_or("diagnostic request identity capacity exhausted")?;
+        let payload =
+            serde_json::to_vec(&json!({"version":1,"id":id,"method":"diagnostics","params":{}}))
+                .map_err(|e| e.to_string())?;
+        let mut frame = (payload.len() as u32).to_be_bytes().to_vec();
+        frame.extend(payload);
+        transfer(&mut self.socket, &mut frame, true, deadline)?;
+        let mut header = [0; 4];
+        transfer(&mut self.socket, &mut header, false, deadline)?;
+        let length = u32::from_be_bytes(header) as usize;
+        if length == 0 || length > 65536 {
+            return Err("diagnostic response outside 1..65536 bytes".into());
+        }
+        let mut payload = vec![0; length];
+        transfer(&mut self.socket, &mut payload, false, deadline)?;
+        let response: Json = serde_json::from_slice(&payload).map_err(|e| e.to_string())?;
+        if response.get("id") != Some(&json!(id)) {
+            return Err("diagnostics response identity mismatch".into());
+        }
+        let stats = response
+            .pointer("/result/runtime")
+            .cloned()
+            .ok_or_else(|| format!("missing diagnostic runtime counters: {response}"))?;
+        for name in [
+            "wayland_requests",
+            "flush_cycles",
+            "flush_would_block",
+            "flush_retry_timer_fired",
+        ] {
+            if stats.get(name).and_then(Json::as_u64).is_none() {
+                return Err(format!("missing numeric diagnostic {name}"));
+            }
+        }
+        Ok(stats)
+    }
+    fn barrier(&mut self, target: u64, deadline: Instant) -> Result<Json> {
+        let observed = loop {
+            let stats = self.snapshot(deadline)?;
+            if counter(&stats, "wayland_requests") >= target {
+                break stats;
+            }
+            std::thread::sleep(Duration::from_millis(1));
+        };
+        loop {
+            let stats = self.snapshot(deadline)?;
+            if counter(&stats, "wayland_requests") >= target
+                && counter(&stats, "flush_cycles") > counter(&observed, "flush_cycles")
+            {
+                return Ok(stats);
+            }
+            std::thread::sleep(Duration::from_millis(1));
+        }
+    }
+}
+fn counter(value: &Json, name: &str) -> u64 {
+    value[name].as_u64().unwrap_or(0)
+}
+fn transfer(
+    socket: &mut UnixStream,
+    bytes: &mut [u8],
+    write: bool,
+    deadline: Instant,
+) -> Result<()> {
+    let mut offset = 0;
+    while offset < bytes.len() {
+        if Instant::now() >= deadline {
+            return Err("diagnostics transfer deadline expired".into());
+        }
+        let result = if write {
+            socket.write(&bytes[offset..])
+        } else {
+            socket.read(&mut bytes[offset..])
+        };
+        match result {
+            Ok(0) => return Err("diagnostics socket closed during frame".into()),
+            Ok(n) => offset += n,
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                poll_fd(
+                    socket.as_raw_fd(),
+                    if write { libc::POLLOUT } else { libc::POLLIN },
+                    deadline,
+                )?;
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {}
+            Err(e) => return Err(e.to_string()),
+        }
+    }
+    Ok(())
+}
+fn flush_without_reading(
+    connection: &Connection,
+    queue: &mut EventQueue<State>,
+    deadline: Instant,
+) -> Result<()> {
+    loop {
+        if Instant::now() >= deadline {
+            return Err("request flush deadline expired".into());
+        }
+        match queue.flush() {
+            Ok(()) => return Ok(()),
+            Err(wayland_client::backend::WaylandError::Io(e))
+                if e.kind() == std::io::ErrorKind::WouldBlock =>
+            {
+                poll_fd(connection.as_fd().as_raw_fd(), libc::POLLOUT, deadline)?;
+            }
+            Err(e) => return Err(format!("request flush: {e}")),
+        }
+    }
+}
+fn slow_reader(timeout: Duration) -> Json {
+    const BATCH: u32 = 32;
+    const MAX_BATCHES: u32 = 512;
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut evidence = json!({"mode":"slow-reader","ok":false,"batch_callbacks":BATCH,"max_batches":MAX_BATCHES,"max_callbacks":BATCH*MAX_BATCHES+1,"read_delay_ms":200,"server_backpressure_proven":false});
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        evidence["socket"] = json!(path);
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        let mut state = State::new(start);
+        let ipc = std::env::var_os("FLUXWM_SOCKET")
+            .ok_or("slow-reader requires FLUXWM_SOCKET diagnostics from the nested compositor")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let baseline = diagnostics.snapshot(deadline)?;
+        let base_requests = counter(&baseline, "wayland_requests");
+        evidence["baseline"] = baseline.clone();
+        let mut requests = 0;
+        let mut batches = 0;
+        let blocked = loop {
+            if batches >= MAX_BATCHES {
+                return Err("bounded request ceiling reached without proven server EAGAIN; not a passing backpressure test".into());
+            }
+            for _ in 0..BATCH {
+                state.sync(&connection, &qh);
+            }
+            requests += BATCH;
+            batches += 1;
+            flush_without_reading(&connection, &mut queue, deadline)?;
+            let stats = diagnostics.barrier(base_requests + u64::from(requests), deadline)?;
+            if counter(&stats, "flush_would_block") > counter(&baseline, "flush_would_block") {
+                break stats;
+            }
+        };
+        evidence["batches_to_backpressure"] = json!(batches);
+        evidence["callback_requests_before_marker"] = json!(requests);
+        evidence["blocked_snapshot"] = blocked;
+        evidence["server_backpressure_proven"] = json!(true);
+        let marker = state.sync(&connection, &qh);
+        requests += 1;
+        flush_without_reading(&connection, &mut queue, deadline)?;
+        let marker_processed =
+            diagnostics.barrier(base_requests + u64::from(requests), deadline)?;
+        evidence["marker_processed_snapshot"] = marker_processed;
+        // All request generation stops here. The following delay gives the server
+        // time to retry against the full socket; no Wayland reads occur until after it.
+        if deadline.saturating_duration_since(Instant::now()) < Duration::from_millis(300) {
+            return Err("insufficient remaining deadline for delayed drain".into());
+        }
+        std::thread::sleep(Duration::from_millis(200));
+        let drain_start = Instant::now();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "delayed final marker",
+            |s| s.last_sync >= marker,
+        )?;
+        evidence["drain_ms"] = json!(drain_start.elapsed().as_millis());
+        evidence["marker_received"] = json!(marker);
+        evidence["callback_events_received"] = json!(state.sync_done_count);
+        evidence["no_requests_during_marker_drain"] = json!(true);
+        if state.sync_done_count != requests {
+            return Err(format!(
+                "expected {requests} callback events, received {}",
+                state.sync_done_count
+            ));
+        }
+        // This IPC request is after marker receipt; it cannot cause its delivery.
+        let final_stats = diagnostics.snapshot(deadline)?;
+        if counter(&final_stats, "wayland_requests") != base_requests + u64::from(requests) {
+            return Err("unexpected concurrent Wayland requests; run this fixture in an isolated nested instance".into());
+        }
+        if counter(&final_stats, "flush_retry_timer_fired")
+            <= counter(&baseline, "flush_retry_timer_fired")
+        {
+            return Err("no retry timer execution was observed".into());
+        }
+        evidence["final_snapshot"] = final_stats;
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence
+}
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
-    let timeout = match args.as_slice() {
-        [mode] if mode == "lifecycle" => Ok(Duration::from_secs(5)),
-        [mode, flag, value] if mode == "lifecycle" && flag == "--timeout-ms" => value
-            .parse::<u64>()
-            .ok()
-            .filter(|n| (1..=5000).contains(n))
-            .map(Duration::from_millis)
-            .ok_or("timeout must be 1..=5000 ms"),
-        _ => Err("usage: fluxwm-fixture lifecycle [--timeout-ms 1..5000]"),
+    let parsed = match args.as_slice() {
+        [mode] if mode == "lifecycle" || mode == "slow-reader" => {
+            Ok((mode.as_str(), Duration::from_secs(5)))
+        }
+        [mode, flag, value]
+            if (mode == "lifecycle" || mode == "slow-reader") && flag == "--timeout-ms" =>
+        {
+            value
+                .parse::<u64>()
+                .ok()
+                .filter(|n| (1..=5000).contains(n))
+                .map(|n| (mode.as_str(), Duration::from_millis(n)))
+                .ok_or("timeout must be 1..=5000 ms")
+        }
+        _ => Err("usage: fluxwm-fixture lifecycle|slow-reader [--timeout-ms 1..5000]"),
     };
-    let result = match timeout {
-        Ok(timeout) => run(timeout),
+    let result = match parsed {
+        Ok(("slow-reader", timeout)) => slow_reader(timeout),
+        Ok((_, timeout)) => run(timeout),
         Err(error) => json!({"ok":false,"error":error}),
     };
     println!("{result}");
@@ -678,6 +910,35 @@ mod tests {
         assert!(result.unwrap_err().contains("deadline"));
         assert!(start.elapsed() < Duration::from_secs(1));
         std::fs::remove_file(path).unwrap();
+    }
+    #[test]
+    fn diagnostics_rejects_oversized_response_before_allocating_payload() {
+        let (client, mut server) = UnixStream::pair().unwrap();
+        client.set_nonblocking(true).unwrap();
+        server.write_all(&65537_u32.to_be_bytes()).unwrap();
+        let mut diagnostics = Diagnostics {
+            socket: client,
+            next_id: 0,
+        };
+        let error = diagnostics
+            .snapshot(Instant::now() + Duration::from_millis(100))
+            .unwrap_err();
+        assert!(error.contains("outside 1..65536"));
+    }
+    #[test]
+    fn diagnostics_silent_peer_cannot_exceed_deadline() {
+        let (client, _server) = UnixStream::pair().unwrap();
+        client.set_nonblocking(true).unwrap();
+        let mut diagnostics = Diagnostics {
+            socket: client,
+            next_id: 0,
+        };
+        let start = Instant::now();
+        let error = diagnostics
+            .snapshot(start + Duration::from_millis(30))
+            .unwrap_err();
+        assert!(error.contains("deadline"));
+        assert!(start.elapsed() < Duration::from_secs(1));
     }
     #[test]
     fn missing_socket_fails_without_blocking() {
