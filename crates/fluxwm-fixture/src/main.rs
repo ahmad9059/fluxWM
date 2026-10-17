@@ -52,6 +52,7 @@ struct FixturePopup {
     storage: Option<File>,
     configures: u32,
     geometry_configures: u32,
+    geometry: Option<[i32; 4]>,
     frames: u32,
     done: u32,
     destroyed: bool,
@@ -87,6 +88,7 @@ struct State {
     keyboard_focus: Option<wl_surface::WlSurface>,
     popup_keyboard_enters: u32,
     container_mode: bool,
+    popup_clip_mode: bool,
     subcompositor: Option<wl_subcompositor::WlSubcompositor>,
     clip_child: Option<wl_surface::WlSurface>,
     clip_child_frames: u32,
@@ -127,6 +129,7 @@ impl State {
             keyboard_focus: None,
             popup_keyboard_enters: 0,
             container_mode: false,
+            popup_clip_mode: false,
             subcompositor: None,
             clip_child: None,
             clip_child_frames: 0,
@@ -171,6 +174,15 @@ impl State {
         n
     }
     fn create_popup(&mut self, parent: usize, invalid_grab: bool, qh: &QueueHandle<Self>) -> usize {
+        self.create_popup_kind(parent, invalid_grab, false, qh)
+    }
+    fn create_popup_kind(
+        &mut self,
+        parent: usize,
+        invalid_grab: bool,
+        viewport_crossing: bool,
+        qh: &QueueHandle<Self>,
+    ) -> usize {
         let index = self.popups.len();
         let surface = self.compositor.as_ref().unwrap().create_surface(qh, ());
         let xdg = self
@@ -179,10 +191,22 @@ impl State {
             .unwrap()
             .get_xdg_surface(&surface, qh, PopupTag(index));
         let positioner = self.wm.as_ref().unwrap().create_positioner(qh, ());
-        positioner.set_size(64, 48);
-        positioner.set_anchor_rect(20, 20, 1, 1);
-        positioner.set_anchor(xdg_positioner::Anchor::BottomRight);
-        positioner.set_gravity(xdg_positioner::Gravity::BottomRight);
+        if viewport_crossing {
+            positioner.set_size(80, 60);
+            positioner.set_anchor_rect(0, 0, 1, 1);
+            positioner.set_anchor(xdg_positioner::Anchor::TopLeft);
+            positioner.set_gravity(xdg_positioner::Gravity::BottomRight);
+            positioner.set_offset(-64, 0);
+            positioner.set_constraint_adjustment(
+                xdg_positioner::ConstraintAdjustment::SlideX
+                    | xdg_positioner::ConstraintAdjustment::SlideY,
+            );
+        } else {
+            positioner.set_size(64, 48);
+            positioner.set_anchor_rect(20, 20, 1, 1);
+            positioner.set_anchor(xdg_positioner::Anchor::BottomRight);
+            positioner.set_gravity(xdg_positioner::Gravity::BottomRight);
+        }
         let popup = xdg.get_popup(
             Some(&self.windows[parent].xdg),
             &positioner,
@@ -202,6 +226,7 @@ impl State {
             storage: None,
             configures: 0,
             geometry_configures: 0,
+            geometry: None,
             frames: 0,
             done: 0,
             destroyed: false,
@@ -210,11 +235,25 @@ impl State {
         index
     }
     fn map_popup(&mut self, index: usize, qh: &QueueHandle<Self>) -> Result<()> {
+        self.map_popup_sized(index, 64, 48, qh)
+    }
+    fn map_popup_sized(
+        &mut self,
+        index: usize,
+        width: i32,
+        height: i32,
+        qh: &QueueHandle<Self>,
+    ) -> Result<()> {
+        if !(1..=512).contains(&width) || !(1..=512).contains(&height) {
+            return Err("popup buffer dimensions outside fixture bounds".into());
+        }
         if self.popups[index].configures == 0 || self.popups[index].done > 0 {
             return Err("popup is not configured/live before mapping".into());
         }
         let mut file = memory_file()?;
-        let bytes = 0xffff00ff_u32.to_ne_bytes().repeat(64 * 48);
+        let bytes = 0xffff00ff_u32
+            .to_ne_bytes()
+            .repeat((width * height) as usize);
         file.set_len(bytes.len() as u64)
             .map_err(|e| e.to_string())?;
         file.write_all(&bytes).map_err(|e| e.to_string())?;
@@ -223,12 +262,20 @@ impl State {
             .as_ref()
             .unwrap()
             .create_pool(file.as_fd(), bytes.len() as i32, qh, ());
-        let buffer = pool.create_buffer(0, 64, 48, 64 * 4, wl_shm::Format::Xrgb8888, qh, ());
+        let buffer = pool.create_buffer(
+            0,
+            width,
+            height,
+            width * 4,
+            wl_shm::Format::Xrgb8888,
+            qh,
+            (),
+        );
         pool.destroy();
         let p = &mut self.popups[index];
-        p.xdg.set_window_geometry(0, 0, 64, 48);
+        p.xdg.set_window_geometry(0, 0, width, height);
         p.surface.attach(Some(&buffer), 0, 0);
-        p.surface.damage(0, 0, 64, 48);
+        p.surface.damage(0, 0, width, height);
         p.surface.frame(qh, Callback::PopupFrame(index));
         p.surface.commit();
         p.buffer = Some(buffer);
@@ -246,6 +293,29 @@ impl State {
         }
         p.destroyed = true;
         self.record(json!({"destroy_popup":index}));
+    }
+    fn map_container_root(&mut self, root: usize, qh: &QueueHandle<Self>) -> Result<()> {
+        let mut file = memory_file()?;
+        let bytes = container_pixels();
+        file.set_len(bytes.len() as u64)
+            .map_err(|e| e.to_string())?;
+        file.write_all(&bytes).map_err(|e| e.to_string())?;
+        let pool = self
+            .shm
+            .as_ref()
+            .unwrap()
+            .create_pool(file.as_fd(), bytes.len() as i32, qh, ());
+        let buffer = pool.create_buffer(0, 1900, 240, 1900 * 4, wl_shm::Format::Xrgb8888, qh, ());
+        pool.destroy();
+        let w = &mut self.windows[root];
+        w.xdg.set_window_geometry(0, 0, 1900, 240);
+        w.surface.attach(Some(&buffer), 0, 0);
+        w.surface.damage(0, 0, 1900, 240);
+        w.surface.frame(qh, Callback::Frame(root));
+        w.surface.commit();
+        w.buffer = Some(buffer);
+        w._storage = Some(file);
+        Ok(())
     }
     fn map(&mut self, index: usize, qh: &QueueHandle<Self>) -> Result<()> {
         if self.windows[index].configures == 0 {
@@ -709,6 +779,7 @@ impl Dispatch<xdg_popup::XdgPopup, PopupTag> for State {
                 height,
             } => {
                 state.popups[index.0].geometry_configures += 1;
+                state.popups[index.0].geometry = Some([x, y, width, height]);
                 state.record(json!({"popup_geometry":index.0,"rect":[x,y,width,height]}));
             }
             xdg_popup::Event::PopupDone => {
@@ -740,6 +811,9 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
             } => {
                 state.pointer_focus_surface = Some(surface.clone());
                 state.pointer_focus_xy = Some((*surface_x, *surface_y));
+                if state.popup_clip_mode {
+                    state.record(json!({"popup_clip_pointer_enter":state.popups.iter().position(|p|p.surface==*surface),"xy":[surface_x,surface_y]}));
+                }
                 if state.container_mode {
                     state.record(json!({"clip_pointer_enter_child":state.clip_child.as_ref()==Some(surface),"xy":[surface_x,surface_y]}));
                 }
@@ -1665,27 +1739,7 @@ fn container_clip(timeout: Duration) -> Json {
             "container root configure",
             |s| s.windows[root].configures >= 1,
         )?;
-        let mut file = memory_file()?;
-        let bytes = container_pixels();
-        file.set_len(bytes.len() as u64)
-            .map_err(|e| e.to_string())?;
-        file.write_all(&bytes).map_err(|e| e.to_string())?;
-        let pool =
-            state
-                .shm
-                .as_ref()
-                .unwrap()
-                .create_pool(file.as_fd(), bytes.len() as i32, &qh, ());
-        let buffer = pool.create_buffer(0, 1900, 240, 1900 * 4, wl_shm::Format::Xrgb8888, &qh, ());
-        pool.destroy();
-        let w = &mut state.windows[root];
-        w.xdg.set_window_geometry(0, 0, 1900, 240);
-        w.surface.attach(Some(&buffer), 0, 0);
-        w.surface.damage(0, 0, 1900, 240);
-        w.surface.frame(&qh, Callback::Frame(root));
-        w.surface.commit();
-        w.buffer = Some(buffer);
-        w._storage = Some(file);
+        state.map_container_root(root, &qh)?;
         until(
             &connection,
             &mut queue,
@@ -1956,6 +2010,201 @@ fn verify_container_ppm(path: &Path) -> Json {
     evidence["error"] = json!(result.err());
     evidence
 }
+fn popup_clip(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    state.pointer_feedback_enabled = true;
+    state.popup_clip_mode = true;
+    let mut evidence = json!({"mode":"popup-clip","ok":false,"actual_shm_size":[1900,240],"settle_ms":1000,"physical_input_injected":false,"popup_request_offset":[-64,0],"popup_requested_size":[80,60],"expected_rgb_counts":{"magenta":4800,"red":16320,"green":14400,"blue":19200,"yellow":14400,"cyan":0},"expected_image_regions":{"popup":{"x":0,"y":0,"width":80,"height":60},"root_container":{"x":32,"y":0,"width":280},"root_visible_content":{"x":32,"y":0,"width":280,"height":240}},"pixel_proof_requires_delayed_compositor_screenshot":true});
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        evidence["socket"] = json!(path);
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        connection.display().get_registry(&qh, ());
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popupclip registry",
+            |s| s.last_sync >= sync,
+        )?;
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popupclip bound globals",
+            |s| s.last_sync >= sync,
+        )?;
+        if state.compositor.is_none()
+            || state.shm.is_none()
+            || state.wm.is_none()
+            || state.pointer.is_none()
+        {
+            return Err("popupclip prerequisites missing".into());
+        }
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("popupclip requires FLUXWM_SOCKET")?;
+        let mut control = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let outputs = control.call("outputs.list", json!({}), deadline)?;
+        let output = outputs
+            .pointer("/outputs/0/geometry")
+            .ok_or("missing output geometry")?;
+        if output["width"].as_f64().unwrap_or(0.0) < 320.0
+            || output["height"].as_f64().unwrap_or(0.0) < 240.0
+        {
+            return Err("popupclip requires output at least320x240".into());
+        }
+        evidence["output_geometry"] = output.clone();
+        let root = state.create(&qh, "popup-clip-owner");
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popupclip root configure",
+            |s| s.windows[root].configures >= 1,
+        )?;
+        state.map_container_root(root, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popupclip root frame/pointer",
+            |s| {
+                s.windows[root].frames >= 1
+                    && s.pointer_focus_surface.as_ref() == Some(&s.windows[root].surface)
+            },
+        )?;
+        if state.pointer_focus_xy != Some((0.0, 0.0)) {
+            return Err("popupclip requires stationary root pointer at0,0".into());
+        }
+        evidence["initial_root_pointer_xy"] = json!(state.pointer_focus_xy);
+        control.call(
+            "action",
+            json!({"name":"workspace-mode","mode":"canvas"}),
+            deadline,
+        )?;
+        let workspace = control.call("workspaces.list", json!({}), deadline)?;
+        if workspace
+            .pointer("/workspaces/0/mode")
+            .and_then(Json::as_str)
+            != Some("canvas")
+        {
+            return Err("workspace did not enter canvas".into());
+        }
+        evidence["workspace_mode"] = json!("canvas");
+        let before = control.call("windows.list", json!({}), deadline)?;
+        let windows = before["windows"].as_array().ok_or("missing root list")?;
+        if windows.len() != 1 {
+            return Err("popupclip requires one isolated root".into());
+        }
+        let width = windows[0]["geometry"]["width"]
+            .as_f64()
+            .filter(|v| v.is_finite())
+            .ok_or("missing root width")?;
+        control.call(
+            "action",
+            json!({"name":"resize","delta":280.0-width}),
+            deadline,
+        )?;
+        control.call(
+            "action",
+            json!({"name":"move","direction":"right"}),
+            deadline,
+        )?;
+        let moved = control.call("windows.list", json!({}), deadline)?;
+        let geometry = moved
+            .pointer("/windows/0/geometry")
+            .ok_or("missing moved root")?;
+        if geometry["x"].as_f64() != Some(32.0)
+            || geometry["y"].as_f64() != Some(0.0)
+            || geometry["width"].as_f64() != Some(280.0)
+        {
+            return Err(format!("unexpected popup owner geometry: {geometry}"));
+        }
+        evidence["root_after_move"] = moved;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pointer outside moved root",
+            |s| s.pointer_focus_surface.is_none(),
+        )?;
+        evidence["pointer_outside_root_before_popup"] = json!(true);
+        let popup = state.create_popup_kind(root, false, true, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popupclip popup configure",
+            |s| s.popups[popup].configures >= 1,
+        )?;
+        let actual = state.popups[popup]
+            .geometry
+            .ok_or("missing actual popup geometry event")?;
+        evidence["actual_popup_configure"] = json!(actual);
+        let world = [32 + actual[0], actual[1], actual[2], actual[3]];
+        evidence["actual_popup_world_rect"] =
+            json!({"x":world[0],"y":world[1],"width":world[2],"height":world[3]});
+        if actual != [-32, 0, 80, 60] || world != [0, 0, 80, 60] {
+            return Err(format!(
+                "popup did not constrain to required viewport-crossing geometry: {actual:?}"
+            ));
+        }
+        state.map_popup_sized(popup, 80, 60, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popupclip actual popup frame/enter",
+            |s| {
+                s.popups[popup].frames >= 1
+                    && s.pointer_focus_surface.as_ref() == Some(&s.popups[popup].surface)
+            },
+        )?;
+        if state.pointer_focus_xy != Some((0.0, 0.0)) {
+            return Err("popupclip pointer entry was not at world origin".into());
+        }
+        evidence["popup_pointer_enter_xy"] = json!(state.pointer_focus_xy);
+        evidence["popup_receives_pointer_outside_owner_clip"] = json!(true);
+        evidence["popup_ready_at_ms"] = json!(start.elapsed().as_millis());
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(1000),
+            deadline,
+        )?;
+        if state.pointer_focus_surface.as_ref() != Some(&state.popups[popup].surface)
+            || state.pointer_focus_xy != Some((0.0, 0.0))
+            || state.popups[popup].done != 0
+            || state.popups[popup].geometry != Some(actual)
+        {
+            return Err("popup/focus/geometry changed during screenshot interval; contaminated or invalid scene".into());
+        }
+        evidence["after_settle"] = control.call("windows.list", json!({}), deadline)?;
+        evidence["popup_frame_callbacks"] = json!(state.popups[popup].frames);
+        evidence["popup_done_before_cleanup"] = json!(state.popups[popup].done);
+        state.destroy_popup(popup);
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence
+}
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     if let [mode, path] = args.as_slice()
@@ -1974,7 +2223,8 @@ fn main() {
                 || mode == "slow-reader"
                 || mode == "pointer-feedback"
                 || mode == "popup-lifecycle"
-                || mode == "container-clip" =>
+                || mode == "container-clip"
+                || mode == "popup-clip" =>
         {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
@@ -1983,7 +2233,8 @@ fn main() {
                 || mode == "slow-reader"
                 || mode == "pointer-feedback"
                 || mode == "popup-lifecycle"
-                || mode == "container-clip")
+                || mode == "container-clip"
+                || mode == "popup-clip")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -1994,7 +2245,7 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip [--timeout-ms 1..5000]",
+            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip [--timeout-ms 1..5000]",
         ),
     };
     let result = match parsed {
@@ -2002,6 +2253,7 @@ fn main() {
         Ok(("pointer-feedback", timeout)) => pointer_feedback(timeout),
         Ok(("popup-lifecycle", timeout)) => popup_lifecycle(timeout),
         Ok(("container-clip", timeout)) => container_clip(timeout),
+        Ok(("popup-clip", timeout)) => popup_clip(timeout),
         Ok((_, timeout)) => run(timeout),
         Err(error) => json!({"ok":false,"error":error}),
     };
