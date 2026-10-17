@@ -89,6 +89,9 @@ struct State {
     popup_keyboard_enters: u32,
     container_mode: bool,
     popup_clip_mode: bool,
+    input_probe_mode: bool,
+    event_file: Option<File>,
+    event_file_bytes: usize,
     subcompositor: Option<wl_subcompositor::WlSubcompositor>,
     clip_child: Option<wl_surface::WlSurface>,
     clip_child_frames: u32,
@@ -130,6 +133,9 @@ impl State {
             popup_keyboard_enters: 0,
             container_mode: false,
             popup_clip_mode: false,
+            input_probe_mode: false,
+            event_file: None,
+            event_file_bytes: 0,
             subcompositor: None,
             clip_child: None,
             clip_child_frames: 0,
@@ -139,12 +145,33 @@ impl State {
         }
     }
     fn record(&mut self, event: Json) {
-        if self.events.len() < 1024 {
-            self.events
-                .push(json!({"at_ms":self.start.elapsed().as_millis(),"event":event}));
-        } else {
+        if self.events.len() >= 1024 {
             self.error = Some("event evidence limit exceeded".into());
+            return;
         }
+        let record = json!({"at_ms":self.start.elapsed().as_millis(),"event":event});
+        if let Some(file) = self.event_file.as_mut() {
+            let result = (|| -> std::io::Result<()> {
+                let mut bytes = serde_json::to_vec(&record)?;
+                bytes.push(b'\n');
+                if self.event_file_bytes + bytes.len() > 1024 * 1024 {
+                    return Err(std::io::Error::other("event file exceeds1MiB budget"));
+                }
+                file.write_all(&bytes)?;
+                file.flush()?;
+                self.event_file_bytes += bytes.len();
+                Ok(())
+            })();
+            if let Err(error) = result {
+                self.error = Some(format!("event stream write failed: {error}"));
+            }
+        }
+        self.events.push(record);
+    }
+    fn pointer_root(&self) -> Option<usize> {
+        self.pointer_focus_surface
+            .as_ref()
+            .and_then(|surface| self.windows.iter().position(|w| &w.surface == surface))
     }
     fn sync(&mut self, connection: &Connection, qh: &QueueHandle<Self>) -> u32 {
         let n = self.next_sync;
@@ -793,6 +820,13 @@ impl Dispatch<xdg_popup::XdgPopup, PopupTag> for State {
 delegate_noop!(State:ignore xdg_positioner::XdgPositioner);
 delegate_noop!(State:ignore wl_subcompositor::WlSubcompositor);
 delegate_noop!(State:ignore wl_subsurface::WlSubsurface);
+fn pointer_axis_name(axis: WEnum<wl_pointer::Axis>) -> &'static str {
+    match axis {
+        WEnum::Value(wl_pointer::Axis::VerticalScroll) => "vertical",
+        WEnum::Value(wl_pointer::Axis::HorizontalScroll) => "horizontal",
+        _ => "unknown",
+    }
+}
 impl Dispatch<wl_pointer::WlPointer, ()> for State {
     fn event(
         state: &mut Self,
@@ -802,6 +836,22 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
+        if state.input_probe_mode {
+            let root = state.pointer_root();
+            match &event {
+                wl_pointer::Event::Enter {serial,surface,surface_x,surface_y} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.enter","root":root,"serial":serial,"x":surface_x,"y":surface_y}));}
+                wl_pointer::Event::Leave {serial,surface} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.leave","root":root,"serial":serial}));}
+                wl_pointer::Event::Motion {time,surface_x,surface_y} => state.record(json!({"type":"pointer.motion","root":root,"time":time,"x":surface_x,"y":surface_y})),
+                wl_pointer::Event::Button {serial,time,button,state:button_state} => {
+                    let button_state=match button_state {WEnum::Value(wl_pointer::ButtonState::Pressed)=>"pressed",WEnum::Value(wl_pointer::ButtonState::Released)=>"released",_=>{state.error=Some("unknown pointer button state".into());"unknown"}};
+                    state.record(json!({"type":"pointer.button","root":root,"serial":serial,"time":time,"button":button,"state":button_state}));
+                }
+                wl_pointer::Event::Axis {time,axis,value} => {let axis=pointer_axis_name(*axis);state.record(json!({"type":"pointer.axis","root":root,"time":time,"axis":axis,"value":value}));}
+                wl_pointer::Event::AxisStop {time,axis}=>state.record(json!({"type":"pointer.axis_stop","root":root,"time":time,"axis":pointer_axis_name(*axis)})),
+                wl_pointer::Event::Frame=>state.record(json!({"type":"pointer.frame","root":root})),
+                _=>{}
+            }
+        }
         match &event {
             wl_pointer::Event::Enter {
                 surface,
@@ -2205,6 +2255,138 @@ fn popup_clip(timeout: Duration) -> Json {
     evidence["events"] = json!(state.events);
     evidence
 }
+fn input_probe(timeout: Duration) -> Json {
+    const OBSERVE_MS: u64 = 7000;
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    state.pointer_feedback_enabled = true;
+    state.input_probe_mode = true;
+    let mut evidence = json!({"mode":"input-probe","ok":false,"observation_ms":OBSERVE_MS,"buffer_size":[320,240],"physical_input_injected_by_fixture":false});
+    let result = (|| -> Result<()> {
+        use std::os::unix::fs::OpenOptionsExt;
+        let path = std::env::var_os("FLUXWM_FIXTURE_EVENT_FILE")
+            .ok_or("input-probe requires explicit FLUXWM_FIXTURE_EVENT_FILE new regular path")?;
+        let file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+            .open(&path)
+            .map_err(|e| format!("event file: {e}"))?;
+        if !file.metadata().map_err(|e| e.to_string())?.is_file() {
+            return Err("event file is not regular".into());
+        }
+        state.event_file = Some(file);
+        evidence["event_file"] = json!(path);
+        let socket = display_path()?;
+        evidence["socket"] = json!(socket);
+        let connection = connect(&socket, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        connection.display().get_registry(&qh, ());
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "input probe registry",
+            |s| s.last_sync >= sync,
+        )?;
+        let sync = state.sync(&connection, &qh);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "input probe bindings",
+            |s| s.last_sync >= sync,
+        )?;
+        if state.compositor.is_none()
+            || state.shm.is_none()
+            || state.wm.is_none()
+            || state.pointer.is_none()
+        {
+            return Err("input probe globals/pointer missing".into());
+        }
+        for title in ["input-A", "input-B"] {
+            let index = state.create(&qh, title);
+            state.windows[index].toplevel.set_title(title.into());
+            state.windows[index]
+                .toplevel
+                .set_app_id("org.fluxwm.InputProbe".into());
+            state.windows[index].toplevel.set_min_size(320, 240);
+            state.windows[index].surface.commit();
+        }
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "input probe both configures",
+            |s| s.windows.len() == 2 && s.windows.iter().all(|w| w.configures >= 1),
+        )?;
+        for index in 0..2 {
+            let mut file = memory_file()?;
+            let color = if index == 0 {
+                0xffff0000_u32
+            } else {
+                0xff00ff00_u32
+            };
+            let bytes = color.to_ne_bytes().repeat(320 * 240);
+            file.set_len(bytes.len() as u64)
+                .map_err(|e| e.to_string())?;
+            file.write_all(&bytes).map_err(|e| e.to_string())?;
+            let pool =
+                state
+                    .shm
+                    .as_ref()
+                    .unwrap()
+                    .create_pool(file.as_fd(), bytes.len() as i32, &qh, ());
+            let buffer =
+                pool.create_buffer(0, 320, 240, 320 * 4, wl_shm::Format::Xrgb8888, &qh, ());
+            pool.destroy();
+            let w = &mut state.windows[index];
+            w.xdg.set_window_geometry(0, 0, 320, 240);
+            w.surface.attach(Some(&buffer), 0, 0);
+            w.surface.damage(0, 0, 320, 240);
+            w.surface.frame(&qh, Callback::Frame(index));
+            w.surface.commit();
+            w.buffer = Some(buffer);
+            w._storage = Some(file);
+        }
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "input probe both frames",
+            |s| s.windows.iter().all(|w| w.frames >= 1),
+        )?;
+        state.record(json!({"type":"ready","root":null,"roots":[{"root":0,"title":"input-A"},{"root":1,"title":"input-B"}],"observation_ms":OBSERVE_MS}));
+        evidence["ready_at_ms"] = json!(start.elapsed().as_millis());
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(OBSERVE_MS),
+            deadline,
+        )?;
+        state.record(json!({"type":"complete","root":null,"mapped_through_observation":true}));
+        if let Some(error) = state.error.take() {
+            return Err(error);
+        }
+        evidence["mapped_through_observation"] = json!(true);
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["event_file_bytes"] = json!(state.event_file_bytes);
+    evidence["events"] = json!(state.events);
+    evidence
+}
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     if let [mode, path] = args.as_slice()
@@ -2218,6 +2400,13 @@ fn main() {
         return;
     }
     let parsed = match args.as_slice() {
+        [mode] if mode == "input-probe" => Ok((mode.as_str(), Duration::from_millis(10000))),
+        [mode, flag, value] if mode == "input-probe" && flag == "--timeout-ms" => value
+            .parse::<u64>()
+            .ok()
+            .filter(|n| (1..=10000).contains(n))
+            .map(|n| (mode.as_str(), Duration::from_millis(n)))
+            .ok_or("input-probe timeout must be1..10000ms"),
         [mode]
             if mode == "lifecycle"
                 || mode == "slow-reader"
@@ -2254,6 +2443,7 @@ fn main() {
         Ok(("popup-lifecycle", timeout)) => popup_lifecycle(timeout),
         Ok(("container-clip", timeout)) => container_clip(timeout),
         Ok(("popup-clip", timeout)) => popup_clip(timeout),
+        Ok(("input-probe", timeout)) => input_probe(timeout),
         Ok((_, timeout)) => run(timeout),
         Err(error) => json!({"ok":false,"error":error}),
     };
@@ -2405,6 +2595,41 @@ mod tests {
         std::fs::remove_file(path).unwrap();
         assert_eq!(bad["ok"], json!(false));
         assert_eq!(bad["rgb_counts"]["cyan"], json!(1));
+    }
+    #[test]
+    fn input_event_file_is_live_private_and_matches_retained_records() {
+        use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+        let path =
+            std::env::temp_dir().join(format!("fluxwm-input-event-test-{}", std::process::id()));
+        let file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(&path)
+            .unwrap();
+        let mut state = State::new(Instant::now());
+        state.event_file = Some(file);
+        state.record(json!({"type":"pointer.enter","root":0,"x":1.0,"y":2.0}));
+        let first = std::fs::read_to_string(&path).unwrap();
+        assert!(first.ends_with('\n'));
+        assert_eq!(
+            serde_json::from_str::<Json>(first.trim()).unwrap(),
+            state.events[0]
+        );
+        state.record(json!({"type":"pointer.button","root":0,"button":272,"state":"pressed","serial":1,"time":1}));
+        let all = std::fs::read_to_string(&path).unwrap();
+        let records: Vec<Json> = all
+            .lines()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect();
+        assert_eq!(records, state.events);
+        assert_eq!(state.event_file_bytes, all.len());
+        assert_eq!(
+            std::fs::metadata(&path).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+        drop(state);
+        std::fs::remove_file(path).unwrap();
     }
     #[test]
     fn missing_socket_fails_without_blocking() {
