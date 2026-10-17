@@ -488,6 +488,11 @@ impl Fluxwm {
         if self.seat.get_keyboard().is_some_and(|k| k.is_grabbed()) {
             return;
         }
+        if self.layout.focused() == Some(id) {
+            // Reassert keyboard ownership without publishing an unchanged scene.
+            self.restore_keyboard_focus();
+            return;
+        }
         if self.layout.focus_window(id).is_ok() {
             self.relayout();
             self.restore_keyboard_focus();

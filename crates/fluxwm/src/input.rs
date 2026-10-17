@@ -192,9 +192,9 @@ impl Fluxwm {
                     self.focus_window_id(id);
                 }
 
-                // Relayout may change the surface under a stationary pointer.
-                // Refresh the pointer target after focus/relayout and before the
-                // button; an active grab retains its own routing.
+                // Route through the last composed scene after focus handling.
+                // Any queued relayout becomes eligible only after composition;
+                // an active grab retains its own routing.
                 if !pointer.is_grabbed() {
                     let location = pointer.current_location();
                     let under = self.surface_under(location);
