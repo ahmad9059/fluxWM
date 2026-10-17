@@ -98,6 +98,10 @@ pub fn init_winit(
             WinitEvent::Resized { size, .. } => {
                 state.bump_sequence();
                 state.render_suspended = size.w <= 0 || size.h <= 0;
+                if state.render_suspended {
+                    state.scene = None;
+                    state.pointer_focus_dirty = true;
+                }
                 if !state.render_suspended {
                     output.change_current_state(
                         Some(Mode {
@@ -189,6 +193,8 @@ impl RenderContext {
             let backend = &mut self.backend;
             let size = backend.window_size();
             if size.w <= 0 || size.h <= 0 {
+                state.scene = None;
+                state.pointer_focus_dirty = true;
                 return Ok(());
             }
             if size.w > 8192 || size.h > 8192 || i64::from(size.w) * i64::from(size.h) > 16_777_216

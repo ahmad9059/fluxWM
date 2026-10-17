@@ -18,13 +18,15 @@ impl Fluxwm {
         if !self.pointer_focus_dirty {
             return;
         }
-        self.pointer_focus_dirty = false;
         let Some(pointer) = self.seat.get_pointer() else {
             return;
         };
         if pointer.is_grabbed() {
+            // Keep the pending refresh until the grab ends. A composition while
+            // an implicit click grab is active must not lose enter/leave repair.
             return;
         }
+        self.pointer_focus_dirty = false;
         let location = pointer.current_location();
         let under = self.surface_under(location);
         if pointer.current_focus() == under.as_ref().map(|(surface, _)| surface.clone())
@@ -221,6 +223,11 @@ impl Fluxwm {
                         time: event.time(),
                     },
                 );
+                if button_state == ButtonState::Released {
+                    // ClickGrab ends without restoring pending focus, including
+                    // a drag across surfaces with no intervening scene redraw.
+                    self.pointer_focus_dirty = true;
+                }
                 pointer.frame(self);
             }
             InputEvent::PointerAxis { event, .. } => {
