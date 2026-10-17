@@ -1,0 +1,88 @@
+name: Linux workspace checks
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: '0'
+  RUSTUP_TOOLCHAIN: 1.99.0
+
+jobs:
+  workspace:
+    name: Rust 1.99 / Ubuntu 24.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      # Verified upstream refs/tags/v5.0.0 on 2026-10-17.
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+
+      - name: Install selected-backend build and documentation dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            build-essential ca-certificates git pkg-config libxkbcommon-dev python3 lua5.4
+
+      - name: Install pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt --component clippy
+          rustc --version --verbose
+          cargo --version
+          python3 --version
+          lua5.4 -v
+          pkg-config --modversion xkbcommon
+
+      # Verified upstream refs/tags/v5.0.0 on 2026-10-17.
+      - uses: actions/cache@a7833574556fa59680c1b7cb190c1735db73ebf0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-rust-1.99.0-${{ hashFiles('Cargo.lock', 'Cargo.toml', 'crates/**/Cargo.toml', 'rust-toolchain.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-1.99.0-
+
+      - name: Require formatting
+        run: cargo fmt --all -- --check
+
+      - name: Check documentation and explicit Lua 5.4 fixtures
+        run: python3 tools/check_docs.py
+
+      - name: Fetch committed dependency resolution
+        run: cargo fetch --locked --target x86_64-unknown-linux-gnu
+
+      - name: Check every workspace target
+        run: cargo check --workspace --all-targets --locked
+
+      - name: Build workspace binaries
+        run: cargo build --workspace --locked
+
+      - name: Test without a display or GPU session
+        env:
+          DISPLAY: ''
+          WAYLAND_DISPLAY: ''
+          WAYLAND_SOCKET: ''
+        run: cargo test --workspace --all-targets --locked
+
+      - name: Require clean clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Build Rust API documentation
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc --workspace --no-deps --locked
+
+      - name: Check real configuration CLI in its supervised helper
+        run: cargo run --locked -p fluxwm-config -- --check docs/examples/config.lua > /tmp/fluxwm-effective-config.json
