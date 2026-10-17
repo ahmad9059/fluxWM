@@ -232,6 +232,68 @@ pub(crate) fn load_with_helper_cancellable(
 mod tests {
     use super::*;
     #[test]
+    fn cancellation_of_spawned_sleeping_helper_is_typed_and_reaped() {
+        use std::{
+            fs,
+            os::unix::fs::PermissionsExt,
+            sync::atomic::{AtomicBool, Ordering},
+        };
+        struct Fixture(std::path::PathBuf);
+        impl Drop for Fixture {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let fixture = Fixture(std::env::temp_dir().join(format!(
+            "flux-config-cancellation-{}-{unique}",
+            std::process::id()
+        )));
+        fs::create_dir(&fixture.0).unwrap();
+        let helper = fixture.0.join("helper");
+        // Sleep replaces the shell at the same owned PID. It burns no CPU, so
+        // RLIMIT_CPU cannot make a broken cancellation path look successful.
+        fs::write(&helper, "#!/bin/sh\nexec /bin/sleep 30\n").unwrap();
+        fs::set_permissions(&helper, fs::Permissions::from_mode(0o700)).unwrap();
+        let cancelled = AtomicBool::new(false);
+        let mut observed_pid = None;
+        let result = load_with_helper_cancellable(
+            &helper,
+            b"",
+            HelperLimits {
+                deadline: Duration::from_millis(500),
+                ..Default::default()
+            },
+            &cancelled,
+            |pid| {
+                // SAFETY: signal zero only tests existence of our spawned child;
+                // it neither terminates nor reaps it.
+                assert_eq!(unsafe { libc::kill(pid as i32, 0) }, 0);
+                observed_pid = Some(pid);
+                cancelled.store(true, Ordering::Release);
+            },
+        );
+        // A deadline, CPU-limit exit, or helper error MUST NOT satisfy this test.
+        assert!(
+            matches!(result, Err(ConfigError::Cancelled)),
+            "expected cancellation, got {result:?}"
+        );
+        let pid = observed_pid.expect("cancellation was never requested after actual spawn");
+        let mut status = 0;
+        // SAFETY: WNOHANG cannot block. ECHILD checks reaping, not just PID absence.
+        assert_eq!(
+            unsafe { libc::waitpid(pid as i32, &mut status, libc::WNOHANG) },
+            -1
+        );
+        assert_eq!(
+            std::io::Error::last_os_error().raw_os_error(),
+            Some(libc::ECHILD)
+        );
+    }
+    #[test]
     fn error_cleanup_kills_and_reaps_the_owned_child() {
         let child = Command::new("/bin/sleep").arg("30").spawn().unwrap();
         let pid = child.id();

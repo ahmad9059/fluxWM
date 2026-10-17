@@ -99,6 +99,25 @@ require observed helper PIDs to disappear after timeout/cancellation; the superv
 unit test independently verifies owned-child reaping with `waitpid`/`ECHILD`. Unit
 tests also cover checked generation exhaustion, invalid admission, source-free static
 diagnostics and a notification that acquires coordinator state without deadlock.
+The cancellation unit test uses a sleeping fake helper, sets cancellation only after
+observing the actual owned PID, requires `ConfigError::Cancelled` rather than any
+other error, and verifies `waitpid` reports `ECHILD`. Its 500 ms supervisor deadline
+bounds a broken cancellation path; CPU limits cannot terminate the sleeping helper
+and satisfy the oracle. A separate coordinator test also uses an observed sleeping helper, a ten-second
+evaluation deadline, one pending replacement and a shutdown bound below one second;
+this checks the coordinator-to-supervisor cancellation wiring independently of CPU
+limits. The actual-Lua shutdown check separately requires retirement in under one
+second, below its two-second CPU backstop. These timings qualify the
+local test environment; they do not establish universal kernel shutdown deadlines.
+Two deliberate mutations were tested independently: removing only the active
+supervisor-loop cancellation check fails the typed unit oracle with `Timeout`;
+removing only the coordinator's cancellation-flag store fails the sleeping-helper
+shutdown oracle after the ten-second deadline. Both source files were restored in
+`finally` blocks and the repaired suite rerun. Exact commands, assertion transcripts
+and restored source hashes are retained in
+`target/config-cancellation-evidence/{checks,mutations}.json` and adjacent logs in
+the configuration worktree. These mutations establish detection of those specific
+missing checks, not arbitrary cancellation or kernel fault schedules.
 These establish this library's local behavior, not atomic compositor hot reload,
 keymap/device transactions, filesystem acquisition or complete phase-6 readiness.
 

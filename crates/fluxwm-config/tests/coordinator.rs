@@ -157,8 +157,8 @@ fn actual_helper_shutdown_cancels_active_drops_pending_and_prevents_late_commit(
     loader.shutdown().unwrap();
     assert_reaped(cancelled_helper);
     assert!(
-        started.elapsed() < Duration::from_secs(3),
-        "cancellation waited for the ten-second helper limit"
+        started.elapsed() < Duration::from_secs(1),
+        "cancellation did not finish below the two-second CPU backstop"
     );
     assert!(
         loader.status().closed
@@ -185,4 +185,48 @@ fn actual_lua_error_text_is_not_retained_in_coordinator_diagnostics() {
     assert_eq!(failure.kind, ConfigFailureKind::Helper);
     assert!(!failure.diagnostic.contains("SECRET_SOURCE_LITERAL"));
     loader.shutdown().unwrap();
+}
+
+#[test]
+fn coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop() {
+    use std::{fs, os::unix::fs::PermissionsExt};
+    struct Fixture(PathBuf);
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+    let unique = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let fixture = Fixture(std::env::temp_dir().join(format!(
+        "flux-coordinator-cancellation-{}-{unique}",
+        std::process::id()
+    )));
+    fs::create_dir(&fixture.0).unwrap();
+    let helper = fixture.0.join("helper");
+    fs::write(&helper, "#!/bin/sh\nexec /bin/sleep 30\n").unwrap();
+    fs::set_permissions(&helper, fs::Permissions::from_mode(0o700)).unwrap();
+    let mut loader = ConfigCoordinator::new(
+        helper,
+        HelperLimits {
+            deadline: Duration::from_secs(10),
+            ..Default::default()
+        },
+        || {},
+    )
+    .unwrap();
+    loader.request(source(10)).unwrap();
+    let pid = await_helper(&loader);
+    loader.request(source(20)).unwrap();
+    let started = Instant::now();
+    loader.shutdown().unwrap();
+    assert_reaped(pid);
+    assert!(
+        started.elapsed() < Duration::from_secs(1),
+        "shutdown waited for the ten-second evaluation deadline instead of cancelling the sleeping helper"
+    );
+    assert!(loader.status().closed && loader.status().pending.is_none());
+    assert!(loader.take_completion().is_none());
 }
