@@ -45,7 +45,8 @@ def identity(pid):
         return None
 
 
-def run(binary, directory, environment):
+def run(binary, directory, environment, shutdown):
+    directory.mkdir(mode=0o700)
     folder = directory / 'events'; folder.mkdir(mode=0o700)
     script = directory / 'companion.py'; script.write_text(FIXTURE)
     def entry(ident, tag, restart=False, policy='long'):
@@ -55,6 +56,7 @@ def run(binary, directory, environment):
     case = Case(binary, directory / 'lifecycle', environment, source([a, b, fast, missing]))
     owned = {}
     stages = []
+    shutdown_started = None
     def settle(g):
         def ready():
             v = case.ipc('diagnostics')['autostart']
@@ -104,7 +106,7 @@ def run(binary, directory, environment):
         reload([('forbidden', ['/usr/bin/touch', str(case.marker)], True)], invalid=True)
         require(case.ipc('config.effective') == before and not case.marker.exists(), 'rejected candidate changed logical state or executed')
         retained = case.ipc('diagnostics')['autostart']
-        require(retained['active_generation'] == g or retained['active_generation'] == stages[-1]['active_generation'], 'rejected generation reached autostart')
+        require(retained['active_generation'] == stages[-1]['active_generation'], 'rejected generation reached autostart')
         removed = settle(reload([b, fast, missing]))
         require(removed['a']['state'] == 'removed' and gone(replacement), 'removal retained live child')
         suppressed = settle(reload([a, b, fast, missing]))
@@ -116,16 +118,28 @@ def run(binary, directory, environment):
         for e in events():
             require(e['wayland'] == case.instance and e['ipc'] == str(case.ipc_path), 'child display/socket identity differs')
             require(e['display'] is None and e['socket'] is None and not set(e['blocked']) & {2, 15, 17}, 'stale environment or blocked termination signal inherited')
-        case.result.update(ok=True, stages=stages, events=events(), owned_processes=owned)
+        case.result.update(ok=True, shutdown_method=shutdown, stages=stages, events=events(), owned_processes=owned)
+        if shutdown == 'ipc-quit':
+            shutdown_started = time.monotonic()
+            accepted = case.ipc('action', {'name': 'quit'})
+            require(accepted == {'accepted': True}, 'quit reply not acknowledged')
+            case.result['quit_reply'] = accepted
+            until = time.monotonic() + 2
+            while case.process.poll() is None:
+                require(time.monotonic() < until, 'quit failed to finish owned teardown')
+                time.sleep(.01)
     except Exception as error:
         case.result['error'] = str(error)
     finally:
-        started = time.monotonic(); case.close()
+        started = shutdown_started or time.monotonic(); case.close()
         case.result['shutdown_seconds'] = time.monotonic() - started
         case.result['all_observed_processes_gone'] = all(gone(pid) for pid in owned)
         if case.stats.exists():
             final = json.loads(case.stats.read_text())['autostart']
             case.result['final_autostart'] = final
+            rows = {e['id']: e for e in final['entries']}
+            case.result['term_ignoring_child_killed'] = rows.get('b', {}).get('exit_signal') == 9 and (folder / (str(original['b']) + '-term.json')).exists()
+            case.result['ok'] &= case.result['term_ignoring_child_killed']
             case.result['ok'] &= final['closed'] and final['settled'] and all(e['pid'] is None for e in final['entries'])
         else:
             case.result['ok'] = False
@@ -158,8 +172,8 @@ def main():
         require(Path('/tmp/.X' + str(session.number) + '-lock').read_text().strip() == str(session.server.pid), 'private server identity differs')
         owner = short_runtime()
         environment = dict(session.environment, XDG_RUNTIME_DIR=owner.name)
-        result['case'] = run(binaries[0], directory, environment)
-        result['ok'] = result['case']['ok']
+        result['cases'] = [run(binaries[0], directory / mode, environment, mode) for mode in ['sigterm', 'ipc-quit']]
+        result['ok'] = all(case['ok'] for case in result['cases'])
         result['executables_unchanged'] = all(sha256(Path(p)) == h for p,h in result['executables'].items())
     except Exception as error:
         result['error'] = str(error)
@@ -173,7 +187,7 @@ def main():
         result['parent_environment_unchanged'] = dict(os.environ) == parent
         result['ok'] &= all(result.get(key) is True for key in ['authority_removed','server_reaped','x_socket_removed','parent_environment_unchanged','executables_unchanged'])
         write_json(directory / 'summary.json', result)
-    print(json.dumps({'ok': result['ok'], 'error': result.get('error') or result.get('case', {}).get('error'), 'artifacts': str(directory)}))
+    print(json.dumps({'ok': result['ok'], 'error': result.get('error') or next((case.get('error') for case in result.get('cases', []) if not case['ok']), None), 'artifacts': str(directory)}))
     return 0 if result['ok'] else 1
 
 if __name__ == '__main__':

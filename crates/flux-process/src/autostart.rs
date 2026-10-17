@@ -845,7 +845,7 @@ mod tests {
         let script = temp.0.join("term.py");
         let ready = temp.0.join("ready");
         let term = temp.0.join("term");
-        std::fs::write(&script,"import signal,time,sys\nsignal.signal(signal.SIGTERM,lambda *_:open(sys.argv[2],'w').write('term'))\nopen(sys.argv[1],'w').write('ready')\ntime.sleep(10)\n").unwrap();
+        std::fs::write(&script,"import signal,time,sys,os\nsignal.signal(signal.SIGTERM,lambda *_:open(sys.argv[2],'w').write('term'))\nopen(sys.argv[1],'w').write(str(os.getpid()))\ntime.sleep(10)\n").unwrap();
         let original = || AutostartCommand {
             id: Some("service".into()),
             argv: vec![
@@ -872,7 +872,10 @@ mod tests {
             thread::sleep(Duration::from_millis(2));
         }
         worker.try_install(&plan(3, vec![original()])).unwrap();
-        let latest = settled(&worker, 3);
+        worker.try_install(&plan(4, vec![original()])).unwrap();
+        let retry = plan(5, vec![original()]);
+        assert_eq!(worker.try_install(&retry), Err(Error::QueueFull));
+        let latest = settled(&worker, 4);
         assert_ne!(latest.entries[0].pid, Some(pid));
         assert!(latest.entries[0].pid.is_some());
         assert_eq!(
@@ -880,7 +883,31 @@ mod tests {
             "superseded command must not start"
         );
         reaped(pid);
+        worker.try_install(&retry).unwrap();
+        assert_eq!(settled(&worker, 5).entries[0].attempts, 2);
+        let latest_pid = latest.entries[0].pid.unwrap();
+        while std::fs::read_to_string(&ready).ok().as_deref() != Some(&latest_pid.to_string()) {
+            assert!(Instant::now() < until);
+            thread::sleep(Duration::from_millis(2));
+        }
+        std::fs::remove_file(&term).unwrap();
+        worker
+            .try_install(&plan(6, vec![command("service", "11", true)]))
+            .unwrap();
+        while !term.exists() {
+            assert!(Instant::now() < until);
+            thread::sleep(Duration::from_millis(2));
+        }
+        worker.try_install(&plan(7, vec![original()])).unwrap();
+        worker.stop();
         worker.shutdown().unwrap();
+        reaped(latest_pid);
+        let closed = worker.take_snapshot().unwrap();
+        assert!(closed.closed && closed.settled);
+        assert_eq!(
+            closed.entries[0].attempts, 2,
+            "sealed pending plans must not execute"
+        );
     }
     #[test]
     fn retained_argv_budget_rejects_before_effects_and_removal_releases_bytes() {
@@ -933,5 +960,51 @@ mod tests {
             .unwrap();
         assert_eq!(settled(&worker, 5).active_generation, Some(5));
         worker.shutdown().unwrap();
+    }
+    #[test]
+    fn failed_replacement_retires_old_child_and_unchanged_failure_is_not_retried() {
+        let mut worker = AutostartWorker::new(|| {}).unwrap();
+        worker
+            .try_install(&plan(1, vec![command("service", "10", true)]))
+            .unwrap();
+        let pid = settled(&worker, 1).entries[0].pid.unwrap();
+        let failed = || AutostartCommand {
+            id: Some("service".into()),
+            argv: vec!["/missing/autostart-replacement".into()],
+            restart_on_change: true,
+        };
+        worker.try_install(&plan(2, vec![failed()])).unwrap();
+        let replaced = settled(&worker, 2);
+        reaped(pid);
+        assert!(replaced.entries[0].pid.is_none());
+        assert_eq!(replaced.entries[0].attempts, 2);
+        assert_eq!(replaced.entries[0].starts, 1);
+        assert_eq!(replaced.entries[0].state, "failed");
+        worker.try_install(&plan(3, vec![failed()])).unwrap();
+        assert_eq!(settled(&worker, 3).entries[0].attempts, 2);
+        worker.shutdown().unwrap();
+    }
+    #[test]
+    fn positional_zero_and_named_zero_have_separate_owned_children() {
+        let mut worker = AutostartWorker::new(|| {}).unwrap();
+        let mut positional = command("unused", "10", false);
+        positional.id = None;
+        worker
+            .try_install(&plan(1, vec![positional, command("0", "10", false)]))
+            .unwrap();
+        let first = settled(&worker, 1);
+        let indexed_pid = first.entries[0].pid.unwrap();
+        let named_pid = first.entries[1].pid.unwrap();
+        assert_ne!(indexed_pid, named_pid);
+        assert!(first.entries[0].id.is_none());
+        worker
+            .try_install(&plan(2, vec![command("0", "10", false)]))
+            .unwrap();
+        let after = settled(&worker, 2);
+        reaped(indexed_pid);
+        assert_eq!(after.entries[0].state, "removed");
+        assert_eq!(after.entries[1].pid, Some(named_pid));
+        worker.shutdown().unwrap();
+        reaped(named_pid);
     }
 }
