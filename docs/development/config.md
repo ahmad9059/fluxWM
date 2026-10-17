@@ -34,13 +34,73 @@ let compiled = flux_config::load_with_helper(
 // compiled.binding_identities detects duplicate normalized chords.
 ```
 
-The caller must run loading/compilation away from the compositor dispatch/render
-path. Serialize requests with one active helper and one coalesced latest request;
-attach generations and reject stale results before applying. This library does not
-pretend an independent function invocation establishes that compositor-wide queue.
+The synchronous function must run away from compositor dispatch/render. The
+`ConfigCoordinator` API below supplies bounded worker ownership for already-acquired
+snapshots; using the synchronous function independently does not join that queue.
 Use `Config::default()` as a candidate safe startup fallback and validate it; starting
 an actually usable terminal also requires the compositor/backend and the separately
 installed `foot` executable. Hardware/device acceptance is not schema acceptance.
+
+
+## Asynchronous evaluation coordinator
+
+`ConfigCoordinator::new(helper: PathBuf, limits: HelperLimits, notify)` starts one
+worker. `notify: Fn() + Send + 'static` must be nonblocking and nonpanicking, such as
+a coalesced event-loop ping. It runs outside the internal mutex. Wakes are hints;
+a newer request can supersede a completion before the wake is handled. The core
+crate has no calloop dependency.
+
+Call `request(&mut self, source: Vec<u8>)` with an already acquired source snapshot.
+It does not read source files or execute the helper on the calling thread. Oversized
+or non-UTF-8 snapshots reject immediately without superseding accepted work. Each
+accepted request gets a checked `ConfigGeneration`; exhaustion rejects without
+wrapping. Lua, schema, helper and timeout failures of accepted work still supersede
+older candidates. There is one active evaluation and one replaceable latest pending
+source; superseding an active request does not start another helper concurrently.
+
+`take_completion()` consumes at most one current `ConfigEvaluation`. Its result is
+a non-cloneable `ConfigCandidate` or `ConfigEvaluationFailure { kind, diagnostic }`;
+the diagnostic contains static failure-class text and is at most 16 KiB. Lua errors,
+serde errors and regex errors can echo source-controlled values, so their raw text
+is discarded by the coordinator. Explicit CLI diagnostic tooling retains the
+synchronous supervisor API and must apply its own disclosure policy. Older results are discarded, including
+successes that finish after a newer failing request was accepted. There is one
+completion slot, no result queue or diagnostic history. Callers must separately
+bound storage of candidates or `Arc` values they retain outside the coordinator.
+
+A candidate exposes `generation()` and a borrowed `config()`. Evaluation success
+does not update `last_good()`. The caller first validates runtime prerequisites and
+prepares its transaction, then explicitly calls `commit(candidate)` at its own
+publication boundary. Commit consumes the candidate, rechecks coordinator identity,
+latest generation and shutdown state, and returns the same `Arc<CompiledConfig>`
+retained by `last_good()`. Candidates from another coordinator, externally held stale
+candidates, and candidates presented after shutdown are rejected. No external model
+or device mutation is performed by commit; caller-side atomic publication remains
+an integration responsibility. Failed evaluation and rejected/dropped candidates
+leave any explicitly committed last-good configuration unchanged.
+
+`status()` reports current generation, active/pending identities, completion presence
+and shutdown state. Its optional active helper PID is observational: the supervisor
+signals only its owned unreaped `Child`, never a PID copied from diagnostics.
+`shutdown()` first rejects admission and publication, drops pending/completed values,
+then cancels the supervision loop, kills/reaps an owned active helper and joins the
+worker. It is idempotent, and Drop calls it as a fallback. Call shutdown/Drop outside
+compositor dispatch. Cancellation is distinct from timeout; a deadline already
+observed by the supervision loop remains a timeout. Kernel exec/kill/wait, worker
+join and filesystem operations have no universal wall-clock deadline under failure.
+Snapshot acquisition must therefore have its own off-thread ownership and explicit
+file/path policy; this API does not make ordinary file reads bounded in time.
+
+Actual-helper integration tests exercise held stale candidates after a newer schema
+failure, active/pending replacement, timeout then recovery, explicit commit-only
+last-good retention, foreign-candidate rejection, shutdown with an observed live
+helper and a pending request, and no late completion or commit. Linux procfs checks
+require observed helper PIDs to disappear after timeout/cancellation; the supervisor
+unit test independently verifies owned-child reaping with `waitpid`/`ECHILD`. Unit
+tests also cover checked generation exhaustion, invalid admission, source-free static
+diagnostics and a notification that acquires coordinator state without deadlock.
+These establish this library's local behavior, not atomic compositor hot reload,
+keymap/device transactions, filesystem acquisition or complete phase-6 readiness.
 
 ## Implemented v1 schema
 

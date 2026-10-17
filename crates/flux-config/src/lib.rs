@@ -1,7 +1,9 @@
 //! Owned schema and supervised Lua configuration loading. This crate never links Lua.
 mod bounds;
+mod coordinator;
 mod schema;
 mod supervisor;
+pub use coordinator::*;
 pub use schema::*;
 pub use supervisor::*;
 
@@ -13,6 +15,8 @@ pub enum ConfigError {
     Io(#[from] std::io::Error),
     #[error("configuration helper exceeded deadline and was killed and reaped")]
     Timeout,
+    #[error("configuration helper evaluation cancelled")]
+    Cancelled,
     #[error("configuration helper failed ({status}): {diagnostic}")]
     Helper { status: String, diagnostic: String },
 }
