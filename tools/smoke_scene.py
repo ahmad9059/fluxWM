@@ -30,8 +30,8 @@ def read_json(path):
     return json.loads(bounded_read(path, JSON_LIMIT))
 
 
-def check_pixels(path, deadline):
-    """Compare aligned RGB rows against the controlled, pre-input scene."""
+def read_ppm(path):
+    """Read the bounded, strict P6 format written by the compositor."""
     data = bounded_read(path, PPM_LIMIT)
     header = data.split(b"\n", 3)
     require(len(header) == 4 and header[0] == b"P6" and header[2] == b"255", "expected strict P6/255 image")
@@ -42,6 +42,12 @@ def check_pixels(path, deadline):
     require(320 <= width <= 8192 and 240 <= height <= 8192, "unsupported image dimensions")
     pixels = header[3]
     require(len(pixels) == width * height * 3, "PPM payload length mismatch")
+    return width, height, pixels
+
+
+def check_pixels(path, deadline):
+    """Compare aligned RGB rows against the controlled, pre-input scene."""
+    width, height, pixels = read_ppm(path)
     background = bytes([15, 18, 23])
     red, green, blue, yellow = (bytes(rgb) for rgb in ([255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0]))
     top = red * 160 + green * 120 + background * (width - 280)
@@ -52,9 +58,30 @@ def check_pixels(path, deadline):
         expected = top if y < 120 else bottom if y < 240 else clear
         actual = pixels[y * width * 3:(y + 1) * width * 3]
         require(actual == expected, f"container screenshot differs from exact clipped scene at row {y}")
-    return {"width": width, "height": height, "sha256": sha256(path),
-            "rgb_counts": {"red": 19200, "green": 14400, "blue": 19200, "yellow": 14400, "cyan": 0},
+    return {"width": width, "height": height, "sha256": sha256(path), "pixel_validation": "exact-row-equality",
+            "expected_rgb_counts": {"red": 19200, "green": 14400, "blue": 19200, "yellow": 14400, "cyan": 0},
             "background_rgb": [15, 18, 23], "right_edge_x280_matches_background": True}
+
+
+def check_popup_pixels(path, deadline):
+    """Validate popup paint outside the root clip and above its own root."""
+    width, height, pixels = read_ppm(path)
+    background = bytes([15, 18, 23])
+    red, green, blue, yellow, magenta = (bytes(rgb) for rgb in (
+        [255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [255, 0, 255]))
+    popup_row = magenta * 80 + red * 112 + green * 120 + background * (width - 312)
+    root_top = background * 32 + red * 160 + green * 120 + background * (width - 312)
+    root_bottom = background * 32 + blue * 160 + yellow * 120 + background * (width - 312)
+    clear = background * width
+    for y in range(height):
+        require(time.monotonic() < deadline, "deadline expired during popup pixel validation")
+        expected = popup_row if y < 60 else root_top if y < 120 else root_bottom if y < 240 else clear
+        require(pixels[y * width * 3:(y + 1) * width * 3] == expected,
+                f"popup screenshot differs from independently clipped scene at row {y}")
+    return {"width": width, "height": height, "sha256": sha256(path), "pixel_validation": "exact-row-equality",
+            "expected_rgb_counts": {"red": 16320, "green": 14400, "blue": 19200, "yellow": 14400, "magenta": 4800, "cyan": 0},
+            "popup_visible_outside_root_clip": True, "popup_paints_above_own_root": True,
+            "background_rgb": [15, 18, 23], "right_edge_x312_matches_background": True}
 
 
 def check_fixture(mode, value):
@@ -70,7 +97,7 @@ def check_fixture(mode, value):
         for key in ("stationary_motions_after_seed", "feedback_commits"):
             require(type(value.get(key)) is int and 0 <= value[key] <= 1, f"pointer feedback exceeds bound: {key}")
         require(value.get("changing_motions_after_seed") == 0 and value.get("initial_pointer_xy") == [0, 0], "stationary pointer precondition failed")
-    else:
+    elif mode == "container-clip":
         require(value.get("workspace_mode") == "canvas" and value.get("actual_shm_size") == [1900, 240], "container scene preconditions missing")
         require(value.get("requested_container_width") == 280, "wrong allocated width")
         for phase in ("after_resize", "after_settle"):
@@ -95,6 +122,30 @@ def check_fixture(mode, value):
         enters = [i for i, event in enumerate(events) if event.get("clip_pointer_enter_child") is True]
         leaves = [i for i, event in enumerate(events) if event.get("clip_pointer_leave_child") is True]
         require(enters and leaves and enters[0] < leaves[-1], "ordered child enter then leave evidence missing")
+    elif mode == "popup-clip":
+        require(value.get("workspace_mode") == "canvas" and value.get("actual_shm_size") == [1900, 240], "popup scene preconditions missing")
+        for phase in ("root_after_move", "after_settle"):
+            windows = value.get(phase, {}).get("windows", [])
+            require(len(windows) == 1, f"{phase}: expected one popup owner")
+            geometry = windows[0].get("geometry", {})
+            require([geometry.get(k) for k in ("x", "y", "width")] == [32, 0, 280], f"{phase}: wrong popup owner placement")
+        require(value.get("initial_root_pointer_xy") == [0, 0] and value.get("pointer_outside_root_before_popup") is True, "popup pointer preconditions missing")
+        require(value.get("actual_popup_configure") == [-32, 0, 80, 60], "wrong popup configure geometry")
+        require(value.get("actual_popup_world_rect") == {"x": 0, "y": 0, "width": 80, "height": 60}, "wrong popup world geometry")
+        require(value.get("popup_receives_pointer_outside_owner_clip") is True and value.get("popup_pointer_enter_xy") == [0, 0], "popup did not receive actual outside-owner pointer enter")
+        require(value.get("popup_frame_callbacks", 0) >= 1 and value.get("popup_done_before_cleanup") == 0, "popup frame/liveness evidence missing")
+        ready_at = value.get("popup_ready_at_ms")
+        require(type(ready_at) is int and 0 <= ready_at < 700, "popup was not ready before delayed screenshot threshold")
+        events = [entry.get("event", {}) for entry in value.get("events", [])]
+        positions = {}
+        for key in ("popup_geometry", "popup_configure_ack", "map_popup_commit", "popup_frame_done", "popup_clip_pointer_enter"):
+            found = [i for i, event in enumerate(events) if type(event.get(key)) is int and event[key] == 0]
+            require(found, f"missing popup event: {key}")
+            positions[key] = found[0]
+        require(positions["popup_geometry"] < positions["popup_configure_ack"] < positions["map_popup_commit"], "popup configure/map ordering invalid")
+        require(all(positions["map_popup_commit"] < positions[key] for key in ("popup_frame_done", "popup_clip_pointer_enter")), "popup frame/enter preceded mapping")
+    else:
+        raise Failure(f"unrecognized fixture mode: {mode}")
 
 
 class Runner:
@@ -116,7 +167,7 @@ class Runner:
         require(all(not path.exists() and not path.is_symlink() for path in endpoints), "unique endpoint collision")
         ready, stats, image = (directory / name for name in ("ready.json", "stats.json", "scene.ppm"))
         command = [str(self.binary), "--backend", "nested", "--socket", socket, "--exit-after-ms", "6000", "--ready-file", str(ready), "--stats-file", str(stats)]
-        if mode == "container-clip":
+        if mode in ("container-clip", "popup-clip"):
             command += ["--screenshot", str(image), "--screenshot-after-ms", "700"]
         command += ["--", str(self.fixture), mode, "--timeout-ms", "4500"]
         result = {"mode": mode, "command": command, "ok": False, "socket": socket,
@@ -160,8 +211,9 @@ class Runner:
             check_fixture(mode, fixture_value)
             result["stats"] = read_json(stats)
             require(result["stats"].get("final_windows") == 0, "managed window remained after fixture disconnect")
-            if mode == "container-clip":
-                result["pixels"] = check_pixels(image, self.deadline)
+            if mode in ("container-clip", "popup-clip"):
+                validator = check_popup_pixels if mode == "popup-clip" else check_pixels
+                result["pixels"] = validator(image, self.deadline)
             require(time.monotonic() < self.deadline, "whole-suite deadline expired during evidence validation")
             result["ok"] = True
         except Exception as error:
@@ -213,7 +265,7 @@ def main():
                "binary": str(binary), "fixture": str(fixture), "binary_sha256": sha256(binary), "fixture_sha256": sha256(fixture),
                "scope": "nested synthetic SHM scene/input regressions; excludes physical input, native backend and host presentation qualification"}
     errors = []
-    for mode in ("popup-lifecycle", "pointer-feedback", "container-clip"):
+    for mode in ("popup-lifecycle", "pointer-feedback", "container-clip", "popup-clip"):
         try:
             runner.run(mode)
         except Exception as error:
