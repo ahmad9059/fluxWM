@@ -2934,6 +2934,146 @@ fn configure_stream(timeout: Duration) -> Json {
     evidence
 }
 
+/// Layout rejection must not confuse protocol buffer ownership with scene
+/// membership. Keep the client alive so it can unmap and retry smaller hints.
+fn configure_admission(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    let mut evidence = json!({"ok":false,"mode":"configure-admission"});
+    let result = (|| -> Result<()> {
+        let connection = connect(&display_path()?, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let healthy = state.create(&qh, "admission-healthy");
+        state.windows[healthy].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "admission healthy configure",
+            |s| s.windows[healthy].configures > 0,
+        )?;
+        state.map(healthy, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "admission healthy frame",
+            |s| s.windows[healthy].frames > 0,
+        )?;
+        let root = state.create(&qh, "admission-retry");
+        state.windows[root]
+            .toplevel
+            .set_min_size(1_000_000_000, 240);
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "rejected root initial configure",
+            |s| s.windows[root].configures > 0,
+        )?;
+        state.map(root, &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit FLUXWM_SOCKET required")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let rejected =
+            configure_window(&mut diagnostics, "FluxWM fixture admission-retry", deadline)?;
+        let rejected_sequence = diagnostics.last_sequence;
+        evidence["rejected"] = rejected.clone();
+        let identity = rejected["id"]
+            .as_str()
+            .ok_or("rejected role has no identity")?;
+        let count = state.windows[root].configure_serials.len();
+        state.windows[root].surface.attach(None, 0, 0);
+        state.windows[root].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let unmapped = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["after_null_unmap"] = unmapped.clone();
+        evidence["wire_configures_on_null_unmap"] =
+            json!(state.windows[root].configure_serials.len() - count);
+        // This real wire oracle runs before checking newly added diagnostics,
+        // so the preserved binary fails for behavior rather than absent fields.
+        if state.windows[root].configure_serials.len() != count {
+            return Err(
+                "rejected-admission null unmap incorrectly emitted an initial configure".into(),
+            );
+        }
+        if diagnostics.last_sequence <= rejected_sequence {
+            return Err("rejected-role buffer retirement did not advance IPC sequence".into());
+        }
+        if rejected["buffered"] != true
+            || rejected["mapped"] != false
+            || rejected["admission_error"].as_str().is_none()
+            || unmapped["buffered"] != false
+            || unmapped["mapped"] != false
+            || !unmapped["admission_error"].is_null()
+            || unmapped["configure"]["initial_sent"] != false
+        {
+            return Err(
+                "admission diagnostics conflate root buffer presence and layout membership".into(),
+            );
+        }
+        state.windows[root]
+            .toplevel
+            .set_title("FluxWM fixture admission-recovered".into());
+        state.windows[root].toplevel.set_min_size(320, 240);
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "admission retry fresh initial configure",
+            |s| s.windows[root].configure_serials.len() > count,
+        )?;
+        let frames = state.windows[root].frames;
+        state.map(root, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "admission retry maps after smaller hints",
+            |s| s.windows[root].frames > frames,
+        )?;
+        let recovered = configure_window(&mut diagnostics, identity, deadline)?;
+        evidence["recovered"] = recovered.clone();
+        if recovered["mapped"] != true
+            || recovered["buffered"] != true
+            || !recovered["admission_error"].is_null()
+        {
+            return Err("smaller valid hints did not recover the retained role".into());
+        }
+        let frames = state.windows[healthy].frames;
+        state.windows[healthy].surface.damage(0, 0, 1, 1);
+        state.windows[healthy]
+            .surface
+            .frame(&qh, Callback::Frame(healthy));
+        state.windows[healthy].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "healthy same-client role survives admission rejection",
+            |s| s.windows[healthy].frames > frames,
+        )?;
+        evidence["healthy_frame_after_recovery"] = json!(true);
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["events"] = json!(state.events);
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence
+}
+
 fn shell_health(timeout: Duration, mode: &str) -> Json {
     let capacity = mode == "shell-health-capacity";
     let disconnect = mode == "shell-health-disconnect";
@@ -3299,7 +3439,8 @@ fn main() {
                 || mode == "popup-lifecycle"
                 || mode == "container-clip"
                 || mode == "popup-clip"
-                || mode == "configure-stream" =>
+                || mode == "configure-stream"
+                || mode == "configure-admission" =>
         {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
@@ -3310,7 +3451,8 @@ fn main() {
                 || mode == "popup-lifecycle"
                 || mode == "container-clip"
                 || mode == "popup-clip"
-                || mode == "configure-stream")
+                || mode == "configure-stream"
+                || mode == "configure-admission")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -3321,11 +3463,12 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|configure-stream|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
         Ok(("configure-stream", timeout)) => configure_stream(timeout),
+        Ok(("configure-admission", timeout)) => configure_admission(timeout),
         Ok(("slow-reader", timeout)) => slow_reader(timeout),
         Ok(("pointer-feedback", timeout)) => pointer_feedback(timeout),
         Ok(("popup-lifecycle", timeout)) => popup_lifecycle(timeout),

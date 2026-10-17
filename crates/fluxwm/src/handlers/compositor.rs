@@ -36,14 +36,14 @@ impl CompositorHandler for Fluxwm {
                 root = parent;
             }
             let id = self.window_id(&root);
-            let was_mapped = id
+            let was_buffered = id
                 .and_then(|id| self.windows.get(id))
-                .is_some_and(|item| item.mapped);
+                .is_some_and(|item| item.buffered);
             self.commit_window(&root);
-            just_unmapped = was_mapped
+            just_unmapped = was_buffered
                 && !id
                     .and_then(|id| self.windows.get(id))
-                    .is_some_and(|item| item.mapped);
+                    .is_some_and(|item| item.buffered);
         };
 
         xdg_shell::handle_commit(self, surface, just_unmapped);

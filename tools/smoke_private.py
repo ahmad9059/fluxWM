@@ -20,7 +20,7 @@ def main():
     parser.add_argument('--artifacts', type=Path)
     parser.add_argument('--binary', type=Path, default=root / 'target/debug/fluxwm')
     parser.add_argument('--fixture', type=Path, default=root / 'target/debug/fluxwm-fixture')
-    parser.add_argument('--suites', nargs='+', choices=['scene', 'nested', 'shutdown', 'ipc', 'health', 'configure'], default=['scene', 'nested', 'shutdown', 'ipc'])
+    parser.add_argument('--suites', nargs='+', choices=['scene', 'nested', 'shutdown', 'ipc', 'health', 'configure'], default=['scene', 'nested', 'shutdown', 'ipc', 'health', 'configure'])
     args = parser.parse_args()
     directory = (args.artifacts or root / 'target/smoke-private' / uuid.uuid4().hex).resolve()
     directory.mkdir(mode=0o700, parents=True, exist_ok=False)

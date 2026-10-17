@@ -34,7 +34,10 @@ pub struct LaunchOutcome {
 
 pub struct ManagedWindow {
     pub window: Window,
+    /// Root-buffer presence is independent of successful layout admission.
+    pub buffered: bool,
     pub mapped: bool,
+    pub admission_error: Option<String>,
     pub floating: bool,
 }
 
@@ -350,7 +353,9 @@ impl Fluxwm {
         let window = Window::new_wayland_window(surface);
         match self.windows.insert(ManagedWindow {
             window,
+            buffered: false,
             mapped: false,
+            admission_error: None,
             floating: false,
         }) {
             Ok(id) => {
@@ -419,6 +424,11 @@ impl Fluxwm {
             .windows
             .get_mut(id)
             .expect("live lookup within one dispatch");
+        let was_buffered = item.buffered;
+        item.buffered = has_buffer;
+        if !has_buffer {
+            item.admission_error = None;
+        }
         item.window.on_commit();
         let was_mapped = item.mapped;
         let window = item.window.clone();
@@ -426,10 +436,17 @@ impl Fluxwm {
             let constraints = self.constraints_for(root);
             let activate = !self.seat.get_keyboard().is_some_and(|k| k.is_grabbed());
             if let Err(error) = self.layout.insert_with_focus(id, constraints, activate) {
+                self.windows
+                    .get_mut(id)
+                    .expect("live dispatch ID")
+                    .admission_error = Some(error.to_string());
+                self.bump_sequence();
                 tracing::warn!(%id, %error, "layout admission rejected");
                 return;
             }
-            self.windows.get_mut(id).expect("live dispatch ID").mapped = true;
+            let item = self.windows.get_mut(id).expect("live dispatch ID");
+            item.mapped = true;
+            item.admission_error = None;
             self.stats.maps += 1;
             self.bump_sequence();
             tracing::info!(%id, "window_mapped");
@@ -454,6 +471,10 @@ impl Fluxwm {
                 tracing::debug!(%id, %error, "constraint update rejected");
             }
             self.relayout();
+        } else if was_buffered {
+            // A rejected admission can lose its buffer without ever entering
+            // the layout. Its buffer/error diagnostics still changed.
+            self.bump_sequence();
         }
         self.request_redraw();
     }

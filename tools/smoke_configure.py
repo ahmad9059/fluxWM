@@ -22,11 +22,12 @@ def main():
     parent = dict(os.environ)
     # Reuse the bounded process/IPC/readiness/cleanup runner. The fixture owns
     # protocol oracles; the runner also verifies shell monitoring retires.
-    case = run_case(args.binary.resolve(), args.fixture.resolve(), directory / 'configure-stream', 'configure-stream', parent, fixture_timeout_ms=5000)
-    result = {'ok': case['ok'], 'cases': [case],
+    cases = [run_case(args.binary.resolve(), args.fixture.resolve(), directory / mode, mode, parent, fixture_timeout_ms=5000)
+             for mode in ['configure-stream', 'configure-admission']]
+    result = {'ok': all(case['ok'] for case in cases), 'cases': cases,
               'source_sha256': {name: sha256(root / 'tools' / name) for name in ['smoke_configure.py', 'smoke_health.py', 'smoke_nested.py']},
               'parent_environment_unchanged': parent == dict(os.environ),
-              'scope': 'one non-acking mapped SHM client, healthy sibling, latest-state ack/commit, two remap orderings and role replacement; no full transaction/native/global resource qualification'}
+              'scope': 'one non-acking mapped SHM client, healthy sibling, latest-state ack/commit, two remap orderings role replacement and rejected-admission recovery; no full transaction/native/global resource qualification'}
     write_json(directory / 'summary.json', result)
     print(json.dumps({'ok': result['ok'], 'artifacts': str(directory)}))
     return 0 if result['ok'] else 1

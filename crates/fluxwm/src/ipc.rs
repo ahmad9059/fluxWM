@@ -86,7 +86,7 @@ impl Fluxwm {
                             (bounded(data.title.as_deref().unwrap_or("")), bounded(data.app_id.as_deref().unwrap_or("")))
                         })
                     }).unwrap_or_default();
-                    json!({"id":id,"workspace":WorkspaceId::new(0,0),"mapped":item.mapped,"focused":self.layout.focused()==Some(id),"title":title,"app_id":app_id,"responsiveness":item.window.toplevel().map(|t|self.health.for_client(&t.client())),"configure":item.window.toplevel().map(crate::configure::snapshot),"geometry":placements.iter().find(|p|p.window==id).map(|p|p.rect)})
+                    json!({"id":id,"workspace":WorkspaceId::new(0,0),"mapped":item.mapped,"buffered":item.buffered,"admission_error":item.admission_error,"focused":self.layout.focused()==Some(id),"title":title,"app_id":app_id,"responsiveness":item.window.toplevel().map(|t|self.health.for_client(&t.client())),"configure":item.window.toplevel().map(crate::configure::snapshot),"geometry":placements.iter().find(|p|p.window==id).map(|p|p.rect)})
                 }).collect();
                 Ok(json!({"windows":windows}))
             }
