@@ -101,7 +101,8 @@ class Runner:
         if fixture:
             command += ["--", str(self.fixture), "lifecycle", "--timeout-ms", "4500"]
         metadata = {"name": name, "command": command, "socket": socket,
-                    "environment": {key: self.parent_env.get(key) for key in ENV_KEYS}, "ok": False}
+                    "environment": {key: self.parent_env.get(key) for key in ENV_KEYS},
+                    "child_environment_overrides": {"RUST_LOG": "fluxwm=info"}, "ok": False}
         self.cases.append(metadata)
         write_json(case_dir / "command.json", metadata)
         started = time.monotonic()
@@ -220,9 +221,10 @@ def main():
     artifacts = (args.artifacts or root / "target/smoke-nested" / uuid.uuid4().hex).resolve()
     artifacts.mkdir(parents=True, exist_ok=False)
     runner = Runner(binary, fixture, artifacts, args.timeout)
-    summary = {"ok": False, "artifacts": str(artifacts), "binary_sha256": sha256(binary),
+    summary = {"ok": False, "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+               "artifacts": str(artifacts), "binary_sha256": sha256(binary),
                "fixture_sha256": sha256(fixture), "cases": runner.cases,
-               "scope": "nested SHM lifecycle, copied GLES framebuffer, idle scheduling, SIGTERM and socket cleanup; no native/hardware/host-presentation qualification"}
+               "scope": "nested SHM lifecycle, copied offscreen GLES scene framebuffer, idle scheduling, SIGTERM and socket cleanup; no native/hardware/host-presentation qualification"}
     errors = []
     def collect(name, *positional, **keywords):
         try:
@@ -236,15 +238,19 @@ def main():
         long = collect("idle-long", 1600)
         if short is not None and long is not None:
             try:
-                for key in ("redraws", "submissions"):
+                for key in ("redraws", "compositions", "submissions"):
                     require(short.get(key, 0) >= 1, f"idle-short: no initial {key}")
                     require(long.get(key, 0) <= short[key] + 2, f"idle work grows with duration: {key}: {short[key]} -> {long.get(key)}")
                     require(long.get(key, 0) <= 6, f"idle-long: excessive {key}: {long.get(key)}")
             except Failure as error:
                 errors.append(str(error))
             summary["idle_comparison"] = {"short_ms": 600, "long_ms": 1600, "short": short, "long": long,
-                                          "allowed_extra_redraws_or_submissions": 2, "maximum_long_count": 6}
+                                          "allowed_extra_redraws_compositions_or_submissions": 2, "maximum_long_count": 6}
         collect("sigterm", 10000, terminate=True)
+        summary["binary_sha256_after"] = sha256(binary)
+        summary["fixture_sha256_after"] = sha256(fixture)
+        if summary["binary_sha256_after"] != summary["binary_sha256"] or summary["fixture_sha256_after"] != summary["fixture_sha256"]:
+            errors.append("tested executables changed during the suite; binary provenance is not stable")
         summary["ok"] = not errors
         if errors:
             summary["error"] = "; ".join(errors)
