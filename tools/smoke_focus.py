@@ -12,14 +12,14 @@ import sys
 import time
 import uuid
 
-from smoke_input import Session, prepare_xvfb
+from smoke_input import Session, prepare_xvfb, short_runtime, close_runtime
 from smoke_nested import require, sha256, write_json
 
 
 def run_case(executable, binary, fixture, directory, case):
     directory.mkdir(mode=0o700)
     result = {'ok': False, 'case': case, 'errors': [], 'binary_sha256': sha256(binary), 'fixture_sha256': sha256(fixture)}
-    session = compositor = client = None
+    session = compositor = client = runtime_owner = None
     logs = []
     deadline = time.monotonic() + 20
     responses = []
@@ -67,7 +67,7 @@ def run_case(executable, binary, fixture, directory, case):
     try:
         session = Session(executable, directory)
         wait(session.ready)
-        runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
+        runtime_owner = short_runtime(); runtime = Path(runtime_owner.name)
         environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime), XKB_DEFAULT_LAYOUT='us', XKB_DEFAULT_VARIANT='', XKB_DEFAULT_OPTIONS='')
         name = 'fluxfocus-' + uuid.uuid4().hex[:16]
         ready, stats = directory / 'ready.json', directory / 'stats.json'
@@ -81,6 +81,8 @@ def run_case(executable, binary, fixture, directory, case):
         result['target'] = session.test(compositor.pid)
         inject('focus', focused=True)
         child_environment = dict(environment, WAYLAND_DISPLAY=name, FLUXWM_SOCKET=str(ipc_path), FLUXWM_FIXTURE_EVENT_FILE=str(event_path))
+        child_environment.pop('FLUXWM_FIXTURE_GRAB_POPUP', None)
+        if case == 'popup': child_environment['FLUXWM_FIXTURE_GRAB_POPUP'] = '1'
         client = subprocess.Popen([str(fixture), 'input-probe', '--timeout-ms', '10000'], env=child_environment, stdout=logs[2], stderr=logs[3], start_new_session=True)
         wait(lambda: seen('ready'), 8)
         owners = {w['title']: w for w in ipc('windows.list')['windows']}
@@ -130,6 +132,45 @@ def run_case(executable, binary, fixture, directory, case):
             expect(not seen('keyboard.key', since=late, key=30, state='released'), 'late_A_release_forwarded_twice')
             fresh = len(events()); inject('key', key='a', pressed=True); inject('key', key='a', pressed=False)
             expect(observe(lambda: seen('keyboard.key', since=fresh, key=30, state='pressed') and seen('keyboard.key', since=fresh, key=30, state='released')), 'fresh_A_failed_after_reentry')
+            result['consumed_reentry_tested'] = not result['errors']
+            if result['consumed_reentry_tested']:
+                inject('key', key='Alt_L', pressed=True); inject('key', key='c', pressed=True)
+                wait(lambda: ipc('workspaces.list')['workspaces'][0]['mode'] == 'canvas')
+                inject('focus', focused=False)
+                inject('key', key='Alt_L', pressed=False, activate=False)
+                inject('focus', focused=True)
+                inject('key', key='c', pressed=False)
+        elif case == 'popup':
+            inject('button', button=1, pressed=True)
+            wait(lambda: seen('popup.frame', popup=0) and seen('keyboard.enter', popup=0))
+            inject('motion', x=65, y=64)
+            wait(lambda: seen('pointer.enter', popup=0))
+            inject('key', key='a', pressed=True)
+            wait(lambda: seen('keyboard.key', key=30, popup=0, state='pressed'))
+            time.sleep(.2); check()
+            before = ipc('diagnostics'); result['before_popup_loss'] = before
+            expect(before.get('composed_scene', {}).get('popup_surfaces') == 1, 'popup_not_in_published_scene')
+            expect(before.get('input_state', {}).get('keyboard_grabbed') is True and before.get('input_state', {}).get('pointer_grabbed') is True, 'valid_popup_grabs_not_installed')
+            loss = len(events()); result['focus_loss_event_index'] = loss
+            inject('focus', focused=False)
+            expect(observe(lambda: seen('popup.done', since=loss, popup=0)), 'popup_not_dismissed_on_focus_loss')
+            expect(observe(lambda: seen('keyboard.key', since=loss, popup=0, key=30, state='released')), 'popup_held_key_not_released')
+            expect(observe(lambda: seen('keyboard.enter', since=loss, root=0, keys=[])), 'root_keyboard_not_restored_empty')
+            # The fixture retains the dismissed popup role and sends no further
+            # Wayland request until S below, so client teardown cannot mask redraw.
+            after = ipc('diagnostics')
+            stop = time.monotonic() + .5
+            while after['runtime']['compositions'] <= before['runtime']['compositions'] and time.monotonic() < stop:
+                check(); time.sleep(.01); after = ipc('diagnostics')
+            result['after_popup_loss'] = after; result['after_loss'] = after
+            expect(after['runtime']['compositions'] > before['runtime']['compositions'] and after.get('composed_scene', {}).get('popup_surfaces') == 0, 'dismissed_popup_not_recomposed')
+            expect(after['runtime']['wayland_requests'] == before['runtime']['wayland_requests'], 'client_request_masked_popup_recomposition')
+            inject('focus', focused=True)
+            inject('key', key='s', pressed=True); inject('key', key='s', pressed=False)
+            expect(observe(lambda: seen('popup.stale_grab_requested', popup=1) and seen('popup.done', popup=1)), 'expired_popup_serial_not_rejected')
+            expect(not seen('keyboard.enter', popup=1), 'denied_popup_stole_keyboard_focus')
+            inject('key', key='a', pressed=False)
+            inject('button', button=1, pressed=False)
         else:
             inject('button', button=1, pressed=True)
             wait(lambda: seen('pointer.button', root=0, button=272, state='pressed'))
@@ -153,7 +194,7 @@ def run_case(executable, binary, fixture, directory, case):
             expect(observe(lambda: seen('pointer.button', since=fresh, root=1, button=272, state='pressed') and seen('pointer.button', since=fresh, root=1, button=272, state='released')), 'fresh_B_click_failed')
         state = result['after_loss'].get('input_state', {})
         expect(state.get('host_focus') is False, 'host_focus_loss_not_observed')
-        expect(state.get('pressed_keys') == 0 and state.get('suppressed_keys') == 0 and state.get('pressed_buttons') == 0 and state.get('pointer_grabbed') is False, 'held_state_survived_focus_loss')
+        expect(state.get('pressed_keys') == 0 and state.get('suppressed_keys') == 0 and state.get('authorized_buttons') == 0 and state.get('pointer_grabbed') is False and state.get('keyboard_grabbed') is False, 'held_state_survived_focus_loss')
         result['final_input_state'] = ipc('diagnostics').get('input_state')
         wait(lambda: client.poll() is not None, 9)
         result['fixture_report'] = json.loads((directory / 'fixture.stdout.log').read_text())
@@ -162,13 +203,20 @@ def run_case(executable, binary, fixture, directory, case):
         if case == 'keyboard':
             counts = {str(key): {kind: sum(e.get('type') == 'keyboard.key' and e.get('key') == key and e.get('state') == kind for e in journal) for kind in ['pressed', 'released']} for key in [30, 31, 46, 56]}
             result['complete_key_counts'] = counts
-            expect(counts == {'30': {'pressed': 2, 'released': 2}, '31': {'pressed': 1, 'released': 1}, '46': {'pressed': 0, 'released': 0}, '56': {'pressed': 2, 'released': 2}}, 'complete_key_ownership_counts_differ')
-        else:
+            alt_count = 3 if result.get('consumed_reentry_tested') else 2
+            expect(counts == {'30': {'pressed': 2, 'released': 2}, '31': {'pressed': 1, 'released': 1}, '46': {'pressed': 0, 'released': 0}, '56': {'pressed': alt_count, 'released': alt_count}}, 'complete_key_ownership_counts_differ')
+        elif case == 'pointer':
+            enter = next((i for i,e in enumerate(journal) if i >= result['focus_loss_event_index'] and e.get('type') == 'pointer.enter' and e.get('root') == 1), None)
+            press = next((i for i,e in enumerate(journal) if e.get('type') == 'pointer.button' and e.get('root') == 1 and e.get('state') == 'pressed'), None)
+            expect(enter is not None and press is not None and enter < press, 'B_press_preceded_pointer_enter')
             counts = {str(owner): {kind: sum(e.get('type') == 'pointer.button' and e.get('button') == 272 and e.get('root') == owner and e.get('state') == kind for e in journal) for kind in ['pressed', 'released']} for owner in [0, 1]}
             result['complete_button_counts'] = counts
             expect(counts == {'0': {'pressed': 1, 'released': 1}, '1': {'pressed': 1, 'released': 1}}, 'complete_button_ownership_counts_differ')
+        else:
+            for kind in ['pressed', 'released']:
+                expect(sum(e.get('type') == 'keyboard.key' and e.get('key') == 30 and e.get('popup') == 0 and e.get('state') == kind for e in journal) == 1, 'popup_A_ownership_count_differs')
         final_state = ipc('diagnostics').get('input_state', {})
-        expect(final_state.get('pressed_keys') == 0 and final_state.get('pressed_buttons') == 0 and final_state.get('suppressed_keys') == 0, 'held_state_remained_after_fixture_completion')
+        expect(final_state.get('pressed_keys') == 0 and final_state.get('authorized_buttons') == 0 and final_state.get('suppressed_keys') == 0, 'held_state_remained_after_fixture_completion')
         result['quit'] = ipc('action', {'name': 'quit'})
         compositor.wait(timeout=2); require(compositor.returncode == 0, 'compositor shutdown failed')
         result['stats'] = json.loads(stats.read_text())
@@ -193,6 +241,9 @@ def run_case(executable, binary, fixture, directory, case):
             result['private_server_reaped'] = session.server.poll() is not None
             result['private_x_socket_removed'] = not Path('/tmp/.X11-unix/X' + str(session.number)).exists()
             result['parent_environment_unchanged'] = session.parent == dict(os.environ)
+        if runtime_owner is not None:
+            result['runtime_cleanup'] = close_runtime(runtime_owner)
+            result['ok'] &= all(result['runtime_cleanup'][k] for k in ['endpoints_removed_before_cleanup', 'directory_removed'])
         for log in logs: log.close()
         result['responses'] = responses
         result['compositor_exit'] = compositor.returncode if compositor else None
@@ -218,7 +269,7 @@ def main():
         digest = sha256(source); shutil.copyfile(source, directory / name); (directory / name).chmod(0o700)
         require(digest == sha256(source) == sha256(directory / name), 'executable changed during snapshot')
         identities[name] = digest
-    cases = [run_case(executable, directory / 'fluxwm', directory / 'fixture', directory / case, case) for case in ['keyboard', 'pointer']]
+    cases = [run_case(executable, directory / 'fluxwm', directory / 'fixture', directory / case, case) for case in ['keyboard', 'pointer', 'popup']]
     result = {'ok': all(case['ok'] for case in cases), 'cases': cases, 'package': verification, 'executables': identities,
               'harness_sha256': source_hashes['harness'], 'private_helper_sha256': source_hashes['helper'],
               'test_sources_unchanged': source_hashes == {'harness': sha256(Path(__file__)), 'helper': sha256(root / 'tools/smoke_input.py')},

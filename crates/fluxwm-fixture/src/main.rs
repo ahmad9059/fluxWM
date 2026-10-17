@@ -90,6 +90,8 @@ struct State {
     container_mode: bool,
     popup_clip_mode: bool,
     input_probe_mode: bool,
+    focus_popup_probe: bool,
+    focus_popup_serial: Option<u32>,
     event_file: Option<File>,
     event_file_bytes: usize,
     subcompositor: Option<wl_subcompositor::WlSubcompositor>,
@@ -138,6 +140,8 @@ impl State {
             container_mode: false,
             popup_clip_mode: false,
             input_probe_mode: false,
+            focus_popup_probe: false,
+            focus_popup_serial: None,
             event_file: None,
             event_file_bytes: 0,
             subcompositor: None,
@@ -732,6 +736,9 @@ impl Dispatch<wl_callback::WlCallback, Callback> for State {
                 Callback::PopupFrame(n) => {
                     state.popups[*n].frames += 1;
                     state.record(json!({"popup_frame_done":n,"timestamp":callback_data}));
+                    if state.focus_popup_probe {
+                        state.record(json!({"type":"popup.frame","popup":n}));
+                    }
                 }
                 Callback::Frame(n) => {
                     state.windows[*n].frames += 1;
@@ -780,7 +787,7 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
         event: wl_keyboard::Event,
         _: &(),
         _: &Connection,
-        _: &QueueHandle<Self>,
+        qh: &QueueHandle<Self>,
     ) {
         match event {
             wl_keyboard::Event::Enter {
@@ -800,7 +807,7 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
                         .copied()
                         .map(u32::from_ne_bytes)
                         .collect();
-                    state.record(json!({"type":"keyboard.enter","root":state.windows.iter().position(|w|w.surface==surface),"keys":keys,"serial":serial}));
+                    state.record(json!({"type":"keyboard.enter","root":state.windows.iter().position(|w|w.surface==surface),"popup":state.popups.iter().position(|p|p.surface==surface),"keys":keys,"serial":serial}));
                 }
                 let popup = state.popups.iter().position(|p| p.surface == surface);
                 if popup.is_some() {
@@ -822,7 +829,25 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
                 key,
                 state: key_state,
             } if state.input_probe_mode => {
-                state.record(json!({"type":"keyboard.key","root":state.keyboard_focus.as_ref().and_then(|surface|state.windows.iter().position(|w|&w.surface==surface)),"key":key,"state":match key_state { WEnum::Value(wl_keyboard::KeyState::Pressed)=>"pressed",WEnum::Value(wl_keyboard::KeyState::Released)=>"released",_=>"unknown" },"serial":serial,"time":time}));
+                state.record(json!({"type":"keyboard.key","root":state.keyboard_focus.as_ref().and_then(|surface|state.windows.iter().position(|w|&w.surface==surface)),"popup":state.keyboard_focus.as_ref().and_then(|surface|state.popups.iter().position(|p|&p.surface==surface)),"key":key,"state":match key_state { WEnum::Value(wl_keyboard::KeyState::Pressed)=>"pressed",WEnum::Value(wl_keyboard::KeyState::Released)=>"released",_=>"unknown" },"serial":serial,"time":time}));
+                if state.focus_popup_probe
+                    && key == 31
+                    && key_state == WEnum::Value(wl_keyboard::KeyState::Pressed)
+                    && state.popups.len() == 1
+                    && state.popups[0].done > 0
+                {
+                    let serial = state.focus_popup_serial.unwrap();
+                    state.destroy_popup(0);
+                    let popup = state.create_popup(0, false, qh);
+                    state.popups[popup]
+                        .popup
+                        .grab(state.seat.as_ref().unwrap(), serial);
+                    // The pinned helper applies requested_grab at surface commit.
+                    state.popups[popup].surface.commit();
+                    state.record(
+                        json!({"type":"popup.stale_grab_requested","popup":popup,"serial":serial}),
+                    );
+                }
             }
             wl_keyboard::Event::Modifiers {
                 serial,
@@ -844,12 +869,18 @@ impl Dispatch<xdg_surface::XdgSurface, PopupTag> for State {
         event: xdg_surface::Event,
         index: &PopupTag,
         _: &Connection,
-        _: &QueueHandle<Self>,
+        qh: &QueueHandle<Self>,
     ) {
         if let xdg_surface::Event::Configure { serial } = event {
             surface.ack_configure(serial);
             state.popups[index.0].configures += 1;
             state.record(json!({"popup_configure_ack":index.0,"serial":serial}));
+            if state.focus_popup_probe
+                && index.0 == 0
+                && let Err(error) = state.map_popup(0, qh)
+            {
+                state.error = Some(error);
+            }
         }
     }
 }
@@ -876,6 +907,9 @@ impl Dispatch<xdg_popup::XdgPopup, PopupTag> for State {
             xdg_popup::Event::PopupDone => {
                 state.popups[index.0].done += 1;
                 state.record(json!({"popup_done":index.0}));
+                if state.focus_popup_probe {
+                    state.record(json!({"type":"popup.done","popup":index.0}));
+                }
             }
             _ => {}
         }
@@ -898,17 +932,23 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
         event: wl_pointer::Event,
         _: &(),
         _: &Connection,
-        _: &QueueHandle<Self>,
+        qh: &QueueHandle<Self>,
     ) {
         if state.input_probe_mode {
             let root = state.pointer_root();
             match &event {
-                wl_pointer::Event::Enter {serial,surface,surface_x,surface_y} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.enter","root":root,"serial":serial,"x":surface_x,"y":surface_y}));}
+                wl_pointer::Event::Enter {serial,surface,surface_x,surface_y} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.enter","root":root,"popup":state.popups.iter().position(|p|p.surface==*surface),"serial":serial,"x":surface_x,"y":surface_y}));}
                 wl_pointer::Event::Leave {serial,surface} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.leave","root":root,"serial":serial}));}
                 wl_pointer::Event::Motion {time,surface_x,surface_y} => state.record(json!({"type":"pointer.motion","root":root,"time":time,"x":surface_x,"y":surface_y})),
                 wl_pointer::Event::Button {serial,time,button,state:button_state} => {
                     let button_state=match button_state {WEnum::Value(wl_pointer::ButtonState::Pressed)=>"pressed",WEnum::Value(wl_pointer::ButtonState::Released)=>"released",_=>{state.error=Some("unknown pointer button state".into());"unknown"}};
                     state.record(json!({"type":"pointer.button","root":root,"serial":serial,"time":time,"button":button,"state":button_state}));
+                    if state.focus_popup_probe && state.popups.is_empty() && root == Some(0) && *button == 272 && button_state == "pressed" {
+                        state.focus_popup_serial = Some(*serial);
+                        let popup = state.create_popup(0, false, qh);
+                        state.popups[popup].popup.grab(state.seat.as_ref().unwrap(), *serial);
+                        state.record(json!({"type":"popup.grab_requested","popup":popup,"serial":serial}));
+                    }
                 }
                 wl_pointer::Event::Axis {time,axis,value} => {let axis=pointer_axis_name(*axis);state.record(json!({"type":"pointer.axis","root":root,"time":time,"axis":axis,"value":value}));}
                 wl_pointer::Event::AxisStop {time,axis}=>state.record(json!({"type":"pointer.axis_stop","root":root,"time":time,"axis":pointer_axis_name(*axis)})),
@@ -2338,6 +2378,8 @@ fn input_probe(timeout: Duration) -> Json {
     state.pointer_feedback_enabled = true;
     state.input_probe_mode = true;
     state.popup_mode = true; // Bind keyboard as well as pointer for the live journal.
+    state.focus_popup_probe =
+        std::env::var("FLUXWM_FIXTURE_GRAB_POPUP").ok().as_deref() == Some("1");
     let mut evidence = json!({"mode":"input-probe","ok":false,"observation_ms":OBSERVE_MS,"buffer_size":[320,240],"physical_input_injected_by_fixture":false});
     let result = (|| -> Result<()> {
         use std::os::unix::fs::OpenOptionsExt;

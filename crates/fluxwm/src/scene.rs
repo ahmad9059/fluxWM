@@ -43,9 +43,13 @@ pub struct RuntimeScene {
     geometry: SceneSnapshot,
     // Both lists are front to back, matching Smithay's element ordering.
     input: Vec<InputSurface>,
+    popup_surfaces: usize,
 }
 
 impl RuntimeScene {
+    pub fn surface_counts(&self) -> (usize, usize) {
+        (self.input.len(), self.popup_surfaces)
+    }
     pub fn capture(state: &Fluxwm, viewport: Rect) -> Result<Self, String> {
         let placements = state.layout.placements();
         let mut inputs = Vec::new();
@@ -131,7 +135,12 @@ impl RuntimeScene {
         for tree in &trees {
             capture_input(tree, &mut input, &mut region_rects, &visited)?;
         }
-        Ok(Self { geometry, input })
+        let popup_surfaces = input.iter().filter(|surface| surface.popup).count();
+        Ok(Self {
+            geometry,
+            input,
+            popup_surfaces,
+        })
     }
 
     pub fn windows(&self) -> impl Iterator<Item = WindowId> + '_ {

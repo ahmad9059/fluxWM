@@ -12,6 +12,7 @@ import secrets
 import socket
 import struct
 import subprocess
+import tempfile
 import sys
 import time
 import urllib.request
@@ -216,6 +217,18 @@ def xtest_helper():
     finally:
         connection.close()
 
+def short_runtime():
+    # Artifact paths can be arbitrarily long; AF_UNIX pathname sockets cannot.
+    return tempfile.TemporaryDirectory(prefix='fluxrt-', dir='/tmp')
+
+
+def close_runtime(owner):
+    path = Path(owner.name)
+    endpoints_removed = not any(not p.is_dir() for p in path.rglob('*'))
+    owner.cleanup()
+    return {'path': str(path), 'endpoints_removed_before_cleanup': endpoints_removed, 'directory_removed': not path.exists()}
+
+
 class Session:
     def __init__(self, executable, directory, screen="1600x1000x24"):
         require(screen in ("1600x1000x24", "3000x2000x24"), 'unsupported private screen size')
@@ -277,7 +290,7 @@ def main():
     directory = (args.artifacts or root / 'target/smoke-input' / uuid.uuid4().hex).resolve()
     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
     result = {'ok': False, 'case': args.case, 'harness_sha256': digest(Path(__file__)), 'invocation': [sys.executable, *sys.argv], 'scope': 'private authenticated X11 host -> nested FluxWM -> owned Wayland input-probe; no host-session injection'}
-    session = compositor = fixture = None
+    session = compositor = fixture = runtime_owner = None
     logs = []
     started = time.monotonic()
     deadline = None
@@ -336,7 +349,7 @@ def main():
             session = Session(executable, directory)
             deadline = time.monotonic() + 30
             wait(session.ready)
-            runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
+            runtime_owner = short_runtime(); runtime = Path(runtime_owner.name)
             environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime))
             name = 'fluxwm-input-' + uuid.uuid4().hex[:12]
             ready = directory / 'ready.json'
@@ -436,6 +449,9 @@ def main():
                 try: process.wait(timeout=2)
                 except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=2)
         if session is not None: session.close()
+        if runtime_owner is not None:
+            result['runtime_cleanup'] = close_runtime(runtime_owner)
+            result['ok'] &= all(result['runtime_cleanup'][k] for k in ['endpoints_removed_before_cleanup', 'directory_removed'])
         for log in logs: log.close()
         result['elapsed_seconds'] = time.monotonic() - started
         result['responses'] = responses

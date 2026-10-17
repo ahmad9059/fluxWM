@@ -9,7 +9,7 @@ import sys
 import time
 import uuid
 
-from smoke_input import Session, prepare_xvfb
+from smoke_input import Session, prepare_xvfb, short_runtime, close_runtime
 from smoke_nested import require, sha256, write_json
 
 
@@ -26,7 +26,7 @@ def main():
     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
     parent = dict(os.environ)
     result = {'ok': False, 'scope': 'owned authenticated X11 software-rendered nested suites; no host input injection', 'harness_sha256': sha256(Path(__file__)), 'suites': []}
-    session = process = None
+    session = process = runtime_owner = None
     try:
         executable, verification = prepare_xvfb(args.bundle, directory)
         result['package'] = verification
@@ -40,7 +40,7 @@ def main():
             time.sleep(.01)
         require(Path('/tmp/.X' + str(session.number) + '-lock').read_text().strip() == str(session.server.pid), 'private display lock PID mismatch')
         require(os.getpgid(session.server.pid) == session.server.pid, 'private server session ownership mismatch')
-        runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
+        runtime_owner = short_runtime(); runtime = Path(runtime_owner.name)
         environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime))
         result['private_server_pid'] = session.server.pid
         result['private_display'] = session.display
@@ -72,6 +72,9 @@ def main():
             result['authority_removed'] = not session.auth.exists()
             result['server_reaped'] = session.server.poll() is not None
             result['x_socket_removed'] = not Path('/tmp/.X11-unix/X' + str(session.number)).exists()
+        if runtime_owner is not None:
+            result['runtime_cleanup'] = close_runtime(runtime_owner)
+            result['ok'] &= all(result['runtime_cleanup'][k] for k in ['endpoints_removed_before_cleanup', 'directory_removed'])
         result['parent_environment_unchanged'] = parent == dict(os.environ)
         write_json(directory / 'result.json', result)
     print(json.dumps({'ok': result['ok'], 'artifacts': str(directory), 'error': result.get('error')}))
