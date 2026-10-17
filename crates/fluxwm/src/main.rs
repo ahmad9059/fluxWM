@@ -3,6 +3,7 @@
 mod actions;
 mod grabs;
 mod handlers;
+mod health;
 mod input;
 mod ipc;
 mod scene;

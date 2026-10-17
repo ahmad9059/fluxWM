@@ -98,6 +98,10 @@ struct State {
     clip_child_motions: u32,
     pointer_focus_surface: Option<wl_surface::WlSurface>,
     pointer_focus_xy: Option<(f64, f64)>,
+    health_mode: bool,
+    health_ignore: bool,
+    health_serials: Vec<u32>,
+    health_primary: Option<xdg_wm_base::XdgWmBase>,
 }
 impl State {
     fn new(start: Instant) -> Self {
@@ -142,6 +146,10 @@ impl State {
             clip_child_motions: 0,
             pointer_focus_surface: None,
             pointer_focus_xy: None,
+            health_mode: false,
+            health_ignore: false,
+            health_serials: Vec::new(),
+            health_primary: None,
         }
     }
     fn record(&mut self, event: Json) {
@@ -613,7 +621,7 @@ impl Dispatch<wl_registry::WlRegistry, ()> for State {
 }
 impl Dispatch<xdg_wm_base::XdgWmBase, ()> for State {
     fn event(
-        _: &mut Self,
+        state: &mut Self,
         wm: &xdg_wm_base::XdgWmBase,
         event: xdg_wm_base::Event,
         _: &(),
@@ -621,7 +629,25 @@ impl Dispatch<xdg_wm_base::XdgWmBase, ()> for State {
         _: &QueueHandle<Self>,
     ) {
         if let xdg_wm_base::Event::Ping { serial } = event {
-            wm.pong(serial);
+            let primary = state.health_primary.as_ref().or(state.wm.as_ref()) == Some(wm);
+            if state.health_mode {
+                state.record(
+                    json!({"ping":serial,"primary":primary,"wm_object":wm.id().protocol_id()}),
+                );
+                if primary {
+                    if state.health_serials.len() >= 1024 {
+                        state.error = Some("ping evidence limit exceeded".into());
+                        return;
+                    }
+                    state.health_serials.push(serial);
+                }
+            }
+            if !(state.health_ignore && primary) {
+                wm.pong(serial);
+                if state.health_mode {
+                    state.record(json!({"pong_sent":serial,"primary":primary}));
+                }
+            }
         }
     }
 }
@@ -1092,12 +1118,14 @@ fn run(timeout: Duration) -> Json {
 struct Diagnostics {
     socket: UnixStream,
     next_id: u32,
+    last_sequence: Option<u64>,
 }
 impl Diagnostics {
     fn new(path: &Path, deadline: Instant) -> Result<Self> {
         Ok(Self {
             socket: connect_stream(path, deadline)?,
             next_id: 0,
+            last_sequence: None,
         })
     }
     fn call(&mut self, method: &str, params: Json, deadline: Instant) -> Result<Json> {
@@ -1124,6 +1152,15 @@ impl Diagnostics {
         if response.get("id") != Some(&json!(id)) {
             return Err("diagnostics response identity mismatch".into());
         }
+        let sequence = response
+            .get("state_sequence")
+            .and_then(Json::as_str)
+            .and_then(|s| s.parse::<u64>().ok())
+            .ok_or("missing string state sequence")?;
+        if self.last_sequence.is_some_and(|old| sequence < old) {
+            return Err("IPC sequence regressed".into());
+        }
+        self.last_sequence = Some(sequence);
         response
             .get("result")
             .cloned()
@@ -2387,6 +2424,275 @@ fn input_probe(timeout: Duration) -> Json {
     evidence["events"] = json!(state.events);
     evidence
 }
+fn health_roundtrip(
+    connection: &Connection,
+    queue: &mut EventQueue<State>,
+    state: &mut State,
+    deadline: Instant,
+) -> Result<()> {
+    let sync = state.sync(connection, &queue.handle());
+    until(
+        connection,
+        queue,
+        state,
+        deadline,
+        "health roundtrip",
+        |s| s.last_sync >= sync,
+    )
+}
+fn health_registry(
+    connection: &Connection,
+    queue: &mut EventQueue<State>,
+    state: &mut State,
+    deadline: Instant,
+) -> Result<wl_registry::WlRegistry> {
+    let registry = connection.display().get_registry(&queue.handle(), ());
+    health_roundtrip(connection, queue, state, deadline)?;
+    health_roundtrip(connection, queue, state, deadline)?;
+    if state.wm.is_none() {
+        return Err("missing XDG shell".into());
+    }
+    Ok(registry)
+}
+fn health_destroy_windows(state: &mut State) {
+    for window in &mut state.windows {
+        window.toplevel.destroy();
+        window.xdg.destroy();
+        window.surface.destroy();
+        if let Some(buffer) = window.buffer.take() {
+            buffer.destroy();
+        }
+        window.destroyed = true;
+    }
+}
+fn shell_health(timeout: Duration, capacity: bool) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut evidence =
+        json!({"ok":false,"mode":if capacity {"shell-health-capacity"} else {"shell-health"}});
+    let mut state = State::new(start);
+    state.health_mode = !capacity;
+    state.health_ignore = !capacity;
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        let registry = health_registry(&connection, &mut queue, &mut state, deadline)?;
+        state.health_primary = state.wm.clone();
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit FLUXWM_SOCKET required")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let snapshot = diagnostics.call("diagnostics", json!({}), deadline)?;
+        if snapshot.get("shell_health").is_none() {
+            return Err("compositor has no shell health diagnostics".into());
+        }
+        let global = state
+            .globals
+            .iter()
+            .find(|g| g["interface"] == "xdg_wm_base")
+            .ok_or("XDG registry name missing")?;
+        let name = global["name"].as_u64().ok_or("invalid registry name")? as u32;
+        let version = global["version"]
+            .as_u64()
+            .ok_or("invalid shell version")?
+            .min(7) as u32;
+        if capacity {
+            let original = state.wm.as_ref().unwrap().clone();
+            let mut extra = Vec::<xdg_wm_base::XdgWmBase>::new();
+            for _ in 0..1025 {
+                extra.push(registry.bind(name, version, &qh, ()));
+            }
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            // Dispatch/flush the ping burst, then order the diagnostics after all
+            // pongs with an explicit display roundtrip.
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let capped = diagnostics.call("diagnostics", json!({}), deadline)?;
+            let health = &capped["shell_health"];
+            if health["capacity"] != json!(1024)
+                || health["clients"].as_array().map(Vec::len) != Some(1024)
+                || health["stats"]["capacity_rejections"] != json!(2)
+            {
+                return Err(format!("monitor capacity oracle failed: {health}"));
+            }
+            evidence["capacity_snapshot"] = capped;
+            state.wm = Some(extra.last().unwrap().clone());
+            let window = state.create(&qh, "health-unmonitored-overflow");
+            state.windows[window].surface.commit();
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "overflow configure",
+                |s| s.windows[window].configures > 0,
+            )?;
+            state.map(window, &qh)?;
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "overflow frame",
+                |s| s.windows[window].frames > 0,
+            )?;
+            let windows = diagnostics.call("windows.list", json!({}), deadline)?;
+            if windows["windows"][0]["responsiveness"]["status"] != "unmonitored" {
+                return Err(format!("overflow role claimed monitored: {windows}"));
+            }
+            evidence["overflow_window"] = windows;
+            health_destroy_windows(&mut state);
+            for wm in extra {
+                wm.destroy();
+            }
+            original.destroy();
+            state.wm = None;
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        } else {
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "initial real ping",
+                |s| !s.health_serials.is_empty(),
+            )?;
+            let serial = state.health_serials[0];
+            let wm = state.wm.as_ref().unwrap().clone();
+            // A second binding on this connection responds normally. Monitor
+            // ownership is xdg_wm_base resource, not just connection identity.
+            let extra: xdg_wm_base::XdgWmBase = registry.bind(name, version, &qh, ());
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            wm.pong(serial.wrapping_add(1));
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let before = diagnostics.call("diagnostics", json!({}), deadline)?;
+            let states = before["shell_health"]["clients"]
+                .as_array()
+                .ok_or("missing health clients")?;
+            if states.len() != 2
+                || !states.iter().any(|e| e["status"] == "waiting")
+                || !states.iter().any(|e| e["status"] == "responsive")
+                || before["shell_health"]["stats"]["pongs"] != json!(1)
+            {
+                return Err(format!(
+                    "wrong pong or shared binding ownership accepted: {before}"
+                ));
+            }
+            evidence["before_timeout"] = before.clone();
+            let before_sequence = diagnostics.last_sequence.unwrap();
+            evidence["before_timeout_sequence"] = json!(before_sequence);
+            observe_for(
+                &connection,
+                &mut queue,
+                &mut state,
+                Duration::from_millis(2200),
+                deadline,
+            )?;
+            let expired = diagnostics.call("diagnostics", json!({}), deadline)?;
+            if expired["shell_health"]["stats"]["timeouts"] != json!(1)
+                || expired["shell_health"]["stats"]["timer_fired"]
+                    .as_u64()
+                    .unwrap_or(0)
+                    < 1
+                || !expired["shell_health"]["clients"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|e| e["status"] == "unresponsive")
+                || expired["runtime"]["wayland_requests"] != before["runtime"]["wayland_requests"]
+            {
+                return Err(format!("silent timer expiry oracle failed: {expired}"));
+            }
+            if diagnostics.last_sequence.unwrap() <= before_sequence {
+                return Err("timeout did not advance IPC sequence".into());
+            }
+            evidence["expired_sequence"] = json!(diagnostics.last_sequence.unwrap());
+            evidence["expired"] = expired;
+            // A different binding remains usable while the first is timed out.
+            state.wm = Some(extra.clone());
+            let window = state.create(&qh, "health-responsive-sibling");
+            state.windows[window].surface.commit();
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "healthy sibling configure",
+                |s| s.windows[window].configures > 0,
+            )?;
+            state.map(window, &qh)?;
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "healthy sibling frame",
+                |s| s.windows[window].frames > 0,
+            )?;
+            state.wm = Some(wm.clone());
+            wm.pong(serial);
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let recovered = diagnostics.call("diagnostics", json!({}), deadline)?;
+            if recovered["shell_health"]["stats"]["recoveries"] != json!(1)
+                || recovered["shell_health"]["stats"]["pongs"] != json!(2)
+                || recovered["shell_health"]["clients"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|e| e["status"] != "responsive")
+            {
+                return Err(format!("late matching pong failed: {recovered}"));
+            }
+            evidence["recovered"] = recovered;
+            // A replay is ignored; the next periodic ping needs its new serial.
+            wm.pong(serial);
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let replay = diagnostics.call("diagnostics", json!({}), deadline)?;
+            if replay["shell_health"]["stats"]["pongs"] != json!(2) {
+                return Err("replayed pong accepted".into());
+            }
+            state.health_ignore = false;
+            observe_for(
+                &connection,
+                &mut queue,
+                &mut state,
+                Duration::from_millis(5200),
+                deadline,
+            )?;
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let periodic = diagnostics.call("diagnostics", json!({}), deadline)?;
+            if state.health_serials.len() != 2
+                || state.health_serials[0] == state.health_serials[1]
+                || periodic["shell_health"]["stats"]["pongs"]
+                    .as_u64()
+                    .unwrap_or(0)
+                    < 4
+                || periodic["shell_health"]["stats"]["timeouts"] != json!(1)
+            {
+                return Err(format!("periodic re-probe failed: {periodic}"));
+            }
+            evidence["periodic"] = periodic;
+            health_destroy_windows(&mut state);
+            extra.destroy();
+            wm.destroy();
+            state.wm = None;
+            health_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        }
+        let retired = diagnostics.call("diagnostics", json!({}), deadline)?;
+        if retired["shell_health"]["clients"] != json!([])
+            || retired["shell_health"]["timer_armed"] != false
+        {
+            return Err(format!("health resources/timer not retired: {retired}"));
+        }
+        evidence["retired"] = retired;
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["events"] = json!(state.events);
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence
+}
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     if let [mode, path] = args.as_slice()
@@ -2400,6 +2706,20 @@ fn main() {
         return;
     }
     let parsed = match args.as_slice() {
+        [mode] if mode == "shell-health" || mode == "shell-health-capacity" => {
+            Ok((mode.as_str(), Duration::from_millis(12000)))
+        }
+        [mode, flag, value]
+            if (mode == "shell-health" || mode == "shell-health-capacity")
+                && flag == "--timeout-ms" =>
+        {
+            value
+                .parse::<u64>()
+                .ok()
+                .filter(|n| (1..=15000).contains(n))
+                .map(|n| (mode.as_str(), Duration::from_millis(n)))
+                .ok_or("shell-health timeout must be 1..15000ms")
+        }
         [mode] if mode == "input-probe" => Ok((mode.as_str(), Duration::from_millis(10000))),
         [mode, flag, value] if mode == "input-probe" && flag == "--timeout-ms" => value
             .parse::<u64>()
@@ -2434,7 +2754,7 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip [--timeout-ms 1..5000]",
+            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
@@ -2444,6 +2764,8 @@ fn main() {
         Ok(("container-clip", timeout)) => container_clip(timeout),
         Ok(("popup-clip", timeout)) => popup_clip(timeout),
         Ok(("input-probe", timeout)) => input_probe(timeout),
+        Ok(("shell-health", timeout)) => shell_health(timeout, false),
+        Ok(("shell-health-capacity", timeout)) => shell_health(timeout, true),
         Ok((_, timeout)) => run(timeout),
         Err(error) => json!({"ok":false,"error":error}),
     };

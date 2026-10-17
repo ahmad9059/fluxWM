@@ -61,6 +61,8 @@ pub struct RuntimeStats {
 }
 
 pub struct Fluxwm {
+    pub health: crate::health::Monitor<Fluxwm>,
+    pub health_requested: bool,
     pub scene: Option<crate::scene::RuntimeScene>,
     pub windows: Arena<ManagedWindow>,
     pub sequence: u64,
@@ -109,7 +111,7 @@ pub struct Fluxwm {
 
 impl Fluxwm {
     pub fn new(
-        event_loop: &mut EventLoop<Self>,
+        event_loop: &mut EventLoop<'static, Self>,
         display: Display<Self>,
         socket: &str,
     ) -> Result<Self, Box<dyn std::error::Error>> {
@@ -180,6 +182,10 @@ impl Fluxwm {
         let loop_signal = event_loop.get_signal();
 
         Ok(Self {
+            health: crate::health::Monitor::new(&event_loop.handle(), |state| {
+                state.health_requested = true
+            }),
+            health_requested: false,
             scene: None,
             windows: Arena::new(),
             sequence: 0,
@@ -230,7 +236,7 @@ impl Fluxwm {
 
     fn init_wayland_listener(
         display: Display<Fluxwm>,
-        event_loop: &mut EventLoop<Self>,
+        event_loop: &mut EventLoop<'static, Self>,
         socket: &str,
     ) -> Result<OsString, Box<dyn std::error::Error>> {
         // The upstream helper unlinks preexisting endpoints. Refuse collisions,
@@ -698,6 +704,16 @@ impl Fluxwm {
         self.space.refresh();
         self.popups.cleanup();
         self.cleanup_popup_grab();
+        if std::mem::take(&mut self.health_requested) || self.shutdown_deadline.is_some() {
+            match self
+                .health
+                .poll(std::time::Instant::now(), self.shutdown_deadline.is_some())
+            {
+                Ok(true) => self.bump_sequence(),
+                Ok(false) => (),
+                Err(error) => self.fail(format!("shell health timer: {error}")),
+            }
+        }
         self.drive_ipc();
         self.cleanup_popup_grab();
         self.refresh_pointer_focus();

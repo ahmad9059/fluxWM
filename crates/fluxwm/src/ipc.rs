@@ -73,6 +73,7 @@ impl Fluxwm {
                 "backend":"nested", "subscriptions":false, "config_reload":false,
                 "actions":["focus","move","pan","resize","workspace-mode","close-window","spawn","quit"],
                 "secure_lock":false,"capture":false,"drag_and_drop":false,"native_session":false,"x11_clients":false,
+                "client_responsiveness":"xdg-shell-ping", "unresponsive_clients_killed":false,
                 "frame_clock":"virtual-60hz", "host_presentation_observed":false,
             })),
             Method::Windows => {
@@ -85,7 +86,7 @@ impl Fluxwm {
                             (bounded(data.title.as_deref().unwrap_or("")), bounded(data.app_id.as_deref().unwrap_or("")))
                         })
                     }).unwrap_or_default();
-                    json!({"id":id,"workspace":WorkspaceId::new(0,0),"mapped":item.mapped,"focused":self.layout.focused()==Some(id),"title":title,"app_id":app_id,"geometry":placements.iter().find(|p|p.window==id).map(|p|p.rect)})
+                    json!({"id":id,"workspace":WorkspaceId::new(0,0),"mapped":item.mapped,"focused":self.layout.focused()==Some(id),"title":title,"app_id":app_id,"responsiveness":item.window.toplevel().map(|t|self.health.for_client(&t.client())),"geometry":placements.iter().find(|p|p.window==id).map(|p|p.rect)})
                 }).collect();
                 Ok(json!({"windows":windows}))
             }
@@ -101,7 +102,7 @@ impl Fluxwm {
                 "Lua configuration is not integrated into the nested runtime",
             )),
             Method::Diagnostics => Ok(
-                json!({"runtime":self.stats,"live_roles":self.windows.len(),"mapped_windows":self.layout.len(),"owned_applications":self.spawned.len(),"pending_launches":self.pending_spawns,"launch_outcomes":self.launch_outcomes,"backend":"nested","production_ready":false}),
+                json!({"shell_health":self.health.diagnostics(),"runtime":self.stats,"live_roles":self.windows.len(),"mapped_windows":self.layout.len(),"owned_applications":self.spawned.len(),"pending_launches":self.pending_spawns,"launch_outcomes":self.launch_outcomes,"backend":"nested","production_ready":false}),
             ),
             Method::Action => request.action().and_then(|action| {
                 let spawning = matches!(action, flux_core::Action::Spawn { .. });

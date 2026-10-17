@@ -19,8 +19,8 @@ use smithay::{
     wayland::{
         compositor::with_states,
         shell::xdg::{
-            PopupSurface, PositionerState, ToplevelSurface, XdgShellHandler, XdgShellState,
-            XdgToplevelSurfaceData,
+            PopupSurface, PositionerState, ShellClient, ToplevelSurface, XdgShellHandler,
+            XdgShellState, XdgToplevelSurfaceData,
         },
     },
 };
@@ -33,6 +33,20 @@ use crate::{
 impl XdgShellHandler for Fluxwm {
     fn xdg_shell_state(&mut self) -> &mut XdgShellState {
         &mut self.xdg_shell_state
+    }
+
+    fn new_client(&mut self, client: ShellClient) {
+        self.health.add(client, std::time::Instant::now());
+        self.health_requested = true;
+    }
+    fn client_pong(&mut self, client: ShellClient) {
+        // Pinned Smithay invokes this only for its matching pending serial.
+        self.health.pong(&client, std::time::Instant::now());
+        self.health_requested = true;
+    }
+    fn client_destroyed(&mut self, client: ShellClient) {
+        self.health.remove(&client);
+        self.health_requested = true;
     }
 
     fn new_toplevel(&mut self, surface: ToplevelSurface) {
