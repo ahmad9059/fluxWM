@@ -53,7 +53,7 @@ def run_case(binary, fixture, directory, mode, parent, fixture_timeout_ms=12000)
     try:
         for name in ['compositor.stdout.log', 'compositor.stderr.log', 'fixture.stdout.log', 'fixture.stderr.log']:
             streams.append((directory / name).open('wb'))
-        command = [str(binary), '--socket', instance, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '18000']
+        command = [str(binary), '--no-config', '--socket', instance, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '18000']
         fixture_command = [str(fixture), mode, '--timeout-ms', str(fixture_timeout_ms)]
         write_json(directory / 'command.json', {'compositor': command, 'fixture': fixture_command})
         process = subprocess.Popen(command, env=parent, stdout=streams[0], stderr=streams[1], start_new_session=True)

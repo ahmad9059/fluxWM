@@ -95,7 +95,7 @@ class Runner:
         case_dir.mkdir()
         socket = "fluxsmoke-" + uuid.uuid4().hex[:24]
         ready, stats, image = (case_dir / n for n in ("ready.json", "stats.json", "first-map.ppm"))
-        command = [str(self.binary), "--backend", "nested", "--socket", socket,
+        command = [str(self.binary), "--backend", "nested", "--no-config", "--socket", socket,
                    "--exit-after-ms", str(milliseconds), "--ready-file", str(ready), "--stats-file", str(stats)]
         if screenshot:
             command += ["--screenshot", str(image)]

@@ -354,7 +354,7 @@ def main():
             name = 'fluxwm-input-' + uuid.uuid4().hex[:12]
             ready = directory / 'ready.json'
             for log_name in ('compositor.stdout', 'compositor.stderr', 'fixture.stdout', 'fixture.stderr'): logs.append((directory / log_name).open('wb'))
-            compositor = subprocess.Popen([str(directory / 'fluxwm'), '--socket', name, '--ready-file', str(ready), '--exit-after-ms', '18000'], env=environment, stdout=logs[0], stderr=logs[1], start_new_session=True)
+            compositor = subprocess.Popen([str(directory / 'fluxwm'), '--no-config', '--socket', name, '--ready-file', str(ready), '--exit-after-ms', '18000'], env=environment, stdout=logs[0], stderr=logs[1], start_new_session=True)
             wait(ready.exists, 8)
             publication = json.loads(ready.read_text()); require(publication['pid'] == compositor.pid, 'ready process mismatch'); ipc_path = Path(publication['ipc_socket'])
             result['private_display'] = {'display': session.display, 'server_pid': session.server.pid, 'authenticated': True, 'auth_path': str(session.auth), 'auth_mode': '0600', 'tcp_disabled': True}

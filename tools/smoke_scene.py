@@ -166,7 +166,7 @@ class Runner:
         endpoints = [self.runtime / socket, self.runtime / (socket + ".lock"), self.runtime / "fluxwm" / (socket + ".sock")]
         require(all(not path.exists() and not path.is_symlink() for path in endpoints), "unique endpoint collision")
         ready, stats, image = (directory / name for name in ("ready.json", "stats.json", "scene.ppm"))
-        command = [str(self.binary), "--backend", "nested", "--socket", socket, "--exit-after-ms", "6000", "--ready-file", str(ready), "--stats-file", str(stats)]
+        command = [str(self.binary), "--backend", "nested", "--no-config", "--socket", socket, "--exit-after-ms", "6000", "--ready-file", str(ready), "--stats-file", str(stats)]
         if mode in ("container-clip", "popup-clip"):
             command += ["--screenshot", str(image), "--screenshot-after-ms", "700"]
         command += ["--", str(self.fixture), mode, "--timeout-ms", "4500"]

@@ -43,7 +43,7 @@ def run_case(binary, directory, case, environment):
 
     try:
         with (directory / 'stdout.log').open('wb') as out, (directory / 'stderr.log').open('wb') as err:
-            command = [str(binary), '--socket', name, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '10000']
+            command = [str(binary), '--no-config', '--socket', name, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '10000']
             write_json(directory / 'command.json', {'argv': command, 'host_environment_saved': False})
             process = subprocess.Popen(command, env=environment, stdout=out, stderr=err, start_new_session=True)
             while not ready.exists():

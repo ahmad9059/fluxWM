@@ -13,7 +13,8 @@ struct Prepared {
     desired: Config,
     bindings: BindingSet,
 }
-// Retired tables, schema strings and layout storage are destroyed on the worker.
+// Retired schema/tables and replaced live-model storage are dropped on the worker.
+// Temporary layout clones in reconfigure/validation still drop on dispatch.
 struct Retired {
     _desired: Option<Config>,
     _bindings: Option<BindingSet>,
@@ -403,6 +404,64 @@ impl crate::Fluxwm {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn worker_publication_rejects_stale_and_closed_generations() {
+        let shared = Shared::default();
+        let (ping, _source) = calloop::ping::make_ping().unwrap();
+        shared.control.lock().unwrap().latest = 2;
+        publish(&shared, 1, Err("old evaluation"), &ping);
+        assert!(shared.control.lock().unwrap().completion.is_none());
+        publish(&shared, 2, Err("current evaluation"), &ping);
+        assert_eq!(
+            shared.control.lock().unwrap().completion.take().unwrap().0,
+            2
+        );
+        shared.control.lock().unwrap().closed = true;
+        publish(&shared, 2, Err("late evaluation"), &ping);
+        assert!(shared.control.lock().unwrap().completion.is_none());
+    }
+    #[test]
+    fn accepted_request_hides_prepared_generation_before_worker_observes_request() {
+        let shared = Arc::new(Shared::default());
+        {
+            let mut c = shared.control.lock().unwrap();
+            c.latest = 1;
+            c.completion = Some((
+                1,
+                Ok(Prepared {
+                    desired: Config::default(),
+                    bindings: BindingSet::default(),
+                }),
+            ));
+        }
+        // Deliberately park the owned worker until shutdown, making the exact
+        // request-before-worker-observation interval deterministic.
+        let observed = shared.clone();
+        let worker = std::thread::spawn(move || {
+            let mut c = observed.control.lock().unwrap();
+            while !c.closed {
+                c = observed.changed.wait(c).unwrap();
+            }
+        });
+        let mut config = RuntimeConfig {
+            source: "/unused".into(),
+            shared,
+            worker: Some(worker),
+            desired: None,
+            applied: None,
+            status: "pending",
+            last_error: None,
+        };
+        assert_eq!(config.request().unwrap(), 2);
+        assert!(config.completion().is_none());
+        {
+            let c = config.shared.control.lock().unwrap();
+            assert_eq!(c.pending.as_ref().unwrap().0, 2);
+            assert_eq!(c.completion.as_ref().unwrap().0, 1);
+        }
+        config.shutdown().unwrap();
+    }
+
     #[test]
     fn termination_seals_ready_config_publication() {
         const GUARD: &str = "FLUX_TEST_CONFIG_STOP_CHILD";

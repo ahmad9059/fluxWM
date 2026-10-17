@@ -80,7 +80,7 @@ def main():
                 collision.write_bytes(b'owned regression sentinel\n')
             before = collision.lstat()
             try:
-                completed = subprocess.run([str(binary), '--socket', name, '--exit-after-ms', '100'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=3)
+                completed = subprocess.run([str(binary), '--no-config', '--socket', name, '--exit-after-ms', '100'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=3)
                 after = collision.lstat()
                 require(completed.returncode != 0, 'existing socket/lock was accepted')
                 require((before.st_dev, before.st_ino) == (after.st_dev, after.st_ino), 'collision inode changed')
@@ -92,7 +92,7 @@ def main():
                 if collision.lstat().st_ino == before.st_ino:
                     collision.unlink()
         with (artifacts / 'stdout.log').open('wb') as out, (artifacts / 'stderr.log').open('wb') as err:
-            process = subprocess.Popen([str(binary), '--socket', name, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '20000'], stdout=out, stderr=err, env=parent, start_new_session=True)
+            process = subprocess.Popen([str(binary), '--no-config', '--socket', name, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '20000'], stdout=out, stderr=err, env=parent, start_new_session=True)
             wait_for(ready.exists)
             published = json.loads(ready.read_text())
             require(published['pid'] == process.pid, 'readiness PID mismatch')

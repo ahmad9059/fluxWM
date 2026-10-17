@@ -72,7 +72,7 @@ def run_case(executable, binary, fixture, directory, case):
         name = 'fluxfocus-' + uuid.uuid4().hex[:16]
         ready, stats = directory / 'ready.json', directory / 'stats.json'
         for filename in ['compositor.stdout.log', 'compositor.stderr.log', 'fixture.stdout.log', 'fixture.stderr.log']: logs.append((directory / filename).open('wb'))
-        command = [str(binary), '--socket', name, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '18000']
+        command = [str(binary), '--no-config', '--socket', name, '--ready-file', str(ready), '--stats-file', str(stats), '--exit-after-ms', '18000']
         write_json(directory / 'command.json', {'compositor': command, 'fixture': [str(fixture), 'input-probe', '--timeout-ms', '10000']})
         compositor = subprocess.Popen(command, env=environment, stdout=logs[0], stderr=logs[1], start_new_session=True)
         wait(ready.exists, 8)

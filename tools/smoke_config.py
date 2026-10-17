@@ -47,7 +47,7 @@ class Case:
         self.streams = []
         self.trace = []
         self.trace_bytes = 0
-        self.result = {'ok': False}
+        self.result = {'ok': False, 'case': directory.name}
         self.instance = 'fluxconfig-' + uuid.uuid4().hex[:12]
         self.config = directory / 'config.lua'
         self.marker = directory / 'forbidden-autostart'
@@ -294,9 +294,45 @@ def extra_case(binary, fixture, directory, environment, session, name):
                 require(snapshot['effective']['effective'] == good['effective']['effective'], 'path/layout failure changed effective config')
                 require(snapshot['workspaces'] == good['workspaces'], 'path/layout failure changed workspace')
                 require(snapshot['diagnostics']['keyboard_bindings'] == good['diagnostics']['keyboard_bindings'], 'path/layout failure changed bindings')
+            case.replace(lua(1024, 'strip'))
+            accepted = case.reload(); case.await_status('applied', accepted)
+            boundary = case.snapshot('gap1024'); assert_applied(boundary, accepted, 1024, 'strip')
+            case.replace(lua(1025, 'canvas'))
+            rejected = case.reload(); failed = case.await_status('failed', rejected)
+            require(failed['configuration']['last_error'] == 'layout.gaps exceeds the nested model limit of 1024', 'wrong1025 rejection boundary')
+            require(case.snapshot('gap1025')['effective']['effective'] == boundary['effective']['effective'], '1025 failure changed effective state')
             case.replace(lua(19, 'canvas'))
             requested = case.reload(); case.await_status('applied', requested)
             assert_applied(case.snapshot('path-recovered'), requested, 19, 'canvas')
+        elif name == 'geometry-rollback':
+            fixture_environment = dict(environment, WAYLAND_DISPLAY=case.instance, FLUXWM_SOCKET=str(case.ipc_path))
+            fixture_streams = [(case.directory / item).open('wb') for item in ['fixture.stdout.log', 'fixture.stderr.log']]
+            client = subprocess.Popen([str(fixture), 'config-geometry', '--timeout-ms', '10000'], env=fixture_environment,
+                                      stdout=fixture_streams[0], stderr=fixture_streams[1], start_new_session=True)
+            def wide():
+                require(client.poll() is None, 'wide geometry fixture exited before readiness')
+                windows = case.ipc('windows.list')['windows']
+                return windows if len(windows) == 1 and windows[0]['title'] == 'config-wide-ready' and windows[0]['mapped'] else None
+            before = case.wait(wide)
+            require(before[0]['geometry']['width'] == 999999984, 'fixture does not exercise aggregate extent boundary')
+            # gap13 succeeds with this member; gap32 is schema/model-range valid
+            # but invalidates its existing aggregate extent. No worker cap masks it.
+            case.replace(lua(32, 'canvas', route=True))
+            rejected = case.reload(); failed = case.await_status('failed', rejected)
+            require(failed['configuration']['last_error'] == 'configuration layout would invalidate live geometry', 'live geometry rollback was not reached')
+            require(failed['configuration']['applied_generation'] == initial, 'geometry failure published generation')
+            require(case.snapshot('geometry-rejected')['effective']['effective'] == good['effective']['effective'], 'geometry failure changed effective state')
+            after = case.ipc('windows.list')['windows']
+            for field in ['id', 'geometry', 'mapped', 'focused', 'workspace']:
+                require(after[0][field] == before[0][field], 'geometry rollback changed window ' + field)
+            case.result['before_windows'] = before; case.result['after_windows'] = after
+            case.replace(lua(8, 'strip'))
+            recovered = case.reload(); case.await_status('applied', recovered)
+            assert_applied(case.snapshot('geometry-recovered'), recovered, 8, 'strip')
+            case.wait(lambda: client.poll() is not None, 9)
+            report = json.loads((case.directory / 'fixture.stdout.log').read_text())
+            require(client.returncode == 0 and report.get('ok') is True and report['ready_frames'] >= 1, 'wide fixture failed')
+            case.result['fixture_report'] = report
         else:
             case.result['target'] = session.test(case.process.pid)
             inject('focus', focused=True)
@@ -328,10 +364,23 @@ def extra_case(binary, fixture, directory, environment, session, name):
                 time.sleep(.04)
             case.result['held_pending_samples'] = samples
             case.result['held_pending_ms'] = round((time.monotonic() - pending_start) * 1000, 2)
+            superseded = requested
+            case.replace(lua(37, 'strip', route=True))
+            requested = case.reload()
+            case.wait(lambda: case.configuration()['configuration']['prepared_generation'] == requested)
+            snapshot = case.snapshot('superseded-while-held')
+            require(snapshot['diagnostics']['configuration']['applied_generation'] == initial, 'superseded prepared generation applied during held input')
             inject('key', key='Alt_L', pressed=False)
             case.wait(lambda: seen('keyboard.key', key=56, state='released'))
-            case.await_status('applied', requested)
-            assert_applied(case.snapshot('after-release-applied'), requested, 31, 'strip', 4)
+            observed = []
+            def newest_applied():
+                config = case.configuration()['configuration']; observed.append(config)
+                require(config['applied_generation'] != superseded, 'superseded prepared generation was applied')
+                return config if config['status'] == 'applied' and config['applied_generation'] == requested else None
+            case.wait(newest_applied)
+            case.result['supersession_observations'] = observed
+            case.result['superseded_generation'] = superseded
+            assert_applied(case.snapshot('after-release-applied'), requested, 37, 'strip', 4)
             # Execute a shortcut from the newly published user table. A is absent
             # from the three control bindings and no IPC action changes mode here.
             chord = len(events())
@@ -387,7 +436,7 @@ def main():
     parser.add_argument('--binary', type=Path, default=root / 'target/debug/fluxwm')
     parser.add_argument('--bundle', type=Path)
     parser.add_argument('--fixture', type=Path, help='defaults to fluxwm-fixture beside selected binary')
-    parser.add_argument('--case', choices=['all', 'baseline', 'input-publication', 'path-retention'], default='all')
+    parser.add_argument('--case', choices=['all', 'baseline', 'input-publication', 'path-retention', 'geometry-rollback'], default='all')
     parser.add_argument('--artifacts', type=Path)
     args = parser.parse_args()
     directory = (args.artifacts or root / 'target/smoke-config' / uuid.uuid4().hex).resolve()
@@ -400,7 +449,7 @@ def main():
               'harness_sha256': sha256(Path(__file__)), 'cases': []}
     session = runtime_owner = None
     try:
-        tested_paths = [binary, helper] + ([fixture] if args.case in ('all', 'input-publication') else [])
+        tested_paths = [binary, helper] + ([fixture] if args.case in ('all', 'input-publication', 'geometry-rollback') else [])
         result['executables'] = {str(path): sha256(path) for path in tested_paths}
         xvfb, result['package'] = prepare_xvfb(args.bundle, directory)
         session = Session(xvfb, directory, screen='3000x2000x24')
@@ -416,7 +465,7 @@ def main():
         if args.case in ('all', 'baseline'):
             result['cases'].extend(exercise(binary, directory, environment, name)
                                    for name in ['disabled', 'invalid-startup', 'reload-retention'])
-        for name in ['input-publication', 'path-retention']:
+        for name in ['input-publication', 'path-retention', 'geometry-rollback']:
             if args.case in ('all', name):
                 result['cases'].append(extra_case(binary, fixture, directory, environment, session, name))
         result['ok'] = all(case['ok'] for case in result['cases'])

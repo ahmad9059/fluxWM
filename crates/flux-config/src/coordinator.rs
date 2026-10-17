@@ -146,7 +146,7 @@ fn read_source_file(path: PathBuf) -> crate::Result<Vec<u8>> {
     // path replaced between admission and open cannot bypass the regular-file check.
     let file = OpenOptions::new()
         .read(true)
-        .custom_flags(libc::O_NONBLOCK | libc::O_CLOEXEC)
+        .custom_flags(libc::O_NONBLOCK | libc::O_CLOEXEC | libc::O_NOCTTY)
         .open(path)?;
     let metadata = file.metadata()?;
     if !metadata.is_file() {
