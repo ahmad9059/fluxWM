@@ -1,6 +1,10 @@
 # Independent Claude review
 
-## Latest shutdown review
+## Latest shell-health review
+
+[Claude’s shell-health report](shell-health-2026-10-17/claude-report.md) inspects frozen `a5b48da`. Its [disposition](shell-health-2026-10-17/disposition.md) accepts three timing/disconnect/redraw oracle gaps and records later author verification. All 927 frozen file hashes match. Actual trace records 11 calls; no tests were executed by Claude.
+
+## Shutdown review
 
 [Claude’s shutdown report](shutdown-2026-10-17/claude-report.md) inspects frozen `a903508`. The [disposition](shutdown-2026-10-17/disposition.md) records two accepted oracle gaps, author corrections and remaining teardown limits. All 632 input hashes match; actual tool trace records 14 calls. Claude executed no tests.
 

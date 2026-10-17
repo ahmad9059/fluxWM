@@ -1,0 +1,30 @@
+[
+  {
+    "original": "/tmp/fluxwm-health-first",
+    "server_pid_absent": true,
+    "authority_removed": true,
+    "x_socket_removed": true,
+    "parent_environment_unchanged": true
+  },
+  {
+    "original": "/tmp/fluxwm-health-second",
+    "server_pid_absent": true,
+    "authority_removed": true,
+    "x_socket_removed": true,
+    "parent_environment_unchanged": true
+  },
+  {
+    "original": "/tmp/fluxwm-health-reviewed",
+    "server_pid_absent": true,
+    "authority_removed": true,
+    "x_socket_removed": true,
+    "parent_environment_unchanged": true
+  },
+  {
+    "original": "/tmp/fluxwm-health-qualified",
+    "server_pid_absent": true,
+    "authority_removed": true,
+    "x_socket_removed": true,
+    "parent_environment_unchanged": true
+  }
+]

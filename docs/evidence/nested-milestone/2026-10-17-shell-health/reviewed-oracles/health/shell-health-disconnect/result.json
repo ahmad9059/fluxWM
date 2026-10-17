@@ -1,0 +1,138 @@
+{
+  "after_disconnect": {
+    "backend": "nested",
+    "launch_outcomes": [],
+    "live_roles": 0,
+    "mapped_windows": 0,
+    "owned_applications": 0,
+    "pending_launches": 0,
+    "production_ready": false,
+    "runtime": {
+      "compositions": 1,
+      "destroyed": 0,
+      "final_windows": 0,
+      "flush_cycles": 10,
+      "flush_retry_timer_fired": 0,
+      "flush_would_block": 0,
+      "frames_sent": 0,
+      "ipc_dispatches_after_shutdown": 0,
+      "ipc_drain_timed_out": 0,
+      "maps": 0,
+      "redraws": 1,
+      "submissions": 1,
+      "unmaps": 0,
+      "wayland_requests": 7
+    },
+    "shell_health": {
+      "capacity": 1024,
+      "clients": [],
+      "interval_ms": 5000,
+      "stats": {
+        "capacity_rejections": 0,
+        "pongs": 0,
+        "recoveries": 0,
+        "send_failures": 0,
+        "sent": 1,
+        "timeouts": 1,
+        "timer_fired": 1
+      },
+      "timeout_ms": 2000,
+      "timer_armed": false
+    }
+  },
+  "binary_sha256": "e7a8cb6577986ad6ad7bad343bdb40f82634cc2b3b9f81b29a28f9fa7687640b",
+  "compositor_exit": 0,
+  "disconnect_cleanup_ms": 0.4,
+  "elapsed_seconds": 2.337,
+  "endpoints_removed": true,
+  "executables_unchanged": true,
+  "fixture_exit": 0,
+  "fixture_report": {
+    "before_disconnect": {
+      "backend": "nested",
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 8,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 0,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 7
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "unresponsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 0,
+          "recoveries": 0,
+          "send_failures": 0,
+          "sent": 1,
+          "timeouts": 1,
+          "timer_fired": 1
+        },
+        "timeout_ms": 2000,
+        "timer_armed": false
+      }
+    },
+    "disconnect_with_live_binding": true,
+    "elapsed_ms": 2202,
+    "error": null,
+    "events": [
+      {
+        "at_ms": 0,
+        "event": {
+          "ping": 1,
+          "primary": true,
+          "wm_object": 4
+        }
+      }
+    ],
+    "explicit_shell_destroy_sent": false,
+    "mode": "shell-health-disconnect",
+    "ok": true
+  },
+  "fixture_sha256": "487246c1e268f164e798b9386802129174a103a357941b87cdfce17de5454a42",
+  "mode": "shell-health-disconnect",
+  "ok": true,
+  "quit": {
+    "accepted": true
+  },
+  "stats": {
+    "compositions": 1,
+    "destroyed": 0,
+    "final_windows": 0,
+    "flush_cycles": 14,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "frames_sent": 0,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_budget_ms": 250,
+    "ipc_drain_elapsed_ms": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 0,
+    "redraws": 1,
+    "submissions": 1,
+    "unmaps": 0,
+    "wayland_requests": 7
+  }
+}

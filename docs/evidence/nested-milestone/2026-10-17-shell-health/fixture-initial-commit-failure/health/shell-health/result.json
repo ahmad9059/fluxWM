@@ -1,0 +1,158 @@
+{
+  "binary_sha256": "f47041b0adf51d741e859e29848c14c95f57252b0814d17c9e24c8737937fe89",
+  "compositor_exit": 0,
+  "elapsed_seconds": 12.144,
+  "endpoints_removed": true,
+  "error": "real fixture oracle failed: healthy sibling configure: fixture deadline expired",
+  "executables_unchanged": true,
+  "fixture_exit": 1,
+  "fixture_report": {
+    "before_timeout": {
+      "backend": "nested",
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 10,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 0,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 13
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "waiting"
+          },
+          {
+            "id": "2",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 1,
+          "recoveries": 0,
+          "send_failures": 0,
+          "sent": 2,
+          "timeouts": 0,
+          "timer_fired": 0
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "elapsed_ms": 12005,
+    "error": "healthy sibling configure: fixture deadline expired",
+    "events": [
+      {
+        "at_ms": 0,
+        "event": {
+          "ping": 1,
+          "primary": true,
+          "wm_object": 4
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "ping": 2,
+          "primary": false,
+          "wm_object": 7
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "pong_sent": 2,
+          "primary": false
+        }
+      },
+      {
+        "at_ms": 2203,
+        "event": {
+          "create": 0,
+          "name": "health-responsive-sibling"
+        }
+      },
+      {
+        "at_ms": 5001,
+        "event": {
+          "ping": 3,
+          "primary": true,
+          "wm_object": 7
+        }
+      }
+    ],
+    "expired": {
+      "backend": "nested",
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 12,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "frames_sent": 0,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 13
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "unresponsive"
+          },
+          {
+            "id": "2",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 1,
+          "recoveries": 0,
+          "send_failures": 0,
+          "sent": 2,
+          "timeouts": 1,
+          "timer_fired": 1
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "mode": "shell-health",
+    "ok": false
+  },
+  "fixture_sha256": "49ea02144b7694ac82f98111513d993d572babbf87fc06c29e0186e9dc79db10",
+  "mode": "shell-health",
+  "ok": false
+}

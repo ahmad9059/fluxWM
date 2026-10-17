@@ -1,0 +1,99 @@
+{
+  "reviewed_commit": "a5b48da6f9872c31d25c552caef2d1ca1c2a169b",
+  "final_implementation_commit": "8939758e20fb38308bbbc31c937bc64ee31a4533",
+  "runtime_implementation_commit": "a5b48da",
+  "later_changes": "Fixture unit initializers and strengthened timing/render/disconnect oracles; no later production monitor edits; final harness explicitly bounds total cleanup observation including IPC wait",
+  "distinct_tests": 122,
+  "raw_pass_sum": 125,
+  "filtered_nested_process_repeats": 3,
+  "binary_sha256": "e7a8cb6577986ad6ad7bad343bdb40f82634cc2b3b9f81b29a28f9fa7687640b",
+  "fixture_sha256": "967cbffb9b9f60d7f69b7e572261287084fad25b41b4a4cfdd273c6682608dd2",
+  "lockfile_sha256": "178ca789a8185f772e39e53f013ac536f7724148f4c55cf740554b87576675dd",
+  "author_patch_sha256": "d9489ea68033d87aa8ed7e410a5f0d373dbcd52334764721a5f661e25a2bd054",
+  "commands": [
+    {
+      "command": "cargo test --workspace --all-targets",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build -p fluxwm -p fluxwm-fixture",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m py_compile tools/smoke_health.py tools/smoke_private.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/check_docs.py --report /tmp/fluxwm-health-docs-final.json",
+      "exit_code": 0
+    }
+  ],
+  "origins": [
+    {
+      "original": "/tmp/fluxwm-health-first",
+      "archive": "fixture-initial-commit-failure"
+    },
+    {
+      "original": "/tmp/fluxwm-health-first/health",
+      "archive": "fixture-initial-commit-failure/health"
+    },
+    {
+      "original": "/tmp/fluxwm-health-second",
+      "archive": "initial-after-fixture-fix"
+    },
+    {
+      "original": "/tmp/fluxwm-health-second/health",
+      "archive": "initial-after-fixture-fix/health"
+    },
+    {
+      "original": "/tmp/fluxwm-health-reviewed",
+      "archive": "reviewed-oracles"
+    },
+    {
+      "original": "/tmp/fluxwm-health-reviewed/health",
+      "archive": "reviewed-oracles/health"
+    }
+  ],
+  "limits": [
+    "Local populated-cache checks, no clean-install or hosted CI result",
+    "Private authenticated X11 software-rendered virtual output; no native/physical presentation claim",
+    "Monitor cap is not a whole-client/Wayland quota or fairness qualification",
+    "Pong measures shell event responsiveness, not application or frame progress",
+    "Local timing windows are regression tolerances, not worst-case production latency guarantees",
+    "Only allowlisted public wrapper/input files archived; no authority/keyring/cache or full environment",
+    "Large images retained locally via summary hashes, not copied",
+    "Claude source-only review; later author oracles not independently re-reviewed"
+  ],
+  "runtime_invocations": [
+    {
+      "command": "python3 tools/smoke_private.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --suites scene nested shutdown ipc health --artifacts /tmp/fluxwm-health-qualified",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_input.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --case scene-pan --artifacts /tmp/fluxwm-health-qualified-input-pan",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_input.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --case held-motion --artifacts /tmp/fluxwm-health-qualified-input-motion",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_private.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --suites health --artifacts /tmp/fluxwm-health-cleanup-bound-final",
+      "exit_code": 0
+    }
+  ],
+  "final_public_artifacts": "qualified, input-pan, input-motion",
+  "full_regression_source": "16319a8113d9af75640c7499abd7f882b827c06e"
+}

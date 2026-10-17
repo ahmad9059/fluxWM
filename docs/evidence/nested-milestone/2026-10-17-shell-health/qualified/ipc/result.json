@@ -1,0 +1,470 @@
+{
+  "binary_sha256": "e7a8cb6577986ad6ad7bad343bdb40f82634cc2b3b9f81b29a28f9fa7687640b",
+  "binary_sha256_after": "e7a8cb6577986ad6ad7bad343bdb40f82634cc2b3b9f81b29a28f9fa7687640b",
+  "child_absent_after_shutdown": true,
+  "ok": true,
+  "responses": [
+    {
+      "id": "0",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "1",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "2",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "3",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "4",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "5",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "6",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "7",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "8",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "9",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "10",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "11",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "12",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "13",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "14",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "15",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "16",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "52da3b3a66784e43be43513689937524",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "0",
+      "version": 1
+    },
+    {
+      "id": "fdbe2a7a849d43c8be3a552e0d56f938",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "1",
+      "version": 1
+    },
+    {
+      "error": {
+        "code": "unsupported_version",
+        "message": "only IPC version 1 is supported"
+      },
+      "id": "63e86e6a1fd14e399e005fd13d253b2d",
+      "state_sequence": "1",
+      "version": 1
+    },
+    {
+      "error": {
+        "code": "invalid_params",
+        "message": "unknown field `unexpected`, there are no fields"
+      },
+      "id": "3a2a01c629f64e1ea7d20491aec6f6ec",
+      "state_sequence": "1",
+      "version": 1
+    },
+    {
+      "id": "f5839ee1d9d644528cd9eb8ebd8df81c",
+      "result": {
+        "actions": [
+          "focus",
+          "move",
+          "pan",
+          "resize",
+          "workspace-mode",
+          "close-window",
+          "spawn",
+          "quit"
+        ],
+        "backend": "nested",
+        "capture": false,
+        "client_responsiveness": "xdg-shell-ping",
+        "config_reload": false,
+        "drag_and_drop": false,
+        "frame_clock": "virtual-60hz",
+        "host_presentation_observed": false,
+        "native_session": false,
+        "secure_lock": false,
+        "subscriptions": false,
+        "unresponsive_clients_killed": false,
+        "x11_clients": false
+      },
+      "state_sequence": "1",
+      "version": 1
+    },
+    {
+      "error": {
+        "code": "not_ready",
+        "message": "action is not implemented in the nested backend"
+      },
+      "id": "22a09b8816294cb89d076161306f8c45",
+      "state_sequence": "1",
+      "version": 1
+    },
+    {
+      "id": "e65fbfff007c4d31a3dc51db11ebb46c",
+      "result": {
+        "accepted": true,
+        "operation_id": "2"
+      },
+      "state_sequence": "2",
+      "version": 1
+    },
+    {
+      "id": "396bda608dff4b32adf357c7080737ed",
+      "result": {
+        "backend": "nested",
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 1,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 9,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "frames_sent": 0,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "2",
+      "version": 1
+    },
+    {
+      "id": "07bfb88fc5ae4d97909b27752a5342d5",
+      "result": {
+        "backend": "nested",
+        "launch_outcomes": [
+          {
+            "error": "No such file or directory (os error 2)",
+            "operation_id": "2",
+            "pid": null
+          }
+        ],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 13,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "frames_sent": 0,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "3",
+      "version": 1
+    },
+    {
+      "id": "48de3e1b63d1477cbf90d7e6ba1b693a",
+      "result": {
+        "accepted": true,
+        "operation_id": "4"
+      },
+      "state_sequence": "4",
+      "version": 1
+    },
+    {
+      "id": "106f3a66f2fe46c086f486349c56e2c7",
+      "result": {
+        "backend": "nested",
+        "launch_outcomes": [
+          {
+            "error": "No such file or directory (os error 2)",
+            "operation_id": "2",
+            "pid": null
+          },
+          {
+            "error": null,
+            "operation_id": "4",
+            "pid": 359920
+          }
+        ],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 1,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 18,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "frames_sent": 0,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "5",
+      "version": 1
+    },
+    {
+      "id": "15ece19a38624ae6a2e1e96839c4eab9",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "6",
+      "version": 1
+    }
+  ],
+  "scope": "nested IPC and direct application ownership; no native/session/descendant qualification",
+  "stats": {
+    "compositions": 1,
+    "destroyed": 0,
+    "final_windows": 0,
+    "flush_cycles": 21,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "frames_sent": 0,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_budget_ms": 250,
+    "ipc_drain_elapsed_ms": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 0,
+    "redraws": 2,
+    "submissions": 1,
+    "unmaps": 0,
+    "wayland_requests": 0
+  }
+}

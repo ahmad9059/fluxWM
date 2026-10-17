@@ -1,0 +1,21 @@
+# Shell responsiveness evidence
+
+Date: 2026-10-17. This bundle records author checks of the new nested [XDG responsiveness monitor](../../../development/shell-health.md). Exact source, commands, binary/fixture identities, final results and limits are recorded in [execution.json](execution.json). The [independent Claude review](../../../reviews/shell-health-2026-10-17/disposition.md) inspected `a5b48da`; later author oracle fixes are recorded separately. `sha256.json` covers the compact bundle except itself. No complete implementation phase is closed.
+
+The real `shell-health` case observes a wrong serial ignored while an independent binding on the same connection responds. The first binding times out without further Wayland requests during the observation interval, the monitor's timer fires, and IPC state sequence advances. A responsive sibling maps and gets a frame while the first is unresponsive. Its late matching pong recovers, a replay is ignored, and periodic probes use fresh serials before all bindings and their timer are retired.
+
+The real `shell-health-capacity` case creates 1,026 bindings, checks 1,024 monitored/two explicit rejections, maps an unmonitored overflow role and observes a frame, then retires all bindings and the timer. This is a cap on monitor records, not a Wayland object or client quota. It does not demonstrate hostile-client resource fairness, maximum RSS or acceptable full-capacity service latency.
+
+The first real run failed after valid serial/timeout observations because the fixture omitted an initial bufferless toplevel commit. That failed evidence is retained. The corrected fixture passes without changing runtime protocol behavior or relaxing configure/frame assertions. The full Rust test run also caught two fixture unit initializers missing the new diagnostics sequence field; those initializers were fixed before final checks.
+
+Only public files are archived from private display/input runs. Authority cookies, full environment dumps, copied executables and private package/keyring cache directories are excluded. Original image PPM paths and hashes remain in suite summaries; large images are not copied. Temporary original paths are not durable image hosting.
+
+Timeout diagnoses the XDG shell event path, including server scheduling and backpressure; it cannot establish that an application is crashed or producing frames. There is no automatic client kill. Native/suspend behavior, all callback ordering/destruction races, serial wrap, global admission/resource fairness and full production gates remain open in the [runtime findings](../../../development/runtime-findings.md).
+
+**122 distinct Rust tests pass** (125 raw passing reports include three filtered process-fixture repeats). Build, Clippy and rustdoc with warnings denied, formatting, Python syntax and documentation checks pass on this machine with populated caches. No hosted CI or clean-install result is claimed.
+
+`qualified/` passes five actual suites sequentially on the owned authenticated private display: scene, nested lifecycle/pixels, bounded shutdown, IPC and all three health cases. `input-pan/` and `input-motion/` repeat the held-button focus regressions with the new periodic monitor. `cleanup-bound-final/` reruns health after explicitly including IPC observation wait in the 500 ms cleanup assertion. All endpoint, authority and owned-server cleanup checks pass.
+
+`reviewed-oracles/` records the first strengthened run: still waiting/no timeout at 1.8 s, no primary re-probe at 4.7 s, unchanged virtual render counters across timeout and late recovery, 1,024 actual pings/pongs at the monitor cap, and a fixture process exit with a live timed-out binding and no timer. Cleanup was observed in 0.4 ms locally. The final source repeats those assertions; timings are regression observations, not production bounds.
+
+The independent report identified three medium test/documentation gaps and no high/medium source bug in the inspected monitor. It did not inspect all compositor code or execute tests. The author dispositions, later patch, exact frozen input hashes and actual tool trace distinguish reviewer conclusions from execution. `pinned-source-checks.json` additionally verifies the author-inspected Smithay ping/pong code matches the compiled checkout at the pinned commit.

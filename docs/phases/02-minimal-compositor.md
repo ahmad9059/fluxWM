@@ -43,3 +43,7 @@ Use the [production blocker register](../13-production-audit.md) and [review dec
 Retain [ordering contracts](../14-state-machines.md), [resources/trust](../17-resource-security.md), [desktop integration](../16-integration-contracts.md), [typed implementation contracts](../20-implementation-contracts.md) and the [window-state matrix](../22-window-state-matrix.md). Substage closure evidence for shared blockers is listed in the blocker register. Numeric limits require qualification.
 
 B16 design in this phase reserves authenticated host/sandbox context classification and privileged-operation filtering before registering sensitive globals. Implement and qualify wp-security-context-v1 in phase 7 before claiming tagged sandbox isolation. Untagged sandbox processes remain within the documented host-trust limitation.
+
+## Partial implementation evidence
+
+The [nested runtime](../development/runtime.md), [shared composed scene](../development/runtime-scene.md), [IPC quit drain](../development/shutdown-smoke.md), and [shell responsiveness monitor](../development/shell-health.md) record executable progress and exact remaining limits. Responsiveness now has real ping/serial/timeout/recovery/disconnect/capacity tests; this does not close task 3’s configure transaction work, the complete input/resource matrix, toolkit compatibility or this phase’s exit gate. Historical phase status remains planned until its full gate is proven.

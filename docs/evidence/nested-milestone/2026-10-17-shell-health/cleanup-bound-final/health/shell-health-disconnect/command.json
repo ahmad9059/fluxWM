@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxhealth-98276368379449b7",
+    "--ready-file",
+    "/tmp/fluxwm-health-cleanup-bound-final/health/shell-health-disconnect/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-health-cleanup-bound-final/health/shell-health-disconnect/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "shell-health-disconnect",
+    "--timeout-ms",
+    "12000"
+  ]
+}

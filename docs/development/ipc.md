@@ -120,3 +120,5 @@ These tests do not establish whole-compositor calloop registration correctness, 
 ## Quit drain boundary
 
 The nested runtime uses `poll_controlled` and `Dispatch::Drain` to queue the quit response before globally ending further dispatch. Only already-queued replies drain, with an absolute 250 ms deadline; pipeline frames after quit are discarded without execution or a reply. `begin_drain` supports external shutdown initiation and cannot extend an existing deadline. Drain readiness has no listener/read interests. `drain_state` exposes remaining userspace bytes, and `drain_timed_out` counts abandoned pending frames. Kernel acceptance is not peer receipt. Read the [shutdown contract and real regression harness](shutdown-smoke.md) for exact scope and remaining teardown limits.
+
+`windows.list` includes per-binding `responsiveness`; `diagnostics.shell_health` supplies bounded probe states, fixed development timing policy and counters. [Shell-health documentation](shell-health.md) explains unmonitored overflow, sequence advancement and the distinction between ping response and application frame progress.

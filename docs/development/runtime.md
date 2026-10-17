@@ -68,3 +68,5 @@ See [runtime findings and remaining production gates](runtime-findings.md) for s
 The [latest independent runtime review and author disposition](../reviews/runtime-2026-10-17/disposition.md) preserve the frozen review, four medium findings, real pointer-feedback reproduction, later fixes and still-unqualified popup cases.
 
 [Popup lifetime coverage](popup-lifecycle-fixture.md) now includes real non-grabbing parent-unmap/role-destruction dismissal and invalid background grab denial. Authorized and nested grabs remain unqualified.
+
+The [XDG responsiveness monitor](shell-health.md) probes live shell bindings, reports waiting/unresponsive/recovered state, and leaves timed-out clients alive. Window and diagnostic queries expose its bounded records. Real protocol timing/disconnect tests qualify this nested path; full stalled-client policy and native/overload behavior remain open.

@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxwm-shutdown-5ef3075b48d3",
+    "--ready-file",
+    "/tmp/fluxwm-health-qualified/shutdown/slow-peer/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-health-qualified/shutdown/slow-peer/stats.json",
+    "--exit-after-ms",
+    "10000"
+  ],
+  "host_environment_saved": false
+}

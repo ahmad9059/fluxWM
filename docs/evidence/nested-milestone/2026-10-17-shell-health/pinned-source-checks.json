@@ -1,0 +1,15 @@
+{
+  "commit": "023b78b1c5a05ca512767cacc07efca55fae8be4",
+  "files": {
+    "src/wayland/shell/xdg/mod.rs": "214879d84c6c8b64237b8a8badce6b0c60b7c47ccde0e0b7a7bc30f45c61fe0b",
+    "src/wayland/shell/xdg/handlers/wm_base.rs": "2475839d1b47b33e6cccf6b0765ddaa1bbb547e2648210d671346871339d4e10"
+  },
+  "author_checked_paths": {
+    "send_ping": "mod.rs:1342\u20131362, checks existing pending serial/dead resource",
+    "valid_pong_callback": "handlers/wm_base.rs:78\u201390, clears/calls only when pending serial matches",
+    "destroyed_callback": "XdgShellHandler::client_destroyed contract plus actual live disconnect test"
+  },
+  "limits": "Local pinned source author checks; Claude did not inspect upstream.",
+  "compiled_checkout_commit": "023b78b1c5a05ca512767cacc07efca55fae8be4",
+  "compiled_checkout_hashes_match": true
+}

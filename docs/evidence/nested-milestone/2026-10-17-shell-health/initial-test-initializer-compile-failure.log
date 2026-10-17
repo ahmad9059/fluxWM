@@ -1,0 +1,17 @@
+   Compiling fluxwm-fixture v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm-fixture)
+   Compiling fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+error[E0063]: missing field `last_sequence` in initializer of `Diagnostics`
+    --> crates/fluxwm-fixture/src/main.rs:2827:31
+     |
+2827 |         let mut diagnostics = Diagnostics {
+     |                               ^^^^^^^^^^^ missing `last_sequence`
+
+error[E0063]: missing field `last_sequence` in initializer of `Diagnostics`
+    --> crates/fluxwm-fixture/src/main.rs:2840:31
+     |
+2840 |         let mut diagnostics = Diagnostics {
+     |                               ^^^^^^^^^^^ missing `last_sequence`
+
+For more information about this error, try `rustc --explain E0063`.
+error: could not compile `fluxwm-fixture` (bin "fluxwm-fixture" test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
