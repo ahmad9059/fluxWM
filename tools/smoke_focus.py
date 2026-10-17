@@ -259,6 +259,7 @@ def main():
     parser.add_argument('--fixture', type=Path, default=root / 'target/debug/fluxwm-fixture')
     parser.add_argument('--bundle', type=Path)
     parser.add_argument('--artifacts', type=Path)
+    parser.add_argument('--case', choices=['all', 'keyboard', 'pointer', 'popup'], default='all')
     args = parser.parse_args()
     directory = (args.artifacts or root / 'target/smoke-focus' / uuid.uuid4().hex).resolve()
     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
@@ -269,7 +270,8 @@ def main():
         digest = sha256(source); shutil.copyfile(source, directory / name); (directory / name).chmod(0o700)
         require(digest == sha256(source) == sha256(directory / name), 'executable changed during snapshot')
         identities[name] = digest
-    cases = [run_case(executable, directory / 'fluxwm', directory / 'fixture', directory / case, case) for case in ['keyboard', 'pointer', 'popup']]
+    names = ['keyboard', 'pointer', 'popup'] if args.case == 'all' else [args.case]
+    cases = [run_case(executable, directory / 'fluxwm', directory / 'fixture', directory / case, case) for case in names]
     result = {'ok': all(case['ok'] for case in cases), 'cases': cases, 'package': verification, 'executables': identities,
               'harness_sha256': source_hashes['harness'], 'private_helper_sha256': source_hashes['helper'],
               'test_sources_unchanged': source_hashes == {'harness': sha256(Path(__file__)), 'helper': sha256(root / 'tools/smoke_input.py')},
