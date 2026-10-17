@@ -38,6 +38,8 @@ def main():
         while not session.ready():
             require(session.server.poll() is None and time.monotonic() < deadline, 'private server readiness failed')
             time.sleep(.01)
+        require(Path('/tmp/.X' + str(session.number) + '-lock').read_text().strip() == str(session.server.pid), 'private display lock PID mismatch')
+        require(os.getpgid(session.server.pid) == session.server.pid, 'private server session ownership mismatch')
         runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
         environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime))
         result['private_server_pid'] = session.server.pid
