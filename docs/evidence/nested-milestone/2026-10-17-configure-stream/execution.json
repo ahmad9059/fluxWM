@@ -69,6 +69,10 @@
     {
       "command": "python3 tools/check_docs.py --report target/configure-docs-final.json",
       "exit_code": 0
+    },
+    {
+      "command": "python3 tools/check_docs.py --report target/configure-docs-sealed.json",
+      "exit_code": 0
     }
   ],
   "environment_checks": [
@@ -122,5 +126,12 @@
   "retry_baseline_binary_sha256": "2ba330539a92984976b4d16391ad5b4339a284d4209529da516b747a24fc3f29",
   "retained_review_commit": "0dba143c54bd5a3aba051870ca2976dce9c0e570",
   "retained_followup_commit": "6435fcbe0a75fa477e37fac92cba2ebb4be76e18",
-  "audit_date_note": "Series began 2026-10-17; continuation crossed midnight Asia/Karachi into 2026-10-18; review process timestamps preserved."
+  "audit_date_note": "Series began 2026-10-17; continuation crossed midnight Asia/Karachi into 2026-10-18; review process timestamps preserved.",
+  "validation_scope_note": {
+    "git_diff_whitespace": {
+      "command": "git diff --check a26292e HEAD -- . ':(exclude)docs/evidence/nested-milestone/2026-10-17-configure-stream/tests.log'",
+      "exit_code": 0,
+      "exception": "Raw cargo console tests.log retains original trailing spaces and EOF blank line. The unfiltered staged whitespace check reported these; no original console bytes were altered. Source and other artifact whitespace check passes."
+    }
+  }
 }
