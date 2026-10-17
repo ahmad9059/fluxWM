@@ -243,3 +243,90 @@ fn limits_and_action_validation_apply_to_direct_rust_callers_too() {
     invalid.action = Action::Spawn { argv: vec![] };
     assert!(BindingSet::compile(&[invalid], &keymap, UnmappedPolicy::Reject).is_err());
 }
+
+#[test]
+fn modifier_and_group_triggers_are_not_misreported_as_reachable() {
+    let keymap = map("us");
+    let mut state = xkb::State::new(&keymap);
+    state.update_key(xkb::Keycode::new(64), xkb::KeyDirection::Down); // Alt_L
+    assert!(state.mod_name_is_active(xkb::MOD_NAME_ALT, xkb::STATE_MODS_EFFECTIVE));
+    assert!(!state.mod_name_is_active(xkb::MOD_NAME_SHIFT, xkb::STATE_MODS_EFFECTIVE));
+    state.update_key(xkb::Keycode::new(50), xkb::KeyDirection::Down); // Shift_L
+    assert!(state.mod_name_is_active(xkb::MOD_NAME_SHIFT, xkb::STATE_MODS_EFFECTIVE));
+    for trigger in [
+        binding("Alt+Shift_L"),
+        code(42, &["Alt"]),
+        binding("Caps_Lock"),
+    ] {
+        let error = BindingSet::compile(&[trigger], &keymap, UnmappedPolicy::Reject)
+            .unwrap_err()
+            .to_string();
+        assert!(error.contains("transition policy"), "{error}");
+    }
+}
+
+#[test]
+fn a_state_changing_shifted_action_is_checked_at_the_configured_modifier_level() {
+    let context = xkb::Context::new(xkb::CONTEXT_NO_ENVIRONMENT_NAMES);
+    let keymap = xkb::Keymap::new_from_string(
+        &context,
+        r#"
+xkb_keymap {
+ xkb_keycodes { include "evdev+aliases(qwerty)" };
+ xkb_types { include "complete" };
+ xkb_compatibility { include "complete" };
+ xkb_symbols { include "pc+us+inet(evdev)"
+  key <AC01> { type="TWO_LEVEL", symbols[Group1]=[a,A],
+   actions[Group1]=[NoAction(),SetMods(modifiers=Control)] };
+ };
+};
+"#
+        .into(),
+        xkb::KEYMAP_FORMAT_TEXT_V1,
+        xkb::KEYMAP_COMPILE_NO_FLAGS,
+    )
+    .unwrap();
+    let mut state = xkb::State::new(&keymap);
+    let shift = 1 << keymap.mod_get_index(xkb::MOD_NAME_SHIFT);
+    let alt = 1 << keymap.mod_get_index(xkb::MOD_NAME_ALT);
+    state.update_mask(shift | alt, 0, 0, 0, 0, 0);
+    assert!(!state.mod_name_is_active(xkb::MOD_NAME_CTRL, xkb::STATE_MODS_EFFECTIVE));
+    state.update_key(xkb::Keycode::new(38), xkb::KeyDirection::Down);
+    assert!(state.mod_name_is_active(xkb::MOD_NAME_CTRL, xkb::STATE_MODS_EFFECTIVE));
+    let error = BindingSet::compile(&[binding("Alt+Shift+a")], &keymap, UnmappedPolicy::Reject)
+        .unwrap_err()
+        .to_string();
+    assert!(error.contains("transition policy"), "{error}");
+}
+
+#[test]
+fn group_changing_actions_cannot_change_their_own_lookup_group() {
+    let context = xkb::Context::new(xkb::CONTEXT_NO_ENVIRONMENT_NAMES);
+    let keymap = xkb::Keymap::new_from_string(
+        &context,
+        r#"
+xkb_keymap {
+ xkb_keycodes { include "evdev+aliases(qwerty)" };
+ xkb_types { include "complete" };
+ xkb_compatibility { include "complete" };
+ xkb_symbols { include "pc+us+ru:2+inet(evdev)"
+  key <FK01> { symbols[Group1]=[F1], actions[Group1]=[SetGroup(group=+1)] };
+ };
+};
+"#
+        .into(),
+        xkb::KEYMAP_FORMAT_TEXT_V1,
+        xkb::KEYMAP_COMPILE_NO_FLAGS,
+    )
+    .unwrap();
+    let mut state = xkb::State::new(&keymap);
+    assert_eq!(state.key_get_layout(xkb::Keycode::new(38)), 0);
+    state.update_key(xkb::Keycode::new(67), xkb::KeyDirection::Down);
+    assert_eq!(state.key_get_layout(xkb::Keycode::new(38)), 1);
+    assert!(
+        BindingSet::compile(&[binding("F1")], &keymap, UnmappedPolicy::Reject)
+            .unwrap_err()
+            .to_string()
+            .contains("transition policy")
+    );
+}

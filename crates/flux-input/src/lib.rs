@@ -137,6 +137,7 @@ impl BindingSet {
         // custom keyboard may report a valid code with no XKB assignment.
         let mut reached: BTreeSet<_> = result.codes.values().copied().collect();
         let mut resolved = 0usize;
+        let mut probe = xkb::State::new(keymap);
         let chord_modifiers: BTreeSet<_> = result
             .codes
             .keys()
@@ -177,6 +178,47 @@ impl BindingSet {
                             return Err(fail(
                                 "binding expansion exceeds 65536 resolved chords".into(),
                             ));
+                        }
+                        // Smithay updates XKB before invoking the filter. Probe
+                        // this exact chord (including lock variants), since a
+                        // shifted level can have a different action from base.
+                        let bit = |name| 1u32.checked_shl(keymap.mod_get_index(name)).unwrap_or(0);
+                        let mut depressed = 0;
+                        for (active, name) in [
+                            (modifiers.ctrl, xkb::MOD_NAME_CTRL),
+                            (modifiers.alt, xkb::MOD_NAME_ALT),
+                            (modifiers.shift, xkb::MOD_NAME_SHIFT),
+                            (modifiers.logo, xkb::MOD_NAME_LOGO),
+                        ] {
+                            if active {
+                                let mask = bit(name);
+                                if mask == 0 {
+                                    return Err(fail(format!(
+                                        "bindings[{index}]: modifier {name} is absent from keymap"
+                                    )));
+                                }
+                                depressed |= mask;
+                            }
+                        }
+                        let caps = bit(xkb::MOD_NAME_CAPS);
+                        let num = bit(xkb::MOD_NAME_NUM);
+                        for locked in [0, caps, num, caps | num] {
+                            probe.update_mask(depressed, 0, locked, 0, 0, layout);
+                            let changed = probe.update_key(key, xkb::KeyDirection::Down)
+                                | probe.update_key(key, xkb::KeyDirection::Up);
+                            if changed
+                                & (xkb::STATE_MODS_DEPRESSED
+                                    | xkb::STATE_MODS_LATCHED
+                                    | xkb::STATE_MODS_LOCKED
+                                    | xkb::STATE_LAYOUT_DEPRESSED
+                                    | xkb::STATE_LAYOUT_LATCHED
+                                    | xkb::STATE_LAYOUT_LOCKED)
+                                != 0
+                            {
+                                return Err(fail(format!(
+                                    "bindings[{index}]: modifier/group-changing triggers require a transition policy"
+                                )));
+                            }
                         }
                     }
                 }
