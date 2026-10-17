@@ -1,0 +1,11 @@
+[package]
+name = "flux-process"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+flux-core.workspace = true
+libc.workspace = true
+calloop = "=0.14.5"
