@@ -1,0 +1,11 @@
+[package]
+name = "flux-ipc-audit-probe"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+flux-ipc = { path = "../../../crates/flux-ipc" }
+serde_json = "=1.0.154"

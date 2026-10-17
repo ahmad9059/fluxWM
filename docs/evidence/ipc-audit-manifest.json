@@ -1,0 +1,52 @@
+{
+  "audit_date": "2026-10-17",
+  "captured_utc": "2026-10-17T09:43:45.250728+00:00",
+  "source_revision": "d14957fc63487c139cb194ceb687231e2cf83a98",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28) (Arch Linux rust 1:1.99.0-1)",
+  "probe_command": "cargo run --locked --manifest-path docs/evidence/ipc-audit-probe/Cargo.toml --target-dir /tmp/flux-ipc-audit-target",
+  "test_command": "cargo test -p flux-ipc -p fluxctl",
+  "test_result": {
+    "passed": 12,
+    "failed": 0
+  },
+  "observations": [
+    {
+      "finding": "IPC-A01",
+      "classification": "observed",
+      "result": "write-half-close after a complete request dispatches zero requests and removes connection"
+    },
+    {
+      "finding": "IPC-A02",
+      "classification": "observed",
+      "result": "same-poll mutation response sequence 11 followed by validation error sequence 10"
+    },
+    {
+      "finding": "IPC-A03",
+      "classification": "observed",
+      "result": "encode accepts nested response that decode rejects"
+    },
+    {
+      "finding": "IPC-A11",
+      "classification": "observed",
+      "result": "empty config path passes Request::validate"
+    },
+    {
+      "finding": "IPC-A13",
+      "classification": "observed",
+      "result": "quit, lock, reload-config and close-window accept unexpected object fields in Request::validate"
+    }
+  ],
+  "sha256": {
+    "crates/flux-ipc/src/lib.rs": "e363bfdfe30b319cf44d15b2c42e5d4ff425fcae634d1dbe7cdfe939210896ab",
+    "crates/fluxctl/src/main.rs": "7c17dfef2588ee8782daac99b6e7bfb852791d1b1f3a39b319e1ee7c4493f0da",
+    "docs/08-desktop-security.md": "2cf0145cd28f7eff0f9a1c67841f886db8c82109d188241067c687d9246c204c",
+    "docs/17-resource-security.md": "8f41276ddaaed3800859a3f088deeed6b8adcee61bb0f3c23f02a7dcced58d5f",
+    "docs/19-release-operations.md": "b96f9aca463455fcc9a1d7d55267efd567cdd01df22f68cb5799e3aae2389fd4",
+    "docs/20-implementation-contracts.md": "d1db8ef2b4a3290f111f2e74e0309fba394a800f9799c92f29ae166a429f6239",
+    "docs/evidence/ipc-audit-probe/src/main.rs": "a8a42d645541d1fb4aa8e979073f98ed1ed3ccdbb58cad7e4838c2a73e519ec9",
+    "docs/evidence/ipc-audit-probe/Cargo.lock": "6b02c4af043ace14c7faf886f820a6ef8686fcc3879c6caee4f5388b1fc40f32",
+    "docs/evidence/ipc-audit-probe-output.txt": "08dff6185195b82833d745fb26a8bc66c98b76666f21f328a7782d936aa43641",
+    "docs/evidence/ipc-audit-tests.txt": "19e9deb9ea20af25d6497f673702110ccbabfe8058f03fc08946c55e08c0e192",
+    "crates/flux-core/src/lib.rs": "859b9d02f961c054ba84288b30317fbcea8a1907036e6940e32cb9134a64fede"
+  }
+}
