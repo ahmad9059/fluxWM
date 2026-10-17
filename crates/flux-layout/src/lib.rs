@@ -19,6 +19,10 @@ pub enum LayoutError {
     UnknownWindow,
     #[error("window size constraints conflict")]
     InvalidConstraints,
+    #[error("layout identity capacity exhausted")]
+    CapacityExceeded,
+    #[error("canvas group is not a live member")]
+    UnknownGroup,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -38,6 +42,40 @@ impl Default for SizeConstraints {
     }
 }
 impl SizeConstraints {
+    /// Adapt XDG per-axis constraints: zero means unconstrained. Negative values
+    /// and contradictory finite bounds are rejected rather than silently coerced.
+    pub fn from_xdg(min: (i32, i32), max: (i32, i32)) -> Result<Self, LayoutError> {
+        if [min.0, min.1, max.0, max.1].into_iter().any(|v| v < 0) {
+            return Err(LayoutError::InvalidConstraints);
+        }
+        let result = Self {
+            min: Size {
+                width: f64::from(min.0).max(1.0),
+                height: f64::from(min.1).max(1.0),
+            },
+            max: if max == (0, 0) {
+                None
+            } else {
+                Some(Size {
+                    width: if max.0 == 0 {
+                        MAX_COORD
+                    } else {
+                        f64::from(max.0).min(MAX_COORD)
+                    },
+                    height: if max.1 == 0 {
+                        MAX_COORD
+                    } else {
+                        f64::from(max.1).min(MAX_COORD)
+                    },
+                })
+            },
+        };
+        if result.valid() {
+            Ok(result)
+        } else {
+            Err(LayoutError::InvalidConstraints)
+        }
+    }
     fn valid(self) -> bool {
         valid_size(self.min)
             && self.max.is_none_or(|m| {
@@ -130,13 +168,37 @@ impl Camera {
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Placement {
+    /// World-space container clip. Render/input integration must intersect this
+    /// with output and surface input clips; target client sizes remain unchanged.
+    pub clip: Rect,
     pub window: WindowId,
     pub rect: Rect,
     pub visible: bool,
     pub focused: bool,
 }
+/// Workspace-local stable group identity. Never reused during a Layout's lifetime.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct GroupId(u64);
+impl GroupId {
+    pub fn get(self) -> u64 {
+        self.0
+    }
+}
+#[derive(Debug, Clone, Copy)]
+struct CanvasGroup {
+    rect: Rect,
+    scroll_y: f64,
+}
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct GroupGeometry {
+    pub id: GroupId,
+    pub rect: Rect,
+    pub active: WindowId,
+    pub mode: ColumnMode,
+}
 #[derive(Debug, Clone)]
 struct Column {
+    group: GroupId,
     windows: Vec<WindowId>,
     width: WidthPolicy,
     mode: ColumnMode,
@@ -152,7 +214,10 @@ pub struct Layout {
     mode: LayoutMode,
     columns: Vec<Column>,
     members: BTreeMap<WindowId, SizeConstraints>,
-    canvas: BTreeMap<WindowId, Rect>,
+    canvas: BTreeMap<GroupId, CanvasGroup>,
+    next_group: u64,
+    canvas_initialized: bool,
+    strip_converted: bool,
     focus: Option<WindowId>,
     history: Vec<WindowId>,
     strip_camera: Camera,
@@ -170,6 +235,9 @@ impl Layout {
             columns: Vec::new(),
             members: BTreeMap::new(),
             canvas: BTreeMap::new(),
+            next_group: 0,
+            canvas_initialized: false,
+            strip_converted: false,
             focus: None,
             history: Vec::new(),
             strip_camera: Camera::default(),
@@ -262,10 +330,16 @@ impl Layout {
             .focus
             .and_then(|w| self.column_index(w))
             .map_or(self.columns.len(), |i| i + 1);
+        let group = GroupId(self.next_group);
+        self.next_group = self
+            .next_group
+            .checked_add(1)
+            .ok_or(LayoutError::CapacityExceeded)?;
         self.members.insert(window, constraints);
         self.columns.insert(
             index,
             Column {
+                group,
                 windows: vec![window],
                 width: WidthPolicy::ViewportFraction(0.5),
                 mode: ColumnMode::Stack,
@@ -277,12 +351,21 @@ impl Layout {
         let strip = self.strip_placements();
         let mut rect = strip.iter().find(|p| p.window == window).unwrap().rect;
         if self.mode == LayoutMode::Canvas
-            && let Some(r) = self.focus.and_then(|w| self.canvas.get(&w))
+            && let Some(r) = self
+                .focus
+                .and_then(|w| self.canvas.get(&self.group_for(w)?))
+                .map(|g| g.rect)
         {
             rect.x = (r.x + r.width + self.gap).min(MAX_COORD - rect.width);
             rect.y = r.y;
         }
-        self.canvas.insert(window, rect);
+        self.canvas.insert(
+            group,
+            CanvasGroup {
+                rect,
+                scroll_y: 0.0,
+            },
+        );
         if activate || self.focus.is_none() {
             self.focus_window(window)
         } else {
@@ -311,12 +394,12 @@ impl Layout {
         let c = &mut self.columns[index];
         c.windows.retain(|w| *w != window);
         if c.windows.is_empty() {
+            self.canvas.remove(&c.group);
             self.columns.remove(index);
         } else if c.active == window {
             c.active = c.windows[0];
         }
         self.members.remove(&window);
-        self.canvas.remove(&window);
         self.history.retain(|w| *w != window);
         if self.focus == Some(window) {
             self.focus = None;
@@ -377,41 +460,125 @@ impl Layout {
         )?;
         let value = self.members.get_mut(&window).unwrap();
         *value = constraints;
-        let rect = self.canvas.get_mut(&window).unwrap();
-        let size = constraints.size(Size {
-            width: rect.width,
-            height: rect.height,
-        });
-        rect.width = size.width;
-        rect.height = size.height;
+        let group = self.columns[self.column_index(window).unwrap()].group;
+        let minimum = self
+            .columns
+            .iter()
+            .find(|c| c.group == group)
+            .unwrap()
+            .windows
+            .iter()
+            .map(|w| self.members[w].min.width)
+            .fold(1.0, f64::max);
+        self.canvas.get_mut(&group).unwrap().rect.width =
+            self.canvas[&group].rect.width.max(minimum);
         self.reveal_focus();
         Ok(())
     }
+    /// First conversion seeds from current strip geometry. First return sorts groups
+    /// by x, y, stable identity; subsequent transitions restore saved cameras/geometry.
     pub fn set_mode(&mut self, mode: LayoutMode) {
+        if self.mode == mode {
+            return;
+        }
+        let mut reveal = false;
+        if mode == LayoutMode::Canvas && !self.canvas_initialized {
+            let mut x = 0.0;
+            for c in &self.columns {
+                let width = c
+                    .windows
+                    .iter()
+                    .map(|w| self.members[w].min.width)
+                    .fold(c.width.resolve(self.viewport.width).unwrap(), f64::max);
+                self.canvas.insert(
+                    c.group,
+                    CanvasGroup {
+                        rect: Rect {
+                            x,
+                            y: 0.0,
+                            width,
+                            height: self.viewport.height,
+                        },
+                        scroll_y: c.scroll_y,
+                    },
+                );
+                x += width + self.gap;
+            }
+            self.canvas_initialized = true;
+            reveal = true;
+        } else if mode == LayoutMode::Strip && !self.strip_converted {
+            self.columns.sort_by(|a, b| {
+                let a_rect = self.canvas[&a.group].rect;
+                let b_rect = self.canvas[&b.group].rect;
+                a_rect
+                    .x
+                    .total_cmp(&b_rect.x)
+                    .then(a_rect.y.total_cmp(&b_rect.y))
+                    .then(a.group.cmp(&b.group))
+            });
+            self.strip_converted = true;
+            reveal = true;
+        }
         self.mode = mode;
-        self.reveal_focus();
+        if reveal {
+            self.reveal_focus();
+        }
     }
+    pub fn group_for(&self, window: WindowId) -> Option<GroupId> {
+        self.column_index(window).map(|i| self.columns[i].group)
+    }
+    pub fn canvas_groups(&self) -> Vec<GroupGeometry> {
+        self.columns
+            .iter()
+            .map(|c| GroupGeometry {
+                id: c.group,
+                rect: self.canvas[&c.group].rect,
+                active: c.active,
+                mode: c.mode,
+            })
+            .collect()
+    }
+    /// Resize/move the containing canvas group. Client minima are retained by its
+    /// local layout; a member maximum constrains the member rather than its group.
     pub fn set_canvas_rect(&mut self, window: WindowId, rect: Rect) -> Result<(), LayoutError> {
+        let group = self.group_for(window).ok_or(LayoutError::UnknownWindow)?;
+        self.set_canvas_group_rect(group, rect)
+    }
+    pub fn set_canvas_group_rect(
+        &mut self,
+        group: GroupId,
+        mut rect: Rect,
+    ) -> Result<(), LayoutError> {
         if !valid_rect(rect) {
             return Err(LayoutError::InvalidGeometry);
         }
-        let constraints = *self
-            .members
-            .get(&window)
-            .ok_or(LayoutError::UnknownWindow)?;
-        let size = constraints.size(Size {
-            width: rect.width,
-            height: rect.height,
-        });
-        self.canvas.insert(
-            window,
-            Rect {
-                width: size.width,
-                height: size.height,
-                ..rect
-            },
-        );
+        let column = self
+            .columns
+            .iter()
+            .find(|c| c.group == group)
+            .ok_or(LayoutError::UnknownGroup)?;
+        rect.width = column
+            .windows
+            .iter()
+            .map(|w| self.members[w].min.width)
+            .fold(rect.width, f64::max);
+        self.canvas.get_mut(&group).unwrap().rect = rect;
         Ok(())
+    }
+    /// Explicit tab navigation; hidden tabs are excluded from spatial focus.
+    pub fn cycle_tab(&mut self, forward: bool) -> Result<Option<WindowId>, LayoutError> {
+        let Some(window) = self.focus else {
+            return Ok(None);
+        };
+        let c = &self.columns[self.column_index(window).unwrap()];
+        let index = c.windows.iter().position(|w| *w == window).unwrap();
+        let next = c.windows[if forward {
+            (index + 1) % c.windows.len()
+        } else {
+            (index + c.windows.len() - 1) % c.windows.len()
+        }];
+        self.focus_window(next)?;
+        Ok(Some(next))
     }
     pub fn pan(&mut self, dx: f64, dy: f64) -> Result<(), LayoutError> {
         let old = self.camera();
@@ -476,7 +643,13 @@ impl Layout {
         }
         self.columns[dest].windows.push(window);
         self.columns[dest].active = window;
+        let dest_group = self.columns[dest].group;
+        self.canvas.get_mut(&dest_group).unwrap().rect.width = self.canvas[&dest_group]
+            .rect
+            .width
+            .max(self.members[&window].min.width);
         if self.columns[source].windows.is_empty() {
+            self.canvas.remove(&self.columns[source].group);
             self.columns.remove(source);
         }
         self.focus_window(window)
@@ -489,7 +662,7 @@ impl Layout {
             return Ok(());
         };
         if self.mode == LayoutMode::Canvas {
-            let r = self.canvas[&window];
+            let r = self.canvas[&self.group_for(window).unwrap()].rect;
             self.set_canvas_rect(
                 window,
                 Rect {
@@ -510,7 +683,7 @@ impl Layout {
             return Ok(());
         };
         if self.mode == LayoutMode::Canvas {
-            let mut r = self.canvas[&window];
+            let mut r = self.canvas[&self.group_for(window).unwrap()].rect;
             match direction {
                 Direction::Left => r.x -= 32.0,
                 Direction::Right => r.x += 32.0,
@@ -572,22 +745,41 @@ impl Layout {
                 Direction::Down => c.windows.get(j + 1).copied(),
             }
         } else {
-            let origin = center(self.canvas[&window]);
-            self.canvas
+            let placements = self.placements();
+            let source = placements.iter().find(|p| p.window == window).unwrap().rect;
+            let origin = center(source);
+            placements
                 .iter()
-                .filter(|(id, _)| **id != window)
-                .filter_map(|(id, r)| {
-                    let p = center(*r);
-                    let (forward, perpendicular) = match direction {
-                        Direction::Left => (origin.x - p.x, (origin.y - p.y).abs()),
-                        Direction::Right => (p.x - origin.x, (origin.y - p.y).abs()),
-                        Direction::Up => (origin.y - p.y, (origin.x - p.x).abs()),
-                        Direction::Down => (p.y - origin.y, (origin.x - p.x).abs()),
+                .filter(|p| p.window != window && p.visible)
+                .filter_map(|candidate| {
+                    let r = candidate.rect;
+                    let p = center(r);
+                    let (forward, perpendicular, edge) = match direction {
+                        Direction::Left => (
+                            origin.x - p.x,
+                            (origin.y - p.y).abs(),
+                            source.x - (r.x + r.width),
+                        ),
+                        Direction::Right => (
+                            p.x - origin.x,
+                            (origin.y - p.y).abs(),
+                            r.x - (source.x + source.width),
+                        ),
+                        Direction::Up => (
+                            origin.y - p.y,
+                            (origin.x - p.x).abs(),
+                            source.y - (r.y + r.height),
+                        ),
+                        Direction::Down => (
+                            p.y - origin.y,
+                            (origin.x - p.x).abs(),
+                            r.y - (source.y + source.height),
+                        ),
                     };
                     (forward > 0.0).then_some((
-                        *id,
+                        candidate.window,
                         perpendicular / forward,
-                        forward,
+                        edge.max(0.0),
                         perpendicular,
                     ))
                 })
@@ -609,24 +801,64 @@ impl Layout {
         if self.mode == LayoutMode::Strip {
             self.strip_placements()
         } else {
-            self.canvas
-                .iter()
-                .map(|(window, rect)| Placement {
-                    window: *window,
-                    rect: *rect,
-                    visible: true,
-                    focused: self.focus == Some(*window),
-                })
-                .collect()
+            let mut placements = Vec::with_capacity(self.len());
+            for c in &self.columns {
+                let group = self.canvas[&c.group];
+                let heights = allocate_heights(
+                    &c.windows,
+                    &self.members,
+                    (group.rect.height - self.gap * c.windows.len().saturating_sub(1) as f64)
+                        .max(0.0),
+                );
+                let mut y = group.rect.y - group.scroll_y;
+                for (i, window) in c.windows.iter().enumerate() {
+                    let size = self.members[window].size(Size {
+                        width: group.rect.width,
+                        height: if c.mode == ColumnMode::Tabs {
+                            group.rect.height
+                        } else {
+                            heights[i]
+                        },
+                    });
+                    placements.push(Placement {
+                        clip: group.rect,
+                        window: *window,
+                        rect: Rect {
+                            x: group.rect.x,
+                            y: if c.mode == ColumnMode::Tabs {
+                                group.rect.y
+                            } else {
+                                y
+                            },
+                            width: size.width,
+                            height: size.height,
+                        },
+                        visible: c.mode == ColumnMode::Stack || *window == c.active,
+                        focused: self.focus == Some(*window),
+                    });
+                    y += size.height + self.gap;
+                }
+            }
+            placements
         }
     }
+
     pub fn visible_placements(&self) -> Vec<Placement> {
         let camera = self.camera();
         self.placements()
             .into_iter()
             .filter(|p| {
                 let r = camera.rect_to_view(p.rect);
+                let clip = camera.rect_to_view(p.clip);
                 p.visible
+                    && r.x < clip.x + clip.width
+                    && r.y < clip.y + clip.height
+                    && r.x + r.width > clip.x
+                    && r.y + r.height > clip.y
+                    && clip.x < self.viewport.width
+                    && clip.y < self.viewport.height
+                    && clip.x + clip.width > 0.0
+                    && clip.y + clip.height > 0.0
                     && r.x < self.viewport.width
                     && r.y < self.viewport.height
                     && r.x + r.width > 0.0
@@ -648,12 +880,12 @@ impl Layout {
         let placements = self.placements();
         placements
             .iter()
-            .find(|p| p.focused && p.visible && p.rect.contains(world))
+            .find(|p| p.focused && p.visible && p.rect.contains(world) && p.clip.contains(world))
             .or_else(|| {
                 placements
                     .iter()
                     .rev()
-                    .find(|p| p.visible && p.rect.contains(world))
+                    .find(|p| p.visible && p.rect.contains(world) && p.clip.contains(world))
             })
             .map(|p| p.window)
     }
@@ -670,16 +902,18 @@ impl Layout {
         };
         let camera = shift(self.canvas_camera.position);
         if !valid_point(camera)
-            || self
-                .canvas
-                .values()
-                .any(|r| !valid_point(shift(Point { x: r.x, y: r.y })))
+            || self.canvas.values().any(|g| {
+                !valid_point(shift(Point {
+                    x: g.rect.x,
+                    y: g.rect.y,
+                }))
+            })
         {
             return Err(LayoutError::InvalidGeometry);
         }
-        for r in self.canvas.values_mut() {
-            r.x -= delta.x;
-            r.y -= delta.y;
+        for group in self.canvas.values_mut() {
+            group.rect.x -= delta.x;
+            group.rect.y -= delta.y;
         }
         self.canvas_camera.position = camera;
         Ok(())
@@ -693,10 +927,23 @@ impl Layout {
         let unique: BTreeSet<_> = flattened.iter().copied().collect();
         if unique.len() != flattened.len()
             || unique.len() != self.members.len()
-            || unique
+            || unique.iter().any(|w| !self.members.contains_key(w))
+            || self.canvas.len() != self.columns.len()
+            || self
+                .columns
                 .iter()
-                .any(|w| !self.members.contains_key(w) || !self.canvas.contains_key(w))
-            || self.canvas.len() != unique.len()
+                .map(|c| c.group)
+                .collect::<BTreeSet<_>>()
+                .len()
+                != self.columns.len()
+            || self
+                .columns
+                .iter()
+                .any(|c| !self.canvas.contains_key(&c.group))
+            || self
+                .canvas
+                .values()
+                .any(|g| !valid_rect(g.rect) || !g.scroll_y.is_finite() || g.scroll_y < 0.0)
         {
             return Err("membership mismatch");
         }
@@ -715,11 +962,12 @@ impl Layout {
         if self.history.iter().any(|w| !unique.contains(w)) {
             return Err("stale focus history");
         }
-        if self
-            .placements()
-            .iter()
-            .any(|p| !p.rect.is_valid() || p.rect.width < MIN_SIZE || p.rect.height < MIN_SIZE)
-        {
+        if self.placements().iter().any(|p| {
+            !p.rect.is_valid()
+                || !p.clip.is_valid()
+                || p.rect.width < MIN_SIZE
+                || p.rect.height < MIN_SIZE
+        }) {
             return Err("invalid placement");
         }
         for c in [self.strip_camera, self.canvas_camera] {
@@ -797,6 +1045,12 @@ impl Layout {
                     },
                 });
                 result.push(Placement {
+                    clip: Rect {
+                        x,
+                        y: 0.0,
+                        width,
+                        height: self.viewport.height,
+                    },
                     window: *window,
                     rect: Rect {
                         x,
@@ -828,6 +1082,23 @@ impl Layout {
                     .rect;
                 let shift = reveal_axis(0.0, self.viewport.height, rect.y, rect.height);
                 self.columns[i].scroll_y = (self.columns[i].scroll_y + shift).max(0.0);
+            }
+        }
+        if self.mode == LayoutMode::Canvas {
+            let i = self.column_index(window).unwrap();
+            let group = self.columns[i].group;
+            if self.columns[i].mode == ColumnMode::Stack {
+                let rect = self
+                    .placements()
+                    .into_iter()
+                    .find(|p| p.window == window)
+                    .unwrap()
+                    .rect;
+                let container = self.canvas[&group].rect;
+                let shift =
+                    reveal_axis(container.y, container.height, rect.y, rect.height) - container.y;
+                let scroll = self.canvas[&group].scroll_y;
+                self.canvas.get_mut(&group).unwrap().scroll_y = (scroll + shift).max(0.0);
             }
         }
         let rect = self
@@ -1197,6 +1468,251 @@ mod tests {
         l.remove(id(0)).unwrap();
         assert_eq!(l.focused(), Some(id(3)));
         assert_eq!(l.camera().rect_to_view(rect(&l, id(3))), anchor);
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn first_canvas_conversion_uses_current_columns_not_insertion_snapshot() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.set_column_width(id(0), WidthPolicy::Fixed(700.0))
+            .unwrap();
+        l.move_focused(Direction::Left).unwrap();
+        let expected = l.placements();
+        l.set_mode(LayoutMode::Canvas);
+        for p in l.placements() {
+            assert_eq!(
+                p.rect,
+                expected.iter().find(|v| v.window == p.window).unwrap().rect
+            );
+        }
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn first_return_sorts_xy_stable_groups_then_preserves_independent_states() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.set_mode(LayoutMode::Canvas);
+        for (n, x, y) in [(0, 100.0, 50.0), (1, -100.0, 50.0), (2, -100.0, 0.0)] {
+            l.set_canvas_rect(
+                id(n),
+                Rect {
+                    x,
+                    y,
+                    width: 500.0,
+                    height: 600.0,
+                },
+            )
+            .unwrap();
+        }
+        let canvas = l.placements();
+        l.set_mode(LayoutMode::Strip);
+        assert_eq!(
+            l.placements().iter().map(|p| p.window).collect::<Vec<_>>(),
+            vec![id(2), id(1), id(0)]
+        );
+        l.pan(21.0, 0.0).unwrap();
+        let strip_camera = l.camera();
+        let strip = l.placements();
+        l.set_mode(LayoutMode::Canvas);
+        // Scene order follows canonical groups; world rectangles remain independent.
+        for p in l.placements() {
+            assert_eq!(
+                p.rect,
+                canvas.iter().find(|v| v.window == p.window).unwrap().rect
+            );
+        }
+        l.pan(-80.0, 70.0).unwrap();
+        let canvas_camera = l.camera();
+        l.set_canvas_rect(
+            id(0),
+            Rect {
+                x: -1000.0,
+                y: 0.0,
+                width: 500.0,
+                height: 600.0,
+            },
+        )
+        .unwrap();
+        l.set_mode(LayoutMode::Strip);
+        assert_eq!(l.placements(), strip);
+        assert_eq!(l.camera(), strip_camera);
+        l.set_mode(LayoutMode::Canvas);
+        assert_eq!(l.camera(), canvas_camera);
+    }
+    #[test]
+    fn stable_groups_preserve_tabs_membership_and_destroy_only_when_empty() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        let target = l.group_for(id(0)).unwrap();
+        let removed = l.group_for(id(1)).unwrap();
+        l.join_column(id(1), id(0)).unwrap();
+        assert_eq!(l.group_for(id(1)), Some(target));
+        assert_eq!(l.canvas_groups().len(), 2);
+        assert_eq!(
+            l.set_canvas_group_rect(
+                removed,
+                Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 10.0,
+                    height: 10.0
+                }
+            ),
+            Err(LayoutError::UnknownGroup)
+        );
+        l.set_column_mode(id(0), ColumnMode::Tabs).unwrap();
+        l.focus_window(id(0)).unwrap();
+        l.set_mode(LayoutMode::Canvas);
+        assert!(
+            !l.placements()
+                .iter()
+                .find(|p| p.window == id(1))
+                .unwrap()
+                .visible
+        );
+        assert_eq!(l.focus_direction(Direction::Down).unwrap(), None);
+        assert_eq!(l.cycle_tab(true).unwrap(), Some(id(1)));
+        l.set_canvas_rect(
+            id(1),
+            Rect {
+                x: -500.0,
+                y: 200.0,
+                width: 400.0,
+                height: 300.0,
+            },
+        )
+        .unwrap();
+        assert_eq!(rect(&l, id(0)).x, -500.0);
+        l.remove(id(0)).unwrap();
+        assert_eq!(l.group_for(id(1)), Some(target));
+        l.remove(id(1)).unwrap();
+        assert!(l.canvas_groups().iter().all(|g| g.id != target));
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn directional_scoring_uses_projected_edge_distance_after_angle() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.set_mode(LayoutMode::Canvas);
+        for (n, x, width) in [(0, 0.0, 100.0), (1, 200.0, 100.0), (2, 150.0, 1000.0)] {
+            l.set_canvas_rect(
+                id(n),
+                Rect {
+                    x,
+                    y: 0.0,
+                    width,
+                    height: 100.0,
+                },
+            )
+            .unwrap();
+        }
+        l.focus_window(id(0)).unwrap();
+        // Candidate 2 has a farther center but a nearer leading edge.
+        assert_eq!(l.focus_direction(Direction::Right).unwrap(), Some(id(2)));
+    }
+    #[test]
+    fn xdg_constraints_handle_each_unlimited_axis_and_reject_conflicts() {
+        let c = SizeConstraints::from_xdg((0, 20), (0, 500)).unwrap();
+        assert_eq!(
+            c.min,
+            Size {
+                width: 1.0,
+                height: 20.0
+            }
+        );
+        assert_eq!(
+            c.max.unwrap(),
+            Size {
+                width: MAX_COORD,
+                height: 500.0
+            }
+        );
+        assert_eq!(
+            SizeConstraints::from_xdg((0, 0), (300, 0))
+                .unwrap()
+                .max
+                .unwrap()
+                .height,
+            MAX_COORD
+        );
+        assert_eq!(
+            SizeConstraints::from_xdg((0, 0), (i32::MAX, i32::MAX))
+                .unwrap()
+                .max
+                .unwrap()
+                .width,
+            MAX_COORD
+        );
+        assert!(SizeConstraints::from_xdg((40, 0), (30, 0)).is_err());
+        assert!(SizeConstraints::from_xdg((-1, 0), (0, 0)).is_err());
+    }
+    #[test]
+    fn equal_canvas_positions_sort_by_stable_group_identity() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.move_focused(Direction::Left).unwrap();
+        l.move_focused(Direction::Left).unwrap();
+        l.set_mode(LayoutMode::Canvas);
+        for n in 0..3 {
+            l.set_canvas_rect(
+                id(n),
+                Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 500.0,
+                    height: 600.0,
+                },
+            )
+            .unwrap();
+        }
+        l.set_mode(LayoutMode::Strip);
+        assert_eq!(
+            l.placements().iter().map(|p| p.window).collect::<Vec<_>>(),
+            vec![id(0), id(1), id(2)]
+        );
+    }
+    #[test]
+    fn canvas_stack_focus_scrolls_local_content_and_picking_obeys_group_clip() {
+        let mut l = layout();
+        let c = SizeConstraints {
+            min: Size {
+                width: 1.0,
+                height: 250.0,
+            },
+            max: None,
+        };
+        for n in 0..3 {
+            l.insert(id(n), c).unwrap();
+        }
+        l.join_column(id(1), id(0)).unwrap();
+        l.join_column(id(2), id(0)).unwrap();
+        l.set_mode(LayoutMode::Canvas);
+        l.set_canvas_rect(
+            id(0),
+            Rect {
+                x: 100.0,
+                y: 100.0,
+                width: 500.0,
+                height: 300.0,
+            },
+        )
+        .unwrap();
+        l.focus_window(id(2)).unwrap();
+        assert_eq!(rect(&l, id(2)).y + rect(&l, id(2)).height, 400.0);
+        assert_eq!(l.hit_test(Point { x: 110.0, y: 90.0 }), None);
+        assert_eq!(l.hit_test(Point { x: 110.0, y: 200.0 }), Some(id(2)));
+        l.focus_window(id(0)).unwrap();
+        assert_eq!(rect(&l, id(0)).y, 100.0);
         assert_eq!(l.validate(), Ok(()));
     }
     #[test]
