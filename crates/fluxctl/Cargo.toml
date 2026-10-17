@@ -1,0 +1,10 @@
+[package]
+name = "fluxctl"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+flux-ipc = { path = "../flux-ipc" }
+serde_json.workspace = true
