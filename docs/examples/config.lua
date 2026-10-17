@@ -1,4 +1,4 @@
--- Proposed FluxWM schema v1. Documentation example; no parser exists yet.
+-- FluxWM schema v1 example; helper schema validation exists, compositor integration is incomplete.
 -- Pure Lua 5.4: evaluate once, return a table, compile actions into Rust.
 local mod = "Super"
 return {

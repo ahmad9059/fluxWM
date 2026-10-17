@@ -1,0 +1,55 @@
+{
+  "reviewed_commit": "c2abdb5",
+  "scope": "Author changes after frozen Claude review, not independently re-reviewed",
+  "changed_reviewed_files": {
+    "docs/06-lua.md": {
+      "reviewed_sha256": "f469e262e2a0fd380fab40f0caa388b3096e0bc41f76b14316f9b6927a0bca29",
+      "current_sha256": "d37d5533df5c96985a549e8200ea7cdfa9dcca9da94fe6c6538a129fa4aae5d9"
+    },
+    "docs/24-implementation-readiness-audit.md": {
+      "reviewed_sha256": "78956b668740d9de057487524155b4d6d92f497d328d26ca3cb25c922314eea5",
+      "current_sha256": "8b3af227be0e8be1597eb0b195314dafe94c573af324640eb8fa3742f3125840"
+    },
+    "docs/development/config.md": {
+      "reviewed_sha256": "535cbe39a3f1f2aed50fdddbd51bb8f1481aa98275a6706d6468c2bb038af14b",
+      "current_sha256": "bcf7ed18842a8b87fd6d15704f721e7ae274d3bad8a987b813dfbd1f6bfae14e"
+    },
+    "docs/development/ipc.md": {
+      "reviewed_sha256": "88f29051e5a00c650f26a0689acd1ae850f4c2aa046c2cd795ffff916f65eee8",
+      "current_sha256": "dd24d584f748ef75e6ddd56fa9f2b622b3af649f5381388d933afe932954cbbb"
+    },
+    "docs/examples/config.lua": {
+      "reviewed_sha256": "592653cb5028adcf020ea5f79f1cb827757118abfabeebdd8db96c2e49f9bb10",
+      "current_sha256": "e1096117f161e43ecdddb378253766ce31d583619f34c3c5d4c9bea6815fe11c"
+    },
+    "docs/reviews/README.md": {
+      "reviewed_sha256": "0e26ad73f6ea6bd3ddef8221d9c9e5da923617aade485a2127601a42221a9d27",
+      "current_sha256": "43c26be7a50e40b10f5f28e803aac3e3957bb4d53bd28ff861ee45dcfeeb8a4c"
+    }
+  },
+  "source_code_changed_after_review": false,
+  "new_administrative_review_files": [
+    "docs/reviews/claude-implementation-attempt-1-stderr.txt",
+    "docs/reviews/claude-implementation-attempt-1-stdout.txt",
+    "docs/reviews/claude-implementation-attempt-1.json",
+    "docs/reviews/claude-implementation-execution.json",
+    "docs/reviews/claude-implementation-result.json",
+    "docs/reviews/claude-implementation-stderr.txt",
+    "docs/reviews/claude-implementation.md",
+    "docs/reviews/implementation-disposition.md",
+    "docs/reviews/implementation-focused-prompt.txt",
+    "docs/reviews/implementation-frozen-check.json"
+  ],
+  "new_administrative_artifact_hashes": {
+    "docs/reviews/claude-implementation-attempt-1-stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/reviews/claude-implementation-attempt-1-stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/reviews/claude-implementation-attempt-1.json": "dc5d3f18f3b88ac7a31a0d7b6591900ec5df60e9b881daaeef61f7ed92a74577",
+    "docs/reviews/claude-implementation-execution.json": "ed6dc4afbd1cb9e3da7e0b15528983fd37516534c7b7959550b05a834ee0c974",
+    "docs/reviews/claude-implementation-result.json": "499e692768e935c012a4d73fdcf03c984ac72b1f57c5b599997b14cc1c4c91c4",
+    "docs/reviews/claude-implementation-stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/reviews/claude-implementation.md": "78d9d52fd6874a76c0a1a9a2c90b540a7454e7c904d4589e1eb4dce0de20a410",
+    "docs/reviews/implementation-disposition.md": "9f9b2df2550df37a99af787011a907c82451bbeea6d5428e99a0b436df981607",
+    "docs/reviews/implementation-focused-prompt.txt": "2e000ddb41370590f369ae627b3d7cdfd15de1dbf78ca1f855592af59952890a",
+    "docs/reviews/implementation-frozen-check.json": "e77e49e82c7bdea7dedc11298dc6717daf97031fb23b4b9b2e543b5ddff11946"
+  }
+}

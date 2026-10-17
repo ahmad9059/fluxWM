@@ -1,5 +1,11 @@
 # Independent Claude review
 
+## Current implementation audit
+
+[Claude Opus 5.5 report](claude-implementation.md) independently spot-checks frozen implementation snapshot `c2abdb5`. It broadly confirms the author audit and adds four medium findings, which remain open. Read the [disposition](implementation-disposition.md), [raw result](claude-implementation-result.json), [execution metadata](claude-implementation-execution.json), [prompt](implementation-focused-prompt.txt) and [frozen checks](implementation-frozen-check.json). Claude read source and author logs; it did not execute checks or certify production readiness. The first attempt timed out without a report and is recorded separately. Later author corrections are explicitly identified.
+
+## Historical design-only reviews
+
 The user requested independent Claude verification after the deeper audit. The locally installed Claude Code CLI completed a read/search/web-only review with no command/write tools, no permission denials, and no spawned subagents.
 
 - [Exact review prompt](claude-review-prompt.txt)

@@ -110,3 +110,7 @@ NUL is rejected in OS-facing strings. Raw table iteration never invokes Lua call
 The subprocess returns only normalized serializable data; regex compilation remains
 in the parent library. The compositor must atomically install a fully accepted snapshot
 and retain the last working generation on every error.
+
+## Embedding signal policy
+
+The supervisor writes to child pipes and relies on the normal Rust executable signal policy that ignores SIGPIPE, so a closed pipe becomes an I/O error. Embedders that change SIGPIPE disposition must provide an equivalent reviewed thread/signal policy. Do not change a host process's signal disposition implicitly from this library; qualify EPIPE behavior and cleanup in that embedding environment. This is source-derived integration guidance, not a tested guarantee for arbitrary non-Rust hosts.

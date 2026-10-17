@@ -1,0 +1,9 @@
+{
+  "snapshot_commit": "c2abdb5",
+  "hashed_files": 112,
+  "hash_mismatches": [],
+  "frozen_worktree_status": "",
+  "tracked_diff_exit_code": 0,
+  "passed": true,
+  "limit": "Manifest hashes selected inputs; clean tracked worktree comparison additionally checks the full committed snapshot. Claude did not recompute hashes."
+}

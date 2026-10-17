@@ -1,6 +1,6 @@
 # Lua configuration contract
 
-All syntax below and in [config.lua](examples/config.lua) is a proposed FluxWM schema. There is no parser yet. Select Lua **5.4** through `mlua`, then pin a compatible crate revision and enabled features during phase 1. This choice is independent of Hyprland's current syntax.
+This document specifies the target FluxWM schema. A strict subset is now implemented in the isolated Lua **5.4** helper; see [config implementation](development/config.md) and its [production audit](development/config-production-audit.md) for supported fields and remaining integration. The helper manifest pins mlua and its enabled features. Schema acceptance does not apply outputs, install bindings or establish atomic compositor reload.
 
 ## User contract
 
@@ -60,7 +60,7 @@ Examples: `animations.camera.curve: unknown curve 'snappy'`; `outputs[2].scale: 
 
 The helper accepts text-only Lua source. Returned configuration is plain data: reject cycles, metatables, functions, threads, userdata, mixed/sparse arrays, embedded NUL in OS fields, nonfinite numbers, and excessive depth/entries/bytes. Traverse with raw operations that cannot invoke user metamethods. Parent-side validation repeats structural/schema checks before applying the result. See [resource policy](17-resource-security.md) for proposed numeric ceilings and why allocator limits do not bound whole-process RSS.
 
-The host `lua` is currently 5.5.1, so use explicit `lua5.4`/`luac5.4` when checking this schema's target runtime. The example was rechecked with Lua 5.4.9; that standalone check is not a FluxWM parser test. A separate [pinned mlua probe](evidence/probes/mlua-hook/README.md) also reproduced catchability; it does not implement the production config helper. A bounded process result is the only candidate config accepted by the main loop; helper stdout cannot be interpreted as arbitrary commands.
+The host `lua` is currently 5.5.1, so use explicit `lua5.4`/`luac5.4` when checking this schema's target runtime. The example was rechecked with Lua 5.4.9; that standalone check is not a FluxWM parser test. A separate [pinned mlua probe](evidence/probes/mlua-hook/README.md) also reproduced catchability; it is a historical research probe, separate from the now-implemented helper. A bounded process result is the only candidate config accepted by the main loop; helper stdout cannot be interpreted as arbitrary commands.
 
 Across the process boundary, return normalized serializable schema data, not Rust compiled regex/GPU/device objects. Parent validates bounded structure and compiles accepted native binding/rule data in bounded background work before atomic application. Lua itself runs only in the helper. Public IPC's 1 MiB frame bound is separate from the helper-result transport's proposed 4 MiB bound.
 
@@ -68,7 +68,7 @@ Across the process boundary, return normalized serializable schema data, not Rus
 
 Widths are tagged records: `{ logical_px = 960 }`, `{ fraction = 0.5 }`, or `{ preset = 2 }`; exactly one tag. Preset definitions cannot recursively reference a preset. Fraction uses usable viewport width. Geometry is logical pixels except explicitly suffixed fields such as `snap_distance_physical_px`. A key is `{ sym = "Super+h" }` for a keysym chord or `{ code = 35, modifiers = { "Super" } }` for an evdev-code chord; the backend performs the required xkb offset conversion. Letter keysyms use lowercase, and Shift is explicit in the chord.
 
-Output match is `{ any = true }` or an AND combination of exact `connector`, `make`, `model`, `serial` hints; none is guaranteed unique. Use ordered later-wins field merging uniformly. An optional future selector ID must not silently change this precedence. Ambiguous physical matches produce diagnostics and safe placement. String rule patterns use bounded Rust-regex syntax, not Lua patterns.
+Output match is `{ any = true }` or an AND combination of exact `connector`, `make`, `model`, `serial` hints; none is guaranteed unique. Use ordered later-wins field merging uniformly. An optional future selector ID must not silently change this precedence. Ambiguous physical matches produce diagnostics and safe placement. String rule patterns use bounded Rust-regex syntax. Current `Regex::is_match` matching is unanchored: a substring match is sufficient. Use `^` and `$` explicitly for whole-string rules. This is distinct from Lua patterns.
 
 [Example contract checker](examples/check-config.lua) validates the supplied fixture's declared schema shapes, tagged widths/keys, output order representation, enums and field whitelist. It runs only against trusted documentation fixture data. It is not the future hardened helper/parser, hardware validator, or proof of adversarial config safety.
 

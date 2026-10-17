@@ -71,3 +71,16 @@ Bootstrap formatting was normalized after the source inspection. The subsystem a
 The recorded assembled workspace passes `cargo check`, **43 component/integration tests**, Clippy with warnings denied, formatting and whitespace checks. The documentation checker passes with 112 cases, 11 variants and ten phase files. The separate IPC defect probe also executes successfully **by asserting the defective behavior**: half-close dispatch count zero, sequence 11 followed by 10, encode/decode depth mismatch, empty config path accepted and four unit actions accepting unknown fields. None of these observations is a production acceptance pass. The `fluxwm` binary has zero tests in this suite and was not launched by these checks.
 
 The first-cycle strip/canvas conversion ambiguity (LP-12) is clarified in the layout contract using explicit initialization flags and stable tie-breaking. That is a documentation decision, not an implementation fix. Other subsystem findings remain open unless explicitly identified as fixed in their audit. Initial formatting and temporarily unresolved cross-document links were corrected before the final checks.
+
+## Independent review additions
+
+[Claude's unedited report](reviews/claude-implementation.md) broadly confirms the audit and the 43-test count, with four additional medium findings. The [disposition](reviews/implementation-disposition.md) records author source checks, precise limits and closure tests. These remain open behavioral work:
+
+| Finding | Source-derived gap | Closure requirement |
+| --- | --- | --- |
+| N1 | Wayland output events flush only during redraw; making rendering idle can strand events | Flush protocol output independently from rendering. Prove keys/configures reach a client with zero redraws and a measured latency budget |
+| N2 | Move/resize assume requested target is in Space; current serial check establishes same client, without mapped-target validation | Make seat/target/location lookups fallible and validate live target policy together with map-on-buffer integration. Exercise a click on A followed by move/resize on unmapped sibling B; do not claim a reproduced current crash |
+| N3 | IPC has no readiness/deadline integration API and may retain complete requests past a bounded turn | Expose event sources/readiness, buffered-work rescheduling and next deadlines; test 17-frame silent pipeline, idle expiry and EMFILE backoff without a busy loop |
+| N4 | IPC reads more data regardless of complete queued input, eventually reaching staging limits | Define an outstanding-request window and use read backpressure. Verify within-window pipelines and explicit overflow semantics; arbitrary pipeline length is not guaranteed |
+
+The reviewer did not execute tests or verify source hashes and did not inspect pinned Smithay source or validate phase prerequisites. The author separately checked the frozen snapshot and its hashes. Review scope and incomplete coverage remain visible; the review is not a production certification.

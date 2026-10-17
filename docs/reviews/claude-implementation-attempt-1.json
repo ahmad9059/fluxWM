@@ -1,0 +1,32 @@
+{
+  "snapshot_commit": "c2abdb5",
+  "exit_code": 124,
+  "report_returned": false,
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "disposition": "Incomplete attempt; no findings or approval inferred",
+  "argv": [
+    "timeout",
+    "600",
+    "claude",
+    "--print",
+    "--safe-mode",
+    "--model",
+    "opus",
+    "--effort",
+    "high",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "json"
+  ],
+  "prompt": "implementation-review-prompt.txt"
+}

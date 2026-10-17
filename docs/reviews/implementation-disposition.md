@@ -1,0 +1,42 @@
+# Disposition of Claude's implementation audit
+
+Date: 2026-10-17. Reviewed snapshot: `c2abdb5`. This records the author's checks after the [unaltered Claude report](claude-implementation.md); it is not another independent review. Claude Opus 5.5 completed a read/search-only review. Its [raw result](claude-implementation-result.json), [execution metadata](claude-implementation-execution.json), [exact prompt](implementation-focused-prompt.txt) and [frozen input verification](implementation-frozen-check.json) preserve scope and provenance.
+
+## Result and evidence limits
+
+Claude broadly confirms the audit, 43 tests in the logs, lack of binary tests and production readiness, IPC failure groups and config containment controls. It reports no materially incorrect high-priority author finding. It adds four medium findings. The author checked their cited control flow; no additional compositor runtime test was executed to validate these new scenarios. All four remain open.
+
+The instrumented metadata contains **29 tool invocations and 30 turns**, while the report describes 25 calls. Preserve the report unchanged and use the instrumented count. Only Glob/Grep/Read were exposed; there were no permission denials and no agent tool. Claude did not execute tests, recompute hashes, inspect pinned Smithay source, inspect all application code, or check phase prerequisites. Its exact covered/uncovered areas are stated in the report.
+
+The author recomputed all 112 listed input hashes after completion and checked that the full frozen tracked worktree had no changes against `c2abdb5`. All matched. The hash manifest covers selected files; the clean Git comparison additionally protects the committed snapshot, including probe source not individually listed in that manifest. This establishes input stability, not correctness.
+
+An earlier broad attempt hit its 600-second wrapper limit with no report. It is [recorded as incomplete](claude-implementation-attempt-1.json), not a successful review. The second, focused attempt completed in approximately 305 seconds with wrapper exit 0 and `is_error=false`.
+
+## New medium findings
+
+| Finding | Author disposition | Concrete closure evidence |
+| --- | --- | --- |
+| N1: flush coupled to redraw | Accepted, source-confirmed. `winit.rs` is the only `flush_clients` caller and `main.rs` has an empty loop callback. The current redraw loop masks the coupling; the proposed idle fix must include independent protocol flushing | In a private nested harness, idle renderer, deliver key and configure events, observe client receipt within the ratified latency budget while redraw count stays zero. Repeat while host is occluded/minimized |
+| N2: mapped-target lookup unwraps | Accepted as a latent integration hazard. `move_request`/`resize_request` unwrap target membership/location; `check_grab` checks same client. Current eager mapping masks the missing membership check. This is not a reproduced current crash | Integrate map-on-buffer and fallible lookups together. Send a valid click serial from A with move/resize targeting unmapped sibling B, then stale/dead targets; server survives and unrelated grabs remain coherent. Define a permitted same-toplevel-tree policy explicitly; this report does not establish that the protocol universally requires exact-tree equality |
+| N3: IPC wakeup contract absent | Accepted, source-confirmed API/design gap. Listener/connections are private; no fd/source, buffered-work or next-deadline API exists. Sixteen-frame decode budget can leave user-space work without another socket readiness event. A listener EMFILE spin is a future integration risk, not an observed current spin | Provide readiness integration plus rescheduling/deadlines and accept-error backoff. Send 17 frames then no further bytes; all complete without periodic busy polling. Trigger timeout without later I/O. Inject descriptor exhaustion in an isolated process |
+| N4: read backpressure absent | Accepted with scope correction. `process` reads before bounded decoding; `Decoder::push` enforces a finite staging cap by error/disconnect. Saturation can discard replies after prior mutations. Saturation behavior was source-checked, not reproduced in a new probe | Specify an outstanding-request window and memory policy; stop reads while buffered complete work should be drained. Test a fast reader with a within-policy pipeline and separately test overflow/ambiguous mutation outcomes. Do not promise every arbitrary 10,000-request pipeline succeeds: byte sizes, queue ceilings and declared admission limits matter |
+
+These findings extend P02/P04 and IPC-A04/A05/A07; they do not replace the existing blockers. The [current audit](../24-implementation-readiness-audit.md) and [IPC implementation notes](../development/ipc.md) now include their integration requirements.
+
+## Other reviewer points
+
+- **Malformed envelope/version policy:** source-confirmed limitation. Decode can close a connection before producing a typed version error. Version negotiation must define a bounded minimal envelope and compatible field behavior. No permissive parse may bypass duplicate/depth/size limits. Track with IPC-A09 and test future/invalid version shapes separately from malformed JSON.
+- **Unsafe environment mutation:** accepted as an unestablished safety precondition. Source calls `set_var` after backend initialization. This audit did not prove whether that backend had started threads in a run; code must not assume it remained single-threaded. Per-child `Command::env` removes the need for that process-global mutation and its unsafe precondition.
+- **Historical layout line references:** disclosed rather than silently rewritten. The layout report identifies its exact pre-format source hashes. Its line numbers refer to that snapshot; root formatter changes are administrative, and the newer report's source references describe the formatted snapshot. Use function names and final input hashes when implementing fixes.
+- **Exposed `Flipped180` transform:** accepted as a qualification question, not a proven rendering bug. Verify clients that pre-transform buffers and all coordinate domains under INP-09/GPU-10 before changing the output transform to compensate for a backend artifact.
+- **Depth probe assertion:** clarified by source inspection. `let frame = encode(...).unwrap()` explicitly requires encoding success; the later assertion requires decoding failure. Both sides are already checked. No probe change needed.
+- **Cached checks:** accepted limitation. Recorded subsecond check/clippy runs use populated build artifacts; they are not a clean-machine build, dependency supply-chain qualification or startup timing. B01 remains open.
+- **Regex matching:** clarified in the Lua contract: current matching uses unanchored `is_match`; whole-string matching requires explicit anchors. This is a documentation correction, not a new engine capability.
+- **SIGPIPE embedding:** added to config implementation notes. The ordinary Rust executable policy is not a guarantee for arbitrary library embedders that change signal disposition. Qualify closed-pipe cleanup in that environment.
+- **MAX_COORD endpoint concern:** no invariant violation established. `valid_rect` bounds origin and size components, not `x + width`; this is already true of `set_canvas_rect`, not only `set_constraints`. Endpoint sums may exceed MAX_COORD while remaining finite. Specify component bounds versus full extents before claiming a bug; add positive/negative boundary, resize and rebase coverage under LP-15/18. No overflow reproduction was executed.
+
+## Documentation corrections after review
+
+The root audit now includes N1–N4. Lua introduction/example now acknowledge the implemented helper and incomplete compositor integration; rule matching semantics are explicit. IPC notes identify missing wakeup/backpressure integration, and config notes state the signal-policy embedding boundary. The [post-review file record](implementation-post-review-changes.json) identifies these changes separately from frozen inputs. They are author-checked by document/link/case checks, **not independently re-reviewed by Claude**.
+
+The implementation remains blocked for production and for closing full phases. Real nested protocol/image tests, native device/session qualification, all declared desktop integrations, clean packaging and hardware support evidence are still required. Neither test totals nor this report close those gates.

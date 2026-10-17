@@ -46,3 +46,9 @@ Use `--socket` or `FLUXWM_SOCKET`; ambiguous socket discovery is intentionally a
 ## Evidence
 
 Run `cargo test -p flux-ipc -p fluxctl` and `cargo clippy -p flux-ipc -p fluxctl --all-targets -- -D warnings`. Tests exercise bytewise fragmentation, coalescing, duplicate JSON keys, depth/UTF-8/trailing input, oversize prefixes, stale versions, string counters, restrictive permissions, startup collisions, socket cleanup, partial-frame deadlines, duplicate outstanding IDs, queue overflow, connection admission, CLI success, readiness errors and rejection exit codes. They do not qualify hostile same-user directory races, other operating systems, or compositor runtime integration.
+
+## Review-added event-loop and backpressure blockers
+
+The current server has no public listener/connection readiness handles, pending-user-space-work indicator or next-deadline API. Calling `poll` only on unrelated compositor activity can strand decoded frames and deadlines; continuously polling conflicts with idle efficiency. Before compositor integration, provide a calloop event source or explicit readiness/deadline contract, schedule another bounded turn when decoded work remains, and back off accepts on EMFILE. Test 17 complete requests in one write followed by silence, timeout expiry with no further I/O and isolated descriptor exhaustion. See N3 in the [Claude disposition](../reviews/implementation-disposition.md).
+
+Receive staging currently keeps reading before decoding at most 16 requests. Bound outstanding requests explicitly and apply read backpressure when complete buffered frames can be serviced. Test valid pipelines within the documented admission window, then exceed that window to verify deliberate overflow behavior and mutation/reply ambiguity. There is no promise that arbitrary 10,000-request pipelines fit every configured resource limit. N4 remains open; the current staging cap alone is not a complete admission/backpressure contract.
