@@ -1,0 +1,113 @@
+{
+  "after": {
+    "compositions": 2,
+    "destroyed": 0,
+    "final_windows": 0,
+    "flush_cycles": 16,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 3,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 1,
+    "popup_grabs_denied_missing_press": 0,
+    "redraws": 5,
+    "submissions": 2,
+    "unmaps": 0,
+    "wayland_requests": 27
+  },
+  "allowed_stationary_motions_after_seed": 1,
+  "baseline_stationary_motions": 0,
+  "before": {
+    "compositions": 2,
+    "destroyed": 0,
+    "final_windows": 0,
+    "flush_cycles": 13,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 2,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 1,
+    "popup_grabs_denied_missing_press": 0,
+    "redraws": 4,
+    "submissions": 2,
+    "unmaps": 0,
+    "wayland_requests": 25
+  },
+  "changing_motions_after_seed": 0,
+  "composition_delta": 0,
+  "elapsed_ms": 659,
+  "error": null,
+  "events": [
+    {
+      "at_ms": 35,
+      "event": {
+        "create": 0,
+        "name": "stationary-pointer-feedback"
+      }
+    },
+    {
+      "at_ms": 35,
+      "event": {
+        "bytes": [],
+        "wm_capabilities": 0
+      }
+    },
+    {
+      "at_ms": 35,
+      "event": {
+        "configure_ack": 0,
+        "serial": 2
+      }
+    },
+    {
+      "at_ms": 39,
+      "event": {
+        "map_commit": 0
+      }
+    },
+    {
+      "at_ms": 39,
+      "event": {
+        "configure_ack": 0,
+        "serial": 3
+      }
+    },
+    {
+      "at_ms": 56,
+      "event": {
+        "frame_done": 0,
+        "timestamp": 128
+      }
+    },
+    {
+      "at_ms": 56,
+      "event": {
+        "pointer_enter_primary": [
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ],
+  "feedback_commits": 0,
+  "initial_pointer_xy": [
+    0.0,
+    0.0
+  ],
+  "maximum_feedback_commits": 32,
+  "mode": "pointer-feedback",
+  "observation_ms": 400,
+  "ok": true,
+  "redraw_delta": 1,
+  "settle_ms": 200,
+  "socket": "/tmp/fluxrt-dyukkjxz/fluxscene-fa24554cdbbf4b439772547b",
+  "stationary_motions_after_seed": 0
+}

@@ -1,0 +1,4478 @@
+{
+  "cases": [
+    {
+      "after_loss": {
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 1,
+          "surfaces": 3
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 4,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 133,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 1,
+          "focus_cancelled_keys": 1,
+          "frames_sent": 10,
+          "host_focus_losses": 2,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 2,
+          "redraws": 7,
+          "submissions": 3,
+          "unmaps": 0,
+          "wayland_requests": 71
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "after_popup_loss": {
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 1,
+          "surfaces": 3
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 4,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 133,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 1,
+          "focus_cancelled_keys": 1,
+          "frames_sent": 10,
+          "host_focus_losses": 2,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 2,
+          "redraws": 7,
+          "submissions": 3,
+          "unmaps": 0,
+          "wayland_requests": 71
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "authority_removed": true,
+      "before_popup_loss": {
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 1,
+          "surfaces": 3
+        },
+        "input_state": {
+          "authorized_buttons": 1,
+          "host_focus": true,
+          "keyboard_grabbed": true,
+          "pointer_grabbed": true,
+          "pressed_keys": 1,
+          "suppressed_keys": 0
+        },
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 4,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 32,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 10,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 2,
+          "redraws": 7,
+          "submissions": 3,
+          "unmaps": 0,
+          "wayland_requests": 71
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "binary_sha256": "8637c6c5e23e459a547c22da111c6057b13b22a1f79c9c4c3ec9d2caec47b1d3",
+      "case": "popup",
+      "compositor_exit": 0,
+      "errors": [
+        "dismissed_popup_not_recomposed"
+      ],
+      "final_input_state": {
+        "authorized_buttons": 0,
+        "host_focus": true,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "fixture_exit": 0,
+      "fixture_report": {
+        "buffer_size": [
+          320,
+          240
+        ],
+        "elapsed_ms": 7024,
+        "error": null,
+        "event_file": {
+          "Unix": [
+            47,
+            104,
+            111,
+            109,
+            101,
+            47,
+            97,
+            104,
+            109,
+            97,
+            100,
+            47,
+            68,
+            111,
+            99,
+            117,
+            109,
+            101,
+            110,
+            116,
+            115,
+            47,
+            80,
+            114,
+            111,
+            106,
+            101,
+            99,
+            116,
+            115,
+            47,
+            102,
+            108,
+            117,
+            120,
+            119,
+            109,
+            47,
+            116,
+            97,
+            114,
+            103,
+            101,
+            116,
+            47,
+            102,
+            111,
+            99,
+            117,
+            115,
+            45,
+            114,
+            101,
+            100,
+            114,
+            97,
+            119,
+            45,
+            109,
+            117,
+            116,
+            97,
+            110,
+            116,
+            45,
+            114,
+            117,
+            110,
+            47,
+            112,
+            111,
+            112,
+            117,
+            112,
+            47,
+            105,
+            110,
+            112,
+            117,
+            116,
+            46,
+            101,
+            118,
+            101,
+            110,
+            116,
+            115,
+            46,
+            106,
+            115,
+            111,
+            110,
+            108
+          ]
+        },
+        "event_file_bytes": 5848,
+        "events": [
+          {
+            "at_ms": 0,
+            "event": {
+              "create": 0,
+              "name": "input-A"
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "create": 1,
+              "name": "input-B"
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "configure_ack": 0,
+              "serial": 3
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 1
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "configure_ack": 1,
+              "serial": 4
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "configure_ack": 0,
+              "serial": 5
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "keys": [],
+              "popup": null,
+              "root": 0,
+              "serial": 6,
+              "type": "keyboard.enter"
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 0
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 6,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "configure_ack": 0,
+              "serial": 7
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "configure_ack": 1,
+              "serial": 8
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "serial": 9,
+              "type": "keyboard.leave"
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "keys": [],
+              "popup": null,
+              "root": 1,
+              "serial": 9,
+              "type": "keyboard.enter"
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 1
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 9,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 23,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 335
+            }
+          },
+          {
+            "at_ms": 23,
+            "event": {
+              "frame_done": 1,
+              "timestamp": 335
+            }
+          },
+          {
+            "at_ms": 23,
+            "event": {
+              "observation_ms": 7000,
+              "root": null,
+              "roots": [
+                {
+                  "root": 0,
+                  "title": "input-A"
+                },
+                {
+                  "root": 1,
+                  "title": "input-B"
+                }
+              ],
+              "type": "ready"
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "configure_ack": 0,
+              "serial": 10
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "configure_ack": 1,
+              "serial": 11
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "serial": 12,
+              "type": "keyboard.leave"
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "keys": [],
+              "popup": null,
+              "root": 0,
+              "serial": 12,
+              "type": "keyboard.enter"
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 0
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 12,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 104,
+            "event": {
+              "popup": null,
+              "root": 0,
+              "serial": 13,
+              "type": "pointer.enter",
+              "x": 64.0,
+              "y": 64.0
+            }
+          },
+          {
+            "at_ms": 104,
+            "event": {
+              "pointer_enter_primary": [
+                64.0,
+                64.0
+              ]
+            }
+          },
+          {
+            "at_ms": 104,
+            "event": {
+              "root": 0,
+              "type": "pointer.frame"
+            }
+          },
+          {
+            "at_ms": 185,
+            "event": {
+              "root": 0,
+              "time": 24955674,
+              "type": "pointer.motion",
+              "x": 64.0,
+              "y": 64.0
+            }
+          },
+          {
+            "at_ms": 185,
+            "event": {
+              "button": 272,
+              "root": 0,
+              "serial": 14,
+              "state": "pressed",
+              "time": 24955674,
+              "type": "pointer.button"
+            }
+          },
+          {
+            "at_ms": 185,
+            "event": {
+              "create_popup": 0,
+              "invalid_grab_serial": null,
+              "parent": 0
+            }
+          },
+          {
+            "at_ms": 185,
+            "event": {
+              "popup": 0,
+              "serial": 14,
+              "type": "popup.grab_requested"
+            }
+          },
+          {
+            "at_ms": 185,
+            "event": {
+              "root": 0,
+              "type": "pointer.frame"
+            }
+          },
+          {
+            "at_ms": 186,
+            "event": {
+              "popup_geometry": 0,
+              "rect": [
+                21,
+                21,
+                64,
+                48
+              ]
+            }
+          },
+          {
+            "at_ms": 186,
+            "event": {
+              "popup_configure_ack": 0,
+              "serial": 16
+            }
+          },
+          {
+            "at_ms": 186,
+            "event": {
+              "map_popup_commit": 0
+            }
+          },
+          {
+            "at_ms": 186,
+            "event": {
+              "serial": 14,
+              "type": "keyboard.leave"
+            }
+          },
+          {
+            "at_ms": 186,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 186,
+            "event": {
+              "keys": [],
+              "popup": 0,
+              "root": null,
+              "serial": 14,
+              "type": "keyboard.enter"
+            }
+          },
+          {
+            "at_ms": 187,
+            "event": {
+              "keyboard_enter_popup": 0,
+              "keyboard_enter_window": null
+            }
+          },
+          {
+            "at_ms": 187,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 14,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 204,
+            "event": {
+              "popup_frame_done": 0,
+              "timestamp": 516
+            }
+          },
+          {
+            "at_ms": 204,
+            "event": {
+              "popup": 0,
+              "type": "popup.frame"
+            }
+          },
+          {
+            "at_ms": 280,
+            "event": {
+              "root": 0,
+              "serial": 17,
+              "type": "pointer.leave"
+            }
+          },
+          {
+            "at_ms": 280,
+            "event": {
+              "root": null,
+              "type": "pointer.frame"
+            }
+          },
+          {
+            "at_ms": 280,
+            "event": {
+              "popup": 0,
+              "root": null,
+              "serial": 17,
+              "type": "pointer.enter",
+              "x": 44.0,
+              "y": 43.0
+            }
+          },
+          {
+            "at_ms": 280,
+            "event": {
+              "root": null,
+              "type": "pointer.frame"
+            }
+          },
+          {
+            "at_ms": 364,
+            "event": {
+              "key": 30,
+              "popup": 0,
+              "root": null,
+              "serial": 18,
+              "state": "pressed",
+              "time": 24955853,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "key": 30,
+              "popup": 0,
+              "root": null,
+              "serial": 19,
+              "state": "released",
+              "time": 24956139,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "button": 272,
+              "root": null,
+              "serial": 20,
+              "state": "released",
+              "time": 24956139,
+              "type": "pointer.button"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "root": null,
+              "type": "pointer.frame"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "popup_done": 0
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "popup": 0,
+              "type": "popup.done"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "root": null,
+              "serial": 21,
+              "type": "pointer.leave"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "root": null,
+              "type": "pointer.frame"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "popup": null,
+              "root": 0,
+              "serial": 21,
+              "type": "pointer.enter",
+              "x": 65.0,
+              "y": 64.0
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "pointer_enter_primary": [
+                65.0,
+                64.0
+              ]
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "root": 0,
+              "type": "pointer.frame"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "serial": 23,
+              "type": "keyboard.leave"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "keys": [],
+              "popup": null,
+              "root": 0,
+              "serial": 23,
+              "type": "keyboard.enter"
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 0
+            }
+          },
+          {
+            "at_ms": 651,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 23,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 1241,
+            "event": {
+              "root": 0,
+              "time": 24956730,
+              "type": "pointer.motion",
+              "x": 65.0,
+              "y": 64.0
+            }
+          },
+          {
+            "at_ms": 1242,
+            "event": {
+              "root": 0,
+              "type": "pointer.frame"
+            }
+          },
+          {
+            "at_ms": 1266,
+            "event": {
+              "key": 30,
+              "popup": null,
+              "root": 0,
+              "serial": 25,
+              "state": "pressed",
+              "time": 24956754,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 1329,
+            "event": {
+              "key": 31,
+              "popup": null,
+              "root": 0,
+              "serial": 26,
+              "state": "pressed",
+              "time": 24956817,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 1329,
+            "event": {
+              "destroy_popup": 0
+            }
+          },
+          {
+            "at_ms": 1329,
+            "event": {
+              "create_popup": 1,
+              "invalid_grab_serial": null,
+              "parent": 0
+            }
+          },
+          {
+            "at_ms": 1329,
+            "event": {
+              "popup": 1,
+              "serial": 14,
+              "type": "popup.stale_grab_requested"
+            }
+          },
+          {
+            "at_ms": 1330,
+            "event": {
+              "popup_geometry": 1,
+              "rect": [
+                21,
+                21,
+                64,
+                48
+              ]
+            }
+          },
+          {
+            "at_ms": 1330,
+            "event": {
+              "popup_configure_ack": 1,
+              "serial": 27
+            }
+          },
+          {
+            "at_ms": 1330,
+            "event": {
+              "popup_done": 1
+            }
+          },
+          {
+            "at_ms": 1330,
+            "event": {
+              "popup": 1,
+              "type": "popup.done"
+            }
+          },
+          {
+            "at_ms": 1417,
+            "event": {
+              "key": 31,
+              "popup": null,
+              "root": 0,
+              "serial": 28,
+              "state": "released",
+              "time": 24956906,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 1503,
+            "event": {
+              "key": 30,
+              "popup": null,
+              "root": 0,
+              "serial": 29,
+              "state": "released",
+              "time": 24956991,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 7024,
+            "event": {
+              "mapped_through_observation": true,
+              "root": null,
+              "type": "complete"
+            }
+          }
+        ],
+        "mapped_through_observation": true,
+        "mode": "input-probe",
+        "observation_ms": 7000,
+        "ok": true,
+        "physical_input_injected_by_fixture": false,
+        "ready_at_ms": 23,
+        "socket": "/tmp/fluxrt-j31qvnth/fluxfocus-5b9811f9639643b0"
+      },
+      "fixture_sha256": "f6d6bbf063aaa46fe5e13fddf5d35d7736073a56c7367ace4b2d9df021e7c58b",
+      "focus_loss_event_index": 50,
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "private_server_reaped": true,
+      "private_x_socket_removed": true,
+      "quit": {
+        "accepted": true
+      },
+      "responses": [
+        {
+          "id": "5cf2acd3c5f74dd0a9ecbf433e196e63",
+          "result": {
+            "windows": [
+              {
+                "app_id": "org.fluxwm.InputProbe",
+                "focused": false,
+                "geometry": {
+                  "height": 800.0,
+                  "width": 640.0,
+                  "x": 0.0,
+                  "y": -0.0
+                },
+                "id": "0:0",
+                "mapped": true,
+                "responsiveness": {
+                  "id": "1",
+                  "status": "responsive"
+                },
+                "title": "input-A",
+                "workspace": "0:0"
+              },
+              {
+                "app_id": "org.fluxwm.InputProbe",
+                "focused": true,
+                "geometry": {
+                  "height": 800.0,
+                  "width": 640.0,
+                  "x": 648.0,
+                  "y": -0.0
+                },
+                "id": "1:0",
+                "mapped": true,
+                "responsiveness": {
+                  "id": "1",
+                  "status": "responsive"
+                },
+                "title": "input-B",
+                "workspace": "0:0"
+              }
+            ]
+          },
+          "state_sequence": "16",
+          "version": 1
+        },
+        {
+          "id": "a436b7d8e6dd46168f79edfb294cc75c",
+          "result": {
+            "accepted": true
+          },
+          "state_sequence": "17",
+          "version": 1
+        },
+        {
+          "id": "fb4bda9f3cc14ae4811d9c5ad4bd4288",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 1,
+              "host_focus": true,
+              "keyboard_grabbed": true,
+              "pointer_grabbed": true,
+              "pressed_keys": 1,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 32,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 0,
+              "focus_cancelled_keys": 0,
+              "frames_sent": 10,
+              "host_focus_losses": 1,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "17",
+          "version": 1
+        },
+        {
+          "id": "5e855d9fdafc426d89e2751e1bbd8663",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 35,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "7a5d73185f704a8e9cece909e79c9fb6",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 37,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "de1b4f12ec324090a0e09d053b4cb821",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 39,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "7695fca4611346ff9dac9ad0746dc28b",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 41,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "77d0d62ff4f644cdb34f9b3d918817e8",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 43,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "f184bece82a6499286028a1d0a0aaa00",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 45,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "f1c02187ba9648b9bde848b5f463f54a",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 47,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "643be96b44b249af8671ef062bdbf12d",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 49,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "2517f6ccfc7c4df5b31567026e6704e3",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 51,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "cf8014cf2b5141afa75ca3bd05e6c0fb",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 53,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "f439a3a61291441b8d36b3eb6ce6df88",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 55,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "19b30d080d624d988e89fae4941d72e8",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 57,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "32147bd8dc3c4319ad883f504bdf7565",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 59,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "4c124c91b9994fec99803411f203c19c",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 61,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "cbc64e91cf484386b1f2a1fff889e936",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 63,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "da7ccef7b40a45dda0d0222b53b84336",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 65,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "e35bc17a2451406f9238c8e18c27471b",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 67,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "dd97c58068bc47b799e5fbf1fceaae14",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 69,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "d04723e1fc7741cfa167f152929b0319",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 71,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "08a4143103fc45d1bef0df21d61c6c58",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 73,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "ffccd44a389c40b48e1e17a3d0668349",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 75,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "816260d807bc4710920c3a614b045fd2",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 77,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "a0bcae033c0b40ea8ed8309917a1a57d",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 79,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "fe5820b1fbdc4071ada3c7fa672b78f4",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 81,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "b07290fb9c92407a9ca14136af051fe4",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 83,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "a4caf13f648e45ef9c37f3a9afd39c65",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 85,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "54a458e7f27a4069a9885a24e1485933",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 87,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "2692c10963124d12b34c0e5e07e79ae7",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 89,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "98bcd2a508c443a89b64a8917f489a19",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 91,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "b69def5c6c434833949c061f3f31e5d6",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 93,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "cd026d05d39e4ed49889e7bd1c871080",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 95,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "756c4e1ec1c94b2293cc8457a04ad2ae",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 97,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "0fdd16ff883a4ef997bc14b37a6b89c6",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 99,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "508d306c90854e4596454c6ecc0c70e4",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 101,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "38bd9880f62e46159fcb703284681725",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 104,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "bf48da3b71f34f788bcfdfcd1ee3dbeb",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 106,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "96ba9e234b6543a6ae72e026b6a74888",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 108,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "8378e4ad65e643649e2c5b4660a13044",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 110,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "6cd11c9290924a32b43fc15e64493028",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 113,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "882a61c49d85411dae751b849173baf2",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 115,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "0aebd5747ae549119ef6056a0da7a32c",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 117,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "6cc650a47932456da4fb138205e77403",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 119,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "c16afa7980fb4ecbb75ac8bb3637742c",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 122,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "42ec5548f6084af0bd5642848a49d9c2",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 124,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "df85dc71740b4abaa10d84bca8571140",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 126,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "a5c87266d4c04d768d107e86e70a4d36",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 129,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "41f5c87703a943f0a3fe520ec87974ae",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 131,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "fa6c11e9ff294be7bd728ac9109ea424",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 1,
+              "surfaces": 3
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": false,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 4,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 133,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 10,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 7,
+              "submissions": 3,
+              "unmaps": 0,
+              "wayland_requests": 71
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "19",
+          "version": 1
+        },
+        {
+          "id": "27511471cc4848399e104f71cdbfa20f",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 0,
+              "surfaces": 2
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": true,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 2,
+            "mapped_windows": 2,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 5,
+              "destroyed": 0,
+              "final_windows": 0,
+              "flush_cycles": 149,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 14,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 9,
+              "submissions": 4,
+              "unmaps": 0,
+              "wayland_requests": 88
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [
+                {
+                  "id": "1",
+                  "status": "responsive"
+                }
+              ],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 1,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 1,
+                "timeouts": 0,
+                "timer_fired": 0
+              },
+              "timeout_ms": 2000,
+              "timer_armed": true
+            }
+          },
+          "state_sequence": "20",
+          "version": 1
+        },
+        {
+          "id": "2bd6aa2578274ceabf38196b156aaae3",
+          "result": {
+            "backend": "nested",
+            "composed_scene": {
+              "popup_surfaces": 0,
+              "surfaces": 0
+            },
+            "input_state": {
+              "authorized_buttons": 0,
+              "host_focus": true,
+              "keyboard_grabbed": false,
+              "pointer_grabbed": false,
+              "pressed_keys": 0,
+              "suppressed_keys": 0
+            },
+            "launch_outcomes": [],
+            "live_roles": 0,
+            "mapped_windows": 0,
+            "owned_applications": 0,
+            "pending_launches": 0,
+            "production_ready": false,
+            "runtime": {
+              "compositions": 6,
+              "destroyed": 2,
+              "final_windows": 0,
+              "flush_cycles": 157,
+              "flush_retry_timer_fired": 0,
+              "flush_would_block": 0,
+              "focus_cancelled_buttons": 1,
+              "focus_cancelled_keys": 1,
+              "frames_sent": 14,
+              "host_focus_losses": 2,
+              "ipc_dispatches_after_shutdown": 0,
+              "ipc_drain_timed_out": 0,
+              "maps": 2,
+              "redraws": 10,
+              "submissions": 4,
+              "unmaps": 0,
+              "wayland_requests": 89
+            },
+            "shell_health": {
+              "capacity": 1024,
+              "clients": [],
+              "interval_ms": 5000,
+              "stats": {
+                "capacity_rejections": 0,
+                "pongs": 2,
+                "recoveries": 0,
+                "send_failures": 0,
+                "sent": 2,
+                "timeouts": 0,
+                "timer_fired": 1
+              },
+              "timeout_ms": 2000,
+              "timer_armed": false
+            }
+          },
+          "state_sequence": "25",
+          "version": 1
+        },
+        {
+          "id": "ed1222e4cb4c45ab94282832cb6a83a4",
+          "result": {
+            "accepted": true
+          },
+          "state_sequence": "26",
+          "version": 1
+        }
+      ],
+      "runtime_cleanup": {
+        "directory_removed": true,
+        "endpoints_removed_before_cleanup": true,
+        "path": "/tmp/fluxrt-j31qvnth"
+      },
+      "stats": {
+        "compositions": 6,
+        "destroyed": 2,
+        "final_windows": 0,
+        "flush_cycles": 161,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 1,
+        "focus_cancelled_keys": 1,
+        "frames_sent": 14,
+        "host_focus_losses": 2,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_budget_ms": 250,
+        "ipc_drain_elapsed_ms": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 2,
+        "redraws": 10,
+        "submissions": 4,
+        "unmaps": 0,
+        "wayland_requests": 89
+      },
+      "target": {
+        "height": 800,
+        "ok": true,
+        "pid": 399975,
+        "width": 1280,
+        "window": 2097154
+      }
+    }
+  ],
+  "executables": {
+    "fixture": "f6d6bbf063aaa46fe5e13fddf5d35d7736073a56c7367ace4b2d9df021e7c58b",
+    "fluxwm": "8637c6c5e23e459a547c22da111c6057b13b22a1f79c9c4c3ec9d2caec47b1d3"
+  },
+  "harness_sha256": "ae9d6218868cc5945e5a89934be7e02eafac5bddb989a19b20b6624c01416c48",
+  "ok": false,
+  "package": {
+    "bundle": "/tmp/fluxwm-xvfb-verified-h8kd45_1",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "private_helper_sha256": "fa8242075353793a9e333d0d6b10a94c7e3d3da8de3e436bdf31a35cbff634ff",
+  "scope": "authenticated owned X11 host focus and key/button cancellation; no host-session input, native devices or full grab matrix",
+  "test_sources_unchanged": true
+}

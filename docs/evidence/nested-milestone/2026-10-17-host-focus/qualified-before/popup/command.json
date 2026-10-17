@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/fluxwm",
+    "--socket",
+    "fluxfocus-93dd9459c7434a79",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/popup/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/popup/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

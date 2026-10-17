@@ -1,0 +1,277 @@
+{
+  "final_source_commit": "df52ad668a2d983953aafa3ddc177bb526ba87ce",
+  "initial_review_commit": "9c4c733140519176e933c7bc0261b7280c0c2d9c",
+  "followup_review_commit": "d91db8e967ca9ef31798cec9644402381dcc50a2",
+  "distinct_tests": 122,
+  "test_count_evidence": "test-list.log: 122 named cases; tests.log has 122 unfiltered main-suite passes plus three nested fixture successes, one interleaved across lines",
+  "binary_sha256": "1496b5bf211e1aad1b1b2555f8ba9cb8f7da6da8fd3b1efcc778bc2fb89b482e",
+  "fixture_sha256": "b407bd4586089683b246c74c55b049fed4f9c36fec30ad7aade10f3a00aeee9d",
+  "lockfile_sha256": "178ca789a8185f772e39e53f013ac536f7724148f4c55cf740554b87576675dd",
+  "post_review_patch_sha256": "bba0873effaf556d070fa1835c94ff3a83b4f8374afcad4d195b99421b009d59",
+  "commands": [
+    {
+      "command": "cargo test --workspace --all-targets --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build -p fluxwm -p fluxwm-fixture --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked -- --list",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m py_compile tools/smoke_focus.py tools/smoke_input.py tools/smoke_private.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/check_docs.py --report /tmp/fluxwm-focus-docs-final.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_focus.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_private.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --suites scene nested shutdown ipc health",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_input.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --case scene-pan",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_input.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --case held-motion",
+      "exit_code": 0
+    }
+  ],
+  "expected_failures": [
+    {
+      "command": "python3 tools/smoke_focus.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --binary /tmp/fluxwm-focus-before/fluxwm --artifacts /home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification",
+      "exit_code": 1,
+      "actual_client_faults": "Missing cancellation releases, stale Alt action and surviving grab/popup; absent new diagnostics are additional failures, not primary proof"
+    },
+    {
+      "command": "python3 tools/smoke_focus.py --bundle /tmp/fluxwm-xvfb-verified-h8kd45_1 --binary /home/ahmad/Documents/Projects/fluxwm/target/focus-redraw-mutant/fluxwm --case popup --artifacts /home/ahmad/Documents/Projects/fluxwm/target/focus-redraw-mutant-run",
+      "exit_code": 1,
+      "failure": "dismissed_popup_not_recomposed; exact d91 tool sources retained"
+    }
+  ],
+  "origins": [
+    {
+      "original": "/tmp/fluxwm-focus-before-evidence",
+      "archive": "initial-before"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-before-evidence/keyboard",
+      "archive": "initial-before/keyboard"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-before-evidence/pointer",
+      "archive": "initial-before/pointer"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-after-evidence",
+      "archive": "initial-after"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-after-evidence/keyboard",
+      "archive": "initial-after/keyboard"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-after-evidence/pointer",
+      "archive": "initial-after/pointer"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-baseline-final",
+      "archive": "initial-strengthened-before"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-baseline-final/keyboard",
+      "archive": "initial-strengthened-before/keyboard"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-baseline-final/pointer",
+      "archive": "initial-strengthened-before/pointer"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-strengthened",
+      "archive": "initial-strengthened-after"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-strengthened/keyboard",
+      "archive": "initial-strengthened-after/keyboard"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-strengthened/pointer",
+      "archive": "initial-strengthened-after/pointer"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-popup-first",
+      "archive": "popup-stationary-fixture-failure"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-popup-first/keyboard",
+      "archive": "popup-stationary-fixture-failure/keyboard"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-popup-first/pointer",
+      "archive": "popup-stationary-fixture-failure/pointer"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-popup-first/popup",
+      "archive": "popup-stationary-fixture-failure/popup"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-popup-second",
+      "archive": "popup-missing-commit-fixture-failure"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-popup-second/keyboard",
+      "archive": "popup-missing-commit-fixture-failure/keyboard"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-popup-second/pointer",
+      "archive": "popup-missing-commit-fixture-failure/pointer"
+    },
+    {
+      "original": "/tmp/fluxwm-focus-popup-second/popup",
+      "archive": "popup-missing-commit-fixture-failure/popup"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-popup-fourth",
+      "archive": "long-runtime-infrastructure-failure"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-popup-fourth/keyboard",
+      "archive": "long-runtime-infrastructure-failure/keyboard"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-popup-fourth/pointer",
+      "archive": "long-runtime-infrastructure-failure/pointer"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-popup-fourth/popup",
+      "archive": "long-runtime-infrastructure-failure/popup"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-short-runtime",
+      "archive": "initial-popup-pass"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-short-runtime/keyboard",
+      "archive": "initial-popup-pass/keyboard"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-short-runtime/pointer",
+      "archive": "initial-popup-pass/pointer"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-short-runtime/popup",
+      "archive": "initial-popup-pass/popup"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-positive-control",
+      "archive": "positive-control-mapping-fixture-failure"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-positive-control/popup",
+      "archive": "positive-control-mapping-fixture-failure/popup"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification",
+      "archive": "qualified-before"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/keyboard",
+      "archive": "qualified-before/keyboard"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/pointer",
+      "archive": "qualified-before/pointer"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/popup",
+      "archive": "qualified-before/popup"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-focus/22fb08c041084d8086b3af38442eaed5",
+      "archive": "qualified-after"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-focus/22fb08c041084d8086b3af38442eaed5/keyboard",
+      "archive": "qualified-after/keyboard"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-focus/22fb08c041084d8086b3af38442eaed5/pointer",
+      "archive": "qualified-after/pointer"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-focus/22fb08c041084d8086b3af38442eaed5/popup",
+      "archive": "qualified-after/popup"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-redraw-mutant-run",
+      "archive": "redraw-mutant"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/focus-redraw-mutant-run/popup",
+      "archive": "redraw-mutant/popup"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-private/f9d2c7c047f441f3bb21f472a274bd02",
+      "archive": "regressions"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-private/f9d2c7c047f441f3bb21f472a274bd02/scene",
+      "archive": "regressions/scene"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-private/f9d2c7c047f441f3bb21f472a274bd02/nested",
+      "archive": "regressions/nested"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-private/f9d2c7c047f441f3bb21f472a274bd02/shutdown",
+      "archive": "regressions/shutdown"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-private/f9d2c7c047f441f3bb21f472a274bd02/ipc",
+      "archive": "regressions/ipc"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-private/f9d2c7c047f441f3bb21f472a274bd02/health",
+      "archive": "regressions/health"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-input/eeae0786b10347a8b7329005439874c8",
+      "archive": "input-pan"
+    },
+    {
+      "original": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-input/f175f129e06b44dba11ad9303721a6fe",
+      "archive": "input-motion"
+    }
+  ],
+  "limits": [
+    "Local populated caches, no clean-machine/hosted CI evidence",
+    "Private authenticated X11 software rendering; no host input injected",
+    "Virtual composition/publication counts, not raw popup disappearance pixels or physical presentation",
+    "Input authorization ledger is not a hardware button counter",
+    "Later author controls not independently re-reviewed; raw reports/dispositions preserve scope",
+    "Native/host Wayland, DnD, every grab/layout/lock/IME/device and backend key_counter remain unqualified",
+    "Private artifacts copied only by allowlist; no authority, caches, executables or full environment",
+    "Large PPMs omitted; original suite metadata preserves their paths/hashes"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "authority_removed": true,
+  "binary_sha256": "cfb8e724b743dbb64d43092ce59db835a75a3c4e128a0765f128983ece09009f",
+  "case": "popup",
+  "compositor_exit": 0,
+  "error": "event observation expired",
+  "errors": [],
+  "fixture_exit": -15,
+  "fixture_sha256": "7788c9209ab758cc0fb5f7d0308ff6e6b121cb1a8311603fad3b810ac63190c4",
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "private_server_reaped": true,
+  "private_x_socket_removed": true,
+  "responses": [
+    {
+      "id": "9b4c6a8afea54ffeb86df2d4f901ee77",
+      "result": {
+        "windows": [
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "input-A",
+            "workspace": "0:0"
+          },
+          {
+            "app_id": "org.fluxwm.InputProbe",
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 640.0,
+              "x": 648.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "input-B",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "16",
+      "version": 1
+    },
+    {
+      "id": "55fd8e0bed84402cb716edbbe6bf59e5",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "17",
+      "version": 1
+    }
+  ],
+  "target": {
+    "height": 800,
+    "ok": true,
+    "pid": 382821,
+    "width": 1280,
+    "window": 2097154
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-short-runtime/fluxwm",
+    "--socket",
+    "fluxfocus-80c5b475fff0470e",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-short-runtime/keyboard/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-short-runtime/keyboard/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-short-runtime/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

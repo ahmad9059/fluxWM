@@ -1,0 +1,13 @@
+{
+  "quota_interruption": {
+    "original": "/tmp/fluxwm-focus-popup-third",
+    "classification": "Infrastructure failure during executable copy before any case result; shell reported disk quota exceeded; exec session exit 120",
+    "summary_exists": false,
+    "case_ready_files": []
+  },
+  "long_runtime": {
+    "original": "target/focus-popup-fourth",
+    "classification": "Compositor startup failed with path must be shorter than SUN_LEN; private runtime path was coupled to long artifact path; now decoupled"
+  },
+  "retirement": "24 completed-run duplicate executables removed after matching recorded hashes and stopped server/auth checks; public evidence and distinct before binaries retained"
+}

@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxhealth-3b69d9c1911a4470",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-private/f9d2c7c047f441f3bb21f472a274bd02/health/shell-health-disconnect/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-private/f9d2c7c047f441f3bb21f472a274bd02/health/shell-health-disconnect/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "shell-health-disconnect",
+    "--timeout-ms",
+    "12000"
+  ]
+}

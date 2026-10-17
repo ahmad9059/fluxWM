@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-popup-fourth/fluxwm",
+    "--socket",
+    "fluxfocus-7331eaed7b644c7f",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-popup-fourth/pointer/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-popup-fourth/pointer/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-popup-fourth/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

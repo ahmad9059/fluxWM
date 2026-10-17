@@ -1,0 +1,106 @@
+[
+  {
+    "run": "qualified-before/keyboard",
+    "authority_removed": true,
+    "private_server_reaped": true,
+    "private_x_socket_removed": true,
+    "parent_environment_unchanged": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-718o9qg8"
+    }
+  },
+  {
+    "run": "qualified-before/pointer",
+    "authority_removed": true,
+    "private_server_reaped": true,
+    "private_x_socket_removed": true,
+    "parent_environment_unchanged": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-sfo2oxwx"
+    }
+  },
+  {
+    "run": "qualified-before/popup",
+    "authority_removed": true,
+    "private_server_reaped": true,
+    "private_x_socket_removed": true,
+    "parent_environment_unchanged": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-t4x5occo"
+    }
+  },
+  {
+    "run": "qualified-after/keyboard",
+    "authority_removed": true,
+    "private_server_reaped": true,
+    "private_x_socket_removed": true,
+    "parent_environment_unchanged": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-vu5wpk_w"
+    }
+  },
+  {
+    "run": "qualified-after/pointer",
+    "authority_removed": true,
+    "private_server_reaped": true,
+    "private_x_socket_removed": true,
+    "parent_environment_unchanged": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-7286putn"
+    }
+  },
+  {
+    "run": "qualified-after/popup",
+    "authority_removed": true,
+    "private_server_reaped": true,
+    "private_x_socket_removed": true,
+    "parent_environment_unchanged": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-jzcvz8o7"
+    }
+  },
+  {
+    "run": "redraw-mutant/popup",
+    "authority_removed": true,
+    "private_server_reaped": true,
+    "private_x_socket_removed": true,
+    "parent_environment_unchanged": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-j31qvnth"
+    }
+  },
+  {
+    "run": "input-pan",
+    "server_pid_absent": true,
+    "authority_absent": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-7sjhcp92"
+    }
+  },
+  {
+    "run": "input-motion",
+    "server_pid_absent": true,
+    "authority_absent": true,
+    "runtime_cleanup": {
+      "directory_removed": true,
+      "endpoints_removed_before_cleanup": true,
+      "path": "/tmp/fluxrt-vy1tkjv6"
+    }
+  }
+]

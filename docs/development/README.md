@@ -46,3 +46,5 @@ The [private-display pointer regression](private-input.md) checks real button/ax
 The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boundary and a fixed response-drain deadline with an unread peer. Full process/session teardown remains separately qualified work.
 
 [XDG shell responsiveness](shell-health.md) adds nonfatal ping/timeout/recovery diagnostics, a bounded shared timer and real serial/timing/disconnect/monitor-cap tests. It does not establish application frame progress or global resource admission.
+
+[Nested host-focus recovery](host-focus.md) verifies cancellation of held keys/buttons, consumed shortcut ownership and one authorized popup grab through real private-display input. Separate short runtime directories keep test socket paths below AF_UNIX limits even when artifact paths are long.

@@ -1,0 +1,15 @@
+{
+  "authority_removed": true,
+  "binary_sha256": "cfb8e724b743dbb64d43092ce59db835a75a3c4e128a0765f128983ece09009f",
+  "case": "popup",
+  "compositor_exit": 1,
+  "error": "compositor exited early",
+  "errors": [],
+  "fixture_exit": null,
+  "fixture_sha256": "f6d6bbf063aaa46fe5e13fddf5d35d7736073a56c7367ace4b2d9df021e7c58b",
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "private_server_reaped": true,
+  "private_x_socket_removed": true,
+  "responses": []
+}

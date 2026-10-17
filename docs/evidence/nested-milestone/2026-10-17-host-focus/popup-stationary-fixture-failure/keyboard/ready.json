@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/tmp/fluxwm-focus-popup-first/keyboard/runtime/fluxwm/fluxfocus-61cfe6ec09be47b7.sock",
+  "pid": 382544,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxfocus-61cfe6ec09be47b7"
+}

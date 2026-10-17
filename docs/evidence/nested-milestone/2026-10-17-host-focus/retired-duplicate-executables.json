@@ -1,0 +1,173 @@
+{
+  "retired": [
+    {
+      "path": "/tmp/fluxwm-final-input-pan/fluxwm",
+      "sha256": "f65dee2e46b43ac1ff9d9dcd4d65e4f72bc918942c77d0859868602db4b92fc5",
+      "bytes": 169812632,
+      "result": "/tmp/fluxwm-final-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-final-input-pan/fixture",
+      "sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+      "bytes": 27754928,
+      "result": "/tmp/fluxwm-final-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-final-input-motion/fluxwm",
+      "sha256": "f65dee2e46b43ac1ff9d9dcd4d65e4f72bc918942c77d0859868602db4b92fc5",
+      "bytes": 169812632,
+      "result": "/tmp/fluxwm-final-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-final-input-motion/fixture",
+      "sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+      "bytes": 27754928,
+      "result": "/tmp/fluxwm-final-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-release-final-input-pan/fluxwm",
+      "sha256": "703716141bc47e08383bf9227b26f6734b0bf748d247c617320041db8abd7793",
+      "bytes": 169812744,
+      "result": "/tmp/fluxwm-release-final-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-release-final-input-pan/fixture",
+      "sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+      "bytes": 27754928,
+      "result": "/tmp/fluxwm-release-final-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-release-final-input-motion/fluxwm",
+      "sha256": "703716141bc47e08383bf9227b26f6734b0bf748d247c617320041db8abd7793",
+      "bytes": 169812744,
+      "result": "/tmp/fluxwm-release-final-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-release-final-input-motion/fixture",
+      "sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+      "bytes": 27754928,
+      "result": "/tmp/fluxwm-release-final-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-health-input-pan/fluxwm",
+      "sha256": "e7a8cb6577986ad6ad7bad343bdb40f82634cc2b3b9f81b29a28f9fa7687640b",
+      "bytes": 170424800,
+      "result": "/tmp/fluxwm-health-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-health-input-pan/fixture",
+      "sha256": "65ae8c33d55abe740afdd427e7e2ef7b13e8b0b431d42adae52880c3508ce2a1",
+      "bytes": 27980568,
+      "result": "/tmp/fluxwm-health-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-health-input-motion/fluxwm",
+      "sha256": "e7a8cb6577986ad6ad7bad343bdb40f82634cc2b3b9f81b29a28f9fa7687640b",
+      "bytes": 170424800,
+      "result": "/tmp/fluxwm-health-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-health-input-motion/fixture",
+      "sha256": "65ae8c33d55abe740afdd427e7e2ef7b13e8b0b431d42adae52880c3508ce2a1",
+      "bytes": 27980568,
+      "result": "/tmp/fluxwm-health-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-health-qualified-input-pan/fluxwm",
+      "sha256": "e7a8cb6577986ad6ad7bad343bdb40f82634cc2b3b9f81b29a28f9fa7687640b",
+      "bytes": 170424800,
+      "result": "/tmp/fluxwm-health-qualified-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-health-qualified-input-pan/fixture",
+      "sha256": "967cbffb9b9f60d7f69b7e572261287084fad25b41b4a4cfdd273c6682608dd2",
+      "bytes": 28029920,
+      "result": "/tmp/fluxwm-health-qualified-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-health-qualified-input-motion/fluxwm",
+      "sha256": "e7a8cb6577986ad6ad7bad343bdb40f82634cc2b3b9f81b29a28f9fa7687640b",
+      "bytes": 170424800,
+      "result": "/tmp/fluxwm-health-qualified-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-health-qualified-input-motion/fixture",
+      "sha256": "967cbffb9b9f60d7f69b7e572261287084fad25b41b4a4cfdd273c6682608dd2",
+      "bytes": 28029920,
+      "result": "/tmp/fluxwm-health-qualified-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-shutdown-input-pan/fluxwm",
+      "sha256": "184655687dd986d6f3535172f9a1c4bc0a007e631d1baf8c32f9e0f7ef7547a3",
+      "bytes": 169766392,
+      "result": "/tmp/fluxwm-shutdown-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-shutdown-input-pan/fixture",
+      "sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+      "bytes": 27754928,
+      "result": "/tmp/fluxwm-shutdown-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-shutdown-input-motion/fluxwm",
+      "sha256": "184655687dd986d6f3535172f9a1c4bc0a007e631d1baf8c32f9e0f7ef7547a3",
+      "bytes": 169766392,
+      "result": "/tmp/fluxwm-shutdown-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-shutdown-input-motion/fixture",
+      "sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+      "bytes": 27754928,
+      "result": "/tmp/fluxwm-shutdown-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-qualified-input-pan/fluxwm",
+      "sha256": "703716141bc47e08383bf9227b26f6734b0bf748d247c617320041db8abd7793",
+      "bytes": 169812744,
+      "result": "/tmp/fluxwm-qualified-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-qualified-input-pan/fixture",
+      "sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+      "bytes": 27754928,
+      "result": "/tmp/fluxwm-qualified-input-pan/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-qualified-input-motion/fluxwm",
+      "sha256": "703716141bc47e08383bf9227b26f6734b0bf748d247c617320041db8abd7793",
+      "bytes": 169812744,
+      "result": "/tmp/fluxwm-qualified-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    },
+    {
+      "path": "/tmp/fluxwm-qualified-input-motion/fixture",
+      "sha256": "53c87e3f0eba5417fcc3927f79d4d222d8fa73f805121c6c82aa5e9caa3e7b76",
+      "bytes": 27754928,
+      "result": "/tmp/fluxwm-qualified-input-motion/result.json",
+      "reason": "duplicate executable in completed owned run; identity and public evidence retained"
+    }
+  ],
+  "bytes_freed": 2374168624
+}

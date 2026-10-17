@@ -47,3 +47,5 @@ B16 design in this phase reserves authenticated host/sandbox context classificat
 ## Partial implementation evidence
 
 The [nested runtime](../development/runtime.md), [shared composed scene](../development/runtime-scene.md), [IPC quit drain](../development/shutdown-smoke.md), and [shell responsiveness monitor](../development/shell-health.md) record executable progress and exact remaining limits. Responsiveness now has real ping/serial/timeout/recovery/disconnect/capacity tests; this does not close task 3’s configure transaction work, the complete input/resource matrix, toolkit compatibility or this phase’s exit gate. Historical phase status remains planned until its full gate is proven.
+
+[Host-focus recovery](../development/host-focus.md) adds real key/modifier/button and one valid popup-grab cancellation/re-entry trace. It is partial task-5/6 evidence; it does not qualify all keyboard/grab/activation behavior or change this phase’s exit status.

@@ -1,0 +1,11 @@
+--- state.rs
++++ state.rs (without popup redraw)
+@@ -675,7 +675,7 @@
+         }
+         // A dismissed-but-alive popup must disappear without waiting for the
+         // client to destroy its role or for unrelated damage to trigger a frame.
+-        self.request_redraw();
++        self.pointer_focus_dirty = true;
+         self.restore_keyboard_focus();
+         self.bump_sequence();
+     }

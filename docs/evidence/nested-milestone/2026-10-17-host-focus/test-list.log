@@ -1,0 +1,158 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running unittests src/lib.rs (target/debug/deps/flux_config-2f2dfd9be96ed795)
+bounds::tests::checks_depth_values_and_trailing_data_before_schema_decode: test
+schema::tests::aggregate_pattern_engine_budget_rejects_large_combined_programs: test
+schema::tests::all_matching_output_rules_merge_fields_in_order: test
+schema::tests::defaults_roundtrip_and_remain_valid: test
+schema::tests::deny_first_capture_is_sticky_but_other_fields_are_later_wins: test
+schema::tests::invalid_references_regex_ranges_and_duplicate_keys_rejected: test
+schema::tests::tagged_records_reject_ambiguity_and_unknown_fields: test
+supervisor::tests::error_cleanup_kills_and_reaps_the_owned_child: test
+
+8 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_core-e6305f90eb85b02c)
+action::tests::argv_limits_preserve_empty_arguments_and_literal_shell_characters: test
+action::tests::duplicate_fields_invalid_types_and_unknown_variants_are_rejected: test
+action::tests::every_variant_keeps_its_wire_shape_and_rejects_extra_fields: test
+action::tests::shared_numeric_policy_covers_json_and_internal_construction: test
+arena::tests::free_list_iteration_and_mutation_keep_live_count_consistent: test
+arena::tests::generation_exhaustion_retires_slot_without_wrapping: test
+arena::tests::removed_identity_never_resolves_or_removes_replacement: test
+tests::geometry_rejects_nonfinite_and_uses_half_open_edges: test
+tests::identities_cannot_alias_generations_and_round_trip_without_json_precision_loss: test
+
+9 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_ipc-860e1b3a24c3ced6)
+driver::tests::buffered_work_continues_through_ping_without_more_client_bytes: test
+driver::tests::capacity_backoff_removes_listener_until_exact_retry_timer: test
+driver::tests::drain_deadline_wakes_without_reader_and_removes_all_socket_sources: test
+driver::tests::driver_can_outlive_loop_and_reports_broken_pipe_without_leaking_socket: test
+driver::tests::driver_in_loop_owned_callback_does_not_form_strong_handle_cycle: test
+driver::tests::dropping_driver_unregisters_sources_before_socket_and_clients_close: test
+driver::tests::eof_flushes_response_and_removes_duplicate_owned_fd: test
+driver::tests::exact_partial_deadline_wakes_without_client_or_periodic_polling: test
+driver::tests::idle_adapter_has_no_timer_or_repeated_wakes: test
+driver::tests::owned_sources_follow_write_backpressure_then_eof_for_large_reply: test
+driver::tests::stale_connection_registration_does_not_follow_reused_fd: test
+tests::accept_exhaustion_backs_off_and_rearms_with_a_deadline: test
+tests::bind_setup_failure_cleans_only_its_own_socket: test
+tests::bounded_connections_and_nonblocking_idle: test
+tests::buffered_requests_schedule_continuation_without_a_new_fd_edge: test
+tests::client_total_deadline_bounds_trickle_prefix_and_full_connect_backlog: test
+tests::complete_half_closed_requests_flush_and_truncated_tail_does_not_erase_them: test
+tests::config_path_is_nonempty_nul_free_and_bounded: test
+tests::controlled_drain_stops_pipeline_and_other_peer_dispatch: test
+tests::drain_absolute_deadline_cannot_be_extended_by_slow_reader: test
+tests::drain_discards_later_peers_previously_buffered_complete_request: test
+tests::drain_seals_dispatch_even_if_handler_response_is_invalid: test
+tests::frame_fragmentation_and_coalescing: test
+tests::half_close_preserves_large_pending_response_until_fully_flushed: test
+tests::outgoing_depth_size_and_escaped_strings_match_decoder: test
+tests::oversized_handler_reply_is_typed_error_without_losing_prior_replies: test
+tests::oversized_prefix_rejected_before_body: test
+tests::queued_drain_preserves_full_response_and_never_dispatches_tail: test
+tests::recursive_serializer_stops_before_unbounded_recursion: test
+tests::response_roundtrip: test
+tests::server_fragmentation_deadline_duplicate_and_stale_version: test
+tests::server_permissions_collision_and_cleanup: test
+tests::slow_reader_backpressure_and_per_message_deadline: test
+tests::socket_action_admission_uses_shared_strict_fields_and_domain_policy: test
+tests::stale_version_ids_params_and_counters: test
+tests::strict_json: test
+tests::transport_errors_follow_current_sequence_across_requests_and_connections: test
+
+37 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_layout-1a84afcf6ccc3500)
+tests::canvas_directional_focus_has_stable_ties_and_ignores_viewport: test
+tests::canvas_has_two_axes_negative_coordinates_and_restores_modes: test
+tests::canvas_stack_focus_scrolls_local_content_and_picking_obeys_group_clip: test
+tests::directional_scoring_uses_projected_edge_distance_after_angle: test
+tests::equal_canvas_positions_sort_by_stable_group_identity: test
+tests::first_canvas_conversion_uses_current_columns_not_insertion_snapshot: test
+tests::first_return_sorts_xy_stable_groups_then_preserves_independent_states: test
+tests::height_water_filling_respects_maximum_and_distributes_remaining: test
+tests::independent_columns_scroll_without_shrinking: test
+tests::invalid_mutations_preserve_valid_state_and_generations_are_distinct: test
+tests::randomized_10000_commands_preserve_membership_focus_and_geometry: test
+tests::reorder_preserves_focused_screen_anchor: test
+tests::stable_groups_preserve_tabs_membership_and_destroy_only_when_empty: test
+tests::stack_minimum_overflow_is_reachable_and_tabs_preserve_geometry: test
+tests::tiny_viewport_and_extent_capacity_are_handled_without_partial_mutation: test
+tests::transform_round_trip_and_rebase_preserve_screen_geometry: test
+tests::unactivated_insert_and_unrelated_close_preserve_focus_and_anchor: test
+tests::xdg_constraints_handle_each_unlimited_axis_and_reject_conflicts: test
+
+18 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_process-2916e96cae399fd3)
+tests::actual_calloop_completion_transfers_child_ownership_to_root: test
+tests::actual_child_gets_instance_environment_and_only_three_masks_unblocked: test
+tests::bounded_completion_backlog_cannot_deadlock_worker_shutdown: test
+tests::child_fixture_entry: test
+tests::eight_queued_jobs_reject_overflow_and_shutdown_cancels_active_result: test
+tests::exact_arguments_and_environment_overrides_do_not_split_or_inherit_display_fd: test
+tests::failed_exec_reports_operation_and_worker_keeps_servicing_jobs: test
+tests::managed_child_drop_kills_and_reaps_and_wait_caches_exit: test
+tests::receiver_drop_kills_unsent_child_and_stops_worker_without_orphan: test
+tests::validates_argv_environment_and_missing_executable: test
+
+10 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_scene-b4cbcc3e442e17b2)
+tests::allocation_candidates_are_distinct_from_visual_hits_and_clip_to_viewport: test
+tests::capacity_counts_filtered_inputs_and_consumes_at_most_one_over_limit: test
+tests::duplicate_ids_include_hidden_inputs_but_generations_remain_distinct: test
+tests::endpoint_limit_is_checked_separately_from_origin_and_width: test
+tests::hidden_offscreen_and_disjoint_visual_container_have_no_scene_entry: test
+tests::integer_rounding_uses_shared_edges_and_rejects_overflow_without_saturation: test
+tests::intersections_require_positive_area_and_validate_all_fields: test
+tests::invalid_hidden_geometry_nonpositive_sizes_overflow_and_loss_of_extent_are_rejected: test
+tests::negative_origins_and_adjacent_half_open_boundaries_have_one_owner: test
+tests::overlap_order_is_reverse_of_stable_explicit_draw_order: test
+tests::oversized_client_retains_actual_geometry_and_picks_only_allocated_clip: test
+tests::snapshot_owns_copied_geometry_and_clone_preserves_pick_order: test
+
+12 tests, 0 benchmarks
+     Running unittests src/main.rs (target/debug/deps/fluxctl-8c950210e0f8ff7d)
+0 tests, 0 benchmarks
+     Running tests/cli.rs (target/debug/deps/cli-49cdeee832bb451c)
+cli_readiness_and_rejected_statuses: test
+cli_success_contains_sequence_and_payload: test
+help_and_missing_socket: test
+
+3 tests, 0 benchmarks
+     Running unittests src/main.rs (target/debug/deps/fluxwm-b20bfeabf66aebb4)
+health::tests::empty_monitor_has_no_timer_or_strong_loop_cycle: test
+health::tests::late_pong_before_timer_service_still_records_missed_deadline: test
+health::tests::timeout_is_once_at_boundary_and_late_pong_recovers_without_duplicate_probe: test
+scene::tests::container_projection_precedes_integer_conversion: test
+scene::tests::offscreen_camera_limit_does_not_reject_the_local_scene: test
+scene::tests::snapped_container_edge_has_the_same_half_open_input_boundary: test
+
+6 tests, 0 benchmarks
+     Running unittests src/main.rs (target/debug/deps/fluxwm_config-07e54b5f904e60e9)
+tests::executable_return_values_and_text_only_chunks_are_rejected: test
+tests::pinned_build_really_embeds_lua54: test
+tests::raw_conversion_rejects_metatables_without_executing_metamethods: test
+
+3 tests, 0 benchmarks
+     Running tests/containment.rs (target/debug/deps/containment-3268ea49f9778571)
+child_receives_minimal_environment_fd_isolation_and_os_limits: test
+documentation_example_is_real_config_and_vm_is_lua54: test
+hostile_plain_data_and_structural_inputs_are_rejected: test
+infinite_loop_catchable_hook_and_allocation_are_bounded: test
+restricted_allowlist_has_no_host_or_dynamic_code_access: test
+source_bytes_and_result_trailing_junk_are_not_accepted: test
+supervisor_reaps_timeout_and_bounds_diagnostic_and_result_pipes: test
+
+7 tests, 0 benchmarks
+     Running unittests src/main.rs (target/debug/deps/fluxwm_fixture-2c424aff603f3b67)
+tests::a_silent_server_cannot_hold_the_event_loop_past_the_deadline: test
+tests::container_checker_accepts_exact_clip_and_rejects_one_pixel_leak: test
+tests::diagnostics_rejects_oversized_response_before_allocating_payload: test
+tests::diagnostics_silent_peer_cannot_exceed_deadline: test
+tests::idle_observation_waits_for_its_interval_without_false_timeout: test
+tests::input_event_file_is_live_private_and_matches_retained_records: test
+tests::missing_socket_fails_without_blocking: test
+tests::oversized_pattern_preserves_original_quadrants_and_distinct_cyan_overflow: test
+tests::shm_pattern_is_native_xrgb_with_four_distinct_quadrants: test
+
+9 tests, 0 benchmarks

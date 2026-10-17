@@ -1,0 +1,18 @@
+{
+  "redraws": 8,
+  "submissions": 2,
+  "compositions": 4,
+  "maps": 2,
+  "unmaps": 0,
+  "destroyed": 2,
+  "frames_sent": 10,
+  "final_windows": 0,
+  "wayland_requests": 52,
+  "flush_cycles": 92,
+  "flush_would_block": 0,
+  "flush_retry_timer_fired": 0,
+  "ipc_drain_timed_out": 0,
+  "ipc_dispatches_after_shutdown": 0,
+  "ipc_drain_budget_ms": 250,
+  "ipc_drain_elapsed_ms": 0
+}

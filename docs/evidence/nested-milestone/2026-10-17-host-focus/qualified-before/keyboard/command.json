@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/fluxwm",
+    "--socket",
+    "fluxfocus-e2f90e1dbe1a48b9",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/keyboard/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/keyboard/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-baseline-qualification/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

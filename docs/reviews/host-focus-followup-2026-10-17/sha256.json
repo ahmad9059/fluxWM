@@ -1,0 +1,11 @@
+{
+  "claude-report.md": "0d97f9e1d6aa899903f6a3452e1b3651379029e2faba72f486c5b20793e132d4",
+  "disposition.md": "fc4e70bd4270e1465aae72e045caa049af566579b29967c19d82a26396e8c1fe",
+  "execution.json": "356b967b6ebc05d86384275256bbd53537e0f616afbaabdaa58de12afb21abc2",
+  "input-manifest.json": "4d3fe07d4ecd1ef36cbf3958bdf8458a5f9dc674ec670a8c99d512f3e458805f",
+  "prompt.txt": "53ae715ef3f5136248118da0805e19f19fa727919131deff97b077fb7c7b5780",
+  "snapshot.json": "6ef3f0d8de10fb06b60cb50002cfeb9de6aeafdab6ef525b9f16d49e0bd8a46e",
+  "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout.json": "46bc7fec02e7de590ee624da55602b9d6bf9d8864bee7ef1ac24876637d7a1cf",
+  "verified-execution.json": "3a81e6c82dcd3b3d69506a86e0ffda4c207d80b7fca4ac1784ce0d7688c891f4"
+}

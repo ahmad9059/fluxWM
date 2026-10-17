@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/tmp/fluxwm-focus-strengthened/fluxwm",
+    "--socket",
+    "fluxfocus-de62e3b3ec1146b3",
+    "--ready-file",
+    "/tmp/fluxwm-focus-strengthened/keyboard/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-focus-strengthened/keyboard/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/tmp/fluxwm-focus-strengthened/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

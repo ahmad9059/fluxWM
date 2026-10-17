@@ -1,0 +1,73 @@
+{
+  "cases": [
+    {
+      "authority_removed": true,
+      "binary_sha256": "cfb8e724b743dbb64d43092ce59db835a75a3c4e128a0765f128983ece09009f",
+      "case": "keyboard",
+      "compositor_exit": 1,
+      "error": "compositor exited early",
+      "errors": [],
+      "fixture_exit": null,
+      "fixture_sha256": "f6d6bbf063aaa46fe5e13fddf5d35d7736073a56c7367ace4b2d9df021e7c58b",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "private_server_reaped": true,
+      "private_x_socket_removed": true,
+      "responses": []
+    },
+    {
+      "authority_removed": true,
+      "binary_sha256": "cfb8e724b743dbb64d43092ce59db835a75a3c4e128a0765f128983ece09009f",
+      "case": "pointer",
+      "compositor_exit": 1,
+      "error": "compositor exited early",
+      "errors": [],
+      "fixture_exit": null,
+      "fixture_sha256": "f6d6bbf063aaa46fe5e13fddf5d35d7736073a56c7367ace4b2d9df021e7c58b",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "private_server_reaped": true,
+      "private_x_socket_removed": true,
+      "responses": []
+    },
+    {
+      "authority_removed": true,
+      "binary_sha256": "cfb8e724b743dbb64d43092ce59db835a75a3c4e128a0765f128983ece09009f",
+      "case": "popup",
+      "compositor_exit": 1,
+      "error": "compositor exited early",
+      "errors": [],
+      "fixture_exit": null,
+      "fixture_sha256": "f6d6bbf063aaa46fe5e13fddf5d35d7736073a56c7367ace4b2d9df021e7c58b",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "private_server_reaped": true,
+      "private_x_socket_removed": true,
+      "responses": []
+    }
+  ],
+  "executables": {
+    "fixture": "f6d6bbf063aaa46fe5e13fddf5d35d7736073a56c7367ace4b2d9df021e7c58b",
+    "fluxwm": "cfb8e724b743dbb64d43092ce59db835a75a3c4e128a0765f128983ece09009f"
+  },
+  "harness_sha256": "f9474baeff2f0c5233278fc59feab6ea4c97aaafb8af6c7beaeafe3058fcae42",
+  "ok": false,
+  "package": {
+    "bundle": "/tmp/fluxwm-xvfb-verified-h8kd45_1",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "private_helper_sha256": "451b69803f4b6444935f50907b49828bf7462a02170361298ada66623694f5f6",
+  "scope": "authenticated owned X11 host focus and key/button cancellation; no host-session input, native devices or full grab matrix",
+  "test_sources_unchanged": true
+}

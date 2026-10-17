@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/tmp/fluxwm-focus-popup-first/fluxwm",
+    "--socket",
+    "fluxfocus-b78d74df472b4065",
+    "--ready-file",
+    "/tmp/fluxwm-focus-popup-first/pointer/ready.json",
+    "--stats-file",
+    "/tmp/fluxwm-focus-popup-first/pointer/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/tmp/fluxwm-focus-popup-first/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

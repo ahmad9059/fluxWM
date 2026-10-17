@@ -1,0 +1,22 @@
+{
+  "commit": "023b78b1c5a05ca512767cacc07efca55fae8be4",
+  "compiled_checkout_files": {
+    "src/backend/winit/mod.rs": "07f0ed917c44a13aee441cfb3345ec88b64f38bf0fb37c00a028ee19f5a83281",
+    "src/input/keyboard/mod.rs": "9098c17cd641d3a0b5a3f983485f37d7dc83af2823478e2e0985805bb3161fe7",
+    "src/input/pointer/mod.rs": "5bf7095ca92125a42a4dc5d4b8f1b5ba20682dda5e25d9bcf70171f86c1e1ad3",
+    "src/wayland/selection/data_device/device.rs": "0bcc505052e4467112c0666c9dc40ada68a64e2b7e6ea17a71648e1cc5cf7b98",
+    "src/desktop/wayland/popup/grab.rs": "1e2986348452b7de8de8698a8ef7e9b38031b2ceef0843a8b363e18bfe18dab3",
+    "src/wayland/shell/xdg/handlers/surface/popup.rs": "02ec77c80ae8625d254507740bc1ae4b3b545f1e26c6e4bba2b37068ad2f43d1",
+    "src/wayland/shell/xdg/mod.rs": "214879d84c6c8b64237b8a8badce6b0c60b7c47ccde0e0b7a7bc30f45c61fe0b"
+  },
+  "author_findings": [
+    "Winit emits Focus and filters synthetic/repeat keyboard events",
+    "Keyboard input deduplicates already released keys before invoking filter",
+    "PointerHandle.button updates its pressed list before invoking the grab",
+    "StartDrag delegates to compositor callback; runtime source.cancel never installs DnD grab",
+    "Popup ungrab(All) dismisses popup tree; requested popup grab is applied on surface commit",
+    "Private winit key_counter has no focus reset; reconciliation/overflow remains unqualified",
+    "Upstream keyboard TRACE logging includes modifier/key symbols; new diagnostics expose counts only; complete log privacy remains unqualified"
+  ],
+  "limits": "Author pinned-source checks, not Claude inspection or full native/overflow proof"
+}

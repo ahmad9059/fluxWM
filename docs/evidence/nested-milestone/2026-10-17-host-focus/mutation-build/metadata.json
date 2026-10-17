@@ -1,0 +1,7 @@
+{
+  "base_commit": "d91db8e967ca9ef31798cec9644402381dcc50a2",
+  "mutation": "Retain pointer refresh but remove scene redraw from ended popup-grab cleanup",
+  "binary_sha256": "8637c6c5e23e459a547c22da111c6057b13b22a1f79c9c4c3ec9d2caec47b1d3",
+  "original_source_sha256": "2a91902a5e5f04093bc01f30d99b57a6b60cf480a067199a10a36a5cebe44a08",
+  "mutated_source_sha256": "a9b156e28dad6de10867671daf898db89e3eb2b2076c7ff00739b0d90faf43c6"
+}

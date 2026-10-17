@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-positive-control/fluxwm",
+    "--socket",
+    "fluxfocus-1df8acec31e6446b",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-positive-control/popup/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-positive-control/popup/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/focus-positive-control/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

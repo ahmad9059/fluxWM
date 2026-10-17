@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-focus/22fb08c041084d8086b3af38442eaed5/fluxwm",
+    "--socket",
+    "fluxfocus-63ebdf536cf640ab",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-focus/22fb08c041084d8086b3af38442eaed5/keyboard/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-focus/22fb08c041084d8086b3af38442eaed5/keyboard/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-focus/22fb08c041084d8086b3af38442eaed5/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

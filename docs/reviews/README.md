@@ -1,6 +1,10 @@
 # Independent Claude review
 
-## Latest shell-health review
+## Latest host-focus reviews
+
+[Initial Claude report](host-focus-2026-10-17/claude-report.md) reviews `9c4c733`; its [disposition](host-focus-2026-10-17/disposition.md) distinguishes a disputed DnD reachability inference from accepted ownership/popup test gaps. The [follow-up](host-focus-followup-2026-10-17/disposition.md) reviews `d91db8e`, accepts further ownership/denial controls and rebuts a redraw-path assumption with source and mutation evidence. Both frozen inputs have 1,188 matching hashes. Author tests and later changes remain separate from read-only review.
+
+## Shell-health review
 
 [Claude’s shell-health report](shell-health-2026-10-17/claude-report.md) inspects frozen `a5b48da`. Its [disposition](shell-health-2026-10-17/disposition.md) accepts three timing/disconnect/redraw oracle gaps and records later author verification. All 927 frozen file hashes match. Actual trace records 11 calls; no tests were executed by Claude.
 

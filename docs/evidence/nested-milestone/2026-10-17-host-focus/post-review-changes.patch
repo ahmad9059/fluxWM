@@ -1,0 +1,535 @@
+diff --git a/crates/fluxwm-fixture/src/main.rs b/crates/fluxwm-fixture/src/main.rs
+index 7865232..24e5676 100644
+--- a/crates/fluxwm-fixture/src/main.rs
++++ b/crates/fluxwm-fixture/src/main.rs
+@@ -90,6 +90,8 @@ struct State {
+     container_mode: bool,
+     popup_clip_mode: bool,
+     input_probe_mode: bool,
++    focus_popup_probe: bool,
++    focus_popup_serial: Option<u32>,
+     event_file: Option<File>,
+     event_file_bytes: usize,
+     subcompositor: Option<wl_subcompositor::WlSubcompositor>,
+@@ -138,6 +140,8 @@ impl State {
+             container_mode: false,
+             popup_clip_mode: false,
+             input_probe_mode: false,
++            focus_popup_probe: false,
++            focus_popup_serial: None,
+             event_file: None,
+             event_file_bytes: 0,
+             subcompositor: None,
+@@ -732,6 +736,9 @@ impl Dispatch<wl_callback::WlCallback, Callback> for State {
+                 Callback::PopupFrame(n) => {
+                     state.popups[*n].frames += 1;
+                     state.record(json!({"popup_frame_done":n,"timestamp":callback_data}));
++                    if state.focus_popup_probe {
++                        state.record(json!({"type":"popup.frame","popup":n}));
++                    }
+                 }
+                 Callback::Frame(n) => {
+                     state.windows[*n].frames += 1;
+@@ -780,7 +787,7 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
+         event: wl_keyboard::Event,
+         _: &(),
+         _: &Connection,
+-        _: &QueueHandle<Self>,
++        qh: &QueueHandle<Self>,
+     ) {
+         match event {
+             wl_keyboard::Event::Enter {
+@@ -800,7 +807,7 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
+                         .copied()
+                         .map(u32::from_ne_bytes)
+                         .collect();
+-                    state.record(json!({"type":"keyboard.enter","root":state.windows.iter().position(|w|w.surface==surface),"keys":keys,"serial":serial}));
++                    state.record(json!({"type":"keyboard.enter","root":state.windows.iter().position(|w|w.surface==surface),"popup":state.popups.iter().position(|p|p.surface==surface),"keys":keys,"serial":serial}));
+                 }
+                 let popup = state.popups.iter().position(|p| p.surface == surface);
+                 if popup.is_some() {
+@@ -822,7 +829,25 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
+                 key,
+                 state: key_state,
+             } if state.input_probe_mode => {
+-                state.record(json!({"type":"keyboard.key","root":state.keyboard_focus.as_ref().and_then(|surface|state.windows.iter().position(|w|&w.surface==surface)),"key":key,"state":match key_state { WEnum::Value(wl_keyboard::KeyState::Pressed)=>"pressed",WEnum::Value(wl_keyboard::KeyState::Released)=>"released",_=>"unknown" },"serial":serial,"time":time}));
++                state.record(json!({"type":"keyboard.key","root":state.keyboard_focus.as_ref().and_then(|surface|state.windows.iter().position(|w|&w.surface==surface)),"popup":state.keyboard_focus.as_ref().and_then(|surface|state.popups.iter().position(|p|&p.surface==surface)),"key":key,"state":match key_state { WEnum::Value(wl_keyboard::KeyState::Pressed)=>"pressed",WEnum::Value(wl_keyboard::KeyState::Released)=>"released",_=>"unknown" },"serial":serial,"time":time}));
++                if state.focus_popup_probe
++                    && key == 31
++                    && key_state == WEnum::Value(wl_keyboard::KeyState::Pressed)
++                    && state.popups.len() == 1
++                    && state.popups[0].done > 0
++                {
++                    let serial = state.focus_popup_serial.unwrap();
++                    state.destroy_popup(0);
++                    let popup = state.create_popup(0, false, qh);
++                    state.popups[popup]
++                        .popup
++                        .grab(state.seat.as_ref().unwrap(), serial);
++                    // The pinned helper applies requested_grab at surface commit.
++                    state.popups[popup].surface.commit();
++                    state.record(
++                        json!({"type":"popup.stale_grab_requested","popup":popup,"serial":serial}),
++                    );
++                }
+             }
+             wl_keyboard::Event::Modifiers {
+                 serial,
+@@ -844,12 +869,18 @@ impl Dispatch<xdg_surface::XdgSurface, PopupTag> for State {
+         event: xdg_surface::Event,
+         index: &PopupTag,
+         _: &Connection,
+-        _: &QueueHandle<Self>,
++        qh: &QueueHandle<Self>,
+     ) {
+         if let xdg_surface::Event::Configure { serial } = event {
+             surface.ack_configure(serial);
+             state.popups[index.0].configures += 1;
+             state.record(json!({"popup_configure_ack":index.0,"serial":serial}));
++            if state.focus_popup_probe
++                && index.0 != 1
++                && let Err(error) = state.map_popup(index.0, qh)
++            {
++                state.error = Some(error);
++            }
+         }
+     }
+ }
+@@ -876,6 +907,9 @@ impl Dispatch<xdg_popup::XdgPopup, PopupTag> for State {
+             xdg_popup::Event::PopupDone => {
+                 state.popups[index.0].done += 1;
+                 state.record(json!({"popup_done":index.0}));
++                if state.focus_popup_probe {
++                    state.record(json!({"type":"popup.done","popup":index.0}));
++                }
+             }
+             _ => {}
+         }
+@@ -898,17 +932,28 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
+         event: wl_pointer::Event,
+         _: &(),
+         _: &Connection,
+-        _: &QueueHandle<Self>,
++        qh: &QueueHandle<Self>,
+     ) {
+         if state.input_probe_mode {
+             let root = state.pointer_root();
++            let popup = state
++                .pointer_focus_surface
++                .as_ref()
++                .and_then(|surface| state.popups.iter().position(|p| &p.surface == surface));
+             match &event {
+-                wl_pointer::Event::Enter {serial,surface,surface_x,surface_y} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.enter","root":root,"serial":serial,"x":surface_x,"y":surface_y}));}
++                wl_pointer::Event::Enter {serial,surface,surface_x,surface_y} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.enter","root":root,"popup":state.popups.iter().position(|p|p.surface==*surface),"serial":serial,"x":surface_x,"y":surface_y}));}
+                 wl_pointer::Event::Leave {serial,surface} => {let root=state.windows.iter().position(|w|w.surface==*surface);state.record(json!({"type":"pointer.leave","root":root,"serial":serial}));}
+                 wl_pointer::Event::Motion {time,surface_x,surface_y} => state.record(json!({"type":"pointer.motion","root":root,"time":time,"x":surface_x,"y":surface_y})),
+                 wl_pointer::Event::Button {serial,time,button,state:button_state} => {
+                     let button_state=match button_state {WEnum::Value(wl_pointer::ButtonState::Pressed)=>"pressed",WEnum::Value(wl_pointer::ButtonState::Released)=>"released",_=>{state.error=Some("unknown pointer button state".into());"unknown"}};
+-                    state.record(json!({"type":"pointer.button","root":root,"serial":serial,"time":time,"button":button,"state":button_state}));
++                    state.record(json!({"type":"pointer.button","root":root,"popup":popup,"serial":serial,"time":time,"button":button,"state":button_state}));
++                    if state.focus_popup_probe && (state.popups.is_empty() || (state.popups.len() == 2 && state.popups.iter().all(|p| p.done > 0))) && root == Some(0) && *button == 272 && button_state == "pressed" {
++                        for index in 0..state.popups.len() { if !state.popups[index].destroyed { state.destroy_popup(index); } }
++                        state.focus_popup_serial = Some(*serial);
++                        let popup = state.create_popup(0, false, qh);
++                        state.popups[popup].popup.grab(state.seat.as_ref().unwrap(), *serial);
++                        state.record(json!({"type":"popup.grab_requested","popup":popup,"serial":serial}));
++                    }
+                 }
+                 wl_pointer::Event::Axis {time,axis,value} => {let axis=pointer_axis_name(*axis);state.record(json!({"type":"pointer.axis","root":root,"time":time,"axis":axis,"value":value}));}
+                 wl_pointer::Event::AxisStop {time,axis}=>state.record(json!({"type":"pointer.axis_stop","root":root,"time":time,"axis":pointer_axis_name(*axis)})),
+@@ -2338,6 +2383,8 @@ fn input_probe(timeout: Duration) -> Json {
+     state.pointer_feedback_enabled = true;
+     state.input_probe_mode = true;
+     state.popup_mode = true; // Bind keyboard as well as pointer for the live journal.
++    state.focus_popup_probe =
++        std::env::var("FLUXWM_FIXTURE_GRAB_POPUP").ok().as_deref() == Some("1");
+     let mut evidence = json!({"mode":"input-probe","ok":false,"observation_ms":OBSERVE_MS,"buffer_size":[320,240],"physical_input_injected_by_fixture":false});
+     let result = (|| -> Result<()> {
+         use std::os::unix::fs::OpenOptionsExt;
+diff --git a/crates/fluxwm/src/handlers/xdg_shell.rs b/crates/fluxwm/src/handlers/xdg_shell.rs
+index e75f9cc..1512f19 100644
+--- a/crates/fluxwm/src/handlers/xdg_shell.rs
++++ b/crates/fluxwm/src/handlers/xdg_shell.rs
+@@ -182,8 +182,15 @@ impl XdgShellHandler for Fluxwm {
+             .pointer_presses
+             .values()
+             .any(|pressed| *pressed == serial)
+-            || check_grab(&seat, surface.wl_surface(), serial).is_none()
+         {
++            self.stats.popup_grabs_denied_missing_press = self
++                .stats
++                .popup_grabs_denied_missing_press
++                .saturating_add(1);
++            surface.send_popup_done();
++            return;
++        }
++        if check_grab(&seat, surface.wl_surface(), serial).is_none() {
+             surface.send_popup_done();
+             return;
+         }
+diff --git a/crates/fluxwm/src/ipc.rs b/crates/fluxwm/src/ipc.rs
+index 21ab4c7..d575524 100644
+--- a/crates/fluxwm/src/ipc.rs
++++ b/crates/fluxwm/src/ipc.rs
+@@ -101,9 +101,24 @@ impl Fluxwm {
+                 ErrorCode::NotReady,
+                 "Lua configuration is not integrated into the nested runtime",
+             )),
+-            Method::Diagnostics => Ok(
+-                json!({"input_state":{"host_focus":self.host_focus,"pressed_keys":self.seat.get_keyboard().map_or(0, |k| k.pressed_keys().len()),"suppressed_keys":self.suppressed_keys.len(),"pressed_buttons":self.pointer_presses.len(),"pointer_grabbed":self.seat.get_pointer().is_some_and(|p|p.is_grabbed()),"keyboard_grabbed":self.seat.get_keyboard().is_some_and(|k|k.is_grabbed())},"shell_health":self.health.diagnostics(),"runtime":self.stats,"live_roles":self.windows.len(),"mapped_windows":self.layout.len(),"owned_applications":self.spawned.len(),"pending_launches":self.pending_spawns,"launch_outcomes":self.launch_outcomes,"backend":"nested","production_ready":false}),
+-            ),
++            Method::Diagnostics => Ok(json!({
++                "composed_scene": self.scene.as_ref().map(|scene| {
++                    let (surfaces, popup_surfaces) = scene.surface_counts();
++                    json!({"surfaces":surfaces, "popup_surfaces":popup_surfaces})
++                }),
++                "input_state": {
++                    "host_focus":self.host_focus,
++                    "pressed_keys":self.seat.get_keyboard().map_or(0, |k| k.pressed_keys().len()),
++                    "suppressed_keys":self.suppressed_keys.len(),
++                    "authorized_buttons":self.pointer_presses.len(),
++                    "pointer_grabbed":self.seat.get_pointer().is_some_and(|p|p.is_grabbed()),
++                    "keyboard_grabbed":self.seat.get_keyboard().is_some_and(|k|k.is_grabbed()),
++                },
++                "shell_health":self.health.diagnostics(), "runtime":self.stats,
++                "live_roles":self.windows.len(), "mapped_windows":self.layout.len(),
++                "owned_applications":self.spawned.len(), "pending_launches":self.pending_spawns,
++                "launch_outcomes":self.launch_outcomes, "backend":"nested", "production_ready":false,
++            })),
+             Method::Action => request.action().and_then(|action| {
+                 let spawning = matches!(action, flux_core::Action::Spawn { .. });
+                 self.apply_action(action)
+diff --git a/crates/fluxwm/src/scene.rs b/crates/fluxwm/src/scene.rs
+index c58ffb5..3fb9cdc 100644
+--- a/crates/fluxwm/src/scene.rs
++++ b/crates/fluxwm/src/scene.rs
+@@ -43,9 +43,13 @@ pub struct RuntimeScene {
+     geometry: SceneSnapshot,
+     // Both lists are front to back, matching Smithay's element ordering.
+     input: Vec<InputSurface>,
++    popup_surfaces: usize,
+ }
+ 
+ impl RuntimeScene {
++    pub fn surface_counts(&self) -> (usize, usize) {
++        (self.input.len(), self.popup_surfaces)
++    }
+     pub fn capture(state: &Fluxwm, viewport: Rect) -> Result<Self, String> {
+         let placements = state.layout.placements();
+         let mut inputs = Vec::new();
+@@ -131,7 +135,12 @@ impl RuntimeScene {
+         for tree in &trees {
+             capture_input(tree, &mut input, &mut region_rects, &visited)?;
+         }
+-        Ok(Self { geometry, input })
++        let popup_surfaces = input.iter().filter(|surface| surface.popup).count();
++        Ok(Self {
++            geometry,
++            input,
++            popup_surfaces,
++        })
+     }
+ 
+     pub fn windows(&self) -> impl Iterator<Item = WindowId> + '_ {
+diff --git a/crates/fluxwm/src/state.rs b/crates/fluxwm/src/state.rs
+index 550df3e..20387c8 100644
+--- a/crates/fluxwm/src/state.rs
++++ b/crates/fluxwm/src/state.rs
+@@ -56,6 +56,7 @@ pub struct RuntimeStats {
+     pub host_focus_losses: u64,
+     pub focus_cancelled_keys: u64,
+     pub focus_cancelled_buttons: u64,
++    pub popup_grabs_denied_missing_press: u64,
+     pub ipc_dispatches_after_shutdown: u64,
+     #[serde(skip_serializing_if = "Option::is_none")]
+     pub ipc_drain_budget_ms: Option<u64>,
+@@ -673,7 +674,9 @@ impl Fluxwm {
+             }
+             pointer.frame(self);
+         }
+-        self.pointer_focus_dirty = true;
++        // A dismissed-but-alive popup must disappear without waiting for the
++        // client to destroy its role or for unrelated damage to trigger a frame.
++        self.request_redraw();
+         self.restore_keyboard_focus();
+         self.bump_sequence();
+     }
+diff --git a/tools/smoke_focus.py b/tools/smoke_focus.py
+index 2c802da..be02614 100644
+--- a/tools/smoke_focus.py
++++ b/tools/smoke_focus.py
+@@ -12,14 +12,14 @@ import sys
+ import time
+ import uuid
+ 
+-from smoke_input import Session, prepare_xvfb
++from smoke_input import Session, prepare_xvfb, short_runtime, close_runtime
+ from smoke_nested import require, sha256, write_json
+ 
+ 
+ def run_case(executable, binary, fixture, directory, case):
+     directory.mkdir(mode=0o700)
+     result = {'ok': False, 'case': case, 'errors': [], 'binary_sha256': sha256(binary), 'fixture_sha256': sha256(fixture)}
+-    session = compositor = client = None
++    session = compositor = client = runtime_owner = None
+     logs = []
+     deadline = time.monotonic() + 20
+     responses = []
+@@ -67,7 +67,7 @@ def run_case(executable, binary, fixture, directory, case):
+     try:
+         session = Session(executable, directory)
+         wait(session.ready)
+-        runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
++        runtime_owner = short_runtime(); runtime = Path(runtime_owner.name)
+         environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime), XKB_DEFAULT_LAYOUT='us', XKB_DEFAULT_VARIANT='', XKB_DEFAULT_OPTIONS='')
+         name = 'fluxfocus-' + uuid.uuid4().hex[:16]
+         ready, stats = directory / 'ready.json', directory / 'stats.json'
+@@ -81,6 +81,8 @@ def run_case(executable, binary, fixture, directory, case):
+         result['target'] = session.test(compositor.pid)
+         inject('focus', focused=True)
+         child_environment = dict(environment, WAYLAND_DISPLAY=name, FLUXWM_SOCKET=str(ipc_path), FLUXWM_FIXTURE_EVENT_FILE=str(event_path))
++        child_environment.pop('FLUXWM_FIXTURE_GRAB_POPUP', None)
++        if case == 'popup': child_environment['FLUXWM_FIXTURE_GRAB_POPUP'] = '1'
+         client = subprocess.Popen([str(fixture), 'input-probe', '--timeout-ms', '10000'], env=child_environment, stdout=logs[2], stderr=logs[3], start_new_session=True)
+         wait(lambda: seen('ready'), 8)
+         owners = {w['title']: w for w in ipc('windows.list')['windows']}
+@@ -130,6 +132,58 @@ def run_case(executable, binary, fixture, directory, case):
+             expect(not seen('keyboard.key', since=late, key=30, state='released'), 'late_A_release_forwarded_twice')
+             fresh = len(events()); inject('key', key='a', pressed=True); inject('key', key='a', pressed=False)
+             expect(observe(lambda: seen('keyboard.key', since=fresh, key=30, state='pressed') and seen('keyboard.key', since=fresh, key=30, state='released')), 'fresh_A_failed_after_reentry')
++            result['consumed_reentry_tested'] = not result['errors']
++            if result['consumed_reentry_tested']:
++                inject('key', key='Alt_L', pressed=True); inject('key', key='c', pressed=True)
++                wait(lambda: ipc('workspaces.list')['workspaces'][0]['mode'] == 'canvas')
++                inject('focus', focused=False)
++                inject('key', key='Alt_L', pressed=False, activate=False)
++                inject('focus', focused=True)
++                inject('key', key='c', pressed=False)
++        elif case == 'popup':
++            inject('button', button=1, pressed=True)
++            wait(lambda: seen('popup.frame', popup=0) and seen('keyboard.enter', popup=0))
++            inject('motion', x=65, y=64)
++            wait(lambda: seen('pointer.enter', popup=0))
++            inject('key', key='a', pressed=True)
++            wait(lambda: seen('keyboard.key', key=30, popup=0, state='pressed'))
++            time.sleep(.2); check()
++            before = ipc('diagnostics'); result['before_popup_loss'] = before
++            expect(before.get('composed_scene', {}).get('popup_surfaces') == 1, 'popup_not_in_published_scene')
++            expect(before.get('input_state', {}).get('keyboard_grabbed') is True and before.get('input_state', {}).get('pointer_grabbed') is True, 'valid_popup_grabs_not_installed')
++            loss = len(events()); result['focus_loss_event_index'] = loss
++            inject('focus', focused=False)
++            expect(observe(lambda: seen('popup.done', since=loss, popup=0)), 'popup_not_dismissed_on_focus_loss')
++            expect(observe(lambda: seen('keyboard.key', since=loss, popup=0, key=30, state='released')), 'popup_held_key_not_released')
++            expect(observe(lambda: seen('keyboard.enter', since=loss, root=0, keys=[])), 'root_keyboard_not_restored_empty')
++            # The fixture retains the dismissed popup role and sends no further
++            # Wayland request until S below, so client teardown cannot mask redraw.
++            after = ipc('diagnostics')
++            stop = time.monotonic() + .5
++            while after['runtime']['compositions'] <= before['runtime']['compositions'] and time.monotonic() < stop:
++                check(); time.sleep(.01); after = ipc('diagnostics')
++            result['after_popup_loss'] = after; result['after_loss'] = after
++            expect(after['runtime']['compositions'] > before['runtime']['compositions'] and after.get('composed_scene', {}).get('popup_surfaces') == 0, 'dismissed_popup_not_recomposed')
++            expect(after['runtime']['wayland_requests'] == before['runtime']['wayland_requests'], 'client_request_masked_popup_recomposition')
++            inject('focus', focused=True)
++            inject('key', key='s', pressed=True); inject('key', key='s', pressed=False)
++            expect(observe(lambda: seen('popup.stale_grab_requested', popup=1) and seen('popup.done', popup=1)), 'expired_popup_serial_not_rejected')
++            expect(not seen('keyboard.enter', popup=1), 'denied_popup_stole_keyboard_focus')
++            denied = ipc('diagnostics'); result['after_stale_grab'] = denied
++            expect(denied['runtime'].get('popup_grabs_denied_missing_press') == after['runtime'].get('popup_grabs_denied_missing_press', 0) + 1, 'stale_grab_denied_for_wrong_reason')
++            inject('key', key='a', pressed=False)
++            inject('button', button=1, pressed=False)
++            # Positive control: the same root must still authorize a fresh grab.
++            inject('button', button=1, pressed=True)
++            accepted = observe(lambda: seen('popup.frame', popup=2) and seen('keyboard.enter', popup=2))
++            expect(accepted, 'fresh_popup_grab_after_return_failed')
++            if accepted:
++                inject('motion', x=66, y=64); wait(lambda: seen('pointer.enter', popup=2))
++                fresh = ipc('diagnostics'); result['fresh_popup_grab'] = fresh
++                expect(fresh['input_state']['keyboard_grabbed'] and fresh['input_state']['pointer_grabbed'], 'fresh_popup_wrappers_missing')
++                inject('focus', focused=False)
++                expect(observe(lambda: seen('popup.done', popup=2)), 'fresh_popup_not_cancelled')
++                inject('button', button=1, pressed=False, activate=False)
+         else:
+             inject('button', button=1, pressed=True)
+             wait(lambda: seen('pointer.button', root=0, button=272, state='pressed'))
+@@ -153,7 +207,7 @@ def run_case(executable, binary, fixture, directory, case):
+             expect(observe(lambda: seen('pointer.button', since=fresh, root=1, button=272, state='pressed') and seen('pointer.button', since=fresh, root=1, button=272, state='released')), 'fresh_B_click_failed')
+         state = result['after_loss'].get('input_state', {})
+         expect(state.get('host_focus') is False, 'host_focus_loss_not_observed')
+-        expect(state.get('pressed_keys') == 0 and state.get('suppressed_keys') == 0 and state.get('pressed_buttons') == 0 and state.get('pointer_grabbed') is False, 'held_state_survived_focus_loss')
++        expect(state.get('pressed_keys') == 0 and state.get('suppressed_keys') == 0 and state.get('authorized_buttons') == 0 and state.get('pointer_grabbed') is False and state.get('keyboard_grabbed') is False, 'held_state_survived_focus_loss')
+         result['final_input_state'] = ipc('diagnostics').get('input_state')
+         wait(lambda: client.poll() is not None, 9)
+         result['fixture_report'] = json.loads((directory / 'fixture.stdout.log').read_text())
+@@ -162,13 +216,32 @@ def run_case(executable, binary, fixture, directory, case):
+         if case == 'keyboard':
+             counts = {str(key): {kind: sum(e.get('type') == 'keyboard.key' and e.get('key') == key and e.get('state') == kind for e in journal) for kind in ['pressed', 'released']} for key in [30, 31, 46, 56]}
+             result['complete_key_counts'] = counts
+-            expect(counts == {'30': {'pressed': 2, 'released': 2}, '31': {'pressed': 1, 'released': 1}, '46': {'pressed': 0, 'released': 0}, '56': {'pressed': 2, 'released': 2}}, 'complete_key_ownership_counts_differ')
+-        else:
++            alt_count = 3 if result.get('consumed_reentry_tested') else 2
++            expect(counts == {'30': {'pressed': 2, 'released': 2}, '31': {'pressed': 1, 'released': 1}, '46': {'pressed': 0, 'released': 0}, '56': {'pressed': alt_count, 'released': alt_count}}, 'complete_key_ownership_counts_differ')
++        elif case == 'pointer':
++            enter = next((i for i,e in enumerate(journal) if i >= result['focus_loss_event_index'] and e.get('type') == 'pointer.enter' and e.get('root') == 1), None)
++            press = next((i for i,e in enumerate(journal) if e.get('type') == 'pointer.button' and e.get('root') == 1 and e.get('state') == 'pressed'), None)
++            expect(enter is not None and press is not None and enter < press, 'B_press_preceded_pointer_enter')
+             counts = {str(owner): {kind: sum(e.get('type') == 'pointer.button' and e.get('button') == 272 and e.get('root') == owner and e.get('state') == kind for e in journal) for kind in ['pressed', 'released']} for owner in [0, 1]}
+             result['complete_button_counts'] = counts
+             expect(counts == {'0': {'pressed': 1, 'released': 1}, '1': {'pressed': 1, 'released': 1}}, 'complete_button_ownership_counts_differ')
++        else:
++            def ownership(kind, code_name, code):
++                found = {}
++                for e in journal:
++                    if e.get('type') != kind or e.get(code_name) != code: continue
++                    owner = 'popup-' + str(e['popup']) if e.get('popup') is not None else 'root-' + str(e.get('root'))
++                    key = owner + ':' + e.get('state', 'unknown'); found[key] = found.get(key, 0) + 1
++                return found
++            keys_a = ownership('keyboard.key', 'key', 30)
++            keys_s = ownership('keyboard.key', 'key', 31)
++            buttons = ownership('pointer.button', 'button', 272)
++            result['popup_complete_ownership'] = {'A': keys_a, 'S': keys_s, 'left_button': buttons}
++            expect(keys_a == {'popup-0:pressed': 1, 'popup-0:released': 1}, 'popup_A_ownership_count_differs')
++            expect(keys_s == {'root-0:pressed': 1, 'root-0:released': 1}, 'popup_S_ownership_count_differs')
++            expect(buttons == {'root-0:pressed': 2, 'popup-0:released': 1, 'popup-2:released': 1}, 'popup_button_ownership_count_differs')
+         final_state = ipc('diagnostics').get('input_state', {})
+-        expect(final_state.get('pressed_keys') == 0 and final_state.get('pressed_buttons') == 0 and final_state.get('suppressed_keys') == 0, 'held_state_remained_after_fixture_completion')
++        expect(final_state.get('pressed_keys') == 0 and final_state.get('authorized_buttons') == 0 and final_state.get('suppressed_keys') == 0, 'held_state_remained_after_fixture_completion')
+         result['quit'] = ipc('action', {'name': 'quit'})
+         compositor.wait(timeout=2); require(compositor.returncode == 0, 'compositor shutdown failed')
+         result['stats'] = json.loads(stats.read_text())
+@@ -193,6 +266,9 @@ def run_case(executable, binary, fixture, directory, case):
+             result['private_server_reaped'] = session.server.poll() is not None
+             result['private_x_socket_removed'] = not Path('/tmp/.X11-unix/X' + str(session.number)).exists()
+             result['parent_environment_unchanged'] = session.parent == dict(os.environ)
++        if runtime_owner is not None:
++            result['runtime_cleanup'] = close_runtime(runtime_owner)
++            result['ok'] &= all(result['runtime_cleanup'][k] for k in ['endpoints_removed_before_cleanup', 'directory_removed'])
+         for log in logs: log.close()
+         result['responses'] = responses
+         result['compositor_exit'] = compositor.returncode if compositor else None
+@@ -208,6 +284,7 @@ def main():
+     parser.add_argument('--fixture', type=Path, default=root / 'target/debug/fluxwm-fixture')
+     parser.add_argument('--bundle', type=Path)
+     parser.add_argument('--artifacts', type=Path)
++    parser.add_argument('--case', choices=['all', 'keyboard', 'pointer', 'popup'], default='all')
+     args = parser.parse_args()
+     directory = (args.artifacts or root / 'target/smoke-focus' / uuid.uuid4().hex).resolve()
+     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
+@@ -218,7 +295,8 @@ def main():
+         digest = sha256(source); shutil.copyfile(source, directory / name); (directory / name).chmod(0o700)
+         require(digest == sha256(source) == sha256(directory / name), 'executable changed during snapshot')
+         identities[name] = digest
+-    cases = [run_case(executable, directory / 'fluxwm', directory / 'fixture', directory / case, case) for case in ['keyboard', 'pointer']]
++    names = ['keyboard', 'pointer', 'popup'] if args.case == 'all' else [args.case]
++    cases = [run_case(executable, directory / 'fluxwm', directory / 'fixture', directory / case, case) for case in names]
+     result = {'ok': all(case['ok'] for case in cases), 'cases': cases, 'package': verification, 'executables': identities,
+               'harness_sha256': source_hashes['harness'], 'private_helper_sha256': source_hashes['helper'],
+               'test_sources_unchanged': source_hashes == {'harness': sha256(Path(__file__)), 'helper': sha256(root / 'tools/smoke_input.py')},
+diff --git a/tools/smoke_input.py b/tools/smoke_input.py
+index c06c2b2..297518a 100644
+--- a/tools/smoke_input.py
++++ b/tools/smoke_input.py
+@@ -12,6 +12,7 @@ import secrets
+ import socket
+ import struct
+ import subprocess
++import tempfile
+ import sys
+ import time
+ import urllib.request
+@@ -216,6 +217,18 @@ def xtest_helper():
+     finally:
+         connection.close()
+ 
++def short_runtime():
++    # Artifact paths can be arbitrarily long; AF_UNIX pathname sockets cannot.
++    return tempfile.TemporaryDirectory(prefix='fluxrt-', dir='/tmp')
++
++
++def close_runtime(owner):
++    path = Path(owner.name)
++    endpoints_removed = not any(not p.is_dir() for p in path.rglob('*'))
++    owner.cleanup()
++    return {'path': str(path), 'endpoints_removed_before_cleanup': endpoints_removed, 'directory_removed': not path.exists()}
++
++
+ class Session:
+     def __init__(self, executable, directory, screen="1600x1000x24"):
+         require(screen in ("1600x1000x24", "3000x2000x24"), 'unsupported private screen size')
+@@ -277,7 +290,7 @@ def main():
+     directory = (args.artifacts or root / 'target/smoke-input' / uuid.uuid4().hex).resolve()
+     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
+     result = {'ok': False, 'case': args.case, 'harness_sha256': digest(Path(__file__)), 'invocation': [sys.executable, *sys.argv], 'scope': 'private authenticated X11 host -> nested FluxWM -> owned Wayland input-probe; no host-session injection'}
+-    session = compositor = fixture = None
++    session = compositor = fixture = runtime_owner = None
+     logs = []
+     started = time.monotonic()
+     deadline = None
+@@ -336,7 +349,7 @@ def main():
+             session = Session(executable, directory)
+             deadline = time.monotonic() + 30
+             wait(session.ready)
+-            runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
++            runtime_owner = short_runtime(); runtime = Path(runtime_owner.name)
+             environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime))
+             name = 'fluxwm-input-' + uuid.uuid4().hex[:12]
+             ready = directory / 'ready.json'
+@@ -348,6 +361,7 @@ def main():
+             result['target'] = session.test(compositor.pid)
+             event_file = directory / 'input.events.jsonl'
+             fixture_environment = dict(environment, WAYLAND_DISPLAY=name, FLUXWM_SOCKET=str(ipc_path), FLUXWM_FIXTURE_EVENT_FILE=str(event_file))
++            fixture_environment.pop('FLUXWM_FIXTURE_GRAB_POPUP', None)
+             fixture = subprocess.Popen([str(directory / 'fixture'), 'input-probe', '--timeout-ms', '10000'], env=fixture_environment, stdout=logs[2], stderr=logs[3], start_new_session=True)
+             wait(lambda: observed('ready'), 8)
+             windows = ipc('windows.list')['windows']
+@@ -436,6 +450,9 @@ def main():
+                 try: process.wait(timeout=2)
+                 except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=2)
+         if session is not None: session.close()
++        if runtime_owner is not None:
++            result['runtime_cleanup'] = close_runtime(runtime_owner)
++            result['ok'] &= all(result['runtime_cleanup'][k] for k in ['endpoints_removed_before_cleanup', 'directory_removed'])
+         for log in logs: log.close()
+         result['elapsed_seconds'] = time.monotonic() - started
+         result['responses'] = responses
+diff --git a/tools/smoke_private.py b/tools/smoke_private.py
+index 8f07e4b..06f40da 100644
+--- a/tools/smoke_private.py
++++ b/tools/smoke_private.py
+@@ -9,7 +9,7 @@ import sys
+ import time
+ import uuid
+ 
+-from smoke_input import Session, prepare_xvfb
++from smoke_input import Session, prepare_xvfb, short_runtime, close_runtime
+ from smoke_nested import require, sha256, write_json
+ 
+ 
+@@ -26,7 +26,7 @@ def main():
+     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
+     parent = dict(os.environ)
+     result = {'ok': False, 'scope': 'owned authenticated X11 software-rendered nested suites; no host input injection', 'harness_sha256': sha256(Path(__file__)), 'suites': []}
+-    session = process = None
++    session = process = runtime_owner = None
+     try:
+         executable, verification = prepare_xvfb(args.bundle, directory)
+         result['package'] = verification
+@@ -40,7 +40,7 @@ def main():
+             time.sleep(.01)
+         require(Path('/tmp/.X' + str(session.number) + '-lock').read_text().strip() == str(session.server.pid), 'private display lock PID mismatch')
+         require(os.getpgid(session.server.pid) == session.server.pid, 'private server session ownership mismatch')
+-        runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
++        runtime_owner = short_runtime(); runtime = Path(runtime_owner.name)
+         environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime))
+         result['private_server_pid'] = session.server.pid
+         result['private_display'] = session.display
+@@ -72,6 +72,9 @@ def main():
+             result['authority_removed'] = not session.auth.exists()
+             result['server_reaped'] = session.server.poll() is not None
+             result['x_socket_removed'] = not Path('/tmp/.X11-unix/X' + str(session.number)).exists()
++        if runtime_owner is not None:
++            result['runtime_cleanup'] = close_runtime(runtime_owner)
++            result['ok'] &= all(result['runtime_cleanup'][k] for k in ['endpoints_removed_before_cleanup', 'directory_removed'])
+         result['parent_environment_unchanged'] = parent == dict(os.environ)
+         write_json(directory / 'result.json', result)
+     print(json.dumps({'ok': result['ok'], 'artifacts': str(directory), 'error': result.get('error')}))
