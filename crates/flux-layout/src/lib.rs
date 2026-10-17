@@ -247,6 +247,39 @@ impl Layout {
     pub fn mode(&self) -> LayoutMode {
         self.mode
     }
+    pub fn gap(&self) -> f64 {
+        self.gap
+    }
+    /// Apply logical runtime configuration atomically, without protocol effects.
+    /// Existing width policies and group identities survive. A changed gap reveals
+    /// focus in the current mode; mode conversion follows [`Self::set_mode`].
+    /// Failure leaves the complete model, including saved mode state, unchanged.
+    pub fn reconfigure(&mut self, gap: f64, mode: LayoutMode) -> Result<(), LayoutError> {
+        let mut candidate = self.clone();
+        if gap != candidate.gap {
+            candidate.set_gap(gap)?;
+        }
+        candidate.set_mode(mode);
+        candidate.check_strip_extent(candidate.viewport.width, gap, None, None, 0.0)?;
+        candidate
+            .validate()
+            .map_err(|_| LayoutError::InvalidGeometry)?;
+        // Validate dormant geometry too, without performing another conversion or
+        // reveal. A successful publication must remain usable in either mode.
+        for saved_mode in [LayoutMode::Strip, LayoutMode::Canvas] {
+            candidate.mode = saved_mode;
+            if candidate
+                .placements()
+                .iter()
+                .any(|p| !valid_rect(p.rect) || !valid_rect(p.clip))
+            {
+                return Err(LayoutError::InvalidGeometry);
+            }
+        }
+        candidate.mode = mode;
+        *self = candidate;
+        Ok(())
+    }
     pub fn focused(&self) -> Option<WindowId> {
         self.focus
     }
@@ -1417,6 +1450,144 @@ mod tests {
         l.focus_window(id(0)).unwrap();
         assert_eq!(l.focus_direction(Direction::Right).unwrap(), Some(id(1)));
         assert_eq!(l.focus_direction(Direction::Down).unwrap(), None);
+    }
+    // Include future mode transitions: rollback must preserve dormant geometry,
+    // cameras and one-time conversion flags as well as the current scene.
+    fn assert_same_observations(a: &Layout, b: &Layout) {
+        let (mut a, mut b) = (a.clone(), b.clone());
+        for mode in [
+            a.mode(),
+            LayoutMode::Canvas,
+            LayoutMode::Strip,
+            LayoutMode::Canvas,
+        ] {
+            a.set_mode(mode);
+            b.set_mode(mode);
+            assert_eq!(a.gap(), b.gap());
+            assert_eq!(a.mode(), b.mode());
+            assert_eq!(a.len(), b.len());
+            assert_eq!(a.focused(), b.focused());
+            assert_eq!(a.viewport(), b.viewport());
+            assert_eq!(a.camera(), b.camera());
+            assert_eq!(a.placements(), b.placements());
+            assert_eq!(a.visible_placements(), b.visible_placements());
+            assert_eq!(a.canvas_groups(), b.canvas_groups());
+        }
+    }
+    #[test]
+    fn reconfigure_changes_gap_preserving_members_focus_and_width_policies() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.set_column_width(id(0), WidthPolicy::Fixed(123.0))
+            .unwrap();
+        l.set_column_width(id(1), WidthPolicy::ViewportFraction(0.25))
+            .unwrap();
+        l.focus_window(id(1)).unwrap();
+        let groups: Vec<_> = (0..3).map(|n| l.group_for(id(n))).collect();
+        let before = l.placements();
+        l.reconfigure(27.0, LayoutMode::Strip).unwrap();
+        let after = l.placements();
+        assert_eq!(l.gap(), 27.0);
+        assert_eq!(l.focused(), Some(id(1)));
+        assert_eq!(l.len(), 3);
+        for n in 0..3 {
+            assert_eq!(l.group_for(id(n)), groups[n as usize]);
+            assert_eq!(before[n as usize].window, after[n as usize].window);
+            assert_eq!(before[n as usize].rect.width, after[n as usize].rect.width);
+        }
+        assert_eq!(after[1].rect.x - before[1].rect.x, 19.0);
+        assert_eq!(after[2].rect.x - before[2].rect.x, 38.0);
+        let viewport = l.viewport();
+        l.set_viewport(Size {
+            width: viewport.width * 2.0,
+            ..viewport
+        })
+        .unwrap();
+        assert_eq!(rect(&l, id(0)).width, 123.0);
+        assert_eq!(rect(&l, id(1)).width, before[1].rect.width * 2.0);
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn reconfigure_modes_retain_saved_groups_tabs_and_cameras() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.join_column(id(1), id(0)).unwrap();
+        l.set_column_mode(id(0), ColumnMode::Tabs).unwrap();
+        let group = l.group_for(id(0));
+        l.reconfigure(16.0, LayoutMode::Canvas).unwrap();
+        l.pan(-40.0, 25.0).unwrap();
+        let camera = l.camera();
+        let groups = l.canvas_groups();
+        let focus = l.focused();
+        l.reconfigure(16.0, LayoutMode::Strip).unwrap();
+        l.reconfigure(16.0, LayoutMode::Canvas).unwrap();
+        assert_eq!(l.camera(), camera);
+        assert_eq!(l.canvas_groups(), groups);
+        assert_eq!(l.focused(), focus);
+        assert_eq!(l.group_for(id(1)), group);
+        assert_eq!(l.placements().iter().filter(|p| p.visible).count(), 2);
+        let saved = l.clone();
+        l.reconfigure(16.0, LayoutMode::Canvas).unwrap();
+        assert_same_observations(&l, &saved);
+    }
+    #[test]
+    fn reconfigure_rejects_invalid_and_aggregate_geometry_atomically() {
+        let mut l = layout();
+        l.insert(id(0), SizeConstraints::default()).unwrap();
+        l.insert(id(1), SizeConstraints::default()).unwrap();
+        for gap in [f64::NAN, f64::INFINITY, -1.0, 1025.0] {
+            let saved = l.clone();
+            assert_eq!(
+                l.reconfigure(gap, LayoutMode::Canvas),
+                Err(LayoutError::InvalidGeometry)
+            );
+            assert_same_observations(&l, &saved);
+        }
+        l.set_column_width(id(0), WidthPolicy::Fixed(MAX_COORD - 2048.0))
+            .unwrap();
+        l.set_column_width(id(1), WidthPolicy::Fixed(1024.0))
+            .unwrap();
+        let saved = l.clone();
+        assert_eq!(
+            l.reconfigure(1024.0, LayoutMode::Canvas),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_same_observations(&l, &saved);
+    }
+    #[test]
+    fn reconfigure_validates_dormant_stack_geometry_before_publication() {
+        let mut l = layout();
+        l.set_gap(0.0).unwrap();
+        for n in 0..2 {
+            l.insert(
+                id(n),
+                SizeConstraints {
+                    min: Size {
+                        width: 1.0,
+                        height: MAX_COORD,
+                    },
+                    max: None,
+                },
+            )
+            .unwrap();
+        }
+        l.join_column(id(1), id(0)).unwrap();
+        l.set_column_mode(id(0), ColumnMode::Tabs).unwrap();
+        l.set_mode(LayoutMode::Canvas);
+        // Stack policy is shared. Keep focus on the first member so the second
+        // starts exactly at MAX_COORD in each representation before reloading.
+        l.focus_window(id(0)).unwrap();
+        l.set_column_mode(id(0), ColumnMode::Stack).unwrap();
+        let saved = l.clone();
+        assert_eq!(
+            l.reconfigure(1.0, LayoutMode::Strip),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_same_observations(&l, &saved);
     }
     #[test]
     fn tiny_viewport_and_extent_capacity_are_handled_without_partial_mutation() {
