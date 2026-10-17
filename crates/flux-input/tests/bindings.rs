@@ -330,3 +330,85 @@ xkb_keymap {
             .contains("transition policy")
     );
 }
+
+#[test]
+fn lock_only_actions_are_checked_even_when_matching_ignores_lock_modifiers() {
+    for (kind, modifier) in [
+        ("ALPHABETIC", xkb::MOD_NAME_CAPS),
+        ("KEYPAD", xkb::MOD_NAME_NUM),
+    ] {
+        let context = xkb::Context::new(xkb::CONTEXT_NO_ENVIRONMENT_NAMES);
+        let source = format!(
+            r#"xkb_keymap {{
+ xkb_keycodes {{ include "evdev+aliases(qwerty)" }};
+ xkb_types {{ include "complete" }};
+ xkb_compatibility {{ include "complete" }};
+ xkb_symbols {{ include "pc+us+inet(evdev)"
+  key <AC01> {{ type="{kind}", symbols[Group1]=[a,A],
+   actions[Group1]=[NoAction(),SetMods(modifiers=Control)] }};
+ }};
+}};"#
+        );
+        let keymap = xkb::Keymap::new_from_string(
+            &context,
+            source,
+            xkb::KEYMAP_FORMAT_TEXT_V1,
+            xkb::KEYMAP_COMPILE_NO_FLAGS,
+        )
+        .unwrap();
+        let mut unlocked = xkb::State::new(&keymap);
+        unlocked.update_key(xkb::Keycode::new(38), xkb::KeyDirection::Down);
+        assert!(!unlocked.mod_name_is_active(xkb::MOD_NAME_CTRL, xkb::STATE_MODS_EFFECTIVE));
+        let mut locked = xkb::State::new(&keymap);
+        locked.update_mask(0, 0, 1 << keymap.mod_get_index(modifier), 0, 0, 0);
+        locked.update_key(xkb::Keycode::new(38), xkb::KeyDirection::Down);
+        assert!(
+            locked.mod_name_is_active(xkb::MOD_NAME_CTRL, xkb::STATE_MODS_EFFECTIVE),
+            "{kind}"
+        );
+        assert!(
+            BindingSet::compile(&[binding("a")], &keymap, UnmappedPolicy::Reject)
+                .unwrap_err()
+                .to_string()
+                .contains("transition policy")
+        );
+    }
+}
+
+#[test]
+fn actions_present_only_in_the_second_group_are_checked_in_that_group() {
+    let context = xkb::Context::new(xkb::CONTEXT_NO_ENVIRONMENT_NAMES);
+    let keymap = xkb::Keymap::new_from_string(
+        &context,
+        r#"xkb_keymap {
+ xkb_keycodes { include "evdev+aliases(qwerty)" };
+ xkb_types { include "complete" };
+ xkb_compatibility { include "complete" };
+ xkb_symbols { include "pc+us+ru:2+inet(evdev)"
+  key <AC01> { type="TWO_LEVEL", symbols[Group1]=[a,A],
+   actions[Group1]=[NoAction(),NoAction()],
+   symbols[Group2]=[Cyrillic_ef,Cyrillic_EF],
+   actions[Group2]=[SetMods(modifiers=Control),SetMods(modifiers=Control)] };
+ };
+};"#
+        .into(),
+        xkb::KEYMAP_FORMAT_TEXT_V1,
+        xkb::KEYMAP_COMPILE_NO_FLAGS,
+    )
+    .unwrap();
+    for group in [0, 1] {
+        let mut state = xkb::State::new(&keymap);
+        state.update_mask(0, 0, 0, 0, 0, group);
+        state.update_key(xkb::Keycode::new(38), xkb::KeyDirection::Down);
+        assert_eq!(
+            state.mod_name_is_active(xkb::MOD_NAME_CTRL, xkb::STATE_MODS_EFFECTIVE),
+            group == 1
+        );
+    }
+    assert!(
+        BindingSet::compile(&[binding("Cyrillic_ef")], &keymap, UnmappedPolicy::Reject)
+            .unwrap_err()
+            .to_string()
+            .contains("transition policy")
+    );
+}
