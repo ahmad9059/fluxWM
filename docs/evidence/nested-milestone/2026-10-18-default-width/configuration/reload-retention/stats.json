@@ -1,0 +1,20 @@
+{
+  "redraws": 4,
+  "submissions": 1,
+  "compositions": 1,
+  "maps": 0,
+  "unmaps": 0,
+  "destroyed": 0,
+  "frames_sent": 0,
+  "final_windows": 0,
+  "wayland_requests": 0,
+  "flush_cycles": 79,
+  "flush_would_block": 0,
+  "flush_retry_timer_fired": 0,
+  "ipc_drain_timed_out": 0,
+  "host_focus_losses": 1,
+  "focus_cancelled_keys": 0,
+  "focus_cancelled_buttons": 0,
+  "popup_grabs_denied_missing_press": 0,
+  "ipc_dispatches_after_shutdown": 0
+}

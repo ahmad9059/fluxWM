@@ -1,0 +1,31 @@
+{
+  "raw_check": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "output": "docs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log:143: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log:145: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log:176: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log:178: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log:180: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log:182: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log:184: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log:305: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-default-width/preset-mutation/restored-tests.log:58: new blank line at EOF.\n"
+  },
+  "source_and_docs_check": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-default-width/preset-mutation/restored-tests.log"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  "excluded_paths": [
+    "docs/evidence/nested-milestone/2026-10-18-default-width/checks/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-default-width/preset-mutation/restored-tests.log"
+  ],
+  "reason": "Preserve raw libtest console whitespace and terminal blank lines; do not normalize execution evidence."
+}

@@ -1,6 +1,6 @@
 # Configured widths for newly admitted windows
 
-The nested runtime now applies `layout.default_width` and resolves its references to `layout.width_presets` when preparing a configuration. The selected policy is published with gap, mode and bindings. It applies to newly admitted columns, including a remapped window or a previously rejected buffer admitted later. It does not resize existing columns or erase a user's manual width changes.
+The nested runtime now applies `layout.default_width` and resolves its references to `layout.width_presets` when preparing a configuration. The selected policy is published with gap, mode and bindings. It applies to newly admitted columns, including a remapped window or a previously rejected buffer admitted later. It does not resize existing columns or erase a user's manual width changes. Reload acceptance alone does not change the policy; admissions use the last published generation until the new one is applied.
 
 ```lua
 layout = {
@@ -11,7 +11,7 @@ layout = {
 }
 ```
 
-This fragment belongs inside the returned configuration table. Presets are one-based and cannot reference other presets. A default may also be `{ logical_px = 760 }` or `{ fraction = 0.25 }` directly. Fractions use the current usable logical viewport width. The existing schema admits pixel widths 1–65536, fractions 0.01–16 and 1–128 preset definitions. Numeric admission is not a memory/performance qualification of every resulting client size.
+This fragment belongs inside the returned configuration table. Presets are one-based and cannot reference other presets. If replacing the list with only one definition, select a valid default explicitly: the schema's default still references preset 2. A default may also be `{ logical_px = 760 }` or `{ fraction = 0.25 }` directly. Fractions use the current usable logical viewport width. The existing schema admits pixel widths 1–65536, fractions 0.01–16 and 1–128 preset definitions. Numeric admission is not a memory/performance qualification of every resulting client size.
 
 Each admission copies the policy into its new column. Fixed policies remain fixed as the viewport changes; fractional policies resolve against later viewport sizes. An admission while already in Canvas seeds the new group's size from the constraint-adjusted client strip rectangle, rather than the raw policy. First mode conversion and existing saved canvas geometry follow the established mode/resize rules. Client minimum/maximum constraints still apply to the client rectangle. A constrained client can be narrower than its column container. A rejected future admission leaves current membership, focus, geometry and identity allocation unchanged.
 
@@ -35,3 +35,7 @@ The artifact path must be new. The existing bundle is reverified; it is not inst
 The first private run passes on this machine with widths 400/760/320/600/600/480. This does not establish native behavior, physical presentation, arbitrary window-rule precedence, preset cycling, all client constraint combinations, latency or soak qualification. Remaining outer gap/focus/canvas-policy settings, input/output transactions, rules and autostart still need implementation.
 
 Remap/rejected-buffer retry, viewport changes and client size constraints are source/model contracts with component coverage; this width harness does not qualify those combinations at the whole-compositor boundary. Its invalid-preset case reaches schema rejection, not a native width-conversion error. The latter defensive checks are tested separately.
+
+See the [independent review disposition](../reviews/default-width-2026-10-18/disposition.md) for inspected controls, later author corrections and unqualified cases.
+
+Final [retained evidence](../evidence/nested-milestone/2026-10-18-default-width/README.md) records 162 named Rust tests, the six-window run, six configuration cases, six private regression suites, three focus cases and the two deliberate failing mutations. Final source `87d52d0` includes the later low corrections; the independently reviewed source is `ccfdb61`.

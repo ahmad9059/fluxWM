@@ -85,6 +85,15 @@ stdout/stderr logs. Never archive authority files or cookie bytes, full environm
 dumps, or the whole private package/GPG directory. Exit zero means every runtime
 assertion and cleanup check passed; exit one retains evidence for diagnosis.
 
+## Width-aware response follow-up
+
+The [default-width integration](config-widths.md) extends desired/effective layout
+summaries with the requested default tag, preset definitions and normalized width
+policy. The current strict response assertions include those fields and remove
+them from unsupported categories. The [later width evidence](../evidence/nested-milestone/2026-10-18-default-width/README.md)
+re-runs all six cases against this response shape, alongside 162 named Rust tests.
+The source `8152a96` results below remain the earlier response checkpoint.
+
 ## Verification status
 
 The final private run on source `8152a96` passes all six cases. The [retained

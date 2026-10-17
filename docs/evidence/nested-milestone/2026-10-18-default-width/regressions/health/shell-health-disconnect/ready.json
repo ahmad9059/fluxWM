@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/tmp/fluxrt-65g_x57_/fluxwm/fluxhealth-ec3a7d01aaf24ee0.sock",
+  "pid": 145681,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxhealth-ec3a7d01aaf24ee0"
+}

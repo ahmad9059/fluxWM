@@ -1,0 +1,15 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxconfig-36a53835d264",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/stats.json",
+    "--exit-after-ms",
+    "17000",
+    "--config",
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/config.lua"
+  ]
+}

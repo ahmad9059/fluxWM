@@ -1,0 +1,20 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/fluxwm",
+    "--no-config",
+    "--socket",
+    "fluxfocus-d74839ad8c2c4d78",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

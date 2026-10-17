@@ -1,0 +1,15 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxconfig-7a4a95590f0c",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/stats.json",
+    "--exit-after-ms",
+    "17000",
+    "--config",
+    "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/config.lua"
+  ]
+}

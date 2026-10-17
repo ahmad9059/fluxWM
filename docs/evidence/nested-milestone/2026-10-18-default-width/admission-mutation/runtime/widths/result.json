@@ -1,0 +1,8 @@
+{
+  "case": "widths",
+  "endpoints_removed": true,
+  "error": "wrong configured width for member0",
+  "exit_code": 0,
+  "forbidden_autostart_absent": true,
+  "ok": false
+}

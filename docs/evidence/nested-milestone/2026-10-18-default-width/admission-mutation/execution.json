@@ -1,0 +1,17 @@
+{
+  "source_sha256": "c9085834589de98b7091c1f2135d194e3101cd4d32b3fd6656b22332fe4c2b0d",
+  "source_commit": "74c97bdc92a82474d83f2abf1ed5aab1339fee20",
+  "old": "width: self.default_width,",
+  "new": "width: WidthPolicy::ViewportFraction(0.5),",
+  "command": [
+    "python3",
+    "tools/smoke_width.py",
+    "--bundle",
+    "target/configure-verified-xvfb",
+    "--artifacts",
+    "target/default-width-admission-mutation/runtime"
+  ],
+  "exit_code": 1,
+  "expected_error": "wrong configured width for member0",
+  "test_source_sha256": "ded1b6c9ab9c8aad0b20e57716f69b465e1dce6f1b3568d3cf4186a0edfe06c9"
+}

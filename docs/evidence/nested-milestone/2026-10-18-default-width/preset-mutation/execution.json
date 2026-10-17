@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "fluxwm",
+    "--locked",
+    "config::tests::configured_width_resolves_one_based_presets_without_recursive_defaults",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "old": ".get(\n                preset\n                    .checked_sub(1)\n                    .ok_or(\"default width preset is invalid\")?,\n            )",
+  "new": ".get(*preset)",
+  "source_sha256": "ed7b75f3c1c12af745321c78254b9cf7d01ef79e741f11fc26c0f3340a5e619d",
+  "restored_sha256": "ed7b75f3c1c12af745321c78254b9cf7d01ef79e741f11fc26c0f3340a5e619d"
+}

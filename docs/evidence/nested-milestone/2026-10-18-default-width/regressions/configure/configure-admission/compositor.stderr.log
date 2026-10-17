@@ -1,0 +1,11 @@
+2026-10-17T22:50:10.129886Z  INFO fluxwm::state: development bindings absent from selected keymap inactive=1
+2026-10-17T22:50:10.223192Z  INFO fluxwm::state: window_mapped id=0:0
+2026-10-17T22:50:10.247756Z  WARN fluxwm::state: layout admission rejected id=1:0 error=geometry must be finite, positive, and within supported coordinate limits
+2026-10-17T22:50:10.249683Z  INFO fluxwm::state: window_mapped id=1:0
+2026-10-17T22:50:10.275960Z  INFO fluxwm::state: window_mapped id=2:0
+2026-10-17T22:50:10.292976Z  WARN fluxwm::state: layout admission rejected id=3:0 error=geometry must be finite, positive, and within supported coordinate limits
+2026-10-17T22:50:10.294281Z  INFO fluxwm::state: toplevel_destroyed id=2:0
+2026-10-17T22:50:10.294329Z  INFO fluxwm::state: window_admission_recovered id=3:0
+2026-10-17T22:50:10.306604Z  INFO fluxwm::state: toplevel_destroyed id=0:0
+2026-10-17T22:50:10.306717Z  INFO fluxwm::state: toplevel_destroyed id=1:0
+2026-10-17T22:50:10.306828Z  INFO fluxwm::state: toplevel_destroyed id=3:0

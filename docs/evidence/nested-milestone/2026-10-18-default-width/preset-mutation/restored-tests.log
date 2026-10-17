@@ -1,0 +1,58 @@
+   Compiling flux-layout v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-layout)
+   Compiling fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.04s
+     Running unittests src/lib.rs (target/debug/deps/flux_layout-41151f65dcdacd54)
+
+running 25 tests
+test tests::canvas_directional_focus_has_stable_ties_and_ignores_viewport ... ok
+test tests::canvas_has_two_axes_negative_coordinates_and_restores_modes ... ok
+test tests::configured_width_still_honors_each_client_size_constraints ... ok
+test tests::first_canvas_conversion_uses_current_columns_not_insertion_snapshot ... ok
+test tests::canvas_stack_focus_scrolls_local_content_and_picking_obeys_group_clip ... ok
+test tests::configured_default_width_only_changes_new_columns_in_both_modes ... ok
+test tests::equal_canvas_positions_sort_by_stable_group_identity ... ok
+test tests::first_return_sorts_xy_stable_groups_then_preserves_independent_states ... ok
+test tests::invalid_mutations_preserve_valid_state_and_generations_are_distinct ... ok
+test tests::directional_scoring_uses_projected_edge_distance_after_angle ... ok
+test tests::invalid_default_or_future_admission_preserves_the_complete_model ... ok
+test tests::height_water_filling_respects_maximum_and_distributes_remaining ... ok
+test tests::reconfigure_changes_gap_preserving_members_focus_and_width_policies ... ok
+test tests::reconfigure_modes_retain_saved_groups_tabs_and_cameras ... ok
+test tests::stable_groups_preserve_tabs_membership_and_destroy_only_when_empty ... ok
+test tests::reorder_preserves_focused_screen_anchor ... ok
+test tests::reconfigure_validates_dormant_stack_geometry_before_publication ... ok
+test tests::tiny_viewport_and_extent_capacity_are_handled_without_partial_mutation ... ok
+test tests::stack_minimum_overflow_is_reachable_and_tabs_preserve_geometry ... ok
+test tests::transform_round_trip_and_rebase_preserve_screen_geometry ... ok
+test tests::xdg_constraints_handle_each_unlimited_axis_and_reject_conflicts ... ok
+test tests::unactivated_insert_and_unrelated_close_preserve_focus_and_anchor ... ok
+test tests::reconfigure_rejects_invalid_and_aggregate_geometry_atomically ... ok
+test tests::independent_columns_scroll_without_shrinking ... ok
+test tests::randomized_10000_commands_preserve_membership_focus_and_geometry ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.08s
+
+     Running unittests src/main.rs (target/debug/deps/fluxwm-335f04a4cc26e03a)
+
+running 12 tests
+test config::tests::configured_width_resolves_one_based_presets_without_recursive_defaults ... ok
+test config::tests::worker_publication_rejects_stale_and_closed_generations ... ok
+test config::tests::accepted_request_hides_prepared_generation_before_worker_observes_request ... ok
+test scene::tests::offscreen_camera_limit_does_not_reject_the_local_scene ... ok
+test health::tests::late_pong_before_timer_service_still_records_missed_deadline ... ok
+test option_tests::configuration_paths_reject_empty_nul_and_expansion_beyond_budget ... ok
+test health::tests::empty_monitor_has_no_timer_or_strong_loop_cycle ... ok
+test option_tests::source_discovery_is_explicit_and_ignores_relative_xdg_roots ... ok
+test health::tests::timeout_is_once_at_boundary_and_late_pong_recovers_without_duplicate_probe ... ok
+test scene::tests::snapped_container_edge_has_the_same_half_open_input_boundary ... ok
+test scene::tests::container_projection_precedes_integer_conversion ... ok
+test config::tests::termination_seals_ready_config_publication ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Doc-tests flux_layout
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,43 @@
+{
+  "authority_removed": true,
+  "case": {
+    "case": "widths",
+    "endpoints_removed": true,
+    "error": "wrong configured width for member0",
+    "exit_code": 0,
+    "forbidden_autostart_absent": true,
+    "ok": false
+  },
+  "executables": {
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm": "910511c05e1cad77b80ef44a55be3d6a46ac04863ae4674cd832e3ba53c05c40",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-config": "3b54fa4d792245ccfc8eca4fc3f9f704b90a257343adf9cbd85f5192a1ede13f",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture": "e21a97bd99e098551985dcb44c2e9d8b51c16a88875e6ef81bc9a86985512901"
+  },
+  "executables_unchanged": true,
+  "harness_sha256": "ded1b6c9ab9c8aad0b20e57716f69b465e1dce6f1b3568d3cf4186a0edfe06c9",
+  "ok": false,
+  "package": {
+    "bundle": "target/configure-verified-xvfb",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "parent_environment_unchanged": true,
+  "runtime_cleanup": {
+    "directory_removed": true,
+    "endpoints_removed_before_cleanup": true,
+    "path": "/tmp/fluxrt-hd68s7du"
+  },
+  "scope": "Configured future-column widths, retained existing columns, invalid-preset retention and real configure/frame events; no native/presentation/soak qualification",
+  "server_reaped": true,
+  "x_socket_removed": true
+}

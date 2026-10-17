@@ -1,0 +1,1572 @@
+[
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-release-checks/build.log",
+    "destination": "checks/build.log",
+    "sha256": "5fef115ee8917dcf71e3d0621d518e35b7686f35dcb69cdfdd92b2f324586425"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-release-checks/checks.json",
+    "destination": "checks/checks.json",
+    "sha256": "05783832e9f756cfb46e4b3d57d767a12c90f7f5705837ef1c709b4b6ec12b91"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-release-checks/clippy.log",
+    "destination": "checks/clippy.log",
+    "sha256": "710fabeb08c9741f08ae03b9577b1b4e998cf48967ec289044ad5fd181cd3cfa"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-release-checks/diff.log",
+    "destination": "checks/diff.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-release-checks/fmt.log",
+    "destination": "checks/fmt.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-release-checks/rustdoc.log",
+    "destination": "checks/rustdoc.log",
+    "sha256": "2ec749b3e965356ae9311f45793e3f764a32d1f8c606a7c4c1785bccddc88390"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-release-checks/test-list.log",
+    "destination": "checks/test-list.log",
+    "sha256": "22e22dae17b23e9a20bfdfd5761340643bec8e1d43bb8d0db552ee777f78e90d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-release-checks/tests.log",
+    "destination": "checks/tests.log",
+    "sha256": "64841399b37dec3f16dc519053aa1b950bf3887363c27e02434d6033f9bea7b5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/package-verification.json",
+    "destination": "widths/package-verification.json",
+    "sha256": "aff3875380999fdf20283e5ddf01d4444a7adf235da172c21db264ef64731792"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/summary.json",
+    "destination": "widths/summary.json",
+    "sha256": "084213eb2d1c234417e74ce58da69078315c6b2dfefc7b3d2833d21bc940ef41"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/applied-2.json",
+    "destination": "widths/widths/applied-2.json",
+    "sha256": "377f8840be5e4ba92893ecbfb10fd28fa071be91b8a1b4bd2239e6721e27cade"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/applied-3.json",
+    "destination": "widths/widths/applied-3.json",
+    "sha256": "be6a38b371c1f0ece180c2e1360abc82daf51d5f6da97748ad73bb0912d2a783"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/applied-4.json",
+    "destination": "widths/widths/applied-4.json",
+    "sha256": "7dd0d64013377921f3994aa7ce0202193599fe83f36b0bf1a0fee0839511e819"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/command.json",
+    "destination": "widths/widths/command.json",
+    "sha256": "569bf0ab5804e5fffef318f85932138fdaa10591c452a1fc1bfe841da140da55"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/config-attempt-0.lua",
+    "destination": "widths/widths/config-attempt-0.lua",
+    "sha256": "3954765ef3a6b5c0ec43ed0ebc4969de73503c2f1127e162b0c899b316da8362"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/config-attempt-1.lua",
+    "destination": "widths/widths/config-attempt-1.lua",
+    "sha256": "cec1304841414fa41bc5643be547040fa149485ba3967d26ac7342eefbbb01c2"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/config-attempt-2.lua",
+    "destination": "widths/widths/config-attempt-2.lua",
+    "sha256": "fad899718e8f0716508be8e99ce9178a18e88374d8ab2d652a6f3125bcc5f975"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/config-attempt-3.lua",
+    "destination": "widths/widths/config-attempt-3.lua",
+    "sha256": "8f6081404c7ebf132b18495677b5bdd0ef623cdc1777e24186cc7510a224d402"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/config-attempt-4.lua",
+    "destination": "widths/widths/config-attempt-4.lua",
+    "sha256": "7c38b4b2c3d7494193da68b660ab9b6d03440ac7a6b5a252ccb366377196ab9e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/config-attempt-5.lua",
+    "destination": "widths/widths/config-attempt-5.lua",
+    "sha256": "7ab5d1ce5561a2db18ccfb68ba2b6add0f5b0979fb870930f23f7c1c3a4efa0e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/config.lua",
+    "destination": "widths/widths/config.lua",
+    "sha256": "7ab5d1ce5561a2db18ccfb68ba2b6add0f5b0979fb870930f23f7c1c3a4efa0e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/fixture-command.json",
+    "destination": "widths/widths/fixture-command.json",
+    "sha256": "ca499130f6350b6cc19fd8424eb263d556e4a2c07ac48da8d2e6e807d8725773"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/fixture.stderr.log",
+    "destination": "widths/widths/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/fixture.stdout.log",
+    "destination": "widths/widths/fixture.stdout.log",
+    "sha256": "a144ca364ac4c40a123a56bb044bb3bd4db0f7fb62315e4787f3268f6b0ca69a"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/ipc-trace.json",
+    "destination": "widths/widths/ipc-trace.json",
+    "sha256": "a5899776a4817b8bedc05891712a1fc0e9af38d0c946981db6d60034a60b49a5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/ready.json",
+    "destination": "widths/widths/ready.json",
+    "sha256": "390cd4a4aecaaa447144000a35e57770b92f8fd05af21558a6bb3814f6a37489"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/result.json",
+    "destination": "widths/widths/result.json",
+    "sha256": "f1adddf31f63532c536bb09f0da45aef297afde0ef5609ee6c1051a9ddd9e521"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/stats.json",
+    "destination": "widths/widths/stats.json",
+    "sha256": "2c0f76387ecf5c1cdbf5c6b30a2de64643cb34673307aa5d10e55556a8abb0e6"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/stderr.log",
+    "destination": "widths/widths/stderr.log",
+    "sha256": "58e15bd7ad5b0786814fb8bbf1568abec9e8ccc923a5a0648be91b2d87fb4354"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/widths/stdout.log",
+    "destination": "widths/widths/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-final/xvfb.log",
+    "destination": "widths/xvfb.log",
+    "sha256": "e9e5985d3d7bbfebd4b594d02ec1047fc0641f65012cde1dc944f393d472ec52"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/disabled/command.json",
+    "destination": "configuration/disabled/command.json",
+    "sha256": "8b366f097699e2563fc19ee58c31a1aaa763af28d5d7a13507c11fe7171b5179"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/disabled/disabled.json",
+    "destination": "configuration/disabled/disabled.json",
+    "sha256": "93dabb366e38a3777fbdbb94ea49408b870cac0e12fa6451e1006e7d42845cab"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/disabled/ipc-trace.json",
+    "destination": "configuration/disabled/ipc-trace.json",
+    "sha256": "915cde8a8cb5afda5d7688f406a02bedadd98196c6606edb7a52d292c1d15156"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/disabled/ready.json",
+    "destination": "configuration/disabled/ready.json",
+    "sha256": "94adc30dd7231de29286c34cd132e9df55201dd9f77a573fada5fd09b7f63335"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/disabled/result.json",
+    "destination": "configuration/disabled/result.json",
+    "sha256": "84c794c120d5f3c13cdb3708a273062ee123873bf5da1ee25347571735df0470"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/disabled/stats.json",
+    "destination": "configuration/disabled/stats.json",
+    "sha256": "c9396539aee6a1eda217e572d553818887934ba014da713010f56ede2809c751"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/disabled/stderr.log",
+    "destination": "configuration/disabled/stderr.log",
+    "sha256": "9b40de9f2cd179a0c47652aa2874e568478f9c2cd82f4c28b375e002e5a8c157"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/disabled/stdout.log",
+    "destination": "configuration/disabled/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/command.json",
+    "destination": "configuration/geometry-rollback/command.json",
+    "sha256": "1c7434326d4aac8abc10486ec1096d0382ba90f280161fcc1f87c7b997e6f435"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/config-attempt-0.lua",
+    "destination": "configuration/geometry-rollback/config-attempt-0.lua",
+    "sha256": "c0e6a1e4ebbcbc4a95ccbb34ff1a45e54720a7e6e87a8804628929a5891183b0"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/config-attempt-1.lua",
+    "destination": "configuration/geometry-rollback/config-attempt-1.lua",
+    "sha256": "70c1b4193b88137551af2e7940800bd319b2787e5ad3a884d5fa235b15c383b8"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/config-attempt-2.lua",
+    "destination": "configuration/geometry-rollback/config-attempt-2.lua",
+    "sha256": "113cdfa3f67d6b7c72628e49926ad5e187a0ec386a6e29db4a550381e826d388"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/config.lua",
+    "destination": "configuration/geometry-rollback/config.lua",
+    "sha256": "113cdfa3f67d6b7c72628e49926ad5e187a0ec386a6e29db4a550381e826d388"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/fixture.stderr.log",
+    "destination": "configuration/geometry-rollback/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/fixture.stdout.log",
+    "destination": "configuration/geometry-rollback/fixture.stdout.log",
+    "sha256": "c69407a06a3c9dce647c58853a4e381582e4f000a5eb743e9a86b81d11562a9d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/geometry-recovered.json",
+    "destination": "configuration/geometry-rollback/geometry-recovered.json",
+    "sha256": "0c70a3c752ceb37b43b99540b00c44d7ac3065797868e6dca8d20a41f645746d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/geometry-rejected.json",
+    "destination": "configuration/geometry-rollback/geometry-rejected.json",
+    "sha256": "8359f18ffd8bd336a46ab0b06a24944d9cfd2e437e9c9e0bfa521b46656bbed8"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/initial.json",
+    "destination": "configuration/geometry-rollback/initial.json",
+    "sha256": "384e2599705e3398e2147944ea7359aebc3b2dc802a744d28051a10d5a085f3f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/ipc-trace.json",
+    "destination": "configuration/geometry-rollback/ipc-trace.json",
+    "sha256": "2d8c246ca4430a5a64d47628a12784f8f0ad7a2798c71f070eca25483625aa36"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/ready.json",
+    "destination": "configuration/geometry-rollback/ready.json",
+    "sha256": "e190fcbca81a7bdc6de6a82e2bc9c2130bb3931bfe86d41cd7188ee2d0697a8d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/result.json",
+    "destination": "configuration/geometry-rollback/result.json",
+    "sha256": "0bb1c98a32a3c5f783229ee57a536b4860cebcc7b45de9ec804d1d22b5d6ae50"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/stats.json",
+    "destination": "configuration/geometry-rollback/stats.json",
+    "sha256": "6e4cc765729fcc5ac347ddba982564257ce6c95896515aa5b915e58193016528"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/stderr.log",
+    "destination": "configuration/geometry-rollback/stderr.log",
+    "sha256": "4d9e39cd2888b3ffe552aa56bd9ff7707c68204287c41f2f84518d035eda2e54"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/geometry-rollback/stdout.log",
+    "destination": "configuration/geometry-rollback/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/after-release-applied.json",
+    "destination": "configuration/input-publication/after-release-applied.json",
+    "sha256": "89e32280ef8bd1e9d656007fca400e85e64c13e7614e327aa69efac9f4437715"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/command.json",
+    "destination": "configuration/input-publication/command.json",
+    "sha256": "d89df3db574cea5d2575ec20aebadc0cdb814debf38bb40ab1ee44aa8c84422b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/config-attempt-0.lua",
+    "destination": "configuration/input-publication/config-attempt-0.lua",
+    "sha256": "c0e6a1e4ebbcbc4a95ccbb34ff1a45e54720a7e6e87a8804628929a5891183b0"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/config-attempt-1.lua",
+    "destination": "configuration/input-publication/config-attempt-1.lua",
+    "sha256": "5782ccc65da27450968ef4e200ac4328b881e786159e1ded30dc98b3146f3fe6"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/config-attempt-2.lua",
+    "destination": "configuration/input-publication/config-attempt-2.lua",
+    "sha256": "9bded1e99d0486f06f8d363cbeb3d31939c83beb8bfeb9fc23ab8a6cb3f99dfd"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/config.lua",
+    "destination": "configuration/input-publication/config.lua",
+    "sha256": "9bded1e99d0486f06f8d363cbeb3d31939c83beb8bfeb9fc23ab8a6cb3f99dfd"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/configured-shortcut.json",
+    "destination": "configuration/input-publication/configured-shortcut.json",
+    "sha256": "46996e0e742ff2a090e50975eb23d2e5fce794c35061ac847630921356aacbb0"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/fixture.stderr.log",
+    "destination": "configuration/input-publication/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/fixture.stdout.log",
+    "destination": "configuration/input-publication/fixture.stdout.log",
+    "sha256": "5b5ec58556203546206249075e851f32140cdebbd286b0785028caf88d5b536b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/held-pending.json",
+    "destination": "configuration/input-publication/held-pending.json",
+    "sha256": "42534302a44d0788ff72e65c8d9cb084aea9a5f94a09c3888e51ccf38fbb3dd8"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/initial.json",
+    "destination": "configuration/input-publication/initial.json",
+    "sha256": "384e2599705e3398e2147944ea7359aebc3b2dc802a744d28051a10d5a085f3f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/input.events.jsonl",
+    "destination": "configuration/input-publication/input.events.jsonl",
+    "sha256": "e47da12eb9c9ce6ad99171538c6464484c8b69052550f81b2203c0755a9c0f28"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/ipc-trace.json",
+    "destination": "configuration/input-publication/ipc-trace.json",
+    "sha256": "671f32f16875fd53520fc515ab0813bf2a29cda65ad9f4286d0c5304208471f0"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/ready.json",
+    "destination": "configuration/input-publication/ready.json",
+    "sha256": "e6f4accb6cbb71ecf089e79024d162fd8c4ccb580a7282e54553d97d65ca6cc7"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/result.json",
+    "destination": "configuration/input-publication/result.json",
+    "sha256": "38982c811617bf2e02419f9e78ef6bbc700005508e68718b89d4039bb7b332c4"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/stats.json",
+    "destination": "configuration/input-publication/stats.json",
+    "sha256": "c38b0934f584579cc7be949adcf5a3db56b17e512af98c94b434375a44072bb7"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/stderr.log",
+    "destination": "configuration/input-publication/stderr.log",
+    "sha256": "187b8e7237de3c1326efcbe4e738ce6d8c26883b7ba5d5c49c006011c9a75b6e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/stdout.log",
+    "destination": "configuration/input-publication/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/input-publication/superseded-while-held.json",
+    "destination": "configuration/input-publication/superseded-while-held.json",
+    "sha256": "727d6142b4eda1399aa8930f0ab8454a6122eb7495b60f00a51ef594f8312234"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/command.json",
+    "destination": "configuration/invalid-startup/command.json",
+    "sha256": "05a1efd37c1c56185b95db6478448ff1f46c7e6e61628396d3c4734bbc4de3d9"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/config-attempt-0.lua",
+    "destination": "configuration/invalid-startup/config-attempt-0.lua",
+    "sha256": "64c1eacbfdb695f7083496be79054d50999b4d7645aa932c73ae6cfc9beb6c19"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/config.lua",
+    "destination": "configuration/invalid-startup/config.lua",
+    "sha256": "64c1eacbfdb695f7083496be79054d50999b4d7645aa932c73ae6cfc9beb6c19"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/failed-startup.json",
+    "destination": "configuration/invalid-startup/failed-startup.json",
+    "sha256": "3f759eca56b09a8f6b59b67c6394507c05b189e175b84fd25a2e3426cb74d59c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/ipc-trace.json",
+    "destination": "configuration/invalid-startup/ipc-trace.json",
+    "sha256": "1dfa135fe9731d018f4cca2628c3e7a12b7a8a43f7ebd25b545288ce26c8d1ed"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/ready.json",
+    "destination": "configuration/invalid-startup/ready.json",
+    "sha256": "1f36b1a0e771ed6ef4707731cc8e2e3ace392e17a2949acbe6bbe92a46791bf5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/result.json",
+    "destination": "configuration/invalid-startup/result.json",
+    "sha256": "ff901220eaa1a095a28d7002f90d3c49c3808face06f0d1f1b9445701b0cc233"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/stats.json",
+    "destination": "configuration/invalid-startup/stats.json",
+    "sha256": "454f03cea68beee1160b89184ceef597b65d960c6b4b0dd5c7413cb6c907b847"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/stderr.log",
+    "destination": "configuration/invalid-startup/stderr.log",
+    "sha256": "383a4fb093e073007c170965d8395cfcabb70a411c02c5e6b5fd65dd4964ab75"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/invalid-startup/stdout.log",
+    "destination": "configuration/invalid-startup/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/package-verification.json",
+    "destination": "configuration/package-verification.json",
+    "sha256": "aff3875380999fdf20283e5ddf01d4444a7adf235da172c21db264ef64731792"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/command.json",
+    "destination": "configuration/path-retention/command.json",
+    "sha256": "0a16f4f5255cf10cb2db653e8b70ca433f99ffdaa93708436fdef13950dce535"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/config-attempt-0.lua",
+    "destination": "configuration/path-retention/config-attempt-0.lua",
+    "sha256": "c0e6a1e4ebbcbc4a95ccbb34ff1a45e54720a7e6e87a8804628929a5891183b0"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/config-attempt-1.lua",
+    "destination": "configuration/path-retention/config-attempt-1.lua",
+    "sha256": "f7a6a7dbfd6b2fdf55fa899e912bd9e7a04b554f7ef6fd9836b703f9683daee5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/config-attempt-2.lua",
+    "destination": "configuration/path-retention/config-attempt-2.lua",
+    "sha256": "3ea6ba0b78d5ecfcfa6d4567e78af86887959ba1f5996f68c590bc52be266128"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/config-attempt-3.lua",
+    "destination": "configuration/path-retention/config-attempt-3.lua",
+    "sha256": "2fed9774535af0b9187948a9685c4355fbaf6ffbb6ed514f7e952c33aa0d0c41"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/config-attempt-4.lua",
+    "destination": "configuration/path-retention/config-attempt-4.lua",
+    "sha256": "d3efe77ff953dfb0a07c52114481b5ffddd9944fa42291af3d8c0732fa8d900b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/config.lua",
+    "destination": "configuration/path-retention/config.lua",
+    "sha256": "d3efe77ff953dfb0a07c52114481b5ffddd9944fa42291af3d8c0732fa8d900b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/gap1024.json",
+    "destination": "configuration/path-retention/gap1024.json",
+    "sha256": "980ea1a02c56581a5a4f2f28239384d280b8b8f5bb5333b8a40693d0938865a2"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/gap1025.json",
+    "destination": "configuration/path-retention/gap1025.json",
+    "sha256": "e46924ee628ec14a014c8cab9748998312365ba3d62ea0ccd5db2308a53fb953"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/initial.json",
+    "destination": "configuration/path-retention/initial.json",
+    "sha256": "384e2599705e3398e2147944ea7359aebc3b2dc802a744d28051a10d5a085f3f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/ipc-trace.json",
+    "destination": "configuration/path-retention/ipc-trace.json",
+    "sha256": "76d6fc2c0cf4e779e7ac621f35f77e755af30f4801bae841039dbffdd7e2e403"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/layout-gap-out-of-range.json",
+    "destination": "configuration/path-retention/layout-gap-out-of-range.json",
+    "sha256": "c96ce105c2d5adeda96fff219758ba9ef1bfa0fbe84bf3e428ba141754213b98"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/missing-path.json",
+    "destination": "configuration/path-retention/missing-path.json",
+    "sha256": "17137b62103723dc8b8ae33118175e56be4bf8f27ebd1d4487f4b476996bb0d7"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/path-recovered.json",
+    "destination": "configuration/path-retention/path-recovered.json",
+    "sha256": "bf3a977a80809f7a863b8d041bc13e5de2ecef13696e61be1fed886a9a834de6"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/ready.json",
+    "destination": "configuration/path-retention/ready.json",
+    "sha256": "eb52559754ccaf50de150f8a4da36baf5bd11a175b5db4a2681acaa41aac0dd3"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/result.json",
+    "destination": "configuration/path-retention/result.json",
+    "sha256": "b05789d9fa52c11facf6a263f2032ab1c3efc3ee9ed05bd252d70be9352f5780"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/stats.json",
+    "destination": "configuration/path-retention/stats.json",
+    "sha256": "7bf9144e2f671b4e32537f186143667805830375eb8e35c1c19fcec1ec8e8c4b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/stderr.log",
+    "destination": "configuration/path-retention/stderr.log",
+    "sha256": "5f936800c4bd83f67aef398030201cb9b04eb7ee44b88841004b158a38a1067d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/path-retention/stdout.log",
+    "destination": "configuration/path-retention/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/command.json",
+    "destination": "configuration/reload-retention/command.json",
+    "sha256": "5f258aa9fd6bc9caac1a7b3ca8e9b86d6fec5b961abf253f129096d7db36198f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/config-attempt-0.lua",
+    "destination": "configuration/reload-retention/config-attempt-0.lua",
+    "sha256": "31ea568d621ead300a1270ac5c381a4098e0dcb2d243be9f718b245d64b304a3"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/config-attempt-1.lua",
+    "destination": "configuration/reload-retention/config-attempt-1.lua",
+    "sha256": "24c628d8c8ee5a1c1e8a3476cb6813ca743a288496be65d9579e9b9c95c45408"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/config-attempt-2.lua",
+    "destination": "configuration/reload-retention/config-attempt-2.lua",
+    "sha256": "9fb7a3821fa267c9d01e0cbcd869d2a6e3454ffb8e5932c2c45cae0dfc10d4ba"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/config-attempt-3.lua",
+    "destination": "configuration/reload-retention/config-attempt-3.lua",
+    "sha256": "1375a2f95d7ceb2dbe5302b0ae57d0ec6457580354f8a8353822fc88c9b150e8"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/config-attempt-4.lua",
+    "destination": "configuration/reload-retention/config-attempt-4.lua",
+    "sha256": "87ad7938558391324eedf0de02026b999cff9f9cb6d840334736d624e4563e2b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/config.lua",
+    "destination": "configuration/reload-retention/config.lua",
+    "sha256": "87ad7938558391324eedf0de02026b999cff9f9cb6d840334736d624e4563e2b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/invalid-lua.json",
+    "destination": "configuration/reload-retention/invalid-lua.json",
+    "sha256": "3bc76d03742e9c99b98432614ed858114f76853a216d95d3f107cf35d8852056"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/ipc-trace.json",
+    "destination": "configuration/reload-retention/ipc-trace.json",
+    "sha256": "ff5063451009e83ab590e0441501b949731c9403fbf8b961cf64210e0d803e0c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/ready.json",
+    "destination": "configuration/reload-retention/ready.json",
+    "sha256": "06d9e2998ef587fe18a9086ef91307926a67ae7a4eea7dcde283e3b8fc323bf1"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/recovery-applied.json",
+    "destination": "configuration/reload-retention/recovery-applied.json",
+    "sha256": "9b7a65d05de4fd61bc7b24e98b09d4458922474aad748029682c7787797d4db5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/reload-applied.json",
+    "destination": "configuration/reload-retention/reload-applied.json",
+    "sha256": "74400e0ce8aee281c5ec6b647dcaa9a6d6a6445db7c35492597864deb3bb3c67"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/result.json",
+    "destination": "configuration/reload-retention/result.json",
+    "sha256": "f72ee7c82bc497075dd8784b1e60fa530b6dfe694b172b9ade8d2841b4729980"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/startup-applied.json",
+    "destination": "configuration/reload-retention/startup-applied.json",
+    "sha256": "f05845bb6a269bf4f286286cd6371872428c3ecb3f889453ffe6663a02cc3205"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/stats.json",
+    "destination": "configuration/reload-retention/stats.json",
+    "sha256": "1f5d8d40c0dd2413b18c26d82b25b852a1aa5f805e5144cfbb97fc182f00e565"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/stderr.log",
+    "destination": "configuration/reload-retention/stderr.log",
+    "sha256": "1246513e780f5bac78a91fa6258af257a0a333b387fff1b97a096cfe6db52def"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/stdout.log",
+    "destination": "configuration/reload-retention/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/reload-retention/unknown-symbol.json",
+    "destination": "configuration/reload-retention/unknown-symbol.json",
+    "sha256": "f16ef7000ec311915b6f0d56df72f68baebb9d082d697f57572b3a0925a45417"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/summary.json",
+    "destination": "configuration/summary.json",
+    "sha256": "195167ed12abfa0ef16e6b0c9d21fbc9cec85cb48faab8fcd60de7348f711637"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-config-regressions/xvfb.log",
+    "destination": "configuration/xvfb.log",
+    "sha256": "e9e5985d3d7bbfebd4b594d02ec1047fc0641f65012cde1dc944f393d472ec52"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-admission/command.json",
+    "destination": "regressions/configure/configure-admission/command.json",
+    "sha256": "c7d33d2ab31763e5ca1de1390d2e1df055cf04d1e45efbf2d622e0300eaf5cc0"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-admission/compositor.stderr.log",
+    "destination": "regressions/configure/configure-admission/compositor.stderr.log",
+    "sha256": "350057161e2e7595aad804b2f8dcd40156557e88caeba6c3944e88b69621a0db"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-admission/compositor.stdout.log",
+    "destination": "regressions/configure/configure-admission/compositor.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-admission/fixture.stderr.log",
+    "destination": "regressions/configure/configure-admission/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-admission/fixture.stdout.log",
+    "destination": "regressions/configure/configure-admission/fixture.stdout.log",
+    "sha256": "7d7b9661e5d288429544a41d6c9594062dc4a28f80637dd2c084d7a7a68ad08a"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-admission/ready.json",
+    "destination": "regressions/configure/configure-admission/ready.json",
+    "sha256": "acb03adc7c3f2fa45423115ceac5c0fb8b4dce87e895829b85f2511ee6bba2a9"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-admission/result.json",
+    "destination": "regressions/configure/configure-admission/result.json",
+    "sha256": "28d3dce8a21cba13af17f6c66f3506abd8da14570d3d552f8b52364e25a56425"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-admission/stats.json",
+    "destination": "regressions/configure/configure-admission/stats.json",
+    "sha256": "f7ec1c8e8975b88e5c0636a4011fc9eb952ab8dc305aa280451ca72f4f753d03"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-stream/command.json",
+    "destination": "regressions/configure/configure-stream/command.json",
+    "sha256": "e4bb41f7cce4a1de25ec01f8bda1a1092882b1a343371541b757fd4c508e6c6b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-stream/compositor.stderr.log",
+    "destination": "regressions/configure/configure-stream/compositor.stderr.log",
+    "sha256": "1fca2108f1e954219fbb44f83b19335ecde9998966af5f11edbbec0a66d570f7"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-stream/compositor.stdout.log",
+    "destination": "regressions/configure/configure-stream/compositor.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-stream/fixture.stderr.log",
+    "destination": "regressions/configure/configure-stream/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-stream/fixture.stdout.log",
+    "destination": "regressions/configure/configure-stream/fixture.stdout.log",
+    "sha256": "ae96834301f09edfe790080248077627ac663b2960a4c4384015939ef2e846d1"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-stream/ready.json",
+    "destination": "regressions/configure/configure-stream/ready.json",
+    "sha256": "ad872f6277107e4bdaeca9d2ab9bec8cd0bd5c34f0689b3d5cf86b7bfe7ce65b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-stream/result.json",
+    "destination": "regressions/configure/configure-stream/result.json",
+    "sha256": "788b7dac6d743a29bf87fecdd24166d1298f6bcb9e66c9a900b94e718334e7bc"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/configure-stream/stats.json",
+    "destination": "regressions/configure/configure-stream/stats.json",
+    "sha256": "7b431fdddeb66c00b1deba288d493c522388055452f59f375b0fd3668eb7346b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure/summary.json",
+    "destination": "regressions/configure/summary.json",
+    "sha256": "c16ac277da86b74e292cb287045f63a4b9cfb27929fcf4167600f2cc4ab8abfd"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure.stderr",
+    "destination": "regressions/configure.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/configure.stdout",
+    "destination": "regressions/configure.stdout",
+    "sha256": "e71efeedd24c821e0290a3908868d3156a65b7fae3a46bb9f27eacaf0f73616f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health/command.json",
+    "destination": "regressions/health/shell-health/command.json",
+    "sha256": "c9fde14f68c10aa455ced4b29701df96fcf1fab129083983171ecbf5855f40ed"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health/compositor.stderr.log",
+    "destination": "regressions/health/shell-health/compositor.stderr.log",
+    "sha256": "5e6ae127ca53a9fc3fff5e134c2e62c7a05439bea18b5fb7fba666d9eba815e9"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health/compositor.stdout.log",
+    "destination": "regressions/health/shell-health/compositor.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health/fixture.stderr.log",
+    "destination": "regressions/health/shell-health/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health/fixture.stdout.log",
+    "destination": "regressions/health/shell-health/fixture.stdout.log",
+    "sha256": "871bf0f887797e532de989eb34a4d5c0f50581b470189d1617cddd3aa61a0a59"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health/ready.json",
+    "destination": "regressions/health/shell-health/ready.json",
+    "sha256": "f72e2fc38c3891ff2c3195e24b49741521dd463577eebb9114d98ee0e1b1642b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health/result.json",
+    "destination": "regressions/health/shell-health/result.json",
+    "sha256": "49902eb2096cf927969c3ccf1379be21706d369be6afd4f98deabf01bdacc538"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health/stats.json",
+    "destination": "regressions/health/shell-health/stats.json",
+    "sha256": "df528fd8ce5f401296346bce881349cc166dd634a6fd5a7e18b606f4f211c061"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-capacity/command.json",
+    "destination": "regressions/health/shell-health-capacity/command.json",
+    "sha256": "f784f852b9eac9f05b75c307370cdc100d72fd3d80952230ea59a8165bf4c5a5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-capacity/compositor.stderr.log",
+    "destination": "regressions/health/shell-health-capacity/compositor.stderr.log",
+    "sha256": "abf61a67714d1f04cbbced8721086c75dab4635ca03a165e6c77467efbb0b953"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-capacity/compositor.stdout.log",
+    "destination": "regressions/health/shell-health-capacity/compositor.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-capacity/fixture.stderr.log",
+    "destination": "regressions/health/shell-health-capacity/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-capacity/fixture.stdout.log",
+    "destination": "regressions/health/shell-health-capacity/fixture.stdout.log",
+    "sha256": "cab89659e9d9b25efbf972fc3d20a87c346c919a8369abc8e2f45df429057250"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-capacity/ready.json",
+    "destination": "regressions/health/shell-health-capacity/ready.json",
+    "sha256": "e31035ca01e813517f16e4075ea610fbb40940af3d681a3a1a1d91596de22b7b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-capacity/result.json",
+    "destination": "regressions/health/shell-health-capacity/result.json",
+    "sha256": "ad1589020779db3e893c5d407381dd486cd588084088d10fcba86d36ed6abd92"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-capacity/stats.json",
+    "destination": "regressions/health/shell-health-capacity/stats.json",
+    "sha256": "ae2a62c025618e586a2e9b49753ecb16332409af9eab4dec0f96e64d4b6cf093"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-disconnect/command.json",
+    "destination": "regressions/health/shell-health-disconnect/command.json",
+    "sha256": "525fdacab8486ac1d6851ab5f5f07f4a3f5a4aad145fd435135c70a0ac4c237b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-disconnect/compositor.stderr.log",
+    "destination": "regressions/health/shell-health-disconnect/compositor.stderr.log",
+    "sha256": "0b5661d64c1a0cd3ce6f06b70c496739e36d272aa5ad1acd1dd97d1e5f6a7e13"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-disconnect/compositor.stdout.log",
+    "destination": "regressions/health/shell-health-disconnect/compositor.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-disconnect/fixture.stderr.log",
+    "destination": "regressions/health/shell-health-disconnect/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-disconnect/fixture.stdout.log",
+    "destination": "regressions/health/shell-health-disconnect/fixture.stdout.log",
+    "sha256": "1348a5f94d30641132a53e9216398b76037860a2a18ff3786029950b3096c6a1"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-disconnect/ready.json",
+    "destination": "regressions/health/shell-health-disconnect/ready.json",
+    "sha256": "c925935358115de22e1a285702d54a9db1900103accaf7d1e8f5c0e4ce75e94a"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-disconnect/result.json",
+    "destination": "regressions/health/shell-health-disconnect/result.json",
+    "sha256": "967e31a6470dc7b25a7352e869f785fa656c0d8992dc39bf3d75dc2a22fd16d5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/shell-health-disconnect/stats.json",
+    "destination": "regressions/health/shell-health-disconnect/stats.json",
+    "sha256": "527f4436f920ab16be4f6ce92c1bc4c7d30d688af46c61b1fd3e9b4af677a01b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health/summary.json",
+    "destination": "regressions/health/summary.json",
+    "sha256": "1d1d6ea7907741d1ffeda7bbea06cfb4efa115f192809867095092ef89687135"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health.stderr",
+    "destination": "regressions/health.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/health.stdout",
+    "destination": "regressions/health.stdout",
+    "sha256": "9e189077e90223a0bcdf328b88bb833b08cac389509a499a8c576d0cca58982f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc/child.json",
+    "destination": "regressions/ipc/child.json",
+    "sha256": "86301ae09f70183d8c033f2108c2053eb90985a36fed4a298124bdb88a3278c9"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc/collision-lock.log",
+    "destination": "regressions/ipc/collision-lock.log",
+    "sha256": "c4d6482365b361201a4947b6bafa6cddd8968f7e32e1b478fd0c1e9ef7592a22"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc/collision-path.log",
+    "destination": "regressions/ipc/collision-path.log",
+    "sha256": "c81d9fcc255d4a57b5f8a896a6cfc166b85367c53a9a3b161ed3a0804820b022"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc/ready.json",
+    "destination": "regressions/ipc/ready.json",
+    "sha256": "a6354d35ce98c8abb5e6d09b2f2c0da6bfdf907646ff81566d237dd4770432e5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc/result.json",
+    "destination": "regressions/ipc/result.json",
+    "sha256": "e5702215c8dd1c4dd61974319cbba1b720a18d9176c2f700b2eccdcdbc091f51"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc/stats.json",
+    "destination": "regressions/ipc/stats.json",
+    "sha256": "4fe4fe2d7bbb9f8622d237bef9f46a2a09670d00d35645238585a602f2825961"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc/stderr.log",
+    "destination": "regressions/ipc/stderr.log",
+    "sha256": "9eebf8107a11e939098ae157451cb5b34fe5e0f92754611d6a78655c553a7a11"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc/stdout.log",
+    "destination": "regressions/ipc/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc.stderr",
+    "destination": "regressions/ipc.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/ipc.stdout",
+    "destination": "regressions/ipc.stdout",
+    "sha256": "52c472beddb8594305edd87d7a83ec5c43f4c5f2c7425d09f63ff4ca297484cd"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-long/command.json",
+    "destination": "regressions/nested/idle-long/command.json",
+    "sha256": "7fa000c40329bea7ac597aa320a56f2787d68355783c75da632f473f991b91ae"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-long/ready.json",
+    "destination": "regressions/nested/idle-long/ready.json",
+    "sha256": "1ab07546f55024f15b9c06a4a182118a7c1e2c00d99017288f4d01dac9609670"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-long/result.json",
+    "destination": "regressions/nested/idle-long/result.json",
+    "sha256": "e4ccba10e0cde0fbb6ed543b7b2242723b33f2f9fdd1d036bb4eb7979129f3bf"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-long/stats.json",
+    "destination": "regressions/nested/idle-long/stats.json",
+    "sha256": "89128fb5dc074f615b0836d1228e738fd38e420775179d7aa457243a741044d6"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-long/stderr.log",
+    "destination": "regressions/nested/idle-long/stderr.log",
+    "sha256": "bc35f2c64aa849da5b38788ee3871276961b35788574e81a15b65f327ae98e7f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-long/stdout.log",
+    "destination": "regressions/nested/idle-long/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-short/command.json",
+    "destination": "regressions/nested/idle-short/command.json",
+    "sha256": "23ad83ac3dc6cde46abe9578a0dea1ced6a2fbadf7c35b772ebd26a2ebed77f1"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-short/ready.json",
+    "destination": "regressions/nested/idle-short/ready.json",
+    "sha256": "d18a5a48f1bc46abb23a1ca22f8866937f2462fe77ba3e13400cd2bc5caf6c6b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-short/result.json",
+    "destination": "regressions/nested/idle-short/result.json",
+    "sha256": "ed6ec8d025e9093bb9c3abaf4c27bcbfa072ebf9629e497d7d6ff9da472f09ac"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-short/stats.json",
+    "destination": "regressions/nested/idle-short/stats.json",
+    "sha256": "89128fb5dc074f615b0836d1228e738fd38e420775179d7aa457243a741044d6"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-short/stderr.log",
+    "destination": "regressions/nested/idle-short/stderr.log",
+    "sha256": "bfcfc3936258d2243092cd5f8e1fcd8c286e51d6502937dd338f852f42c2b109"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/idle-short/stdout.log",
+    "destination": "regressions/nested/idle-short/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/lifecycle/command.json",
+    "destination": "regressions/nested/lifecycle/command.json",
+    "sha256": "3d25f5af396442eb14f914a319b6de838f5a8f1500fa6f88538662d89caadb51"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/lifecycle/fixture.json",
+    "destination": "regressions/nested/lifecycle/fixture.json",
+    "sha256": "9953a324fb4e1338a0ed021cce649d2430f7372100bb92578db37a2345769894"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/lifecycle/ready.json",
+    "destination": "regressions/nested/lifecycle/ready.json",
+    "sha256": "2f84ab00a1bad2152e0d1a57fca5a3feeb6e76d5c0ef61c24a753cce8888f9eb"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/lifecycle/result.json",
+    "destination": "regressions/nested/lifecycle/result.json",
+    "sha256": "9b1593fa71b4b657287d0d6e62ff2a888d335f363f6c223b2e9d729163b1aa78"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/lifecycle/stats.json",
+    "destination": "regressions/nested/lifecycle/stats.json",
+    "sha256": "02b6c7b4690f7d383e30bf0f50fa0a975c8313848b55e663c97889da25818823"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/lifecycle/stderr.log",
+    "destination": "regressions/nested/lifecycle/stderr.log",
+    "sha256": "4446d0dcfd2e04e66a6949d092461f5e824c1f8ed1b44535388201ef52049cc4"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/lifecycle/stdout.log",
+    "destination": "regressions/nested/lifecycle/stdout.log",
+    "sha256": "a07d02b6cdc7b92922a4b8fe13601041409dfa94d2d13db2ab3fad2ef042c686"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/sigterm/command.json",
+    "destination": "regressions/nested/sigterm/command.json",
+    "sha256": "4bc6167fc76397cf32bf6a524a36926c488a1cc3e7533d1d096a872d028ee19a"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/sigterm/ready.json",
+    "destination": "regressions/nested/sigterm/ready.json",
+    "sha256": "d551fd4c93e871db77c07d1c74636488f872a5e24d3222db7932843bbecc43c6"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/sigterm/result.json",
+    "destination": "regressions/nested/sigterm/result.json",
+    "sha256": "37c544437515415328fc7a6beca892b080b6fa424d20af96e46313f998578bbd"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/sigterm/stats.json",
+    "destination": "regressions/nested/sigterm/stats.json",
+    "sha256": "89128fb5dc074f615b0836d1228e738fd38e420775179d7aa457243a741044d6"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/sigterm/stderr.log",
+    "destination": "regressions/nested/sigterm/stderr.log",
+    "sha256": "75888cfc432d7dd4b199728daab5e24bbc7d208345f5e93aee44a804b6b5eca5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/sigterm/stdout.log",
+    "destination": "regressions/nested/sigterm/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested/summary.json",
+    "destination": "regressions/nested/summary.json",
+    "sha256": "ff26c65f475c775a0990c35ec20d4fd3fcee9b4775f492948eed2c9a9101df33"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested.stderr",
+    "destination": "regressions/nested.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/nested.stdout",
+    "destination": "regressions/nested.stdout",
+    "sha256": "03a39aeab6787feac7249b581c2731440c01be2405e2e6d62257df53a605364b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/package-verification.json",
+    "destination": "regressions/package-verification.json",
+    "sha256": "aff3875380999fdf20283e5ddf01d4444a7adf235da172c21db264ef64731792"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/result.json",
+    "destination": "regressions/result.json",
+    "sha256": "327eabe3d316e9a5ce4d788eb5b80d1432945f7b534444b79e54e195d232ba1d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/container-clip/command.json",
+    "destination": "regressions/scene/container-clip/command.json",
+    "sha256": "7e2aab525fe1842482b76dc173916f30d96519931d3610da3d1390392a83022c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/container-clip/fixture.json",
+    "destination": "regressions/scene/container-clip/fixture.json",
+    "sha256": "bb02259ce165c593b659bd44f80501e3a56622268806727822453dc15ceaf978"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/container-clip/ready.json",
+    "destination": "regressions/scene/container-clip/ready.json",
+    "sha256": "190849a50a6bd7332fcd14ee232febb82b320a6b3fa023bdd4fc7ef06e585101"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/container-clip/result.json",
+    "destination": "regressions/scene/container-clip/result.json",
+    "sha256": "1799cf85a4e6576d2ecc7f45a06dee136f5aa6f868d20317fe53db393a7a81ff"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/container-clip/stats.json",
+    "destination": "regressions/scene/container-clip/stats.json",
+    "sha256": "ecbee792a89bc2be002037e9b5daab3d8837f006e19502dbcdfa911ca681705d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/container-clip/stderr.log",
+    "destination": "regressions/scene/container-clip/stderr.log",
+    "sha256": "7b52ab4395417a9c950db8dc4db07405dd0a3d9e2771bdb3c44726c1cf877212"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/container-clip/stdout.log",
+    "destination": "regressions/scene/container-clip/stdout.log",
+    "sha256": "8f1d55d8e0c528e9e7867092a7581999c9a961179786949a53c3551db30bdbe8"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/pointer-feedback/command.json",
+    "destination": "regressions/scene/pointer-feedback/command.json",
+    "sha256": "7636cf575c56cb6616be05b09ea0c7a9ad77ae56aad4f8eff12920087bf5c6dd"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/pointer-feedback/fixture.json",
+    "destination": "regressions/scene/pointer-feedback/fixture.json",
+    "sha256": "8a109721e36749fe5b2ee781d7988eedf4bd15c3bac8ad7d3a71a5c22796809c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/pointer-feedback/ready.json",
+    "destination": "regressions/scene/pointer-feedback/ready.json",
+    "sha256": "33a7a573fa5777ed3df64699c94b0ed15cfcb2be895882c75eb4f238ece4029d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/pointer-feedback/result.json",
+    "destination": "regressions/scene/pointer-feedback/result.json",
+    "sha256": "ad1d3fd21714b013d7e32a49cf23f05891d39d9e3c8303ea797dadcd872f8e1d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/pointer-feedback/stats.json",
+    "destination": "regressions/scene/pointer-feedback/stats.json",
+    "sha256": "8d72dcca3288951af3b664a20d3aebcfb892834ebbf90c139f701fc17fb2000c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/pointer-feedback/stderr.log",
+    "destination": "regressions/scene/pointer-feedback/stderr.log",
+    "sha256": "3490d74090c36c0b7a8045efdf612f90a4783a13bf6a7e8db03880ed232c656b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/pointer-feedback/stdout.log",
+    "destination": "regressions/scene/pointer-feedback/stdout.log",
+    "sha256": "3344ab45e833b10b6cb8c9d9aa0a0a1902020ccd547737284c722ecc490966b9"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-clip/command.json",
+    "destination": "regressions/scene/popup-clip/command.json",
+    "sha256": "deb30fdb6862b4e363b12415dbd7b625b3cd11f35bc3a98ea557fc5c0a56cbbb"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-clip/fixture.json",
+    "destination": "regressions/scene/popup-clip/fixture.json",
+    "sha256": "bb0303dc3412d076891149ce34ee5c51feea92eadd46fd889aa4c9ab5cd02921"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-clip/ready.json",
+    "destination": "regressions/scene/popup-clip/ready.json",
+    "sha256": "13966ee4be2e1c80e0b6c86744515a603cc7b729e6daf99fef807d54891a95e1"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-clip/result.json",
+    "destination": "regressions/scene/popup-clip/result.json",
+    "sha256": "38d34265be69e7104f183dcf2aa678463583761c1aa344012777634caff05d98"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-clip/stats.json",
+    "destination": "regressions/scene/popup-clip/stats.json",
+    "sha256": "a0260ab6baf172c31595512cbecedb72c6a62eb1569665e07f9e5485dda235d6"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-clip/stderr.log",
+    "destination": "regressions/scene/popup-clip/stderr.log",
+    "sha256": "349acba70dc89df8596e16433fc0593c6ebe9e9aef8b13811cde2f7251a6c549"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-clip/stdout.log",
+    "destination": "regressions/scene/popup-clip/stdout.log",
+    "sha256": "b6f6b4daba11a1eef92d614658b3be5a5740c593c37fc2d34d5d4725322112d3"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-lifecycle/command.json",
+    "destination": "regressions/scene/popup-lifecycle/command.json",
+    "sha256": "8c5f311824da9d33ed7be2c8e3628cb64209cff179df972b4e2e334a28378af5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-lifecycle/fixture.json",
+    "destination": "regressions/scene/popup-lifecycle/fixture.json",
+    "sha256": "40d4e0a4c5760dc71ae4d808d80d0c53dca3a0c23c484c7324e8c9c1c9003c8a"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-lifecycle/ready.json",
+    "destination": "regressions/scene/popup-lifecycle/ready.json",
+    "sha256": "5eeb65532fcea0ef9f74fa5ca12b0e37b039e67ef7d3829c0c0a6cd9e29a729c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-lifecycle/result.json",
+    "destination": "regressions/scene/popup-lifecycle/result.json",
+    "sha256": "2fcbd3a0d0cde0838e431ceaf95caa4f540fea898831de7fd1bb57ef4061143e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-lifecycle/stats.json",
+    "destination": "regressions/scene/popup-lifecycle/stats.json",
+    "sha256": "43f998a244d2761861806e240d9e0ec85f890a10c5c0bd26b293612080ce531d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-lifecycle/stderr.log",
+    "destination": "regressions/scene/popup-lifecycle/stderr.log",
+    "sha256": "0ce309b57b39987566b1b27694f795c491ee0d918e50701242e84bbec6310275"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/popup-lifecycle/stdout.log",
+    "destination": "regressions/scene/popup-lifecycle/stdout.log",
+    "sha256": "dfb72ab4a82c97bf4e71fa11811babf4112265d689c0b4fd8589aad2e1ea4f03"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene/summary.json",
+    "destination": "regressions/scene/summary.json",
+    "sha256": "90abb34aaee416330a4b3aaaeae6c50cc68451bb75f121701e09e16b9d580881"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene.stderr",
+    "destination": "regressions/scene.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/scene.stdout",
+    "destination": "regressions/scene.stdout",
+    "sha256": "7a2c584022e9abf54d1731353b508ba5cad14eba23e6080ce2cde0225213a895"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/pipeline/command.json",
+    "destination": "regressions/shutdown/pipeline/command.json",
+    "sha256": "7847e9832b711b26ff90fae7ca8f1e94b22288b64b425c0d0ddb4fc102cc171e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/pipeline/ready.json",
+    "destination": "regressions/shutdown/pipeline/ready.json",
+    "sha256": "5b1c86023e731104ffee23b3be0ac55119f171f71678686d5f0be738b07388a9"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/pipeline/result.json",
+    "destination": "regressions/shutdown/pipeline/result.json",
+    "sha256": "cfaa8722d05aaaf7ff209743629ded59699c62c659646b94163d354f8a33f782"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/pipeline/stats.json",
+    "destination": "regressions/shutdown/pipeline/stats.json",
+    "sha256": "ff8ce1eeed9970753196922a6e222b2d4abad79a88a2ed780ecc38b7295b2d0c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/pipeline/stderr.log",
+    "destination": "regressions/shutdown/pipeline/stderr.log",
+    "sha256": "f665e44f92891df2718b2359fe571f5961c2bcaaeaaa885221b7c64fb74d508d"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/pipeline/stdout.log",
+    "destination": "regressions/shutdown/pipeline/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/slow-peer/command.json",
+    "destination": "regressions/shutdown/slow-peer/command.json",
+    "sha256": "69f56a7f637bbfbb56db20d7370c964a0811c8df96d4212ac1b239c0bd774269"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/slow-peer/ready.json",
+    "destination": "regressions/shutdown/slow-peer/ready.json",
+    "sha256": "406d4ea0a9ce1b83679dd97831f503729635fc87bc68c7cc76699099c80bf2e7"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/slow-peer/result.json",
+    "destination": "regressions/shutdown/slow-peer/result.json",
+    "sha256": "8b35638957971214b525014fd57175dac877fa29336eafb304600791990748b1"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/slow-peer/stats.json",
+    "destination": "regressions/shutdown/slow-peer/stats.json",
+    "sha256": "44dca1a050c8f28e7f92a6401543464b00e7e7303e32cddb2b1cd366b8350a16"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/slow-peer/stderr.log",
+    "destination": "regressions/shutdown/slow-peer/stderr.log",
+    "sha256": "12fb37210ef42fa5b99d8572bb6c4435ef34f8a52996d16bbcc1c0abfe5af400"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/slow-peer/stdout.log",
+    "destination": "regressions/shutdown/slow-peer/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown/summary.json",
+    "destination": "regressions/shutdown/summary.json",
+    "sha256": "bb1ed2d485d0882651c04041b4c7890c6df7983392f6192a2e2eca0f505669ce"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown.stderr",
+    "destination": "regressions/shutdown.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/shutdown.stdout",
+    "destination": "regressions/shutdown.stdout",
+    "sha256": "a77e7f650b539e8d06db7e5fbb568b2e3f48cc6483cf92865708fb66702d8bda"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-regressions/xvfb.log",
+    "destination": "regressions/xvfb.log",
+    "sha256": "e9e5985d3d7bbfebd4b594d02ec1047fc0641f65012cde1dc944f393d472ec52"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/command.json",
+    "destination": "focus/keyboard/command.json",
+    "sha256": "aec2b58ecbd3b4cd6721dd27d34b4a1c74b7a81d326941fc57453beae24969f5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/compositor.stderr.log",
+    "destination": "focus/keyboard/compositor.stderr.log",
+    "sha256": "e19319e3857324802487d246174136e376283cbda99d851086a2fdb28b4e7392"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/compositor.stdout.log",
+    "destination": "focus/keyboard/compositor.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/fixture.stderr.log",
+    "destination": "focus/keyboard/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/fixture.stdout.log",
+    "destination": "focus/keyboard/fixture.stdout.log",
+    "sha256": "62ceebb6b7c0d934f44d2cce7122a18a3b4285315fcdaa5daea70f08fb009f80"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/input.events.jsonl",
+    "destination": "focus/keyboard/input.events.jsonl",
+    "sha256": "7a36dffd743e20742bce1132dc6fc9aa688b18d51331e7ec3ecc337be413984f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/ready.json",
+    "destination": "focus/keyboard/ready.json",
+    "sha256": "0475fdd33aec0b8678c6613c0742e6dda4c9c0ac3664f4db73ea16b473b5f6ef"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/result.json",
+    "destination": "focus/keyboard/result.json",
+    "sha256": "989dfe864718f17f0c800307c383617282fb0afa549642ee644f3d54bbd621c1"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/stats.json",
+    "destination": "focus/keyboard/stats.json",
+    "sha256": "5b2d4ebd42da8b9be20836f9dbc560d733fb62f05e38c3251c8be62d61c91b58"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/keyboard/xvfb.log",
+    "destination": "focus/keyboard/xvfb.log",
+    "sha256": "e9e5985d3d7bbfebd4b594d02ec1047fc0641f65012cde1dc944f393d472ec52"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/package-verification.json",
+    "destination": "focus/package-verification.json",
+    "sha256": "aff3875380999fdf20283e5ddf01d4444a7adf235da172c21db264ef64731792"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/command.json",
+    "destination": "focus/pointer/command.json",
+    "sha256": "5805b38c964132ad44a292a7aa27353fab68ed24f30532c88b26b4c7fc81cf3c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/compositor.stderr.log",
+    "destination": "focus/pointer/compositor.stderr.log",
+    "sha256": "c88c3bb13121e464bee5bd734a92951b9a2acf0da619721d3e7feb1fa000abde"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/compositor.stdout.log",
+    "destination": "focus/pointer/compositor.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/fixture.stderr.log",
+    "destination": "focus/pointer/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/fixture.stdout.log",
+    "destination": "focus/pointer/fixture.stdout.log",
+    "sha256": "1e313eef810672ee393642bb157715e92ecf1e5ad835a20a388b3899b9e47755"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/input.events.jsonl",
+    "destination": "focus/pointer/input.events.jsonl",
+    "sha256": "f1885734985bebba2ace9dfc7917ddb1436974786c6a925e304d9db418f5cef2"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/ready.json",
+    "destination": "focus/pointer/ready.json",
+    "sha256": "2acbe6abea0d4c39c3cdf192783f75c515da21c6a8fad83cf83c6baffe102338"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/result.json",
+    "destination": "focus/pointer/result.json",
+    "sha256": "23db59f450f0c3ca95895fe8baa2e1b73327337ee5784f34e3dea4bbb32387d2"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/stats.json",
+    "destination": "focus/pointer/stats.json",
+    "sha256": "9d87f93e3513fe494c62be9505f5a3551f36cb89f96c6c62eb7c329fa0970917"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/pointer/xvfb.log",
+    "destination": "focus/pointer/xvfb.log",
+    "sha256": "e9e5985d3d7bbfebd4b594d02ec1047fc0641f65012cde1dc944f393d472ec52"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/command.json",
+    "destination": "focus/popup/command.json",
+    "sha256": "2471fe71bd9e20d916211481a668e78cb641a77ed527e93a6b03b5620f15a8f5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/compositor.stderr.log",
+    "destination": "focus/popup/compositor.stderr.log",
+    "sha256": "73e1ef03f3b09e5358bcfcc138dc91b4de8774eebf4fcb74411fb554e3ed270c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/compositor.stdout.log",
+    "destination": "focus/popup/compositor.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/fixture.stderr.log",
+    "destination": "focus/popup/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/fixture.stdout.log",
+    "destination": "focus/popup/fixture.stdout.log",
+    "sha256": "0ac5b0030fe1f1dec7dd75fd81fb1ed0cdce2c356cd199ccb6d127ad3331bd9e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/input.events.jsonl",
+    "destination": "focus/popup/input.events.jsonl",
+    "sha256": "2c7aff09929018623289244587dde301050240e2ed6f2240648dc56b2a82e2c2"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/ready.json",
+    "destination": "focus/popup/ready.json",
+    "sha256": "b1e2d43f1a6221097f19f0289c70b66d01f5c41a5e85ca1739b48b6a6cce3165"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/result.json",
+    "destination": "focus/popup/result.json",
+    "sha256": "977fb47cb73119a7aa4890ca48c584a88f2587d08a9790abb05479a9afedd0df"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/stats.json",
+    "destination": "focus/popup/stats.json",
+    "sha256": "3da2672a753f8cf7a6780b49682e4bf5e51a090e64a167854294709b47893b69"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/popup/xvfb.log",
+    "destination": "focus/popup/xvfb.log",
+    "sha256": "e9e5985d3d7bbfebd4b594d02ec1047fc0641f65012cde1dc944f393d472ec52"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-focus/summary.json",
+    "destination": "focus/summary.json",
+    "sha256": "bd268060820d8dc680b5b98107f4330a6e336482b685d948ccb997922b276d4f"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/build.log",
+    "destination": "admission-mutation/build.log",
+    "sha256": "3775239962c75986ca5082471093c809de9ec6b519323833a5ab3e2da686015e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/command.log",
+    "destination": "admission-mutation/command.log",
+    "sha256": "8f833e24ca781b9c5d4383c2b8d86ee44023039149d63c13bddc131b4407d9aa"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/execution.json",
+    "destination": "admission-mutation/execution.json",
+    "sha256": "0b3f886ed726797ae71389c87963a6b46a1bba4bc45e329bccfc2665d24dd65e"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/mutated-lib.rs",
+    "destination": "admission-mutation/mutated-lib.rs",
+    "sha256": "36e3c1bc15fcf0695f09e7972fcd340b78c1b74cc13985b5897b0b32fffc4a07"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/restored-build.log",
+    "destination": "admission-mutation/restored-build.log",
+    "sha256": "710889af1fe0fe61a69aacc13b24801840e98c479959d2fe92cf58869c9ed9c0"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/restored.json",
+    "destination": "admission-mutation/restored.json",
+    "sha256": "f417b985954a8b30dcde422f961ddcc497ca61d397d6f14850f1c76453a251f5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/package-verification.json",
+    "destination": "admission-mutation/runtime/package-verification.json",
+    "sha256": "aff3875380999fdf20283e5ddf01d4444a7adf235da172c21db264ef64731792"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/summary.json",
+    "destination": "admission-mutation/runtime/summary.json",
+    "sha256": "67190d94a7cb0f56d900a01a37af0145b6caff7edef83d91f25f5f982c22e226"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/command.json",
+    "destination": "admission-mutation/runtime/widths/command.json",
+    "sha256": "8fe134a6cad083d6ee3bc9878a909f68b856407b27db649887b801bedef649dc"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/config-attempt-0.lua",
+    "destination": "admission-mutation/runtime/widths/config-attempt-0.lua",
+    "sha256": "3954765ef3a6b5c0ec43ed0ebc4969de73503c2f1127e162b0c899b316da8362"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/config.lua",
+    "destination": "admission-mutation/runtime/widths/config.lua",
+    "sha256": "3954765ef3a6b5c0ec43ed0ebc4969de73503c2f1127e162b0c899b316da8362"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/fixture-command.json",
+    "destination": "admission-mutation/runtime/widths/fixture-command.json",
+    "sha256": "ca499130f6350b6cc19fd8424eb263d556e4a2c07ac48da8d2e6e807d8725773"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/fixture.stderr.log",
+    "destination": "admission-mutation/runtime/widths/fixture.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/fixture.stdout.log",
+    "destination": "admission-mutation/runtime/widths/fixture.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/ipc-trace.json",
+    "destination": "admission-mutation/runtime/widths/ipc-trace.json",
+    "sha256": "1dd3e47afaca0fb5f924858aeb27360843fd3cd13f583eed9db07e71b69cdb1b"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/ready.json",
+    "destination": "admission-mutation/runtime/widths/ready.json",
+    "sha256": "5146fe20ba3cb8d05e358b351caa5f25e2a74fdd50a939a21f146edbdcd0ac33"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/result.json",
+    "destination": "admission-mutation/runtime/widths/result.json",
+    "sha256": "83d5023d8925acfd9db87fb0e3ac64abdd3421c2bb45d2967d5f15b23ca43b51"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/stats.json",
+    "destination": "admission-mutation/runtime/widths/stats.json",
+    "sha256": "37405e6b2a449b4781fd28bd363af9e304ed57b4959967025478f78b5c9e073c"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/stderr.log",
+    "destination": "admission-mutation/runtime/widths/stderr.log",
+    "sha256": "f27b16b7fb9c163e3a72ed66c858f1349b085120b36015af3a398b65900ee9e1"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/widths/stdout.log",
+    "destination": "admission-mutation/runtime/widths/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-admission-mutation/runtime/xvfb.log",
+    "destination": "admission-mutation/runtime/xvfb.log",
+    "sha256": "e9e5985d3d7bbfebd4b594d02ec1047fc0641f65012cde1dc944f393d472ec52"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-preset-mutation/execution.json",
+    "destination": "preset-mutation/execution.json",
+    "sha256": "a160ae6f8f1097e8310bb4bc63cb12eda77fc0abf122ce1f414d574d4e0ea222"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-preset-mutation/mutated-config.rs",
+    "destination": "preset-mutation/mutated-config.rs",
+    "sha256": "3113468b0fe91a54bb6a5db29584a067d99009a48e43e0d6edeb860fa4bb74a5"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-preset-mutation/mutation.log",
+    "destination": "preset-mutation/mutation.log",
+    "sha256": "0757fae7e675b5f31eb1b14cad506105c78a2b4eff3454a0ab5af4f43aa2b0dd"
+  },
+  {
+    "source": "/home/ahmad/Documents/Projects/fluxwm/target/default-width-preset-mutation/restored-tests.log",
+    "destination": "preset-mutation/restored-tests.log",
+    "sha256": "836b88ec38b5f7e314d1e1ebe21e19509221f1284d94237efbd0c1107ac21e12"
+  }
+]

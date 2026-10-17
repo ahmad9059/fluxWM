@@ -1,0 +1,134 @@
+{
+  "diagnostics": {
+    "backend": "nested",
+    "composed_scene": {
+      "popup_surfaces": 0,
+      "surfaces": 1
+    },
+    "configuration": {
+      "applied_generation": "3",
+      "last_error": null,
+      "prepared_generation": null,
+      "requested_generation": "3",
+      "status": "applied"
+    },
+    "input_state": {
+      "authorized_buttons": 0,
+      "host_focus": false,
+      "keyboard_grabbed": false,
+      "pointer_grabbed": false,
+      "pressed_keys": 0,
+      "suppressed_keys": 0
+    },
+    "keyboard_bindings": {
+      "entries": 3,
+      "inactive": 0,
+      "runtime_keymap_changes": false,
+      "source": "user-config"
+    },
+    "launch_outcomes": [],
+    "live_roles": 1,
+    "mapped_windows": 1,
+    "owned_applications": 0,
+    "pending_launches": 0,
+    "production_ready": false,
+    "runtime": {
+      "compositions": 2,
+      "destroyed": 0,
+      "final_windows": 0,
+      "flush_cycles": 57,
+      "flush_retry_timer_fired": 0,
+      "flush_would_block": 0,
+      "focus_cancelled_buttons": 0,
+      "focus_cancelled_keys": 0,
+      "frames_sent": 3,
+      "host_focus_losses": 1,
+      "ipc_dispatches_after_shutdown": 0,
+      "ipc_drain_timed_out": 0,
+      "maps": 1,
+      "popup_grabs_denied_missing_press": 0,
+      "redraws": 5,
+      "submissions": 2,
+      "unmaps": 0,
+      "wayland_requests": 29
+    },
+    "shell_health": {
+      "capacity": 1024,
+      "clients": [
+        {
+          "id": "1",
+          "status": "responsive"
+        }
+      ],
+      "interval_ms": 5000,
+      "stats": {
+        "capacity_rejections": 0,
+        "pongs": 1,
+        "recoveries": 0,
+        "send_failures": 0,
+        "sent": 1,
+        "timeouts": 0,
+        "timer_fired": 0
+      },
+      "timeout_ms": 2000,
+      "timer_armed": true
+    }
+  },
+  "effective": {
+    "desired": {
+      "binding_entries": 3,
+      "layout": {
+        "default_width": {
+          "preset": 2
+        },
+        "gaps": 8.0,
+        "mode": "strip",
+        "width_presets": [
+          {
+            "fraction": 0.33
+          },
+          {
+            "fraction": 0.5
+          },
+          {
+            "fraction": 0.66
+          }
+        ]
+      }
+    },
+    "effective": {
+      "binding_entries": 3,
+      "keymap": "startup-seat-keymap",
+      "layout": {
+        "default_width": {
+          "fraction": 0.5
+        },
+        "gaps": 8.0,
+        "mode": "strip"
+      }
+    },
+    "generation": "3",
+    "unsupported": [
+      "layout.outer_gap",
+      "layout.focus_margin",
+      "layout.canvas",
+      "input",
+      "outputs",
+      "animations",
+      "decoration",
+      "rules",
+      "autostart",
+      "security"
+    ]
+  },
+  "workspaces": {
+    "workspaces": [
+      {
+        "focused": true,
+        "id": "0:0",
+        "mode": "strip",
+        "output": "0:0"
+      }
+    ]
+  }
+}
