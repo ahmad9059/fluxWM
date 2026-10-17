@@ -6,7 +6,6 @@ use xkbcommon::xkb;
 
 const MAX_BINDINGS: usize = 4096;
 const MAX_STRING_BYTES: usize = 4 * 1024 * 1024;
-const MAX_KEYCODES: usize = 4096;
 const MAX_LAYOUTS_PER_KEY: u32 = 32;
 const MAX_RESOLVED_CHORDS: usize = 65_536;
 
@@ -124,15 +123,6 @@ impl BindingSet {
             result.actions.push(binding.action.clone());
         }
 
-        let mut keys = Vec::new();
-        keymap.key_for_each(|_, code| {
-            if keys.len() <= MAX_KEYCODES {
-                keys.push(code);
-            }
-        });
-        if keys.len() > MAX_KEYCODES {
-            return Err(fail("keymap exceeds 4096-key validation budget".into()));
-        }
         // Physical evdev bindings do not require a symbol in this keymap. A
         // custom keyboard may report a valid code with no XKB assignment.
         let mut reached: BTreeSet<_> = result.codes.values().copied().collect();
@@ -144,13 +134,11 @@ impl BindingSet {
             .map(|(_, m)| *m)
             .chain(result.symbols.keys().map(|(_, m)| *m))
             .collect();
-        for key in keys {
-            let Some(code) = key.raw().checked_sub(8).and_then(|c| u16::try_from(c).ok()) else {
-                continue;
-            };
-            if !(1..=767).contains(&code) {
-                continue;
-            }
+        // Fixed evdev domain: a native key_for_each callback cannot abort its
+        // underlying enumeration when a storage cap is reached. Codes outside
+        // this schema/runtime domain cannot be binding triggers here.
+        for code in 1..=767u16 {
+            let key = xkb::Keycode::new(u32::from(code) + 8);
             let layouts = keymap.num_layouts_for_key(key);
             if layouts > MAX_LAYOUTS_PER_KEY {
                 return Err(fail("keymap exceeds 32 layouts per key".into()));
