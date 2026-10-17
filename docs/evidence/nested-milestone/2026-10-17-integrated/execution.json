@@ -1,0 +1,103 @@
+{
+  "implementation_commit": "4a87922945decff827da5a18213d9f5d57fca6eb",
+  "commands": [
+    {
+      "name": "build",
+      "argv": [
+        "cargo",
+        "build",
+        "--workspace",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "environment_overrides": {}
+    },
+    {
+      "name": "tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "environment_overrides": {}
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "environment_overrides": {}
+    },
+    {
+      "name": "rustdoc",
+      "argv": [
+        "cargo",
+        "doc",
+        "--workspace",
+        "--no-deps",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "environment_overrides": {
+        "RUSTDOCFLAGS": "-D warnings"
+      }
+    },
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "environment_overrides": {}
+    },
+    {
+      "name": "docs",
+      "argv": [
+        "python3",
+        "tools/check_docs.py",
+        "--report",
+        "/tmp/fluxwm-final-docs.json"
+      ],
+      "exit_code": 0,
+      "environment_overrides": {}
+    },
+    {
+      "name": "current-ipc-probe",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--manifest-path",
+        "docs/evidence/ipc-audit-probe/Cargo.toml",
+        "--example",
+        "current",
+        "--target-dir",
+        "/tmp/flux-ipc-audit-target"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "distinct_test_cases": 94,
+  "extra_internal_process_fixture_test_invocations": 3,
+  "raw_passing_test_result_sum": 97,
+  "artifact_sources": {
+    "nested": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/c86dae51e66848c588d4e2aac59a12d8",
+    "ipc": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-ipc/7f04a55149524ac0bfe52df0018b097d",
+    "slow-reader": "/home/ahmad/Documents/Projects/fluxwm/target/slow-reader/073bda3547794affbda18694952ac9a0"
+  },
+  "scope": "Local cached Linux nested checks. No hosted CI, native/hardware, complete phase or production qualification.",
+  "binary_sha256": "562d4a444ebcf684f86fa3659d912e36cc1c5189ef739b8d576e456363caf115"
+}

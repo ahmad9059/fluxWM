@@ -37,3 +37,5 @@ Use the [nested runtime instructions](runtime.md) for real commands and supporte
 The ten-phase plan still governs qualification. Independent branches implement owned components; merge commits and final lockfile checks establish what actually belongs to the integrated source revision. Preserve a clean evidence snapshot before review, and record any later changes separately.
 
 See [Linux build setup and CI](build.md), [runtime behavior](runtime.md) and [application launch ownership](processes.md) for current implementation boundaries.
+
+[Runtime findings and production gates](runtime-findings.md) distinguish addressed defects, live evidence and source-only fixes that still need closure tests.

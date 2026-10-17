@@ -41,7 +41,7 @@ Default evidence lives under `target/smoke-nested/<unique-run-id>/` and is retai
 
 Logs are monitored under a four-MiB per-stream budget; JSON evidence is bounded to one MiB and screenshot reading to 64 MiB with bounded dimensions. Screenshot validation checks the suite deadline while processing pixels. A timed-out/oversized-log child and its supervised descendants are killed only in the new process group created for that scenario, then reaped with a bounded wait. If a failed process leaks runtime files, the harness records the leak as a failure and removes only matching device/inode pairs it observed while its own unique child was live. It never removes arbitrary host sockets or conceals a cleanup failure by counting harness removal as compositor success.
 
-Current test coverage excludes IPC commands until the runtime wire/API is settled, native sessions, hotplug, transformed physical outputs, real input injection, fullscreen/backdrop behavior, capture permissions, animation timing, and accessibility. Those remain separate production gates.
+This harness excludes IPC commands (the separate `python3 tools/smoke_ipc_runtime.py` checks current runtime IPC/process ownership), native sessions, hotplug, transformed physical outputs, real input injection, fullscreen/backdrop behavior, capture permissions, animation timing, and accessibility. Those remain separate production gates.
 
 ## Recorded first execution: failures preserved
 
@@ -77,3 +77,5 @@ This establishes one successful nested developer smoke on the recorded graphical
 
 
 Compact historical evidence is committed at [nested milestone evidence](../evidence/nested-milestone/2026-10-17-initial-passing/manifest.json). It includes the original summary, fixture stdout JSON, and each scenario's readiness/stats/result metadata with copy hashes. The large P6 is retained only at its original local path, with its SHA-256 recorded in the manifest. This snapshot identifies work-in-progress source by its tested executable hash and is not a committed release qualification. A final integrated revision must rerun the harness and retain a separate evidence bundle; this historical pass must not be silently relabeled as the later revision.
+
+The [integrated evidence bundle](../evidence/nested-milestone/2026-10-17-integrated/README.md) records final runtime tests and the complementary [slow-reader fixture](slow-reader-fixture.md).

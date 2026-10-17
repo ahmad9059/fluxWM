@@ -33,6 +33,7 @@ Research date: **2026-10-17**. This folder specifies the product, architecture, 
 | [XDG window-state matrix](22-window-state-matrix.md) | Client flags, bounds, visibility, fullscreen backdrop, version gates |
 | [Current implementation audit](24-implementation-readiness-audit.md) | Source-backed findings, executable evidence and production blockers |
 | [Runnable nested milestone](development/runtime.md) | Actual CLI, controls, IPC, lifecycle and rendering evidence boundaries |
+| [Runtime findings and remaining gates](development/runtime-findings.md) | Integrated runtime fixes, actual tests and unqualified production behavior |
 | [Development documentation](development/README.md) | Implemented component APIs and remaining integration work |
 | [Independent review](reviews/README.md) | Claude review, remediation, and verification limits |
 
