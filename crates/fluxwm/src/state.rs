@@ -337,10 +337,37 @@ impl Fluxwm {
         }
     }
 
+    /// A popup may be tracked only while its managed root belongs to the scene.
+    /// This is scene membership, not proof of output visibility or clipping.
+    pub(crate) fn popup_root_visible(&self, surface: &WlSurface) -> bool {
+        self.window_id(surface)
+            .and_then(|id| self.windows.get(id))
+            .is_some_and(|item| item.mapped && self.space.element_location(&item.window).is_some())
+    }
+
+    /// PopupManager owns non-grabbing trees independently of the seat's active
+    /// PopupGrab. Detach every subtree when its root leaves the scene so a later
+    /// remap cannot resurrect old popups. Collect before mutating the tree;
+    /// dismiss_popup sends popup_done to descendants before their parent.
+    fn dismiss_root_popups(surface: &WlSurface) {
+        if !surface.alive() {
+            return;
+        }
+        let popups: Vec<_> = PopupManager::popups_for_surface(surface)
+            .map(|(popup, _)| popup)
+            .collect();
+        for popup in popups {
+            // An earlier ancestor dismissal may already have detached this node.
+            // The pinned manager treats an absent subtree as a no-op.
+            let _ = PopupManager::dismiss_popup(surface, &popup);
+        }
+    }
+
     pub fn remove_toplevel(&mut self, surface: &WlSurface) {
         let Some(id) = self.window_id(surface) else {
             return;
         };
+        Self::dismiss_root_popups(surface);
         if let Some(item) = self.windows.remove(id) {
             self.space.unmap_elem(&item.window);
             if item.mapped {
@@ -388,6 +415,7 @@ impl Fluxwm {
             }
         } else if !has_buffer && was_mapped {
             self.windows.get_mut(id).expect("live dispatch ID").mapped = false;
+            Self::dismiss_root_popups(root);
             self.space.unmap_elem(&window);
             let _ = self.layout.remove(id);
             self.stats.unmaps += 1;
@@ -442,9 +470,15 @@ impl Fluxwm {
                     placement.focused,
                 );
             } else {
+                if let Some(toplevel) = item.window.toplevel() {
+                    Self::dismiss_root_popups(toplevel.wl_surface());
+                }
                 self.space.unmap_elem(&item.window);
             }
         }
+        // Release seat wrappers only after all scene removals are authoritative;
+        // cleanup repairs keyboard/pointer focus using the completed layout.
+        self.cleanup_popup_grab();
         self.request_redraw();
     }
 
@@ -624,6 +658,14 @@ impl Fluxwm {
             .map(|(id, _)| id)
             .collect();
         for id in dead {
+            if let Some(surface) = self
+                .windows
+                .get(id)
+                .and_then(|item| item.window.toplevel())
+                .map(|toplevel| toplevel.wl_surface().clone())
+            {
+                Self::dismiss_root_popups(&surface);
+            }
             if let Some(item) = self.windows.remove(id) {
                 self.space.unmap_elem(&item.window);
                 if item.mapped {
