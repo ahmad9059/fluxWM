@@ -235,6 +235,16 @@ impl Layout {
         window: WindowId,
         constraints: SizeConstraints,
     ) -> Result<(), LayoutError> {
+        self.insert_with_focus(window, constraints, true)
+    }
+    /// Insert according to the compositor's activation decision. An empty workspace
+    /// selects its first member even when `activate` is false so focus stays valid.
+    pub fn insert_with_focus(
+        &mut self,
+        window: WindowId,
+        constraints: SizeConstraints,
+        activate: bool,
+    ) -> Result<(), LayoutError> {
         if self.members.contains_key(&window) {
             return Err(LayoutError::DuplicateWindow);
         }
@@ -273,12 +283,31 @@ impl Layout {
             rect.y = r.y;
         }
         self.canvas.insert(window, rect);
-        self.focus_window(window)
+        if activate || self.focus.is_none() {
+            self.focus_window(window)
+        } else {
+            Ok(())
+        }
     }
     pub fn remove(&mut self, window: WindowId) -> Result<(), LayoutError> {
         let index = self
             .column_index(window)
             .ok_or(LayoutError::UnknownWindow)?;
+        let anchor = if self.mode == LayoutMode::Strip && self.focus != Some(window) {
+            self.focus.map(|w| {
+                (
+                    w,
+                    self.strip_placements()
+                        .into_iter()
+                        .find(|p| p.window == w)
+                        .unwrap()
+                        .rect
+                        .x,
+                )
+            })
+        } else {
+            None
+        };
         let c = &mut self.columns[index];
         c.windows.retain(|w| *w != window);
         if c.windows.is_empty() {
@@ -298,6 +327,18 @@ impl Layout {
             }) {
                 self.focus_window(next)?;
             }
+        }
+        if let Some((w, old_x)) = anchor {
+            let new_x = self
+                .strip_placements()
+                .into_iter()
+                .find(|p| p.window == w)
+                .unwrap()
+                .rect
+                .x;
+            self.strip_camera.position.x =
+                (self.strip_camera.position.x + new_x - old_x).clamp(-MAX_COORD, MAX_COORD);
+            self.reveal_focus();
         }
         if self.is_empty() {
             self.strip_camera = Camera::default();
@@ -1140,6 +1181,23 @@ mod tests {
         let before = l.camera().rect_to_view(rect(&l, id(3)));
         l.move_focused(Direction::Left).unwrap();
         assert_eq!(l.camera().rect_to_view(rect(&l, id(3))), before);
+    }
+    #[test]
+    fn unactivated_insert_and_unrelated_close_preserve_focus_and_anchor() {
+        let mut l = layout();
+        for n in 0..4 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        let camera = l.camera();
+        l.insert_with_focus(id(4), SizeConstraints::default(), false)
+            .unwrap();
+        assert_eq!(l.focused(), Some(id(3)));
+        assert_eq!(l.camera(), camera);
+        let anchor = l.camera().rect_to_view(rect(&l, id(3)));
+        l.remove(id(0)).unwrap();
+        assert_eq!(l.focused(), Some(id(3)));
+        assert_eq!(l.camera().rect_to_view(rect(&l, id(3))), anchor);
+        assert_eq!(l.validate(), Ok(()));
     }
     #[test]
     fn randomized_10000_commands_preserve_membership_focus_and_geometry() {

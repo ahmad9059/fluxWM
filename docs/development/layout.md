@@ -4,7 +4,7 @@
 
 ## Integration
 
-Create `Layout::new(Size)` from the positive usable output dimensions, then insert mapped `WindowId` identities and validated `SizeConstraints`. `insert` currently explicitly activates the new window; the compositor must call it only after its activation policy permits this, or restore prior focus immediately while integrating a future insertion-policy API. Never insert untrusted protocol object IDs without the owning generational arena.
+Create `Layout::new(Size)` from the positive usable output dimensions, then insert mapped `WindowId` identities and validated `SizeConstraints`. `insert` explicitly activates the new window. Use `insert_with_focus(window, constraints, false)` when activation policy rejects a focus request; this preserves existing focus and camera. The first member of an empty workspace becomes focused so the nonempty-workspace invariant holds. Never insert untrusted protocol object IDs without the owning generational arena.
 
 Use `placements()` for client target sizes. Its rectangles are in workspace world coordinates. Use `camera().rect_to_view(rect)` to build the scene in output-local logical coordinates. Apply the output usable-region offset, physical scale, output transform, surface offsets, and buffer conversions in the renderer. `visible_placements()` excludes offscreen content and hidden tabs. Offscreen members remain live; hidden tabs keep their allocated nonzero target size. `hit_test` accepts viewport-local logical coordinates; the compositor must additionally apply input-region and surface-tree tests.
 
