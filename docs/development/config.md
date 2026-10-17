@@ -53,7 +53,9 @@ a newer request can supersede a completion before the wake is handled. The core
 crate has no calloop dependency.
 
 Call `request(&mut self, source: Vec<u8>)` with an already acquired source snapshot.
-It does not read source files or execute the helper on the calling thread. Oversized
+Alternatively, `request_path(&mut self, path: PathBuf)` admits a path and delegates
+acquisition to the same worker, as specified below. Neither API reads source files
+or executes the helper on the calling thread. Oversized
 or non-UTF-8 snapshots reject immediately without superseding accepted work. Each
 accepted request gets a checked `ConfigGeneration`; exhaustion rejects without
 wrapping. Lua, schema, helper and timeout failures of accepted work still supersede
@@ -90,8 +92,9 @@ worker. It is idempotent, and Drop calls it as a fallback. Call shutdown/Drop ou
 compositor dispatch. Cancellation is distinct from timeout; a deadline already
 observed by the supervision loop remains a timeout. Kernel exec/kill/wait, worker
 join and filesystem operations have no universal wall-clock deadline under failure.
-Snapshot acquisition must therefore have its own off-thread ownership and explicit
-file/path policy; this API does not make ordinary file reads bounded in time.
+For supplied byte snapshots, acquisition remains the caller's responsibility. The
+path API below owns acquisition on the worker; neither route makes ordinary file
+reads bounded in time.
 
 Actual-helper integration tests exercise held stale candidates after a newer schema
 failure, active/pending replacement, timeout then recovery, explicit commit-only
@@ -126,6 +129,52 @@ These mutations establish detection of those specific
 missing checks, not arbitrary cancellation or kernel fault schedules.
 These establish this library's local behavior, not atomic compositor hot reload,
 keymap/device transactions, filesystem acquisition or complete phase-6 readiness.
+
+
+## Worker-owned source paths
+
+`request_path(PathBuf)` checks syntax and issues the same checked generation as a
+byte-snapshot request while holding the coordinator mutex, before any file I/O.
+Paths must be absolute, nonempty, NUL-free and at most `MAX_SOURCE_PATH_BYTES`
+(4096) Linux `OsStr` bytes. Non-UTF-8 filenames are allowed. Invalid path syntax
+rejects without changing generation or invalidating an existing candidate. Once
+admitted, even a missing, unreadable or invalid source supersedes older candidates;
+an error does not restore a superseded candidate or replace explicit last-good state.
+No default source discovery or runtime path selection is provided by this library.
+
+The Linux worker opens with `O_NONBLOCK | O_CLOEXEC`, requires the opened descriptor
+to represent a regular file before reading, rejects a reported size above 1 MiB,
+and reads at most `MAX_SOURCE_BYTES + 1` bytes to detect growth past the limit.
+It then validates the actual byte length and UTF-8 before launching a helper.
+Directory/FIFO sources are rejected without helper evaluation. Cancellation is
+checked before acquisition and again after its result, including an I/O error.
+The source descriptor is closed before helper execution. File errors produce only
+static `Io` or `Invalid` diagnostics, without user paths or file contents.
+
+Following symlinks is intentional: same-user configuration is trusted code, modules
+remain unavailable, and this API establishes no filesystem ownership sandbox. The
+path resolves when the worker opens it, rather than at request admission. Replacing
+the path after open does not redirect the existing descriptor. Concurrent in-place
+writes can still produce mixed or incomplete content; metadata plus read is not a
+transaction with the writer. Writers should publish complete files by atomic rename
+if they need a coherent publication convention. No automatic retry is performed.
+
+`O_NONBLOCK` prevents waiting for a FIFO writer in the tested Linux case; it does
+not establish a hard timeout for regular-file open, metadata or read on every kernel
+or filesystem. Cancellation cannot interrupt an operation blocked in the kernel.
+The helper's evaluation deadline starts after source acquisition, and a blocked
+acquisition can delay pending evaluations and shutdown join despite bounded queue
+and byte ownership. Native/session policy must account for that limitation.
+
+Real-file integration tests cover actual Lua results, followed symlinks, non-UTF-8
+filenames, missing paths superseding held candidates, directory/oversize/non-UTF-8
+content failures, immediate invalid-path rejection preserving generation and commit,
+and recovery. The FIFO-with-no-writer case runs in an owned disposable test process
+with a separate two-second deadline and kill/reap cleanup, so a blocking-open defect
+cannot hang the suite. That fixture requires coreutils `mkfifo`. A targeted mutation
+removing only `O_NONBLOCK` must fail the FIFO liveness assertion; mutation scripts
+restore source in a `finally` block before repaired checks. Commands and transcripts
+are retained under `target/config-source-evidence/` in the configuration worktree.
 
 ## Implemented v1 schema
 
