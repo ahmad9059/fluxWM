@@ -40,6 +40,14 @@ impl XdgShellHandler for Fluxwm {
     }
 
     fn new_popup(&mut self, surface: PopupSurface, _positioner: PositionerState) {
+        // Creating a fresh popup after its root left the scene must not recreate
+        // a tree that was dismissed by an earlier unmap/hide transaction.
+        let visible = find_popup_root_surface(&PopupKind::Xdg(surface.clone()))
+            .is_ok_and(|root| self.popup_root_visible(&root));
+        if !visible {
+            surface.send_popup_done();
+            return;
+        }
         self.unconstrain_popup(&surface);
         let _ = self.popups.track_popup(PopupKind::Xdg(surface));
     }
@@ -174,7 +182,7 @@ impl XdgShellHandler for Fluxwm {
             surface.send_popup_done();
             return;
         };
-        if !self.windows.get(id).is_some_and(|item| item.mapped) {
+        if !self.popup_root_visible(&root) {
             surface.send_popup_done();
             return;
         }
