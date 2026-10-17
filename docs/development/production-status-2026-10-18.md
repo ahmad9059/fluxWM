@@ -2,6 +2,8 @@
 
 **Production release remains blocked.** Current local evidence supports a nested development compositor and specific regression scenarios. It does not close any full phase gate. This document updates current status; the [initial implementation audit](../24-implementation-readiness-audit.md), [blocker register](../13-production-audit.md), [ten phases](../10-roadmap.md) and [112-case catalog](../15-edge-cases.md) retain their named scope and required closure evidence. No finite review establishes that nothing else is missing.
 
+Inspected entry points: [backend selection](../../crates/fluxwm/src/main.rs), [enabled backend features](../../crates/fluxwm/Cargo.toml), [capabilities and queries](../../crates/fluxwm/src/ipc.rs), [logical configuration](../../crates/fluxwm/src/config.rs), [XDG initialization](../../crates/fluxwm/src/state.rs), and [autostart supervision](../../crates/flux-process/src/autostart.rs). The retained milestone and independent review records identify exact source snapshots.
+
 ## Source-confirmed boundaries
 
 | Area | Present evidence | Missing work and closure evidence |

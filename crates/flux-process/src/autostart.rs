@@ -124,6 +124,8 @@ pub struct AutostartStatus {
 pub struct AutostartSnapshot {
     pub requested_generation: Option<u64>,
     pub active_generation: Option<u64>,
+    pub active_complete: bool,
+    pub retained_argv_bytes: usize,
     pub settled: bool,
     pub closed: bool,
     pub error: Option<&'static str>,
@@ -281,21 +283,23 @@ fn current(shared: &Shared, generation: u64) -> bool {
     let c = shared.control.lock().unwrap_or_else(|e| e.into_inner());
     !c.closed && c.latest == generation
 }
-fn publish(
-    shared: &Shared,
-    slots: &[Slot],
+#[derive(Default)]
+struct Progress {
     active: Option<u64>,
     observed: Option<u64>,
     settled: bool,
+    active_complete: bool,
     error: Option<&'static str>,
-    notify: &impl Fn(),
-) {
+}
+fn publish(shared: &Shared, slots: &[Slot], progress: &Progress, notify: &impl Fn()) {
     let mut snapshot = AutostartSnapshot {
-        requested_generation: observed,
-        active_generation: active,
-        settled,
+        requested_generation: progress.observed,
+        active_generation: progress.active,
+        active_complete: progress.active_complete,
+        retained_argv_bytes: slots.iter().map(|s| s.bytes).sum(),
+        settled: progress.settled,
         closed: false,
-        error,
+        error: progress.error,
         entries: slots.iter().map(|s| s.view.clone()).collect(),
     };
     let old = {
@@ -401,10 +405,10 @@ fn retire(slots: &mut [Slot], indices: &[usize]) {
 }
 fn run(shared: Arc<Shared>, notify: impl Fn()) {
     let mut slots: Vec<Slot> = Vec::new();
-    let mut active = None;
-    let mut observed = None;
-    let mut settled = true;
-    let mut plan_error = None;
+    let mut progress = Progress {
+        settled: true,
+        ..Progress::default()
+    };
     loop {
         let (plan, discard, should_reap, closed) = {
             let mut c = shared.control.lock().unwrap_or_else(|e| e.into_inner());
@@ -424,9 +428,7 @@ fn run(shared: Arc<Shared>, notify: impl Fn()) {
             break;
         }
         if should_reap && reap(&mut slots) {
-            publish(
-                &shared, &slots, active, observed, settled, plan_error, &notify,
-            );
+            publish(&shared, &slots, &progress, &notify);
         }
         let Some(plan) = plan else {
             continue;
@@ -434,7 +436,7 @@ fn run(shared: Arc<Shared>, notify: impl Fn()) {
         if !current(&shared, plan.generation) {
             continue;
         }
-        observed = Some(plan.generation);
+        progress.observed = Some(plan.generation);
         let added = plan
             .entries
             .iter()
@@ -444,7 +446,9 @@ fn run(shared: Arc<Shared>, notify: impl Fn()) {
         for slot in &slots {
             if let Some(entry) = plan.entries.iter().find(|e| e.identity == slot.identity) {
                 bytes += if slot.needs_start(entry) {
-                    entry.bytes
+                    // Any prefix can survive supersession. Account for both
+                    // shrinking old histories and growing replacements.
+                    slot.bytes.max(entry.bytes)
                 } else {
                     slot.bytes
                 };
@@ -457,8 +461,9 @@ fn run(shared: Arc<Shared>, notify: impl Fn()) {
             .map(|e| e.bytes)
             .sum::<usize>();
         if slots.len() + added > MAX_AUTOSTART_IDENTITIES || bytes > MAX_AUTOSTART_HISTORY_BYTES {
-            plan_error = Some("autostart session identity or retained argv budget exceeded");
-            publish(&shared, &slots, active, observed, true, plan_error, &notify);
+            progress.error = Some("autostart session identity or retained argv budget exceeded");
+            progress.settled = true;
+            publish(&shared, &slots, &progress, &notify);
             continue;
         }
         for entry in &plan.entries {
@@ -474,8 +479,10 @@ fn run(shared: Arc<Shared>, notify: impl Fn()) {
                 (s.child.is_some() && desired.is_none_or(|entry| s.needs_start(entry))).then_some(i)
             })
             .collect();
-        active = Some(plan.generation);
-        plan_error = None;
+        progress.active = Some(plan.generation);
+        progress.error = None;
+        progress.settled = false;
+        progress.active_complete = false;
         // A superseding plan can arrive during retirement. Preserve the need
         // to restart a deliberately retired child even if it restores argv.
         for &i in &stop {
@@ -494,7 +501,7 @@ fn run(shared: Arc<Shared>, notify: impl Fn()) {
                 slot.view.state = "removed";
             }
         }
-        publish(&shared, &slots, active, observed, false, None, &notify);
+        publish(&shared, &slots, &progress, &notify);
         let mut complete = true;
         for (index, entry) in plan.entries.iter().enumerate() {
             if !current(&shared, plan.generation) {
@@ -509,9 +516,15 @@ fn run(shared: Arc<Shared>, notify: impl Fn()) {
             slot.present = true;
             slot.view.desired = true;
             slot.view.index = Some(index);
-            slot.view.change_deferred =
-                !start && slot.history.as_deref() != Some(entry.argv.as_ref());
+            slot.view.change_deferred = !start
+                && slot
+                    .history
+                    .as_ref()
+                    .is_some_and(|h| h.as_ref() != entry.argv.as_ref());
             if !start {
+                if slot.history.is_none() {
+                    slot.view.state = "once-suppressed";
+                }
                 continue;
             }
             let Some(attempts) = slot.view.attempts.checked_add(1) else {
@@ -551,18 +564,22 @@ fn run(shared: Arc<Shared>, notify: impl Fn()) {
                 }
             }
             reap(&mut slots);
-            publish(&shared, &slots, active, observed, false, None, &notify);
+            publish(&shared, &slots, &progress, &notify);
         }
-        settled = complete;
-        publish(&shared, &slots, active, observed, settled, None, &notify);
+        progress.settled = complete;
+        progress.active_complete = complete;
+        publish(&shared, &slots, &progress, &notify);
     }
     let indices: Vec<_> = (0..slots.len()).collect();
     retire(&mut slots, &indices);
     for s in &mut slots {
         s.view.state = "stopped";
         s.view.pid = None;
+        s.history = None;
+        s.bytes = 0;
     }
-    publish(&shared, &slots, active, observed, true, None, &notify);
+    progress.settled = true;
+    publish(&shared, &slots, &progress, &notify);
     let (pending, discard) = {
         let mut c = shared.control.lock().unwrap_or_else(|e| e.into_inner());
         (c.pending.take(), c.discard.take())
@@ -677,6 +694,8 @@ mod tests {
         let suppressed = settled(&worker, 5);
         assert!(suppressed.entries[0].pid.is_none());
         assert_eq!(suppressed.entries[0].attempts, 2);
+        assert_eq!(suppressed.entries[0].state, "once-suppressed");
+        assert!(!suppressed.entries[0].change_deferred);
         worker
             .try_install(&plan(6, vec![command("a", "11", true)]))
             .unwrap();
@@ -1006,5 +1025,198 @@ mod tests {
         assert_eq!(after.entries[1].pid, Some(named_pid));
         worker.shutdown().unwrap();
         reaped(named_pid);
+    }
+    // Pause after each real publication. A newer plan is admitted while the
+    // worker owns a concrete prefix, without relying on scheduler timing.
+    struct ControlledWorker {
+        worker: AutostartWorker,
+        notices: std::sync::mpsc::Receiver<()>,
+        resume: std::sync::mpsc::Sender<()>,
+        gated: Arc<std::sync::atomic::AtomicBool>,
+    }
+    impl ControlledWorker {
+        fn new() -> Self {
+            let (notice, notices) = std::sync::mpsc::channel();
+            let (resume, resumed) = std::sync::mpsc::channel();
+            let gated = Arc::new(std::sync::atomic::AtomicBool::new(true));
+            let gate = gated.clone();
+            let worker = AutostartWorker::new(move || {
+                if gate.load(std::sync::atomic::Ordering::SeqCst) && notice.send(()).is_ok() {
+                    let _ = resumed.recv_timeout(Duration::from_secs(3));
+                }
+            })
+            .unwrap();
+            Self {
+                worker,
+                notices,
+                resume,
+                gated,
+            }
+        }
+        fn next(&self) -> AutostartSnapshot {
+            let until = Instant::now() + Duration::from_secs(5);
+            loop {
+                match self.notices.recv_timeout(Duration::from_millis(2)) {
+                    Ok(()) => return self.worker.take_snapshot().expect("published snapshot"),
+                    Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                        assert!(Instant::now() < until, "controlled worker did not publish");
+                        self.worker.notify_child_exit();
+                    }
+                    Err(error) => panic!("controlled worker disconnected: {error}"),
+                }
+            }
+        }
+        fn resume(&self) {
+            self.resume.send(()).unwrap();
+        }
+        fn settled(&self, g: u64) -> AutostartSnapshot {
+            loop {
+                let s = self.next();
+                self.resume();
+                if s.requested_generation == Some(g) && s.settled {
+                    return s;
+                }
+            }
+        }
+    }
+    impl Drop for ControlledWorker {
+        fn drop(&mut self) {
+            self.gated.store(false, std::sync::atomic::Ordering::SeqCst);
+            self.worker.stop();
+            let _ = self.resume.send(());
+            let _ = self.worker.shutdown();
+        }
+    }
+    #[test]
+    fn superseded_prefix_cannot_exceed_retained_history_budget() {
+        let controlled = ControlledWorker::new();
+        let large = |id: String| AutostartCommand {
+            id: Some(id),
+            argv: std::iter::once("/missing/autostart".into())
+                .chain((0..255).map(|_| "x".repeat(4096)))
+                .collect(),
+            restart_on_change: false,
+        };
+        let small = |id: String, restart| AutostartCommand {
+            id: Some(id),
+            argv: vec!["/missing/small".into()],
+            restart_on_change: restart,
+        };
+        controlled
+            .worker
+            .try_install(&plan(1, (0..4).map(|i| large(format!("a{i}"))).collect()))
+            .unwrap();
+        controlled.settled(1);
+        controlled
+            .worker
+            .try_install(&plan(
+                2,
+                (0..4)
+                    .map(|i| small(format!("a{i}"), false))
+                    .chain((0..4).map(|i| large(format!("c{i}"))))
+                    .collect(),
+            ))
+            .unwrap();
+        let before = controlled.settled(2);
+        assert!(before.retained_argv_bytes <= MAX_AUTOSTART_HISTORY_BYTES);
+        let p3 = plan(
+            3,
+            (0..4)
+                .map(|i| large(format!("b{i}")))
+                .chain(
+                    (0..4)
+                        .flat_map(|i| [small(format!("a{i}"), true), small(format!("c{i}"), true)]),
+                )
+                .collect(),
+        );
+        let p4 = plan(4, vec![]);
+        controlled.worker.try_install(&p3).unwrap();
+        let mut peak = before.retained_argv_bytes;
+        let rejected;
+        loop {
+            let s = controlled.next();
+            peak = peak.max(s.retained_argv_bytes);
+            let prefix = s
+                .entries
+                .iter()
+                .any(|e| e.id.as_deref() == Some("b3") && e.attempts == 1);
+            if s.settled || prefix {
+                rejected = s.error.is_some();
+                controlled.worker.try_install(&p4).unwrap();
+                controlled.resume();
+                break;
+            }
+            controlled.resume();
+        }
+        let removed = controlled.settled(4);
+        assert_eq!(removed.retained_argv_bytes, 0);
+        assert!(
+            peak <= MAX_AUTOSTART_HISTORY_BYTES,
+            "superseded prefix retained {peak} bytes"
+        );
+        assert!(
+            rejected,
+            "unsafe transition must be rejected before starting new identities"
+        );
+        assert_eq!(removed.entries.len(), before.entries.len());
+    }
+    #[test]
+    fn rejected_latest_plan_keeps_partial_active_status_settled_after_child_exit() {
+        let controlled = ControlledWorker::new();
+        for (g, range) in [(1, 0..128), (2, 128..256)] {
+            let entries = range
+                .map(|i| AutostartCommand {
+                    id: Some(format!("id-{i}")),
+                    argv: vec!["/missing/history".into()],
+                    restart_on_change: false,
+                })
+                .collect();
+            controlled.worker.try_install(&plan(g, entries)).unwrap();
+            controlled.settled(g);
+        }
+        controlled
+            .worker
+            .try_install(&plan(
+                3,
+                vec![command("id-0", "0.5", true), command("id-1", "10", true)],
+            ))
+            .unwrap();
+        loop {
+            let s = controlled.next();
+            let started = s
+                .entries
+                .iter()
+                .any(|e| e.id.as_deref() == Some("id-0") && e.starts == 1);
+            if started {
+                controlled
+                    .worker
+                    .try_install(&plan(4, vec![command("excess", "10", true)]))
+                    .unwrap();
+                controlled.resume();
+                break;
+            }
+            controlled.resume();
+        }
+        let rejected = controlled.settled(4);
+        assert!(rejected.error.is_some());
+        assert_eq!(rejected.active_generation, Some(3));
+        assert!(!rejected.active_complete);
+        loop {
+            let s = controlled.next();
+            controlled.resume();
+            assert!(s.settled, "reaping must not unset settled rejection status");
+            assert!(!s.active_complete);
+            assert_eq!(s.requested_generation, Some(4));
+            assert!(s.error.is_some());
+            if s.entries
+                .iter()
+                .find(|e| e.id.as_deref() == Some("id-0"))
+                .unwrap()
+                .pid
+                .is_none()
+            {
+                break;
+            }
+        }
     }
 }

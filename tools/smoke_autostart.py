@@ -63,7 +63,7 @@ def run(binary, directory, environment, shutdown):
             v = case.ipc('diagnostics')['autostart']
             return v if v['settled'] and v['observed_generation'] == g else None
         v = case.wait(ready)
-        require(v['requested_generation'] == g and v['active_generation'] == g and v['error'] is None, 'autostart generation/error differs')
+        require(v['requested_generation'] == g and v['active_generation'] == g and v['active_complete'] and v['retained_argv_bytes'] <= 8 * 1024 * 1024 and v['error'] is None, 'autostart generation/error differs')
         rows = {e['id']: e for e in v['entries']}
         for row in rows.values():
             if row['pid'] is not None:
@@ -111,7 +111,7 @@ def run(binary, directory, environment, shutdown):
         removed = settle(reload([b, fast, missing]))
         require(removed['a']['state'] == 'removed' and gone(replacement), 'removal retained live child')
         suppressed = settle(reload([a, b, fast, missing]))
-        require(suppressed['a']['pid'] is None and suppressed['a']['attempts'] == '2', 'once-only reintroduction retried')
+        require(suppressed['a']['pid'] is None and suppressed['a']['attempts'] == '2' and suppressed['a']['state'] == 'once-suppressed' and not suppressed['a']['change_deferred'], 'once-only reintroduction retried')
         a = entry('a', 'returned', True)
         recovered = settle(reload([a, b, fast, ('missing', ['/bin/true'], True)]))
         require(recovered['a']['pid'] and recovered['a']['attempts'] == '3' and recovered['missing']['attempts'] == '2', 'explicit restart/recovery failed')
@@ -141,11 +141,54 @@ def run(binary, directory, environment, shutdown):
             rows = {e['id']: e for e in final['entries']}
             case.result['term_ignoring_child_killed'] = rows.get('b', {}).get('exit_signal') == 9 and (folder / (str(original.get('b')) + '-term.json')).exists()
             case.result['ok'] &= case.result['term_ignoring_child_killed']
-            case.result['ok'] &= final['closed'] and final['settled'] and all(e['pid'] is None for e in final['entries'])
+            case.result['ok'] &= final['closed'] and final['settled'] and final['retained_argv_bytes'] == 0 and all(e['pid'] is None for e in final['entries'])
         else:
             case.result['ok'] = False
         case.result['ok'] &= case.result['all_observed_processes_gone'] and case.result['shutdown_seconds'] < 2
         write_json(case.directory / 'result.json', case.result)
+    return case.result
+
+
+def run_budget(binary, directory, environment):
+    case = Case(binary, directory, environment, source([
+        ('history-%s' % i, ['/missing/autostart-budget'], False) for i in range(128)]))
+    stages = []
+    def settle(g, error=False):
+        def ready():
+            value = case.ipc('diagnostics')['autostart']
+            return value if value['observed_generation'] == g and value['settled'] else None
+        value = case.wait(ready)
+        require(value['requested_generation'] == g and value['active_complete'] and value['retained_argv_bytes'] <= 8 * 1024 * 1024 and bool(value['error']) == error, 'session-budget diagnostic generation/error differs')
+        stages.append(value)
+        return value
+    def reload(entries):
+        case.replace(source(entries)); g = case.reload(); case.await_status('applied', g)
+        return g
+    try:
+        case.start()
+        first = case.await_status('applied')['configuration']['applied_generation']
+        require(len(settle(first)['entries']) == 128, 'first identity batch incomplete')
+        active = reload([('history-%s' % i, ['/missing/autostart-budget'], False) for i in range(128, 256)])
+        require(len(settle(active)['entries']) == 256, 'second identity batch incomplete')
+        forbidden = [('excess', ['/usr/bin/touch', str(case.marker)], True)]
+        rejected = reload(forbidden)
+        retained = settle(rejected, error=True)
+        require(retained['active_generation'] == active and len(retained['entries']) == 256 and
+                all(e['attempts'] == '1' for e in retained['entries']), 'session budget partially changed ownership')
+        effective = case.ipc('config.effective')
+        require(effective['generation'] == rejected and effective['desired']['autostart_entries'] == 1, 'logical publication incorrectly rolled back with external effects')
+        removed = settle(reload([]))
+        require(all(not e['desired'] and e['pid'] is None for e in removed['entries']), 'empty list did not clear desired membership')
+        again = settle(reload(forbidden), error=True)
+        require(again['active_generation'] == removed['active_generation'], 'removal incorrectly reset identity tombstones')
+        recovered = settle(reload([('history-0', ['/bin/true'], True)]))
+        row = next(e for e in recovered['entries'] if e['id'] == 'history-0')
+        require(row['attempts'] == '2' and row['starts'] == '1', 'existing identity could not recover after budget rejection')
+        case.result.update(ok=True, stages=stages, published_but_effects_rejected=effective)
+    except Exception as error:
+        case.result['error'] = str(error)
+    finally:
+        case.close()
     return case.result
 
 
@@ -174,6 +217,7 @@ def main():
         owner = short_runtime()
         environment = dict(session.environment, XDG_RUNTIME_DIR=owner.name)
         result['cases'] = [run(binaries[0], directory / mode, environment, mode) for mode in ['sigterm', 'ipc-quit']]
+        result['cases'].append(run_budget(binaries[0], directory / 'session-budget', environment))
         result['ok'] = all(case['ok'] for case in result['cases'])
         result['executables_unchanged'] = all(sha256(Path(p)) == h for p,h in result['executables'].items())
     except Exception as error:
