@@ -1,0 +1,13 @@
+[package]
+name = "fluxwm-fixture"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+wayland-client = "0.31.15"
+wayland-protocols = { version = "0.32.13", features = ["client"] }
+serde_json.workspace = true
+libc.workspace = true
