@@ -201,7 +201,8 @@ def xtest_helper():
         connection.close()
 
 class Session:
-    def __init__(self, executable, directory):
+    def __init__(self, executable, directory, screen="1600x1000x24"):
+        require(screen in ("1600x1000x24", "3000x2000x24"), 'unsupported private screen size')
         self.directory = directory
         self.parent = dict(os.environ)
         self.number = None
@@ -220,7 +221,7 @@ class Session:
         try:
             with os.fdopen(os.open(self.auth, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'wb') as target: target.write(record)
             self.log = (directory / 'xvfb.log').open('wb')
-            self.server = subprocess.Popen([str(executable), self.display, '-screen', '0', '1600x1000x24', '-nolisten', 'tcp', '-auth', str(self.auth), '-noreset'], stdout=self.log, stderr=self.log, start_new_session=True)
+            self.server = subprocess.Popen([str(executable), self.display, '-screen', '0', screen, '-nolisten', 'tcp', '-auth', str(self.auth), '-noreset'], stdout=self.log, stderr=self.log, start_new_session=True)
         except BaseException:
             if self.log is not None: self.log.close()
             self.auth.unlink(missing_ok=True)

@@ -49,11 +49,22 @@ impl Fluxwm {
         }
         self.stats.ipc_drain_timed_out = driver.stats().drain_timed_out;
         if driver.drain_state() == DrainState::Drained {
+            self.stats.ipc_drain_elapsed_ms = self
+                .shutdown_started
+                .map(|started| started.elapsed().as_millis() as u64);
             self.loop_signal.stop();
         }
         self.ipc = Some(driver);
     }
     fn dispatch_ipc(&mut self, request: Request) -> Response {
+        if self.shutdown_deadline.is_some() {
+            self.stats.ipc_dispatches_after_shutdown += 1;
+            return Response::error(
+                request.id,
+                self.sequence,
+                ErrorBody::new(ErrorCode::NotReady, "instance is shutting down"),
+            );
+        }
         let result: Result<Value, ErrorBody> = match request.method {
             Method::Version => Ok(
                 json!({"name":"FluxWM", "version":env!("CARGO_PKG_VERSION"), "ipc_version":1, "backend":"nested"}),

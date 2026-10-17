@@ -74,8 +74,23 @@ def run_case(binary, directory, case, environment):
                 # No receives on slow: the final drain timeout counter proves
                 # a pending frame survived to the absolute deadline.
                 time.sleep(.2)
+            later = None
+            if case == 'slow-peer':
+                later = connect(ipc)
+                later.sendall(frame('admission-probe', 'version'))
+                def exact(count):
+                    raw = b''
+                    while len(raw) < count:
+                        check()
+                        part = later.recv(count - len(raw))
+                        require(part, 'later-peer admission EOF')
+                        raw += part
+                    return raw
+                length, = struct.unpack('>I', exact(4))
+                require(0 < length <= 1024 * 1024, 'admission reply size')
+                require(json.loads(exact(length))['id'] == 'admission-probe', 'later-peer admission mismatch')
             controller = connect(ipc)
-            controller.sendall(frame('before', 'version') + frame('quit', 'action', {'name': 'quit'}) + frame('tail', 'version'))
+            controller.sendall(frame('before', 'version') + frame('quit', 'action', {'name': 'quit'}) + frame('tail', 'action', {'name': 'workspace-mode', 'mode': 'canvas'}))
             quit_sent = time.monotonic()
             captured = bytearray()
             while True:
@@ -100,6 +115,12 @@ def run_case(binary, directory, case, environment):
                 responses.append(json.loads(captured[offset:offset + length]))
                 offset += length
             result['responses'] = responses
+            if later is not None:
+                try:
+                    later.sendall(frame('after-quit-peer', 'action', {'name': 'workspace-mode', 'mode': 'canvas'}))
+                    result['post_quit_peer_send'] = 'sent'
+                except (BrokenPipeError, ConnectionResetError):
+                    result['post_quit_peer_send'] = 'already closed'
             # Collect natural shutdown and cleanup evidence even if the response
             # oracle fails; do not turn an observed defect into harness SIGTERM.
             process.wait(timeout=min(3, max(.001, deadline - time.monotonic())))
@@ -110,6 +131,12 @@ def run_case(binary, directory, case, environment):
             require(int(responses[1]['state_sequence']) == int(responses[0]['state_sequence']) + 1, 'quit sequence mismatch')
             require(process.returncode == 0, 'compositor failed during shutdown')
             require(result['process_exit_ms'] < 2000, 'shutdown exceeded local two-second test tolerance')
+            require(result['stats'].get('ipc_dispatches_after_shutdown') == 0, 'handler invoked after quit')
+            require(result['stats'].get('ipc_drain_budget_ms') == 250, 'configured drain budget differs from 250 ms')
+            elapsed = result['stats'].get('ipc_drain_elapsed_ms')
+            require(isinstance(elapsed, int) and elapsed <= 750, 'drain exceeded 250 ms plus 500 ms scheduling tolerance')
+            if case == 'slow-peer':
+                require(elapsed >= 240, 'unread peer drain expired before budget minus 10 ms measurement tolerance')
             timed_out = result['stats'].get('ipc_drain_timed_out', 0)
             require(timed_out >= 1 if case == 'slow-peer' else timed_out == 0, 'pending-frame deadline oracle failed')
             require(all(not path.exists() and not path.is_symlink() for path, _, _ in paths), 'owned endpoint survived shutdown')

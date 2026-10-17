@@ -609,10 +609,22 @@ mod tests {
                 .all(|r| !r.readable && r.writable)
         );
         let bound = Instant::now() + Duration::from_secs(1);
+        let mut saw_timer = false;
         while fixture.driver.drain_state() != DrainState::Drained {
             assert!(Instant::now() < bound);
-            fixture.dispatch(Duration::from_millis(50));
+            fixture
+                .event_loop
+                .dispatch(Duration::from_millis(50), &mut fixture.state)
+                .unwrap();
+            saw_timer |= fixture.driver.deadline_fired.get();
+            if std::mem::take(&mut fixture.state.pending) {
+                fixture
+                    .driver
+                    .poll(Instant::now(), 1, |_| panic!("drain handler"))
+                    .unwrap();
+            }
         }
+        assert!(saw_timer, "deadline callback must actually fire");
         assert_eq!(fixture.state.handled, 0);
         assert_eq!(fixture.driver.stats().drain_timed_out, 1);
         assert!(fixture.driver.registrations.is_empty());

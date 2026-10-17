@@ -80,8 +80,12 @@ impl Fluxwm {
                 self.pending_spawns += 1;
             }
             Action::Quit => {
-                self.shutdown_deadline =
-                    Some(std::time::Instant::now() + std::time::Duration::from_millis(250));
+                let started = std::time::Instant::now();
+                let deadline = started + std::time::Duration::from_millis(250);
+                self.shutdown_started = Some(started);
+                self.shutdown_deadline = Some(deadline);
+                self.stats.ipc_drain_budget_ms =
+                    Some(deadline.duration_since(started).as_millis() as u64);
                 self.ipc_requested = true;
             }
             Action::Fullscreen { .. }

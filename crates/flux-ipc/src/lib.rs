@@ -996,6 +996,11 @@ fn process(
             Dispatch::Continue(response) => (response, None),
             Dispatch::Drain { response, deadline } => (response, Some(deadline)),
         };
+        if let Some(deadline) = requested_drain {
+            // Preserve the global dispatch seal even if a faulty handler returns
+            // an invalid/unencodable response after applying shutdown effects.
+            *drain_deadline = Some(deadline);
+        }
         if response.id != id
             || response.version != VERSION
             || response.state_sequence.0 < *state_sequence
@@ -1023,9 +1028,8 @@ fn process(
             id,
             enqueued: now,
         });
-        if let Some(deadline) = requested_drain {
-            *drain_deadline = Some(deadline);
-            // Publish shutdown globally before inspecting another pipeline frame.
+        if requested_drain.is_some() {
+            // Response is queued; never inspect another pipeline frame.
             flush(c, &mut write_budget)?;
             break;
         }
@@ -1842,5 +1846,62 @@ mod tests {
         server.poll(deadline, |_| panic!("drain callback"));
         assert_eq!(server.drain_state(), DrainState::Drained);
         assert_eq!(server.stats().drain_timed_out, 1);
+    }
+    #[test]
+    fn drain_seals_dispatch_even_if_handler_response_is_invalid() {
+        let temp = Temp::new();
+        let mut server = Server::bind(&temp.0, "bad-drain").unwrap();
+        let mut a = UnixStream::connect(server.socket_path()).unwrap();
+        let mut b = UnixStream::connect(server.socket_path()).unwrap();
+        a.write_all(&encode(&Request::new("a", Method::Version)).unwrap())
+            .unwrap();
+        b.write_all(&encode(&Request::new("b", Method::Version)).unwrap())
+            .unwrap();
+        let now = Instant::now();
+        let mut handled = 0;
+        server.poll_controlled(now, |_| {
+            handled += 1;
+            Dispatch::Drain {
+                response: Response::success("wrong-id", 1, Value::Null),
+                deadline: now + Duration::from_millis(250),
+            }
+        });
+        assert_eq!(handled, 1);
+        assert_eq!(server.drain_state(), DrainState::Drained);
+    }
+    #[test]
+    fn drain_discards_later_peers_previously_buffered_complete_request() {
+        let temp = Temp::new();
+        let mut server = Server::bind(&temp.0, "buffered-drain").unwrap();
+        let mut a = UnixStream::connect(server.socket_path()).unwrap();
+        let mut b = UnixStream::connect(server.socket_path()).unwrap();
+        let bytes: Vec<_> = (0..17)
+            .flat_map(|i| encode(&Request::new(i.to_string(), Method::Version)).unwrap())
+            .collect();
+        b.write_all(&bytes).unwrap();
+        let now = Instant::now();
+        let mut calls = 0;
+        server.poll(now, |r| {
+            calls += 1;
+            Response::success(r.id, 0, Value::Null)
+        });
+        assert_eq!(calls, 16);
+        assert!(server.connections[1].decoder.has_complete_frame());
+        a.write_all(&encode(&Request::new("quit", Method::Version)).unwrap())
+            .unwrap();
+        server.poll_controlled(now, |r| {
+            assert_eq!(r.id, "quit");
+            Dispatch::Drain {
+                response: Response::success(r.id, 1, Value::Null),
+                deadline: now + Duration::from_millis(250),
+            }
+        });
+        assert_eq!(receive(&mut a).id, "quit");
+        for i in 0..16 {
+            assert_eq!(receive(&mut b).id, i.to_string());
+        }
+        let mut last = [0];
+        assert_eq!(b.read(&mut last).unwrap(), 0);
+        assert_eq!(server.drain_state(), DrainState::Drained);
     }
 }

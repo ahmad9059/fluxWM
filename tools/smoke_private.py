@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""Run owned nested regression suites on an authenticated isolated Xvfb."""
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+import uuid
+
+from smoke_input import Session, prepare_xvfb
+from smoke_nested import require, sha256, write_json
+
+
+def main():
+    root = Path(__file__).resolve().parents[1]
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--bundle', type=Path)
+    parser.add_argument('--artifacts', type=Path)
+    parser.add_argument('--binary', type=Path, default=root / 'target/debug/fluxwm')
+    parser.add_argument('--fixture', type=Path, default=root / 'target/debug/fluxwm-fixture')
+    parser.add_argument('--suites', nargs='+', choices=['scene', 'nested', 'shutdown', 'ipc'], default=['scene', 'nested', 'shutdown', 'ipc'])
+    args = parser.parse_args()
+    directory = (args.artifacts or root / 'target/smoke-private' / uuid.uuid4().hex).resolve()
+    directory.mkdir(mode=0o700, parents=True, exist_ok=False)
+    parent = dict(os.environ)
+    result = {'ok': False, 'scope': 'owned authenticated X11 software-rendered nested suites; no host input injection', 'harness_sha256': sha256(Path(__file__)), 'suites': []}
+    session = process = None
+    try:
+        executable, verification = prepare_xvfb(args.bundle, directory)
+        result['package'] = verification
+        # Default Xvfb cursor starts at screen center. Keep it outside the default
+        # 1280x800 test window without injecting input; the scene fixtures observe
+        # the compositor's unchanged initial pointer at (0,0).
+        session = Session(executable, directory, screen='3000x2000x24')
+        deadline = time.monotonic() + 8
+        while not session.ready():
+            require(session.server.poll() is None and time.monotonic() < deadline, 'private server readiness failed')
+            time.sleep(.01)
+        runtime = directory / 'runtime'; runtime.mkdir(mode=0o700)
+        environment = dict(session.environment, XDG_RUNTIME_DIR=str(runtime))
+        result['private_server_pid'] = session.server.pid
+        result['private_display'] = session.display
+        for suite in args.suites:
+            script = {'scene': 'smoke_scene.py', 'nested': 'smoke_nested.py', 'shutdown': 'smoke_shutdown.py', 'ipc': 'smoke_ipc_runtime.py'}[suite]
+            command = [sys.executable, str(root / 'tools' / script), '--binary', str(args.binary.resolve()), '--artifacts', str(directory / suite)]
+            if suite in ('scene', 'nested'): command += ['--fixture', str(args.fixture.resolve())]
+            stdout, stderr = directory / (suite + '.stdout'), directory / (suite + '.stderr')
+            start = time.monotonic()
+            with stdout.open('wb') as out, stderr.open('wb') as err:
+                process = subprocess.Popen(command, stdout=out, stderr=err, env=environment, start_new_session=True)
+                while process.poll() is None:
+                    require(time.monotonic() - start < 65, 'suite exceeded 65-second deadline')
+                    require(all(p.stat().st_size < 4 * 1024 * 1024 for p in (stdout, stderr)), 'suite output budget exceeded')
+                    time.sleep(.02)
+            result['suites'].append({'suite': suite, 'command': command, 'exit_code': process.returncode, 'elapsed_seconds': round(time.monotonic() - start, 3)})
+            require(process.returncode == 0, suite + ' failed; inspect retained suite artifacts')
+            process = None
+        result['ok'] = True
+    except Exception as error:
+        result['error'] = str(error)
+    finally:
+        if process is not None and process.poll() is None:
+            process.terminate()
+            try: process.wait(timeout=3)
+            except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=2)
+        if session is not None:
+            session.close()
+            result['authority_removed'] = not session.auth.exists()
+            result['server_reaped'] = session.server.poll() is not None
+            result['x_socket_removed'] = not Path('/tmp/.X11-unix/X' + str(session.number)).exists()
+        result['parent_environment_unchanged'] = parent == dict(os.environ)
+        write_json(directory / 'result.json', result)
+    print(json.dumps({'ok': result['ok'], 'artifacts': str(directory), 'error': result.get('error')}))
+    return 0 if result['ok'] else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
