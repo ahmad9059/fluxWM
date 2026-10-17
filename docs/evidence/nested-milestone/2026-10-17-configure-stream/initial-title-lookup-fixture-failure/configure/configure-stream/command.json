@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxhealth-c77e7444502f4ff4",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-second/configure/configure-stream/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-second/configure/configure-stream/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "configure-stream",
+    "--timeout-ms",
+    "5000"
+  ]
+}

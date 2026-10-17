@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independent focused follow-up of frozen 6435fcbe0a75fa477e37fac92cba2ebb4be76e18. Only Read/Grep within this snapshot, no commands/tests/agents/edits/fetch/outside files. Use 8-12 calls then substantive report. Focus on NEW automatic recovery of rejected layout admission in crates/fluxwm/src/state.rs relayout, commit_window, remove_toplevel, finish_dispatch; crates/flux-layout/src/lib.rs insert_with_focus/remove/reveal behavior; crates/fluxwm-fixture/src/main.rs configure_admission aggregate_rejected and aggregate_after_blocker_destroy. The earlier source review identified static buffered roles being stranded until their own commit. New relayout does one arena-order pass over live buffered/nonmapped/error roles, tries insertion without activation, clears error/maps/counters on success, then publishes placements and restores keyboard selection. The real fixture maps a 600M min-width blocker, rejects a 500M static role (both legal individually), destroys blocker, and requires same-ID background mapping and original queued frame without another surface commit. Analyze state ownership, rejection/retry loops, focus/grab interaction, failure paths, actual source oracle effectiveness and resource bound. The role arena is capped at1024; no wall-clock fairness/global memory or complete transaction/native claim. Only report NEW concrete HIGH/MEDIUM issues with path, trigger and closure test; otherwise say none found and state limits/checked controls. Do not trust author results or certify production readiness. Relevant copied pinned Smithay source remains under upstream/smithay/ if needed.\n",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "18",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/configure-followup-snapshot"
+}

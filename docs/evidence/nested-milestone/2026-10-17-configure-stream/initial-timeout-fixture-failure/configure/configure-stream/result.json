@@ -1,0 +1,16 @@
+{
+  "binary_sha256": "a565a10255887d6bfeafb5de4be462ad36ab16843892c0cb1d3574c4a0ea4706",
+  "compositor_exit": 0,
+  "elapsed_seconds": 0.141,
+  "endpoints_removed": true,
+  "error": "real fixture oracle failed: timeout must be 1..=5000 ms",
+  "executables_unchanged": true,
+  "fixture_exit": 1,
+  "fixture_report": {
+    "error": "timeout must be 1..=5000 ms",
+    "ok": false
+  },
+  "fixture_sha256": "3f031f81e5a2c145a6e7b4efec8f45a0c7904be7456866cc4549fa22608152a2",
+  "mode": "configure-stream",
+  "ok": false
+}

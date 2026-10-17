@@ -124,3 +124,5 @@ The nested runtime uses `poll_controlled` and `Dispatch::Drain` to queue the qui
 `windows.list` includes per-binding `responsiveness`; `diagnostics.shell_health` supplies bounded probe states, fixed development timing policy and counters. [Shell-health documentation](shell-health.md) explains unmonitored overflow, sequence advancement and the distinction between ping response and application frame progress.
 
 `diagnostics.input_state` reports virtual key/suppression counts, observed host focus, grab flags and `authorized_buttons` (the application’s authorization ledger). `composed_scene` counts come from the last successful published snapshot. [Host-focus documentation](host-focus.md) distinguishes those observations from hardware state and raw-pixel proof.
+
+The nested `windows.list` rows expose [toplevel configure state](configure-stream.md): actual unacknowledged count, pending intent, and separate last-acked/committed serials and size suggestions. These fields do not prove actual buffer size, acquire readiness or presentation.

@@ -1,0 +1,334 @@
+{
+  "binary_sha256": "4fc888b054fac25d9913f3a52d3a79724ee989de49294a4a2349d81c8499f068",
+  "compositor_exit": 0,
+  "elapsed_seconds": 0.654,
+  "endpoints_removed": true,
+  "error": "real fixture oracle failed: ack did not flush exactly the latest state while preserving committed ownership",
+  "executables_unchanged": true,
+  "fixture_exit": 1,
+  "fixture_report": {
+    "after_old_ack_without_commit": {
+      "app_id": "org.fluxwm.Fixture",
+      "configure": {
+        "committed_serial": 14,
+        "committed_size": [
+          640,
+          800
+        ],
+        "deferred": true,
+        "desired_size": [
+          736,
+          800
+        ],
+        "initial_sent": true,
+        "last_acked_serial": 15,
+        "sent_size": [
+          672,
+          800
+        ],
+        "unacknowledged": 0
+      },
+      "focused": true,
+      "geometry": {
+        "height": 800.0,
+        "width": 736.0,
+        "x": 0.0,
+        "y": -0.0
+      },
+      "id": "0:0",
+      "mapped": true,
+      "responsiveness": {
+        "id": "1",
+        "status": "responsive"
+      },
+      "title": "FluxWM fixture configure-slow",
+      "workspace": "0:0"
+    },
+    "before": {
+      "app_id": "org.fluxwm.Fixture",
+      "configure": {
+        "committed_serial": 14,
+        "committed_size": [
+          640,
+          800
+        ],
+        "deferred": false,
+        "desired_size": [
+          640,
+          800
+        ],
+        "initial_sent": true,
+        "last_acked_serial": 14,
+        "sent_size": [
+          640,
+          800
+        ],
+        "unacknowledged": 0
+      },
+      "focused": true,
+      "geometry": {
+        "height": 800.0,
+        "width": 640.0,
+        "x": 0.0,
+        "y": -0.0
+      },
+      "id": "0:0",
+      "mapped": true,
+      "responsiveness": {
+        "id": "1",
+        "status": "responsive"
+      },
+      "title": "FluxWM fixture configure-slow",
+      "workspace": "0:0"
+    },
+    "elapsed_ms": 205,
+    "error": "ack did not flush exactly the latest state while preserving committed ownership",
+    "events": [
+      {
+        "at_ms": 15,
+        "event": {
+          "create": 0,
+          "name": "configure-slow"
+        }
+      },
+      {
+        "at_ms": 19,
+        "event": {
+          "bytes": [],
+          "wm_capabilities": 0
+        }
+      },
+      {
+        "at_ms": 19,
+        "event": {
+          "configure_ack": 0,
+          "serial": 2,
+          "size": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "at_ms": 23,
+        "event": {
+          "map_commit": 0
+        }
+      },
+      {
+        "at_ms": 25,
+        "event": {
+          "configure_ack": 0,
+          "serial": 3,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 41,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 357
+        }
+      },
+      {
+        "at_ms": 64,
+        "event": {
+          "configure_ack": 0,
+          "serial": 8,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 65,
+        "event": {
+          "configure_ack": 0,
+          "serial": 14,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 70,
+        "event": {
+          "configure_held": 0,
+          "serial": 15,
+          "size": [
+            672,
+            800
+          ]
+        }
+      }
+    ],
+    "healthy_events": [
+      {
+        "at_ms": 41,
+        "event": {
+          "create": 0,
+          "name": "configure-healthy"
+        }
+      },
+      {
+        "at_ms": 42,
+        "event": {
+          "bytes": [],
+          "wm_capabilities": 0
+        }
+      },
+      {
+        "at_ms": 42,
+        "event": {
+          "configure_ack": 0,
+          "serial": 7,
+          "size": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "at_ms": 46,
+        "event": {
+          "map_commit": 0
+        }
+      },
+      {
+        "at_ms": 46,
+        "event": {
+          "configure_ack": 0,
+          "serial": 9,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 55,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 371
+        }
+      },
+      {
+        "at_ms": 65,
+        "event": {
+          "configure_ack": 0,
+          "serial": 12,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 88,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 404
+        }
+      },
+      {
+        "at_ms": 103,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 420
+        }
+      },
+      {
+        "at_ms": 120,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 436
+        }
+      },
+      {
+        "at_ms": 136,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 453
+        }
+      },
+      {
+        "at_ms": 153,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 470
+        }
+      },
+      {
+        "at_ms": 170,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 486
+        }
+      },
+      {
+        "at_ms": 187,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 503
+        }
+      },
+      {
+        "at_ms": 203,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 520
+        }
+      }
+    ],
+    "healthy_frames_during_stall": 8,
+    "mode": "configure-stream",
+    "ok": false,
+    "resize_actions": 130,
+    "stalled": {
+      "app_id": "org.fluxwm.Fixture",
+      "configure": {
+        "committed_serial": 14,
+        "committed_size": [
+          640,
+          800
+        ],
+        "deferred": true,
+        "desired_size": [
+          736,
+          800
+        ],
+        "initial_sent": true,
+        "last_acked_serial": 14,
+        "sent_size": [
+          672,
+          800
+        ],
+        "unacknowledged": 1
+      },
+      "focused": true,
+      "geometry": {
+        "height": 800.0,
+        "width": 736.0,
+        "x": 0.0,
+        "y": -0.0
+      },
+      "id": "0:0",
+      "mapped": true,
+      "responsiveness": {
+        "id": "1",
+        "status": "responsive"
+      },
+      "title": "FluxWM fixture configure-slow",
+      "workspace": "0:0"
+    },
+    "wire_configures_during_stall": 1
+  },
+  "fixture_sha256": "6a078d642e3be360b08fc4605b6e92be97e706c6059a44934ed19c01b260d59a",
+  "mode": "configure-stream",
+  "ok": false
+}

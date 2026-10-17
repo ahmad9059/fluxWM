@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -16,7 +17,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def check(source_cache: Path | None) -> dict:
     checks: dict = {"scope": "Documentation integrity and explicit Lua 5.4 example checks; no FluxWM runtime tests"}
-    docs = sorted(ROOT.rglob("*.md"))
+    docs = []
+    for directory, subdirectories, files in os.walk(ROOT):
+        # Build output can contain API docs and incomplete frozen review trees.
+        # Validate authored repository documents, not generated/cache copies.
+        subdirectories[:] = [name for name in subdirectories if name not in {".git", "target"}]
+        docs.extend(Path(directory) / name for name in files if name.endswith(".md"))
+    docs.sort()
+    checks["excluded_directories"] = [".git", "target"]
     errors = []
     local_links = 0
     for path in docs:

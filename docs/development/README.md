@@ -48,3 +48,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 [XDG shell responsiveness](shell-health.md) adds nonfatal ping/timeout/recovery diagnostics, a bounded shared timer and real serial/timing/disconnect/monitor-cap tests. It does not establish application frame progress or global resource admission.
 
 [Nested host-focus recovery](host-focus.md) verifies cancellation of held keys/buttons, consumed shortcut ownership and one authorized popup grab through real private-display input. Separate short runtime directories keep test socket paths below AF_UNIX limits even when artifact paths are long.
+
+[Bounded toplevel configures](configure-stream.md) limits ordinary unacknowledged traffic, coalesces latest layout intent and verifies ack/commit separation, healthy-sibling progress, remap overlap and pending-role destruction. Full layout transactions and global resource accounting remain open.

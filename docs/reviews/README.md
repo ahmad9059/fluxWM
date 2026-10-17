@@ -1,4 +1,6 @@
 # Independent Claude review
+[Claude’s configure-stream review](configure-stream-2026-10-17/disposition.md) inspects frozen `0dba143` and identifies static rejected-buffer recovery. Its disposition records a real failure on that executable and later automatic admission without a new surface commit. The actual trace has 23 read/search calls and 1,662 matching input hashes. Author tests and later source changes are separate. The [focused follow-up](configure-stream-followup-2026-10-17/disposition.md) inspects final `6435fcb`, finds no new high/medium issue within that correction, and retains retry-cost/ordering/fairness limits. Its actual trace has 13 calls and all 1,662 hashes match.
+
 
 ## Latest host-focus reviews
 

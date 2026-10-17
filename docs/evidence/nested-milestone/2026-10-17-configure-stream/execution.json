@@ -1,0 +1,126 @@
+{
+  "final_source_commit": "6435fcbe0a75fa477e37fac92cba2ebb4be76e18",
+  "branch": "impl/bounded-toplevel-configures",
+  "baseline_binary_sha256": "1496b5bf211e1aad1b1b2555f8ba9cb8f7da6da8fd3b1efcc778bc2fb89b482e",
+  "baseline_source_commit": "a26292e",
+  "baseline_identity_matches_prior_host_focus_evidence": true,
+  "final_binary_sha256": "3107ef0a972222eac4b058783bc4d08b01103851af8130515feba5e8d36585e0",
+  "fixture_sha256": "3e5d8dfda9b446ad497fa9f437fdf30ba61459dc7b99af74431bb2043128273f",
+  "source_hashes": {
+    "crates/fluxwm/src/configure.rs": "6235aee639a7f0b60a95a107270286c4e719ee259341c528777c98b8c8bd1b59",
+    "crates/fluxwm/src/state.rs": "e14953bbc3f3fd308e7b61e363845d9b689fe098a50476dec9da302ebb45b04c",
+    "crates/fluxwm/src/handlers/xdg_shell.rs": "fe81c252f847ff1e72fad030039ac567465da3bbc67fa5efc7e4ab6189d4c4d3",
+    "crates/fluxwm/src/handlers/compositor.rs": "effbe6ea77661de6656f49a4d9e44bc723b60bc2fd618e7f77d8d79257712a31",
+    "crates/fluxwm/src/ipc.rs": "aae56c2c5318aeca2100ebe7c525d19e49034195b0c2ef4cad3e4a2b57a1d374",
+    "crates/fluxwm-fixture/src/main.rs": "7a139ff9b2fe031d7c2cf3abc4876eec56732d4a97f6b3145666056cce767ac3",
+    "tools/smoke_configure.py": "0047c8fa983c916d63a6e1f04768f97671dfdb6d3a5f33a93f9872db3165b9f9",
+    "tools/smoke_private.py": "904abfc1211238f303526acca785a34bb4c170003d4ab88aa04a7b7df3f6f57f",
+    "tools/smoke_health.py": "7c9a4846a6d263af4d6726dc7c3c234587b3f1b6a063d5b875657896229a4ee1",
+    "tools/check_docs.py": "831bde0f2fb06e1f1f874ce9e78a9d2bc4f5fcb43ade673523a56e4e9e1734b5"
+  },
+  "cargo_lock_sha256": "178ca789a8185f772e39e53f013ac536f7724148f4c55cf740554b87576675dd",
+  "commands": [
+    {
+      "command": "cargo build --workspace --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked -- --list",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m py_compile tools/smoke_configure.py tools/smoke_private.py tools/smoke_health.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_private.py --bundle target/configure-verified-xvfb --artifacts target/configure-qualified-regressions",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_focus.py --bundle target/configure-verified-xvfb --artifacts target/configure-qualified-focus",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tools/smoke_private.py --bundle target/configure-verified-xvfb --binary target/configure-before/fluxwm --suites configure --artifacts target/configure-qualified-baseline",
+      "exit_code": 1,
+      "expected_failure": true
+    },
+    {
+      "command": "python3 tools/smoke_private.py --bundle target/configure-verified-xvfb --binary target/configure-retry-before/fluxwm --suites configure --artifacts target/configure-retry-baseline",
+      "exit_code": 1,
+      "expected_failure": true
+    },
+    {
+      "command": "python3 tools/check_docs.py --report target/configure-docs-final.json",
+      "exit_code": 0
+    }
+  ],
+  "environment_checks": [
+    {
+      "command": [
+        "rustc",
+        "--version",
+        "--verbose"
+      ],
+      "exit_code": 0,
+      "stdout": "rustc 1.99.0 (b940084d7 2026-09-28) (Arch Linux rust 1:1.99.0-1)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: x86_64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "cargo 1.99.0 (5f94df478 2026-08-27) (Arch Linux rust 1:1.99.0-1)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "Python 3.14.7\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pkg-config",
+        "--modversion",
+        "wayland-server",
+        "xkbcommon",
+        "egl",
+        "glesv2"
+      ],
+      "exit_code": 0,
+      "stdout": "1.26.0\n1.13.2\n1.5\n3.2\n",
+      "stderr": ""
+    }
+  ],
+  "named_rust_test_count": 122,
+  "rust_count_scope": "122 distinct named tests enumerated; subprocess helper invocations in raw test log are additional executions, not distinct test names",
+  "mutation_base_commit": "061d83dc22a352f673c8020c22264f4c78171005",
+  "mutation_limit": "The mutation predates separate buffer/admission tracking; the configure gate and acknowledgment-flush production source are unchanged in the final source. Its exact helper source hashes are verified and retained. It is not described as a one-line mutation of the final snapshot.",
+  "retry_baseline_source_commit": "0dba143c54bd5a3aba051870ca2976dce9c0e570",
+  "retry_baseline_binary_sha256": "2ba330539a92984976b4d16391ad5b4339a284d4209529da516b747a24fc3f29",
+  "retained_review_commit": "0dba143c54bd5a3aba051870ca2976dce9c0e570",
+  "retained_followup_commit": "6435fcbe0a75fa477e37fac92cba2ebb4be76e18",
+  "audit_date_note": "Series began 2026-10-17; continuation crossed midnight Asia/Karachi into 2026-10-18; review process timestamps preserved."
+}

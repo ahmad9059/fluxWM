@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-ack-mutant/fluxwm",
+    "--socket",
+    "fluxhealth-0aa14b751ea7425e",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-ack-mutant-run/configure/configure-stream/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-ack-mutant-run/configure/configure-stream/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "configure-stream",
+    "--timeout-ms",
+    "5000"
+  ]
+}

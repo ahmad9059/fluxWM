@@ -1,0 +1,300 @@
+{
+  "elapsed_ms": 93,
+  "error": null,
+  "events": [
+    {
+      "at_ms": 23,
+      "event": {
+        "create": 0,
+        "name": "quadrants"
+      }
+    },
+    {
+      "at_ms": 23,
+      "event": {
+        "create": 1,
+        "name": "disconnect-survivor"
+      }
+    },
+    {
+      "at_ms": 24,
+      "event": {
+        "bytes": [],
+        "wm_capabilities": 0
+      }
+    },
+    {
+      "at_ms": 24,
+      "event": {
+        "configure_ack": 0,
+        "serial": 2,
+        "size": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "at_ms": 24,
+      "event": {
+        "bytes": [],
+        "wm_capabilities": 1
+      }
+    },
+    {
+      "at_ms": 24,
+      "event": {
+        "configure_ack": 1,
+        "serial": 3,
+        "size": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "at_ms": 27,
+      "event": {
+        "map_commit": 0
+      }
+    },
+    {
+      "at_ms": 27,
+      "event": {
+        "configure_ack": 0,
+        "serial": 4,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 47,
+      "event": {
+        "frame_done": 0,
+        "timestamp": 107
+      }
+    },
+    {
+      "at_ms": 59,
+      "event": {
+        "frame_done": 0,
+        "timestamp": 119
+      }
+    },
+    {
+      "at_ms": 63,
+      "event": {
+        "map_commit": 1
+      }
+    },
+    {
+      "at_ms": 65,
+      "event": {
+        "configure_ack": 0,
+        "serial": 7,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 65,
+      "event": {
+        "configure_ack": 1,
+        "serial": 8,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 75,
+      "event": {
+        "frame_done": 1,
+        "timestamp": 135
+      }
+    },
+    {
+      "at_ms": 75,
+      "event": {
+        "null_buffer_unmap": 0
+      }
+    },
+    {
+      "at_ms": 75,
+      "event": {
+        "remap_initial_bufferless_commit": 0
+      }
+    },
+    {
+      "at_ms": 76,
+      "event": {
+        "bytes": [],
+        "wm_capabilities": 0
+      }
+    },
+    {
+      "at_ms": 76,
+      "event": {
+        "configure_ack": 0,
+        "serial": 13,
+        "size": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "at_ms": 76,
+      "event": {
+        "map_commit": 0
+      }
+    },
+    {
+      "at_ms": 76,
+      "event": {
+        "configure_ack": 1,
+        "serial": 14,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 76,
+      "event": {
+        "configure_ack": 0,
+        "serial": 15,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 93,
+      "event": {
+        "frame_done": 0,
+        "timestamp": 153
+      }
+    },
+    {
+      "at_ms": 93,
+      "event": {
+        "explicit_destroy": 0
+      }
+    },
+    {
+      "at_ms": 93,
+      "event": {
+        "configure_ack": 1,
+        "serial": 19,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 93,
+      "event": {
+        "disconnect_with_mapped_siblings": 1
+      }
+    }
+  ],
+  "expected_primary_quadrants_rgb": [
+    [
+      255,
+      0,
+      0
+    ],
+    [
+      0,
+      255,
+      0
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      255,
+      255,
+      0
+    ]
+  ],
+  "expected_sibling_rgb": [
+    255,
+    0,
+    255
+  ],
+  "globals": [
+    {
+      "interface": "wl_compositor",
+      "name": 1,
+      "version": 5
+    },
+    {
+      "interface": "wl_subcompositor",
+      "name": 2,
+      "version": 1
+    },
+    {
+      "interface": "xdg_wm_base",
+      "name": 3,
+      "version": 7
+    },
+    {
+      "interface": "wl_shm",
+      "name": 4,
+      "version": 2
+    },
+    {
+      "interface": "zxdg_output_manager_v1",
+      "name": 5,
+      "version": 3
+    },
+    {
+      "interface": "wl_data_device_manager",
+      "name": 6,
+      "version": 3
+    },
+    {
+      "interface": "wl_seat",
+      "name": 7,
+      "version": 9
+    },
+    {
+      "interface": "wl_output",
+      "name": 8,
+      "version": 4
+    }
+  ],
+  "invalid_unmapped_move_attempted": true,
+  "mode": "lifecycle",
+  "ok": true,
+  "socket": "/tmp/fluxrt-_6830nfp/fluxsmoke-8764389d959b423e9d9dd574",
+  "windows": [
+    {
+      "configure_acks": 5,
+      "explicitly_destroyed": true,
+      "frame_callbacks": 3,
+      "index": 0,
+      "wm_capability_events": 2
+    },
+    {
+      "configure_acks": 4,
+      "explicitly_destroyed": false,
+      "frame_callbacks": 1,
+      "index": 1,
+      "wm_capability_events": 1
+    }
+  ],
+  "wm_base_bound_version": 7
+}

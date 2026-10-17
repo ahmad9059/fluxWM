@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxwm-shutdown-df958862d5c3",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-qualified-regressions/shutdown/pipeline/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-qualified-regressions/shutdown/pipeline/stats.json",
+    "--exit-after-ms",
+    "10000"
+  ],
+  "host_environment_saved": false
+}

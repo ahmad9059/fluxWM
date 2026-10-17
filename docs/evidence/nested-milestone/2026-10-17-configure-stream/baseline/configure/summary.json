@@ -1,0 +1,1835 @@
+{
+  "cases": [
+    {
+      "binary_sha256": "1496b5bf211e1aad1b1b2555f8ba9cb8f7da6da8fd3b1efcc778bc2fb89b482e",
+      "compositor_exit": 0,
+      "elapsed_seconds": 0.274,
+      "endpoints_removed": true,
+      "error": "real fixture oracle failed: unacknowledged resize stream emitted more than one wire configure",
+      "executables_unchanged": true,
+      "fixture_exit": 1,
+      "fixture_report": {
+        "before": {
+          "app_id": "org.fluxwm.Fixture",
+          "focused": true,
+          "geometry": {
+            "height": 800.0,
+            "width": 640.0,
+            "x": 0.0,
+            "y": -0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture configure-slow",
+          "workspace": "0:0"
+        },
+        "elapsed_ms": 169,
+        "error": "unacknowledged resize stream emitted more than one wire configure",
+        "events": [
+          {
+            "at_ms": 0,
+            "event": {
+              "create": 0,
+              "name": "configure-slow"
+            }
+          },
+          {
+            "at_ms": 0,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 0,
+            "event": {
+              "configure_ack": 0,
+              "serial": 2,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "map_commit": 0
+            }
+          },
+          {
+            "at_ms": 4,
+            "event": {
+              "configure_ack": 0,
+              "serial": 3,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 21,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 103
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "configure_ack": 0,
+              "serial": 8,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "configure_ack": 0,
+              "serial": 12,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 15,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 16,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 17,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 18,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 19,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 20,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 21,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 22,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 23,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 24,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 25,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 26,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 27,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 28,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 29,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 30,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 41,
+            "event": {
+              "configure_held": 0,
+              "serial": 31,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 33,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 34,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 35,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 36,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 37,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 38,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 39,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 40,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 41,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 42,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 43,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 44,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 45,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 46,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 47,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 55,
+            "event": {
+              "configure_held": 0,
+              "serial": 48,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 49,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 50,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 51,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 52,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 53,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 54,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 55,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 56,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 57,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 58,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 59,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 60,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 61,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 62,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 63,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 73,
+            "event": {
+              "configure_held": 0,
+              "serial": 64,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 65,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 66,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 67,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 68,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 69,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 70,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 71,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 72,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 73,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 74,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 75,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 76,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 77,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 78,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 79,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 89,
+            "event": {
+              "configure_held": 0,
+              "serial": 80,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 81,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 82,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 83,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 84,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 85,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 86,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 87,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 88,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 89,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 90,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 91,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 92,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 93,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 94,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 95,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 106,
+            "event": {
+              "configure_held": 0,
+              "serial": 96,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 97,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 98,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 99,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 100,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 101,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 102,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 103,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 104,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 105,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 106,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 107,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 108,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 109,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 110,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 111,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_held": 0,
+              "serial": 112,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 113,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 114,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 115,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 116,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 117,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 118,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 119,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 120,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 121,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 122,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 123,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 124,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 125,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 126,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 127,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 139,
+            "event": {
+              "configure_held": 0,
+              "serial": 128,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 129,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 130,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 131,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 132,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 133,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 134,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 135,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 136,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 137,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 138,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 139,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 140,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 141,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 142,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 143,
+              "size": [
+                688,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "configure_held": 0,
+              "serial": 144,
+              "size": [
+                672,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 169,
+            "event": {
+              "configure_held": 0,
+              "serial": 145,
+              "size": [
+                736,
+                800
+              ]
+            }
+          }
+        ],
+        "healthy_events": [
+          {
+            "at_ms": 22,
+            "event": {
+              "create": 0,
+              "name": "configure-healthy"
+            }
+          },
+          {
+            "at_ms": 22,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 22,
+            "event": {
+              "configure_ack": 0,
+              "serial": 7,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 25,
+            "event": {
+              "map_commit": 0
+            }
+          },
+          {
+            "at_ms": 25,
+            "event": {
+              "configure_ack": 0,
+              "serial": 9,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 36,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 118
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "configure_ack": 0,
+              "serial": 13,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 52,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 133
+            }
+          },
+          {
+            "at_ms": 69,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 151
+            }
+          },
+          {
+            "at_ms": 84,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 166
+            }
+          },
+          {
+            "at_ms": 101,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 183
+            }
+          },
+          {
+            "at_ms": 118,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 200
+            }
+          },
+          {
+            "at_ms": 135,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 217
+            }
+          },
+          {
+            "at_ms": 151,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 233
+            }
+          },
+          {
+            "at_ms": 168,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 250
+            }
+          }
+        ],
+        "healthy_frames_during_stall": 8,
+        "mode": "configure-stream",
+        "ok": false,
+        "resize_actions": 130,
+        "stalled": {
+          "app_id": "org.fluxwm.Fixture",
+          "focused": true,
+          "geometry": {
+            "height": 800.0,
+            "width": 736.0,
+            "x": 0.0,
+            "y": -0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture configure-slow",
+          "workspace": "0:0"
+        },
+        "wire_configures_during_stall": 130
+      },
+      "fixture_sha256": "3e5d8dfda9b446ad497fa9f437fdf30ba61459dc7b99af74431bb2043128273f",
+      "mode": "configure-stream",
+      "ok": false
+    },
+    {
+      "binary_sha256": "1496b5bf211e1aad1b1b2555f8ba9cb8f7da6da8fd3b1efcc778bc2fb89b482e",
+      "compositor_exit": 0,
+      "elapsed_seconds": 0.132,
+      "endpoints_removed": true,
+      "error": "real fixture oracle failed: rejected-admission null unmap incorrectly emitted an initial configure",
+      "executables_unchanged": true,
+      "fixture_exit": 1,
+      "fixture_report": {
+        "after_null_unmap": {
+          "app_id": "",
+          "focused": false,
+          "geometry": null,
+          "id": "1:0",
+          "mapped": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "",
+          "workspace": "0:0"
+        },
+        "elapsed_ms": 28,
+        "error": "rejected-admission null unmap incorrectly emitted an initial configure",
+        "events": [
+          {
+            "at_ms": 0,
+            "event": {
+              "create": 0,
+              "name": "admission-healthy"
+            }
+          },
+          {
+            "at_ms": 0,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 0,
+            "event": {
+              "configure_ack": 0,
+              "serial": 2,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "map_commit": 0
+            }
+          },
+          {
+            "at_ms": 4,
+            "event": {
+              "configure_ack": 0,
+              "serial": 3,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 22,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 113
+            }
+          },
+          {
+            "at_ms": 22,
+            "event": {
+              "create": 1,
+              "name": "admission-retry"
+            }
+          },
+          {
+            "at_ms": 23,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 1
+            }
+          },
+          {
+            "at_ms": 23,
+            "event": {
+              "configure_ack": 1,
+              "serial": 6,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 27,
+            "event": {
+              "map_commit": 1
+            }
+          },
+          {
+            "at_ms": 28,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 1
+            }
+          },
+          {
+            "at_ms": 28,
+            "event": {
+              "configure_ack": 1,
+              "serial": 7,
+              "size": [
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "mode": "configure-admission",
+        "ok": false,
+        "rejected": {
+          "app_id": "org.fluxwm.Fixture",
+          "focused": false,
+          "geometry": null,
+          "id": "1:0",
+          "mapped": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture admission-retry",
+          "workspace": "0:0"
+        },
+        "wire_configures_on_null_unmap": 1
+      },
+      "fixture_sha256": "3e5d8dfda9b446ad497fa9f437fdf30ba61459dc7b99af74431bb2043128273f",
+      "mode": "configure-admission",
+      "ok": false
+    }
+  ],
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "scope": "one non-acking mapped SHM client, healthy sibling, latest-state ack/commit, two remap orderings role replacement and rejected-admission recovery; no full transaction/native/global resource qualification",
+  "source_sha256": {
+    "smoke_configure.py": "0047c8fa983c916d63a6e1f04768f97671dfdb6d3a5f33a93f9872db3165b9f9",
+    "smoke_health.py": "7c9a4846a6d263af4d6726dc7c3c234587b3f1b6a063d5b875657896229a4ee1",
+    "smoke_nested.py": "f556959ff8af95a40830c3eb5bef44e6363e937b1abbeb3d9704b5ef1498583b"
+  }
+}

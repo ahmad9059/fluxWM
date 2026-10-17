@@ -1,0 +1,13 @@
+diff --git a/crates/fluxwm/src/handlers/xdg_shell.rs b/crates/fluxwm/src/handlers/xdg_shell.rs
+index 49a6493..7779c7d 100644
+--- a/crates/fluxwm/src/handlers/xdg_shell.rs
++++ b/crates/fluxwm/src/handlers/xdg_shell.rs
+@@ -61,7 +61,7 @@ impl XdgShellHandler for Fluxwm {
+             && item.mapped
+             && let Some(toplevel) = item.window.toplevel()
+         {
+-            crate::configure::send_pending(toplevel);
++            let _ = toplevel; // mutation: do not flush after accepted ack
+         }
+         self.bump_sequence();
+     }

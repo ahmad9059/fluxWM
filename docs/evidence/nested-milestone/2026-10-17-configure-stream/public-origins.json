@@ -1,0 +1,1018 @@
+[
+  {
+    "source": "target/configure-ack-mutant-run/configure/configure-stream/command.json",
+    "copy": "ack-mutant/configure/configure-stream/command.json"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure/configure-stream/compositor.stderr.log",
+    "copy": "ack-mutant/configure/configure-stream/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure/configure-stream/compositor.stdout.log",
+    "copy": "ack-mutant/configure/configure-stream/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure/configure-stream/fixture.stderr.log",
+    "copy": "ack-mutant/configure/configure-stream/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure/configure-stream/fixture.stdout.log",
+    "copy": "ack-mutant/configure/configure-stream/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure/configure-stream/ready.json",
+    "copy": "ack-mutant/configure/configure-stream/ready.json"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure/configure-stream/result.json",
+    "copy": "ack-mutant/configure/configure-stream/result.json"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure/configure-stream/stats.json",
+    "copy": "ack-mutant/configure/configure-stream/stats.json"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure/summary.json",
+    "copy": "ack-mutant/configure/summary.json"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure.stderr",
+    "copy": "ack-mutant/configure.stderr"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/configure.stdout",
+    "copy": "ack-mutant/configure.stdout"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/package-verification.json",
+    "copy": "ack-mutant/package-verification.json"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/result.json",
+    "copy": "ack-mutant/result.json"
+  },
+  {
+    "source": "target/configure-ack-mutant-run/xvfb.log",
+    "copy": "ack-mutant/xvfb.log"
+  },
+  {
+    "source": "target/configure-first/configure/configure-stream/command.json",
+    "copy": "initial-timeout-fixture-failure/configure/configure-stream/command.json"
+  },
+  {
+    "source": "target/configure-first/configure/configure-stream/compositor.stderr.log",
+    "copy": "initial-timeout-fixture-failure/configure/configure-stream/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-first/configure/configure-stream/compositor.stdout.log",
+    "copy": "initial-timeout-fixture-failure/configure/configure-stream/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-first/configure/configure-stream/fixture.stderr.log",
+    "copy": "initial-timeout-fixture-failure/configure/configure-stream/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-first/configure/configure-stream/fixture.stdout.log",
+    "copy": "initial-timeout-fixture-failure/configure/configure-stream/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-first/configure/configure-stream/ready.json",
+    "copy": "initial-timeout-fixture-failure/configure/configure-stream/ready.json"
+  },
+  {
+    "source": "target/configure-first/configure/configure-stream/result.json",
+    "copy": "initial-timeout-fixture-failure/configure/configure-stream/result.json"
+  },
+  {
+    "source": "target/configure-first/configure/configure-stream/stats.json",
+    "copy": "initial-timeout-fixture-failure/configure/configure-stream/stats.json"
+  },
+  {
+    "source": "target/configure-first/configure/summary.json",
+    "copy": "initial-timeout-fixture-failure/configure/summary.json"
+  },
+  {
+    "source": "target/configure-first/configure.stderr",
+    "copy": "initial-timeout-fixture-failure/configure.stderr"
+  },
+  {
+    "source": "target/configure-first/configure.stdout",
+    "copy": "initial-timeout-fixture-failure/configure.stdout"
+  },
+  {
+    "source": "target/configure-first/package-verification.json",
+    "copy": "initial-timeout-fixture-failure/package-verification.json"
+  },
+  {
+    "source": "target/configure-first/result.json",
+    "copy": "initial-timeout-fixture-failure/result.json"
+  },
+  {
+    "source": "target/configure-first/xvfb.log",
+    "copy": "initial-timeout-fixture-failure/xvfb.log"
+  },
+  {
+    "source": "target/configure-second/configure/configure-stream/command.json",
+    "copy": "initial-title-lookup-fixture-failure/configure/configure-stream/command.json"
+  },
+  {
+    "source": "target/configure-second/configure/configure-stream/compositor.stderr.log",
+    "copy": "initial-title-lookup-fixture-failure/configure/configure-stream/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-second/configure/configure-stream/compositor.stdout.log",
+    "copy": "initial-title-lookup-fixture-failure/configure/configure-stream/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-second/configure/configure-stream/fixture.stderr.log",
+    "copy": "initial-title-lookup-fixture-failure/configure/configure-stream/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-second/configure/configure-stream/fixture.stdout.log",
+    "copy": "initial-title-lookup-fixture-failure/configure/configure-stream/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-second/configure/configure-stream/ready.json",
+    "copy": "initial-title-lookup-fixture-failure/configure/configure-stream/ready.json"
+  },
+  {
+    "source": "target/configure-second/configure/configure-stream/result.json",
+    "copy": "initial-title-lookup-fixture-failure/configure/configure-stream/result.json"
+  },
+  {
+    "source": "target/configure-second/configure/configure-stream/stats.json",
+    "copy": "initial-title-lookup-fixture-failure/configure/configure-stream/stats.json"
+  },
+  {
+    "source": "target/configure-second/configure/summary.json",
+    "copy": "initial-title-lookup-fixture-failure/configure/summary.json"
+  },
+  {
+    "source": "target/configure-second/configure.stderr",
+    "copy": "initial-title-lookup-fixture-failure/configure.stderr"
+  },
+  {
+    "source": "target/configure-second/configure.stdout",
+    "copy": "initial-title-lookup-fixture-failure/configure.stdout"
+  },
+  {
+    "source": "target/configure-second/package-verification.json",
+    "copy": "initial-title-lookup-fixture-failure/package-verification.json"
+  },
+  {
+    "source": "target/configure-second/result.json",
+    "copy": "initial-title-lookup-fixture-failure/result.json"
+  },
+  {
+    "source": "target/configure-second/xvfb.log",
+    "copy": "initial-title-lookup-fixture-failure/xvfb.log"
+  },
+  {
+    "source": "target/configure-admission-after/result.json",
+    "copy": "missing-bundle-infrastructure-failure/result.json"
+  },
+  {
+    "source": "target/configure-admission-recovered/package/official.json",
+    "copy": "download-infrastructure-failure/package/official.json"
+  },
+  {
+    "source": "target/configure-admission-recovered/result.json",
+    "copy": "download-infrastructure-failure/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-admission/command.json",
+    "copy": "regressions/configure/configure-admission/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-admission/compositor.stderr.log",
+    "copy": "regressions/configure/configure-admission/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-admission/compositor.stdout.log",
+    "copy": "regressions/configure/configure-admission/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-admission/fixture.stderr.log",
+    "copy": "regressions/configure/configure-admission/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-admission/fixture.stdout.log",
+    "copy": "regressions/configure/configure-admission/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-admission/ready.json",
+    "copy": "regressions/configure/configure-admission/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-admission/result.json",
+    "copy": "regressions/configure/configure-admission/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-admission/stats.json",
+    "copy": "regressions/configure/configure-admission/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-stream/command.json",
+    "copy": "regressions/configure/configure-stream/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-stream/compositor.stderr.log",
+    "copy": "regressions/configure/configure-stream/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-stream/compositor.stdout.log",
+    "copy": "regressions/configure/configure-stream/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-stream/fixture.stderr.log",
+    "copy": "regressions/configure/configure-stream/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-stream/fixture.stdout.log",
+    "copy": "regressions/configure/configure-stream/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-stream/ready.json",
+    "copy": "regressions/configure/configure-stream/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-stream/result.json",
+    "copy": "regressions/configure/configure-stream/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/configure-stream/stats.json",
+    "copy": "regressions/configure/configure-stream/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure/summary.json",
+    "copy": "regressions/configure/summary.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure.stderr",
+    "copy": "regressions/configure.stderr"
+  },
+  {
+    "source": "target/configure-qualified-regressions/configure.stdout",
+    "copy": "regressions/configure.stdout"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health/command.json",
+    "copy": "regressions/health/shell-health/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health/compositor.stderr.log",
+    "copy": "regressions/health/shell-health/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health/compositor.stdout.log",
+    "copy": "regressions/health/shell-health/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health/fixture.stderr.log",
+    "copy": "regressions/health/shell-health/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health/fixture.stdout.log",
+    "copy": "regressions/health/shell-health/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health/ready.json",
+    "copy": "regressions/health/shell-health/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health/result.json",
+    "copy": "regressions/health/shell-health/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health/stats.json",
+    "copy": "regressions/health/shell-health/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-capacity/command.json",
+    "copy": "regressions/health/shell-health-capacity/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-capacity/compositor.stderr.log",
+    "copy": "regressions/health/shell-health-capacity/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-capacity/compositor.stdout.log",
+    "copy": "regressions/health/shell-health-capacity/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-capacity/fixture.stderr.log",
+    "copy": "regressions/health/shell-health-capacity/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-capacity/fixture.stdout.log",
+    "copy": "regressions/health/shell-health-capacity/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-capacity/ready.json",
+    "copy": "regressions/health/shell-health-capacity/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-capacity/result.json",
+    "copy": "regressions/health/shell-health-capacity/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-capacity/stats.json",
+    "copy": "regressions/health/shell-health-capacity/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-disconnect/command.json",
+    "copy": "regressions/health/shell-health-disconnect/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-disconnect/compositor.stderr.log",
+    "copy": "regressions/health/shell-health-disconnect/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-disconnect/compositor.stdout.log",
+    "copy": "regressions/health/shell-health-disconnect/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-disconnect/fixture.stderr.log",
+    "copy": "regressions/health/shell-health-disconnect/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-disconnect/fixture.stdout.log",
+    "copy": "regressions/health/shell-health-disconnect/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-disconnect/ready.json",
+    "copy": "regressions/health/shell-health-disconnect/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-disconnect/result.json",
+    "copy": "regressions/health/shell-health-disconnect/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/shell-health-disconnect/stats.json",
+    "copy": "regressions/health/shell-health-disconnect/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health/summary.json",
+    "copy": "regressions/health/summary.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health.stderr",
+    "copy": "regressions/health.stderr"
+  },
+  {
+    "source": "target/configure-qualified-regressions/health.stdout",
+    "copy": "regressions/health.stdout"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc/child.json",
+    "copy": "regressions/ipc/child.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc/collision-lock.log",
+    "copy": "regressions/ipc/collision-lock.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc/collision-path.log",
+    "copy": "regressions/ipc/collision-path.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc/ready.json",
+    "copy": "regressions/ipc/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc/result.json",
+    "copy": "regressions/ipc/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc/stats.json",
+    "copy": "regressions/ipc/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc/stderr.log",
+    "copy": "regressions/ipc/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc/stdout.log",
+    "copy": "regressions/ipc/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc.stderr",
+    "copy": "regressions/ipc.stderr"
+  },
+  {
+    "source": "target/configure-qualified-regressions/ipc.stdout",
+    "copy": "regressions/ipc.stdout"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-long/command.json",
+    "copy": "regressions/nested/idle-long/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-long/ready.json",
+    "copy": "regressions/nested/idle-long/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-long/result.json",
+    "copy": "regressions/nested/idle-long/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-long/stats.json",
+    "copy": "regressions/nested/idle-long/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-long/stderr.log",
+    "copy": "regressions/nested/idle-long/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-long/stdout.log",
+    "copy": "regressions/nested/idle-long/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-short/command.json",
+    "copy": "regressions/nested/idle-short/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-short/ready.json",
+    "copy": "regressions/nested/idle-short/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-short/result.json",
+    "copy": "regressions/nested/idle-short/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-short/stats.json",
+    "copy": "regressions/nested/idle-short/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-short/stderr.log",
+    "copy": "regressions/nested/idle-short/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/idle-short/stdout.log",
+    "copy": "regressions/nested/idle-short/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/lifecycle/command.json",
+    "copy": "regressions/nested/lifecycle/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/lifecycle/fixture.json",
+    "copy": "regressions/nested/lifecycle/fixture.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/lifecycle/ready.json",
+    "copy": "regressions/nested/lifecycle/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/lifecycle/result.json",
+    "copy": "regressions/nested/lifecycle/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/lifecycle/stats.json",
+    "copy": "regressions/nested/lifecycle/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/lifecycle/stderr.log",
+    "copy": "regressions/nested/lifecycle/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/lifecycle/stdout.log",
+    "copy": "regressions/nested/lifecycle/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/sigterm/command.json",
+    "copy": "regressions/nested/sigterm/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/sigterm/ready.json",
+    "copy": "regressions/nested/sigterm/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/sigterm/result.json",
+    "copy": "regressions/nested/sigterm/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/sigterm/stats.json",
+    "copy": "regressions/nested/sigterm/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/sigterm/stderr.log",
+    "copy": "regressions/nested/sigterm/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/sigterm/stdout.log",
+    "copy": "regressions/nested/sigterm/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested/summary.json",
+    "copy": "regressions/nested/summary.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested.stderr",
+    "copy": "regressions/nested.stderr"
+  },
+  {
+    "source": "target/configure-qualified-regressions/nested.stdout",
+    "copy": "regressions/nested.stdout"
+  },
+  {
+    "source": "target/configure-qualified-regressions/package-verification.json",
+    "copy": "regressions/package-verification.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/result.json",
+    "copy": "regressions/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/container-clip/command.json",
+    "copy": "regressions/scene/container-clip/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/container-clip/fixture.json",
+    "copy": "regressions/scene/container-clip/fixture.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/container-clip/ready.json",
+    "copy": "regressions/scene/container-clip/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/container-clip/result.json",
+    "copy": "regressions/scene/container-clip/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/container-clip/stats.json",
+    "copy": "regressions/scene/container-clip/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/container-clip/stderr.log",
+    "copy": "regressions/scene/container-clip/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/container-clip/stdout.log",
+    "copy": "regressions/scene/container-clip/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/pointer-feedback/command.json",
+    "copy": "regressions/scene/pointer-feedback/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/pointer-feedback/fixture.json",
+    "copy": "regressions/scene/pointer-feedback/fixture.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/pointer-feedback/ready.json",
+    "copy": "regressions/scene/pointer-feedback/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/pointer-feedback/result.json",
+    "copy": "regressions/scene/pointer-feedback/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/pointer-feedback/stats.json",
+    "copy": "regressions/scene/pointer-feedback/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/pointer-feedback/stderr.log",
+    "copy": "regressions/scene/pointer-feedback/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/pointer-feedback/stdout.log",
+    "copy": "regressions/scene/pointer-feedback/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-clip/command.json",
+    "copy": "regressions/scene/popup-clip/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-clip/fixture.json",
+    "copy": "regressions/scene/popup-clip/fixture.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-clip/ready.json",
+    "copy": "regressions/scene/popup-clip/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-clip/result.json",
+    "copy": "regressions/scene/popup-clip/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-clip/stats.json",
+    "copy": "regressions/scene/popup-clip/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-clip/stderr.log",
+    "copy": "regressions/scene/popup-clip/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-clip/stdout.log",
+    "copy": "regressions/scene/popup-clip/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-lifecycle/command.json",
+    "copy": "regressions/scene/popup-lifecycle/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-lifecycle/fixture.json",
+    "copy": "regressions/scene/popup-lifecycle/fixture.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-lifecycle/ready.json",
+    "copy": "regressions/scene/popup-lifecycle/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-lifecycle/result.json",
+    "copy": "regressions/scene/popup-lifecycle/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-lifecycle/stats.json",
+    "copy": "regressions/scene/popup-lifecycle/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-lifecycle/stderr.log",
+    "copy": "regressions/scene/popup-lifecycle/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/popup-lifecycle/stdout.log",
+    "copy": "regressions/scene/popup-lifecycle/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene/summary.json",
+    "copy": "regressions/scene/summary.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene.stderr",
+    "copy": "regressions/scene.stderr"
+  },
+  {
+    "source": "target/configure-qualified-regressions/scene.stdout",
+    "copy": "regressions/scene.stdout"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/pipeline/command.json",
+    "copy": "regressions/shutdown/pipeline/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/pipeline/ready.json",
+    "copy": "regressions/shutdown/pipeline/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/pipeline/result.json",
+    "copy": "regressions/shutdown/pipeline/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/pipeline/stats.json",
+    "copy": "regressions/shutdown/pipeline/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/pipeline/stderr.log",
+    "copy": "regressions/shutdown/pipeline/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/pipeline/stdout.log",
+    "copy": "regressions/shutdown/pipeline/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/slow-peer/command.json",
+    "copy": "regressions/shutdown/slow-peer/command.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/slow-peer/ready.json",
+    "copy": "regressions/shutdown/slow-peer/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/slow-peer/result.json",
+    "copy": "regressions/shutdown/slow-peer/result.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/slow-peer/stats.json",
+    "copy": "regressions/shutdown/slow-peer/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/slow-peer/stderr.log",
+    "copy": "regressions/shutdown/slow-peer/stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/slow-peer/stdout.log",
+    "copy": "regressions/shutdown/slow-peer/stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown/summary.json",
+    "copy": "regressions/shutdown/summary.json"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown.stderr",
+    "copy": "regressions/shutdown.stderr"
+  },
+  {
+    "source": "target/configure-qualified-regressions/shutdown.stdout",
+    "copy": "regressions/shutdown.stdout"
+  },
+  {
+    "source": "target/configure-qualified-regressions/xvfb.log",
+    "copy": "regressions/xvfb.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-admission/command.json",
+    "copy": "baseline/configure/configure-admission/command.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-admission/compositor.stderr.log",
+    "copy": "baseline/configure/configure-admission/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-admission/compositor.stdout.log",
+    "copy": "baseline/configure/configure-admission/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-admission/fixture.stderr.log",
+    "copy": "baseline/configure/configure-admission/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-admission/fixture.stdout.log",
+    "copy": "baseline/configure/configure-admission/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-admission/ready.json",
+    "copy": "baseline/configure/configure-admission/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-admission/result.json",
+    "copy": "baseline/configure/configure-admission/result.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-admission/stats.json",
+    "copy": "baseline/configure/configure-admission/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-stream/command.json",
+    "copy": "baseline/configure/configure-stream/command.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-stream/compositor.stderr.log",
+    "copy": "baseline/configure/configure-stream/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-stream/compositor.stdout.log",
+    "copy": "baseline/configure/configure-stream/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-stream/fixture.stderr.log",
+    "copy": "baseline/configure/configure-stream/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-stream/fixture.stdout.log",
+    "copy": "baseline/configure/configure-stream/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-stream/ready.json",
+    "copy": "baseline/configure/configure-stream/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-stream/result.json",
+    "copy": "baseline/configure/configure-stream/result.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/configure-stream/stats.json",
+    "copy": "baseline/configure/configure-stream/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure/summary.json",
+    "copy": "baseline/configure/summary.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure.stderr",
+    "copy": "baseline/configure.stderr"
+  },
+  {
+    "source": "target/configure-qualified-baseline/configure.stdout",
+    "copy": "baseline/configure.stdout"
+  },
+  {
+    "source": "target/configure-qualified-baseline/package-verification.json",
+    "copy": "baseline/package-verification.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/result.json",
+    "copy": "baseline/result.json"
+  },
+  {
+    "source": "target/configure-qualified-baseline/xvfb.log",
+    "copy": "baseline/xvfb.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-admission/command.json",
+    "copy": "retry-baseline/configure/configure-admission/command.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-admission/compositor.stderr.log",
+    "copy": "retry-baseline/configure/configure-admission/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-admission/compositor.stdout.log",
+    "copy": "retry-baseline/configure/configure-admission/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-admission/fixture.stderr.log",
+    "copy": "retry-baseline/configure/configure-admission/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-admission/fixture.stdout.log",
+    "copy": "retry-baseline/configure/configure-admission/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-admission/ready.json",
+    "copy": "retry-baseline/configure/configure-admission/ready.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-admission/result.json",
+    "copy": "retry-baseline/configure/configure-admission/result.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-admission/stats.json",
+    "copy": "retry-baseline/configure/configure-admission/stats.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-stream/command.json",
+    "copy": "retry-baseline/configure/configure-stream/command.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-stream/compositor.stderr.log",
+    "copy": "retry-baseline/configure/configure-stream/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-stream/compositor.stdout.log",
+    "copy": "retry-baseline/configure/configure-stream/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-stream/fixture.stderr.log",
+    "copy": "retry-baseline/configure/configure-stream/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-stream/fixture.stdout.log",
+    "copy": "retry-baseline/configure/configure-stream/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-stream/ready.json",
+    "copy": "retry-baseline/configure/configure-stream/ready.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-stream/result.json",
+    "copy": "retry-baseline/configure/configure-stream/result.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/configure-stream/stats.json",
+    "copy": "retry-baseline/configure/configure-stream/stats.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure/summary.json",
+    "copy": "retry-baseline/configure/summary.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure.stderr",
+    "copy": "retry-baseline/configure.stderr"
+  },
+  {
+    "source": "target/configure-retry-baseline/configure.stdout",
+    "copy": "retry-baseline/configure.stdout"
+  },
+  {
+    "source": "target/configure-retry-baseline/package-verification.json",
+    "copy": "retry-baseline/package-verification.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/result.json",
+    "copy": "retry-baseline/result.json"
+  },
+  {
+    "source": "target/configure-retry-baseline/xvfb.log",
+    "copy": "retry-baseline/xvfb.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/command.json",
+    "copy": "focus/keyboard/command.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/compositor.stderr.log",
+    "copy": "focus/keyboard/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/compositor.stdout.log",
+    "copy": "focus/keyboard/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/fixture.stderr.log",
+    "copy": "focus/keyboard/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/fixture.stdout.log",
+    "copy": "focus/keyboard/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/input.events.jsonl",
+    "copy": "focus/keyboard/input.events.jsonl"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/ready.json",
+    "copy": "focus/keyboard/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/result.json",
+    "copy": "focus/keyboard/result.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/stats.json",
+    "copy": "focus/keyboard/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/keyboard/xvfb.log",
+    "copy": "focus/keyboard/xvfb.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/package-verification.json",
+    "copy": "focus/package-verification.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/command.json",
+    "copy": "focus/pointer/command.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/compositor.stderr.log",
+    "copy": "focus/pointer/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/compositor.stdout.log",
+    "copy": "focus/pointer/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/fixture.stderr.log",
+    "copy": "focus/pointer/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/fixture.stdout.log",
+    "copy": "focus/pointer/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/input.events.jsonl",
+    "copy": "focus/pointer/input.events.jsonl"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/ready.json",
+    "copy": "focus/pointer/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/result.json",
+    "copy": "focus/pointer/result.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/stats.json",
+    "copy": "focus/pointer/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/pointer/xvfb.log",
+    "copy": "focus/pointer/xvfb.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/command.json",
+    "copy": "focus/popup/command.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/compositor.stderr.log",
+    "copy": "focus/popup/compositor.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/compositor.stdout.log",
+    "copy": "focus/popup/compositor.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/fixture.stderr.log",
+    "copy": "focus/popup/fixture.stderr.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/fixture.stdout.log",
+    "copy": "focus/popup/fixture.stdout.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/input.events.jsonl",
+    "copy": "focus/popup/input.events.jsonl"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/ready.json",
+    "copy": "focus/popup/ready.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/result.json",
+    "copy": "focus/popup/result.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/stats.json",
+    "copy": "focus/popup/stats.json"
+  },
+  {
+    "source": "target/configure-qualified-focus/popup/xvfb.log",
+    "copy": "focus/popup/xvfb.log"
+  },
+  {
+    "source": "target/configure-qualified-focus/summary.json",
+    "copy": "focus/summary.json"
+  }
+]

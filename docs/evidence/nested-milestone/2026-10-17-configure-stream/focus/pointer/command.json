@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-qualified-focus/fluxwm",
+    "--socket",
+    "fluxfocus-fb671a40e59e436d",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-qualified-focus/pointer/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-qualified-focus/pointer/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-qualified-focus/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

@@ -1,0 +1,9 @@
+2026-10-17T18:57:05.434162Z  INFO fluxwm::state: window_mapped id=0:0
+2026-10-17T18:57:05.457016Z  WARN fluxwm::state: layout admission rejected id=1:0 error=geometry must be finite, positive, and within supported coordinate limits
+2026-10-17T18:57:05.458537Z  INFO fluxwm::state: window_mapped id=1:0
+2026-10-17T18:57:05.486826Z  INFO fluxwm::state: window_mapped id=2:0
+2026-10-17T18:57:05.504021Z  WARN fluxwm::state: layout admission rejected id=3:0 error=geometry must be finite, positive, and within supported coordinate limits
+2026-10-17T18:57:05.505423Z  INFO fluxwm::state: toplevel_destroyed id=2:0
+2026-10-17T18:57:05.506628Z  INFO fluxwm::state: toplevel_destroyed id=0:0
+2026-10-17T18:57:05.506707Z  INFO fluxwm::state: toplevel_destroyed id=1:0
+2026-10-17T18:57:05.506758Z  INFO fluxwm::state: toplevel_destroyed id=3:0

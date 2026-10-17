@@ -1,0 +1,8 @@
+{
+  "scope": "author checks recorded teardown results after terminal executions; no fault-injection or native cleanup claim",
+  "regressions": true,
+  "expected_failure_initial_baseline": true,
+  "expected_failure_retry_baseline": true,
+  "focus_all_three_cases": true,
+  "authority_server_x_socket_runtime_endpoints_and_parent_environment": true
+}

@@ -1,0 +1,9 @@
+{
+  "base_commit": "061d83dc22a352f673c8020c22264f4c78171005",
+  "normal_binary_sha256": "a565a10255887d6bfeafb5de4be462ad36ab16843892c0cb1d3574c4a0ea4706",
+  "source_before_sha256": "fe81c252f847ff1e72fad030039ac567465da3bbc67fa5efc7e4ab6189d4c4d3",
+  "mutant_binary_sha256": "4fc888b054fac25d9913f3a52d3a79724ee989de49294a4a2349d81c8499f068",
+  "run_exit_code": 1,
+  "source_restored": true,
+  "restored_binary_sha256": "a565a10255887d6bfeafb5de4be462ad36ab16843892c0cb1d3574c4a0ea4706"
+}

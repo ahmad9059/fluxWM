@@ -1,0 +1,8 @@
+{
+  "error": "bundle must contain exactly one official Xvfb package",
+  "harness_sha256": "904abfc1211238f303526acca785a34bb4c170003d4ab88aa04a7b7df3f6f57f",
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "scope": "owned authenticated X11 software-rendered nested suites; no host input injection",
+  "suites": []
+}

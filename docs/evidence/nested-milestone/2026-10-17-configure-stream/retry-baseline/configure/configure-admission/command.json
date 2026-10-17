@@ -1,0 +1,19 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-retry-before/fluxwm",
+    "--socket",
+    "fluxhealth-5f24f40044c6452e",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-retry-baseline/configure/configure-admission/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/configure-retry-baseline/configure/configure-admission/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "configure-admission",
+    "--timeout-ms",
+    "5000"
+  ]
+}

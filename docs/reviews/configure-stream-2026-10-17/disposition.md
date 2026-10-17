@@ -1,0 +1,15 @@
+# Author disposition: bounded configure scheduling review
+
+The retained independent Claude review inspected frozen source `0dba143c54bd5a3aba051870ca2976dce9c0e570`, with copied actual pinned Smithay files. Its raw [report](claude-report.md), [completion](stdout.json), [command](command.json), [prompt](prompt.txt), [execution](execution.json), [manifest](input-manifest.json) and [author verification](verified-execution.json) are retained unchanged. Process exit was zero after 161.19 seconds. All **1,662** frozen input hashes match, tool paths remain inside the snapshot, and there are no permission denials or error result. The actual trace has **23** Read/Grep calls; the report's self-description of 18 calls is inaccurate. Claude executed no tests.
+
+## Medium: static rejected roles wait indefinitely for their own commit
+
+**Accepted and reproduced.** Admission depends on aggregate member extent, but the reviewed source retried only on the rejected root's own commit. A static buffered role could remain invisible after another member released capacity. The final fixture uses individually legal 600M and 500M minimum-width hints to exceed aggregate capacity, then destroys the blocking member without another commit from the waiting surface. The reviewed executable still reports `mapped: false`; the corrected executable admits the same ID, clears the error, preserves background selection and completes the original queued frame.
+
+The correction in `6435fcbe0a75fa477e37fac92cba2ebb4be76e18` makes one arena-order retry pass over live buffered/unmapped/error roles at relayout, using committed hints and background insertion. It then publishes placements and restores eligible keyboard selection. It adds no recurring timer, retry recursion or new role ownership. The pass has at most 1,024 candidates, but no wall-clock/global fairness claim. [Raw baseline and final evidence](../../evidence/nested-milestone/2026-10-17-configure-stream/README.md) separates author runtime tests from this source review. A separate focused follow-up inspects the correction.
+
+## Low and review limits
+
+The inherited old-cycle acknowledgment/attach ordering remains an explicit protocol-conformance gap. Current tests do not establish client-scoped rejection or complete toolkit behavior for that sequence. Serial validation/retirement remains delegated to pinned Smithay. Dormant floating-grab state/reset behavior is not qualified because floating activation is unavailable; enabling it requires its own lifecycle and transaction work.
+
+The reviewer did not trace full post-commit/Window helper behavior, run the fixture, qualify timing under load or inspect hardware. This is a focused source review, not production certification. Earlier temporary review files disappeared between continuations and are excluded from retained independent verification; see [the loss record](../../evidence/nested-milestone/2026-10-17-configure-stream/temporary-evidence-loss.json). Source history and real failure records separately establish the earlier rejected-admission/default-suite corrections.

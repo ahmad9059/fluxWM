@@ -1,0 +1,17 @@
+[
+  {
+    "source": "target/configure-admission-recovered/package/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "copy": "target/configure-verified-xvfb/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564"
+  },
+  {
+    "source": "target/configure-admission-recovered/package/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst.sig",
+    "copy": "target/configure-verified-xvfb/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst.sig",
+    "sha256": "21d0cb243c1c56fe71222bd523e74c09889ff02d3a48c6f870997bfb31a09405"
+  },
+  {
+    "source": "/var/lib/pacman/sync/extra.db",
+    "copy": "target/configure-verified-xvfb/extra.db",
+    "sha256": "53ba71a4692505f027fd7f324bf262b68b69c42090b2d79b301e85e4be925481"
+  }
+]

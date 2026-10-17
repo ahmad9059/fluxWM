@@ -1,0 +1,5 @@
+{
+  "status": "prior temporary review files no longer exist; not offered as retained independent verification",
+  "previous_reviewed_commit": "061d83dc22a352f673c8020c22264f4c78171005",
+  "context": "A prior review in the conversation raised rejected-admission buffer tracking and default suite selection. The /tmp source snapshot, stdout and check logs disappeared between continuations. Target runtime artifacts and mutation metadata survived. A new independent review of 0dba143 is retained separately; do not reconstruct the missing raw report from conversation text."
+}

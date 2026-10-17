@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {
+      "binary_sha256": "a565a10255887d6bfeafb5de4be462ad36ab16843892c0cb1d3574c4a0ea4706",
+      "compositor_exit": 0,
+      "elapsed_seconds": 0.141,
+      "endpoints_removed": true,
+      "error": "real fixture oracle failed: timeout must be 1..=5000 ms",
+      "executables_unchanged": true,
+      "fixture_exit": 1,
+      "fixture_report": {
+        "error": "timeout must be 1..=5000 ms",
+        "ok": false
+      },
+      "fixture_sha256": "3f031f81e5a2c145a6e7b4efec8f45a0c7904be7456866cc4549fa22608152a2",
+      "mode": "configure-stream",
+      "ok": false
+    }
+  ],
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "scope": "one non-acking mapped SHM client, healthy sibling, latest-state ack/commit, two remap orderings and role replacement; no full transaction/native/global resource qualification",
+  "source_sha256": {
+    "smoke_configure.py": "347fbcacaef518abcf9f503da1fdce4ac21e429f06d8419039ac58e471c3302e",
+    "smoke_health.py": "5fdd1ac7b31d86d3c58a5fe0ea5b11648487e18d9a819759c42b4c7dfbe9b793",
+    "smoke_nested.py": "f556959ff8af95a40830c3eb5bef44e6363e937b1abbeb3d9704b5ef1498583b"
+  }
+}
