@@ -102,7 +102,7 @@ impl Fluxwm {
                 "Lua configuration is not integrated into the nested runtime",
             )),
             Method::Diagnostics => Ok(
-                json!({"shell_health":self.health.diagnostics(),"runtime":self.stats,"live_roles":self.windows.len(),"mapped_windows":self.layout.len(),"owned_applications":self.spawned.len(),"pending_launches":self.pending_spawns,"launch_outcomes":self.launch_outcomes,"backend":"nested","production_ready":false}),
+                json!({"input_state":{"host_focus":self.host_focus,"pressed_keys":self.seat.get_keyboard().map_or(0, |k| k.pressed_keys().len()),"suppressed_keys":self.suppressed_keys.len(),"pressed_buttons":self.pointer_presses.len(),"pointer_grabbed":self.seat.get_pointer().is_some_and(|p|p.is_grabbed()),"keyboard_grabbed":self.seat.get_keyboard().is_some_and(|k|k.is_grabbed())},"shell_health":self.health.diagnostics(),"runtime":self.stats,"live_roles":self.windows.len(),"mapped_windows":self.layout.len(),"owned_applications":self.spawned.len(),"pending_launches":self.pending_spawns,"launch_outcomes":self.launch_outcomes,"backend":"nested","production_ready":false}),
             ),
             Method::Action => request.action().and_then(|action| {
                 let spawning = matches!(action, flux_core::Action::Spawn { .. });

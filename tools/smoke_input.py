@@ -127,12 +127,12 @@ class PrivateX:
             'XFree': ([C.c_void_p], C.c_int), 'XFetchName': ([C.c_void_p, C.c_ulong, C.POINTER(C.c_char_p)], C.c_int),
             'XGetGeometry': ([C.c_void_p, C.c_ulong, C.POINTER(C.c_ulong), C.POINTER(C.c_int), C.POINTER(C.c_int), C.POINTER(C.c_uint), C.POINTER(C.c_uint), C.POINTER(C.c_uint), C.POINTER(C.c_uint)], C.c_int),
             'XTranslateCoordinates': ([C.c_void_p, C.c_ulong, C.c_ulong, C.c_int, C.c_int, C.POINTER(C.c_int), C.POINTER(C.c_int), C.POINTER(C.c_ulong)], C.c_int),
-            'XSetInputFocus': ([C.c_void_p, C.c_ulong, C.c_int, C.c_ulong], C.c_int), 'XRaiseWindow': ([C.c_void_p, C.c_ulong], C.c_int),
+            'XSetInputFocus': ([C.c_void_p, C.c_ulong, C.c_int, C.c_ulong], C.c_int), 'XGetInputFocus': ([C.c_void_p, C.POINTER(C.c_ulong), C.POINTER(C.c_int)], C.c_int), 'XStringToKeysym': ([C.c_char_p], C.c_ulong), 'XKeysymToKeycode': ([C.c_void_p, C.c_ulong], C.c_ubyte), 'XRaiseWindow': ([C.c_void_p, C.c_ulong], C.c_int),
             'XSync': ([C.c_void_p, C.c_int], C.c_int),
         }
         for name, (arguments, result) in signatures.items():
             function = getattr(self.x, name); function.argtypes = arguments; function.restype = result
-        for name, arguments in [('XTestQueryExtension', [C.c_void_p] + [C.POINTER(C.c_int)] * 4), ('XTestFakeMotionEvent', [C.c_void_p, C.c_int, C.c_int, C.c_int, C.c_ulong]), ('XTestFakeButtonEvent', [C.c_void_p, C.c_uint, C.c_int, C.c_ulong])]:
+        for name, arguments in [('XTestQueryExtension', [C.c_void_p] + [C.POINTER(C.c_int)] * 4), ('XTestFakeMotionEvent', [C.c_void_p, C.c_int, C.c_int, C.c_int, C.c_ulong]), ('XTestFakeButtonEvent', [C.c_void_p, C.c_uint, C.c_int, C.c_ulong]), ('XTestFakeKeyEvent', [C.c_void_p, C.c_uint, C.c_int, C.c_ulong])]:
             function = getattr(self.t, name); function.argtypes = arguments; function.restype = C.c_int
         self.x.XSetAuthorization(pieces[2], len(pieces[2]), pieces[3], len(pieces[3]))
         self.d = self.x.XOpenDisplay(f':{number}'.encode())
@@ -173,15 +173,31 @@ class PrivateX:
         require(320 <= w.value <= 1600 and 240 <= h.value <= 1000, 'target size outside private screen bounds')
         return {'width': w.value, 'height': h.value}
     def inject(self, window, action):
-        self.x.XRaiseWindow(self.d, window)
-        self.x.XSetInputFocus(self.d, window, 1, 0)
-        if action['kind'] == 'motion':
+        if action['kind'] == 'focus':
+            require(type(action['focused']) is bool, 'focus target must be explicit boolean')
+            target = window if action['focused'] else self.root
+            self.x.XSetInputFocus(self.d, target, 1, 0)
+            self.x.XSync(self.d, 0)
+            focus, revert = C.c_ulong(), C.c_int()
+            self.x.XGetInputFocus(self.d, C.byref(focus), C.byref(revert))
+            require(focus.value == target, 'private focus transition not confirmed')
+            return
+        if action.get('activate', True):
+            self.x.XRaiseWindow(self.d, window)
+            self.x.XSetInputFocus(self.d, window, 1, 0)
+        if action['kind'] == 'key':
+            require(action['key'] in ('a', 'c', 's', 'Alt_L', 'Shift_L'), 'unsupported private test key')
+            key = self.x.XKeysymToKeycode(self.d, self.x.XStringToKeysym(action['key'].encode()))
+            require(0 < key < 256, 'private key mapping unavailable')
+            require(self.t.XTestFakeKeyEvent(self.d, key, int(action['pressed']), 0), 'XTEST key failed')
+        elif action['kind'] == 'motion':
             geometry = self.geometry(window); x, y = action['x'], action['y']
             require(0 <= x < geometry['width'] and 0 <= y < geometry['height'], 'motion outside exact owned target')
             rx, ry, child = C.c_int(), C.c_int(), C.c_ulong()
             require(self.x.XTranslateCoordinates(self.d, window, self.root, x, y, C.byref(rx), C.byref(ry), C.byref(child)), 'target coordinate conversion failed')
             require(self.t.XTestFakeMotionEvent(self.d, 0, rx.value, ry.value, 0), 'XTEST motion failed')
         else:
+            require(action['kind'] == 'button', 'unsupported private action')
             require(action['button'] in (1, 4, 5, 6, 7), 'unsupported private test button')
             require(self.t.XTestFakeButtonEvent(self.d, action['button'], int(action['pressed']), 0), 'XTEST button failed')
         self.x.XSync(self.d, 0)

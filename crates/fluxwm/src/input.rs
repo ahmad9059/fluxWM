@@ -14,6 +14,70 @@ use smithay::{
 use crate::state::Fluxwm;
 
 impl Fluxwm {
+    /// Cancel the nested seat's held state when the host keyboard focus leaves.
+    /// Logical window selection persists; no absent backend release is required.
+    pub fn host_focus_changed(&mut self, focused: bool) {
+        if self.host_focus == Some(focused) {
+            return;
+        }
+        self.host_focus = Some(focused);
+        self.bump_sequence();
+        if focused {
+            return;
+        }
+        self.stats.host_focus_losses += 1;
+        let time = smithay::backend::input::InputTime::now();
+        if let Some(keyboard) = self.seat.get_keyboard() {
+            let mut keys: Vec<_> = keyboard.pressed_keys().into_iter().collect();
+            keys.sort_by_key(|key| key.raw());
+            self.stats.focus_cancelled_keys += keys.len() as u64;
+            for code in keys {
+                keyboard.input::<(), _>(
+                    self,
+                    code,
+                    KeyState::Released,
+                    SERIAL_COUNTER.next_serial(),
+                    time,
+                    |state, _, _| {
+                        if state.suppressed_keys.remove(&code.raw()) {
+                            FilterResult::Intercept(())
+                        } else {
+                            FilterResult::Forward
+                        }
+                    },
+                );
+            }
+        }
+        self.suppressed_keys.clear();
+        let buttons: Vec<_> = self.pointer_presses.keys().copied().collect();
+        self.stats.focus_cancelled_buttons += buttons.len() as u64;
+        if let Some(pointer) = self.seat.get_pointer() {
+            for button in buttons {
+                pointer.button(
+                    self,
+                    &ButtonEvent {
+                        button,
+                        state: ButtonState::Released,
+                        serial: SERIAL_COUNTER.next_serial(),
+                        time,
+                    },
+                );
+            }
+            pointer.frame(self);
+        }
+        self.pointer_presses.clear();
+        if let Some((_, grab)) = self.popup_grab.as_mut() {
+            grab.ungrab(smithay::desktop::PopupUngrabStrategy::All);
+        }
+        self.cleanup_popup_grab();
+        if let Some(pointer) = self.seat.get_pointer()
+            && pointer.is_grabbed()
+        {
+            pointer.unset_grab(self, SERIAL_COUNTER.next_serial(), time);
+        }
+        self.pointer_focus_dirty = true;
+    }
+
     pub fn refresh_pointer_focus(&mut self) {
         if !self.pointer_focus_dirty {
             return;
@@ -50,6 +114,9 @@ impl Fluxwm {
     pub fn process_input_event<I: InputBackend>(&mut self, event: InputEvent<I>) {
         match event {
             InputEvent::Keyboard { event, .. } => {
+                if self.host_focus == Some(false) {
+                    return;
+                }
                 let serial = SERIAL_COUNTER.next_serial();
                 let time = Event::time(&event);
 
@@ -181,6 +248,13 @@ impl Fluxwm {
                 let button = event.button_code();
 
                 let button_state = event.state();
+                if (button_state == ButtonState::Released
+                    && !self.pointer_presses.contains_key(&button))
+                    || (button_state == ButtonState::Pressed
+                        && self.pointer_presses.contains_key(&button))
+                {
+                    return;
+                }
 
                 if ButtonState::Pressed == button_state
                     && !pointer.is_grabbed()

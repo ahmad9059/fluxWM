@@ -126,13 +126,13 @@ pub fn init_winit(
                     state.relayout();
                 }
             }
+            WinitEvent::Focus(focused) => state.host_focus_changed(focused),
             WinitEvent::Input(event) => state.process_input_event(event),
             WinitEvent::Redraw => {
                 context.borrow_mut().host_ready = true;
                 state.request_redraw();
             }
             WinitEvent::CloseRequested => state.loop_signal.stop(),
-            _ => (),
         })
         .map_err(|e| std::io::Error::other(e.to_string()))?;
     state.request_redraw();

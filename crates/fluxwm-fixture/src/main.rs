@@ -783,7 +783,25 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
         _: &QueueHandle<Self>,
     ) {
         match event {
-            wl_keyboard::Event::Enter { surface, .. } => {
+            wl_keyboard::Event::Enter {
+                surface,
+                keys,
+                serial,
+            } => {
+                if state.input_probe_mode {
+                    if keys.len() > 1024 || keys.len() % 4 != 0 {
+                        state.error = Some("invalid keyboard enter key array".into());
+                        return;
+                    }
+                    let keys: Vec<_> = keys
+                        .as_chunks::<4>()
+                        .0
+                        .iter()
+                        .copied()
+                        .map(u32::from_ne_bytes)
+                        .collect();
+                    state.record(json!({"type":"keyboard.enter","root":state.windows.iter().position(|w|w.surface==surface),"keys":keys,"serial":serial}));
+                }
                 let popup = state.popups.iter().position(|p| p.surface == surface);
                 if popup.is_some() {
                     state.popup_keyboard_enters += 1;
@@ -791,9 +809,29 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
                 state.keyboard_focus = Some(surface.clone());
                 state.record(json!({"keyboard_enter_window":state.windows.iter().position(|w|w.surface==surface),"keyboard_enter_popup":popup}));
             }
-            wl_keyboard::Event::Leave { .. } => {
+            wl_keyboard::Event::Leave { serial, .. } => {
+                if state.input_probe_mode {
+                    state.record(json!({"type":"keyboard.leave","serial":serial}));
+                }
                 state.keyboard_focus = None;
                 state.record(json!({"keyboard_leave":true}));
+            }
+            wl_keyboard::Event::Key {
+                serial,
+                time,
+                key,
+                state: key_state,
+            } if state.input_probe_mode => {
+                state.record(json!({"type":"keyboard.key","root":state.keyboard_focus.as_ref().and_then(|surface|state.windows.iter().position(|w|&w.surface==surface)),"key":key,"state":match key_state { WEnum::Value(wl_keyboard::KeyState::Pressed)=>"pressed",WEnum::Value(wl_keyboard::KeyState::Released)=>"released",_=>"unknown" },"serial":serial,"time":time}));
+            }
+            wl_keyboard::Event::Modifiers {
+                serial,
+                mods_depressed,
+                mods_latched,
+                mods_locked,
+                group,
+            } if state.input_probe_mode => {
+                state.record(json!({"type":"keyboard.modifiers","serial":serial,"depressed":mods_depressed,"latched":mods_latched,"locked":mods_locked,"group":group}));
             }
             _ => {}
         }
@@ -2299,6 +2337,7 @@ fn input_probe(timeout: Duration) -> Json {
     let mut state = State::new(start);
     state.pointer_feedback_enabled = true;
     state.input_probe_mode = true;
+    state.popup_mode = true; // Bind keyboard as well as pointer for the live journal.
     let mut evidence = json!({"mode":"input-probe","ok":false,"observation_ms":OBSERVE_MS,"buffer_size":[320,240],"physical_input_injected_by_fixture":false});
     let result = (|| -> Result<()> {
         use std::os::unix::fs::OpenOptionsExt;

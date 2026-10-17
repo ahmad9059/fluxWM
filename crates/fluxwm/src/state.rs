@@ -53,6 +53,9 @@ pub struct RuntimeStats {
     pub flush_would_block: u64,
     pub flush_retry_timer_fired: u64,
     pub ipc_drain_timed_out: u64,
+    pub host_focus_losses: u64,
+    pub focus_cancelled_keys: u64,
+    pub focus_cancelled_buttons: u64,
     pub ipc_dispatches_after_shutdown: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ipc_drain_budget_ms: Option<u64>,
@@ -61,6 +64,7 @@ pub struct RuntimeStats {
 }
 
 pub struct Fluxwm {
+    pub host_focus: Option<bool>,
     pub health: crate::health::Monitor<Fluxwm>,
     pub health_requested: bool,
     pub scene: Option<crate::scene::RuntimeScene>,
@@ -182,6 +186,7 @@ impl Fluxwm {
         let loop_signal = event_loop.get_signal();
 
         Ok(Self {
+            host_focus: None,
             health: crate::health::Monitor::new(&event_loop.handle(), |state| {
                 state.health_requested = true
             }),
