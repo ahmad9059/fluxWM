@@ -28,6 +28,44 @@ let readiness = ipc.readiness(std::time::Instant::now());
 
 Call `set_state_sequence` with the current core sequence at poll entry. Every handler response must contain the exact resulting sequence. The server uses that response to advance its sequence before decoding the next request, including requests on another connection; transport-generated validation errors therefore see mutations earlier in that poll. A regressing handler sequence, wrong ID or wrong version is a handler contract violation and closes the connection. External mutations outside the handler must be reflected at the next poll entry. A restarted instance needs a separately specified instance/epoch policy before subscriptions or persistent clients are supported.
 
+## Optional calloop driver
+
+Enable the `calloop` feature on `flux-ipc` to use `EventLoopDriver<D>` with calloop 0.14.5. The transport's default features remain empty; applications with another event loop can continue using `Server` and `readiness()` directly.
+
+```rust,ignore
+// Store the driver in compositor state as Option<EventLoopDriver<Fluxwm>>.
+fn wake_ipc(state: &mut Fluxwm) { state.ipc_pending = true; }
+let driver = flux_ipc::EventLoopDriver::bind(
+    &event_loop.handle(), runtime_dir, instance_name, wake_ipc,
+)?;
+// After event_loop.dispatch(), outside all source callbacks:
+if std::mem::take(&mut state.ipc_pending) {
+    let mut driver = state.ipc.take().expect("live IPC driver");
+    let outcome = driver.poll(Instant::now(), state.sequence(), |request| {
+        state.dispatch_ipc(request) // exact resulting sequence in every response
+    });
+    // On adapter registration failure, drop the driver and follow the declared
+    // IPC recovery/session policy. Preserve the error in bounded diagnostics.
+    outcome?;
+    state.ipc = Some(driver);
+}
+```
+
+The driver owns `Server` and exposes `socket_path()`, `stats()` and `connection_count()`. Its source callbacks only call the supplied `wake` function, which must mark pending work rather than invoke `poll` reentrantly. Service that flag after dispatch. A coalesced ping schedules complete buffered requests even if the client sends no additional bytes. One timer tracks the exact earliest server deadline, including partial frames and accept backoff; obsolete timers and socket registrations are removed. With no clients or buffered work there is no IPC timer or periodic polling.
+
+Socket registrations use owned `F_DUPFD_CLOEXEC` duplicates, keyed by `Endpoint`; originals can close during `Server::poll` without invalidating a registered borrowed descriptor. At most 33 additional socket descriptors exist (listener plus 32 clients), plus the calloop ping descriptor and calloop's own backend descriptors. Changed interests and obsolete endpoints are removed before replacements are installed. Dropping the driver unregisters its socket, ping and timer sources before dropping `Server`, so duplicate descriptors do not retain a disconnected client/socket.
+
+Only a weak loop handle is retained, including when a driver lives inside loop-owned state or callbacks. calloop 0.14.5 does not re-export the returned weak-handle type; the adapter stores an upgrade closure that captures that weak handle without capturing a strong handle. Loop destruction therefore cannot create a source/handle reference cycle. A driver that outlives its loop returns `BrokenPipe` from `poll` and still cleans up its owned socket when dropped.
+
+Verify the optional adapter with:
+
+```sh
+cargo test -p flux-ipc -p fluxctl --features flux-ipc/calloop
+cargo clippy -p flux-ipc -p fluxctl --features flux-ipc/calloop --all-targets -- -D warnings
+```
+
+Actual calloop tests cover forty pipelined requests followed by client silence, EOF and large pending-reply flush, read/write-interest transitions, deadline wakeup without periodic polling, acceptance backoff/rearm, idle wake suppression, endpoint replacement, driver/loop destruction in both orders and cleanup when loop-owned callbacks hold a driver. The deadline test moves an existing five-second partial-frame start timestamp so its exact expiry is forty milliseconds away; it exercises the real calloop timer rather than waiting five seconds. This adapter evidence does not qualify compositor-wide scheduling latency or native desktop readiness.
+
 ## Socket ownership and authentication
 
 The Linux `SO_PEERCRED` check admits the effective UID only; the client helper also verifies its server has the same UID. Bind requires a real final runtime-directory component owned by that UID with no group/other permissions. Its `fluxwm/` child has mode 0700; sockets have mode 0600. Instance names contain 1..64 ASCII letters, digits, hyphens or underscores. Existing paths are never replaced or unlinked on startup.

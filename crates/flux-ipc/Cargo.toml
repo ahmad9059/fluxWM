@@ -11,3 +11,8 @@ serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 libc.workspace = true
+calloop = { version = "=0.14.5", optional = true }
+
+[features]
+default = []
+calloop = ["dep:calloop"]
