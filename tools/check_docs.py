@@ -136,6 +136,8 @@ def check(source_cache: Path | None) -> dict:
     else:
         commands = [
             [luac, "-p", "docs/examples/config.lua"],
+            [luac, "-p", "docs/examples/nested-config.lua"],
+            [lua, "-e", 'local c=assert(loadfile("docs/examples/nested-config.lua","t",{}))(); assert(type(c)=="table" and c.schema_version==1 and #c.bindings==16)'],
             [lua, "-e", 'local c=assert(loadfile("docs/examples/config.lua","t",{}))(); assert(type(c)=="table" and c.schema_version==1)'],
             [lua, "docs/evidence/lua-hook-catchability.lua"],
             [lua, "docs/examples/check-config.lua"],

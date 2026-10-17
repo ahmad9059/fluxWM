@@ -18,6 +18,10 @@ fn documentation_example_is_real_config_and_vm_is_lua54() {
     let c = load(include_str!("../../../docs/examples/config.lua")).unwrap();
     assert_eq!(c.config.bindings.len(), 13);
     assert_eq!(c.rules.len(), 3);
+    let nested = load(include_str!("../../../docs/examples/nested-config.lua")).unwrap();
+    assert_eq!(nested.config.bindings.len(), 16);
+    assert_eq!(nested.config.layout.gaps, 12.);
+    assert!(nested.config.autostart.is_empty() && nested.rules.is_empty());
     load("assert(_VERSION == nil); assert(math.type(1)=='integer'); return {schema_version=1, bindings={}} ").unwrap();
     let c = load("local a = 1 << 3; return {schema_version=1,layout={gaps=a}} ").unwrap();
     assert_eq!(c.config.layout.gaps, 8.);
