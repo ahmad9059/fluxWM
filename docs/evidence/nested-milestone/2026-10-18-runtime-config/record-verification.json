@@ -1,0 +1,29 @@
+{
+  "final_executables_match": true,
+  "final_source_files_match": true,
+  "documentation_passed": true,
+  "workspace_tests": 157,
+  "configuration_cases": 6,
+  "private_regression_suites": 6,
+  "host_focus_cases": 3,
+  "nested_example_bindings": 16,
+  "nested_example_generations": [
+    "1",
+    "2"
+  ],
+  "controller_mutations_expected_failure": 4,
+  "binding_mutation_expected_failure": true,
+  "reviews": [
+    {
+      "folder": "runtime-config-2026-10-18",
+      "files": 61,
+      "actual_tool_calls": 20
+    },
+    {
+      "folder": "runtime-config-followup-2026-10-18",
+      "files": 68,
+      "actual_tool_calls": 16
+    }
+  ],
+  "scope": "Author record verification, not a new compositor execution or a production completeness assertion"
+}

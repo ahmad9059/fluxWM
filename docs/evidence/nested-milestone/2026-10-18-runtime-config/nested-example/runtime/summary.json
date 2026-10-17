@@ -1,0 +1,45 @@
+{
+  "authority_removed": true,
+  "case": {
+    "case": "example",
+    "endpoints_removed": true,
+    "exit_code": 0,
+    "forbidden_autostart_absent": true,
+    "ok": true
+  },
+  "example_sha256": "51f47c3155202d17514a342ec43af53eaf82bdd0ee9d762b20e6e9c2ae77a0ec",
+  "executables": {
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm": "076213d6026c5fb1fe7bdfa38ff5fa66173ea7af3ba051447dec19d5e0bfdb75",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-config": "44d6234857448302737c5f7601510993082c9d7e3fefb291f3be6bbdae75cfcf"
+  },
+  "executables_unchanged": true,
+  "generations": [
+    "1",
+    "2"
+  ],
+  "ok": true,
+  "package": {
+    "bundle": "target/configure-verified-xvfb",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "parent_environment_unchanged": true,
+  "runtime_cleanup": {
+    "directory_removed": true,
+    "endpoints_removed_before_cleanup": true,
+    "path": "/tmp/fluxrt-wdn83m_8"
+  },
+  "scope": "Actual private startup/manual reload of docs/examples/nested-config.lua copied into owned source; no terminal argv executed or native qualification",
+  "server_reaped": true,
+  "x_socket_removed": true
+}

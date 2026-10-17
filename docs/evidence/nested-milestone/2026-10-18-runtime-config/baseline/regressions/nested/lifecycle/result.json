@@ -1,0 +1,102 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxsmoke-33fa10a8992d4022bcb9c1b1",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-final-regressions/nested/lifecycle/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-final-regressions/nested/lifecycle/stats.json",
+    "--screenshot",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-final-regressions/nested/lifecycle/first-map.ppm",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "lifecycle",
+    "--timeout-ms",
+    "4500"
+  ],
+  "elapsed_ms": 6276,
+  "environment": {
+    "DISPLAY": ":5466",
+    "WAYLAND_DISPLAY": null,
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": "x11",
+    "XDG_RUNTIME_DIR": "/tmp/fluxrt-2069sy8f"
+  },
+  "leaked_socket_paths_before_harness_cleanup": [],
+  "name": "lifecycle",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "readiness": {
+    "backend": "nested",
+    "ipc_socket": "/tmp/fluxrt-2069sy8f/fluxwm/fluxsmoke-33fa10a8992d4022bcb9c1b1.sock",
+    "pid": 42562,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxsmoke-33fa10a8992d4022bcb9c1b1"
+  },
+  "returncode": 0,
+  "screenshot": {
+    "format": "P6",
+    "height": 800,
+    "quadrants": {
+      "blue": [
+        0,
+        120,
+        159,
+        239,
+        19200
+      ],
+      "green": [
+        160,
+        0,
+        319,
+        119,
+        19200
+      ],
+      "red": [
+        0,
+        0,
+        159,
+        119,
+        19200
+      ],
+      "yellow": [
+        160,
+        120,
+        319,
+        239,
+        19200
+      ]
+    },
+    "sha256": "4d390c13b1dd8ac080b2cf60e2a1628a1924664b735d223e52180de2bc84e866",
+    "width": 1280
+  },
+  "socket": "fluxsmoke-33fa10a8992d4022bcb9c1b1",
+  "stats": {
+    "compositions": 5,
+    "destroyed": 2,
+    "final_windows": 0,
+    "flush_cycles": 39,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 6,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 3,
+    "popup_grabs_denied_missing_press": 0,
+    "redraws": 8,
+    "submissions": 4,
+    "unmaps": 1,
+    "wayland_requests": 64
+  }
+}

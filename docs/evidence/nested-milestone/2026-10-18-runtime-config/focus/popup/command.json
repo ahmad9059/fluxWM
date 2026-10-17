@@ -1,0 +1,20 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-example-focus/fluxwm",
+    "--no-config",
+    "--socket",
+    "fluxfocus-487a37a34b57425f",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-example-focus/popup/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-example-focus/popup/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-example-focus/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

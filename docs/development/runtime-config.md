@@ -4,10 +4,20 @@ The nested executable now reads Lua on startup and explicit reload, prepares bin
 
 ```sh
 cargo build --workspace --locked
-fluxwm --backend nested --config /absolute/config.lua
-fluxctl reload
-fluxctl query config.effective
+target/debug/fluxwm --backend nested --socket demo --config docs/examples/nested-config.lua
 ```
+
+From another terminal using the same runtime directory:
+
+```sh
+target/debug/fluxctl --socket "$XDG_RUNTIME_DIR/fluxwm/demo.sock" reload
+target/debug/fluxctl --socket "$XDG_RUNTIME_DIR/fluxwm/demo.sock" query config.effective
+```
+
+The [runnable nested example](../examples/nested-config.lua) has sixteen controls,
+including reload, close/quit, terminal argv, directional focus/move, modes and width.
+It targets the tested US startup seat map. The broader [target-schema example](../examples/config.lua)
+also contains unfinished features and is not a runtime-support promise.
 
 The standalone `fluxwm-config --check FILE` remains the detailed evaluator/schema diagnostic path. Runtime `config.check` is unavailable. No Lua VM is linked into the compositor.
 
@@ -15,7 +25,7 @@ The standalone `fluxwm-config --check FILE` remains the detailed evaluator/schem
 
 `--config PATH` selects a file; relative paths resolve against startup working directory. Otherwise an absolute nonempty `XDG_CONFIG_HOME` selects `fluxwm/config.lua`; absent/empty/relative XDG roots fall back to an absolute HOME's `.config/fluxwm/config.lua`. With neither absolute root, loading is disabled. `--no-config` explicitly disables it and is mutually exclusive with `--config`. Missing/invalid selected files keep development defaults on startup and retain the last successful settings on reload, with a static failure diagnostic. Missing default files currently also report failure rather than a special absent-default status.
 
-The helper is the executable named `fluxwm-config` beside the compositor's resolved executable. `--config-helper PATH` explicitly overrides it; PATH is never searched. Paths must be nonempty, NUL-free and at most 4096 bytes before and after absolute expansion. Source names may contain non-UTF-8 bytes. Source contents must be UTF-8 and at most 1 MiB. The worker opens with nonblocking/CLOEXEC flags, verifies the opened descriptor is a regular file, and uses a bounded read. Symlinks are allowed. Modules are unavailable. Atomic replacement by the writer is recommended; concurrent in-place writes can produce mixed bytes. Kernel/filesystem operations have no universal wall deadline and can delay helper start or shutdown despite off-thread ownership.
+The helper is the executable named `fluxwm-config` beside the compositor's resolved executable. `--config-helper PATH` explicitly overrides it; PATH is never searched. Paths must be nonempty, NUL-free and at most 4096 bytes before and after absolute expansion. Source names may contain non-UTF-8 bytes. Source contents must be UTF-8 and at most 1 MiB. The worker opens with nonblocking/CLOEXEC/NOCTTY flags, verifies the opened descriptor is a regular file, and uses a bounded read. Symlinks are allowed. NOCTTY prevents a nonregular terminal target from becoming a controlling terminal before descriptor-type rejection. Modules are unavailable. Atomic replacement by the writer is recommended; concurrent in-place writes can produce mixed bytes. Kernel/filesystem operations have no universal wall deadline and can delay helper start or shutdown despite off-thread ownership.
 
 ## Generations and publication
 

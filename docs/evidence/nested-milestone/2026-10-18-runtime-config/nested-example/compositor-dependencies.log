@@ -1,0 +1,414 @@
+fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+├── bitflags v2.13.2
+├── calloop v0.14.5
+│   ├── bitflags v2.13.2
+│   ├── nix v0.31.3
+│   │   ├── bitflags v2.13.2
+│   │   ├── cfg-if v1.0.5
+│   │   └── libc v0.2.191
+│   │   [build-dependencies]
+│   │   └── cfg_aliases v0.2.2
+│   ├── polling v3.11.0
+│   │   ├── cfg-if v1.0.5
+│   │   └── rustix v1.1.5
+│   │       ├── bitflags v2.13.2
+│   │       └── linux-raw-sys v0.12.1
+│   ├── rustix v1.1.5 (*)
+│   └── tracing v0.1.44
+│       ├── log v0.4.34
+│       ├── pin-project-lite v0.2.17
+│       ├── tracing-attributes v0.1.31 (proc-macro)
+│       │   ├── proc-macro2 v1.0.107
+│       │   │   └── unicode-ident v1.0.27
+│       │   ├── quote v1.0.47
+│       │   │   └── proc-macro2 v1.0.107 (*)
+│       │   └── syn v2.0.119
+│       │       ├── proc-macro2 v1.0.107 (*)
+│       │       ├── quote v1.0.47 (*)
+│       │       └── unicode-ident v1.0.27
+│       └── tracing-core v0.1.36
+│           └── once_cell v1.21.4
+├── flux-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-config)
+│   ├── flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core)
+│   │   ├── serde v1.0.229
+│   │   │   ├── serde_core v1.0.229
+│   │   │   └── serde_derive v1.0.229 (proc-macro)
+│   │   │       ├── proc-macro2 v1.0.107 (*)
+│   │   │       ├── quote v1.0.47 (*)
+│   │   │       └── syn v3.0.9
+│   │   │           ├── proc-macro2 v1.0.107 (*)
+│   │   │           ├── quote v1.0.47 (*)
+│   │   │           └── unicode-ident v1.0.27
+│   │   └── thiserror v2.0.21
+│   │       └── thiserror-impl v2.0.21 (proc-macro)
+│   │           ├── proc-macro2 v1.0.107 (*)
+│   │           ├── quote v1.0.47 (*)
+│   │           └── syn v3.0.9 (*)
+│   ├── libc v0.2.191
+│   ├── regex v1.13.1
+│   │   ├── aho-corasick v1.1.5
+│   │   │   └── memchr v2.8.3
+│   │   ├── memchr v2.8.3
+│   │   ├── regex-automata v0.4.18
+│   │   │   ├── aho-corasick v1.1.5 (*)
+│   │   │   ├── memchr v2.8.3
+│   │   │   └── regex-syntax v0.8.11
+│   │   └── regex-syntax v0.8.11
+│   ├── serde v1.0.229 (*)
+│   ├── serde_json v1.0.154
+│   │   ├── itoa v1.0.18
+│   │   ├── memchr v2.8.3
+│   │   ├── serde_core v1.0.229
+│   │   └── zmij v1.0.23
+│   ├── serde_path_to_error v0.1.20
+│   │   ├── itoa v1.0.18
+│   │   └── serde_core v1.0.229
+│   └── thiserror v2.0.21 (*)
+├── flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core) (*)
+├── flux-input v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-input)
+│   ├── flux-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-config) (*)
+│   ├── flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core) (*)
+│   ├── thiserror v2.0.21 (*)
+│   └── xkbcommon v0.9.0
+│       ├── libc v0.2.191
+│       ├── memmap2 v0.9.11
+│       │   └── libc v0.2.191
+│       └── xkeysym v0.2.1
+├── flux-ipc v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-ipc)
+│   ├── calloop v0.14.5 (*)
+│   ├── flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core) (*)
+│   ├── libc v0.2.191
+│   ├── serde v1.0.229 (*)
+│   ├── serde_json v1.0.154 (*)
+│   └── thiserror v2.0.21 (*)
+├── flux-layout v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-layout)
+│   ├── flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core) (*)
+│   └── thiserror v2.0.21 (*)
+├── flux-process v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-process)
+│   ├── calloop v0.14.5 (*)
+│   ├── flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core) (*)
+│   └── libc v0.2.191
+├── flux-scene v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-scene)
+│   ├── flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core) (*)
+│   └── thiserror v2.0.21 (*)
+├── libc v0.2.191
+├── serde v1.0.229 (*)
+├── serde_json v1.0.154 (*)
+├── smithay v0.7.0 (https://github.com/Smithay/smithay?rev=023b78b1c5a05ca512767cacc07efca55fae8be4#023b78b1)
+│   ├── appendlist v1.4.0
+│   ├── bitflags v2.13.2
+│   ├── calloop v0.14.5 (*)
+│   ├── cursor-icon v1.2.0
+│   ├── downcast-rs v1.2.1
+│   ├── drm-fourcc v2.2.0
+│   ├── errno v0.3.14
+│   │   └── libc v0.2.191
+│   ├── glam v0.33.12
+│   ├── indexmap v2.14.2
+│   │   ├── equivalent v1.0.3
+│   │   └── hashbrown v0.17.1
+│   ├── libc v0.2.191
+│   ├── libloading v0.8.9
+│   │   └── cfg-if v1.0.5
+│   ├── portable-atomic v1.15.0
+│   ├── profiling v1.0.18
+│   │   └── profiling-procmacros v1.0.18 (proc-macro)
+│   │       ├── quote v1.0.47 (*)
+│   │       └── syn v2.0.119 (*)
+│   ├── rand v0.10.3
+│   │   ├── chacha20 v0.10.2
+│   │   │   ├── cfg-if v1.0.5
+│   │   │   ├── cpufeatures v0.3.1
+│   │   │   └── rand_core v0.10.1
+│   │   ├── getrandom v0.4.3
+│   │   │   ├── cfg-if v1.0.5
+│   │   │   ├── libc v0.2.191
+│   │   │   └── rand_core v0.10.1
+│   │   └── rand_core v0.10.1
+│   ├── reis v0.7.1
+│   │   ├── calloop v0.14.5 (*)
+│   │   ├── enumflags2 v0.7.12
+│   │   │   └── enumflags2_derive v0.7.12 (proc-macro)
+│   │   │       ├── proc-macro2 v1.0.107 (*)
+│   │   │       ├── quote v1.0.47 (*)
+│   │   │       └── syn v2.0.119 (*)
+│   │   ├── log v0.4.34
+│   │   └── rustix v1.1.5 (*)
+│   ├── rustix v1.1.5 (*)
+│   ├── siphasher v1.0.4
+│   ├── smallvec v1.16.3
+│   ├── tempfile v3.27.0
+│   │   ├── fastrand v2.5.0
+│   │   ├── getrandom v0.4.3 (*)
+│   │   ├── once_cell v1.21.4
+│   │   └── rustix v1.1.5 (*)
+│   ├── thiserror v2.0.21 (*)
+│   ├── tracing v0.1.44 (*)
+│   ├── wayland-client v0.31.15
+│   │   ├── bitflags v2.13.2
+│   │   ├── rustix v1.1.5 (*)
+│   │   ├── wayland-backend v0.3.17
+│   │   │   ├── downcast-rs v1.2.1
+│   │   │   ├── rustix v1.1.5 (*)
+│   │   │   ├── scoped-tls v1.0.1
+│   │   │   ├── smallvec v1.16.3
+│   │   │   └── wayland-sys v0.31.11
+│   │   │       ├── dlib v0.5.3
+│   │   │       │   └── libloading v0.8.9 (*)
+│   │   │       ├── log v0.4.34
+│   │   │       └── once_cell v1.21.4
+│   │   │       [build-dependencies]
+│   │   │       └── pkg-config v0.3.34
+│   │   │   [build-dependencies]
+│   │   │   └── cc v1.8.0
+│   │   │       ├── find-msvc-tools v0.1.14
+│   │   │       └── shlex v2.0.1
+│   │   └── wayland-scanner v0.31.11 (proc-macro)
+│   │       ├── proc-macro2 v1.0.107 (*)
+│   │       ├── quick-xml v0.41.0
+│   │       │   └── memchr v2.8.3
+│   │       └── quote v1.0.47 (*)
+│   ├── wayland-cursor v0.31.14
+│   │   ├── rustix v1.1.5 (*)
+│   │   ├── wayland-client v0.31.15 (*)
+│   │   └── xcursor v0.3.11
+│   ├── wayland-egl v0.32.11
+│   │   ├── wayland-backend v0.3.17 (*)
+│   │   └── wayland-sys v0.31.11 (*)
+│   ├── wayland-protocols v0.32.13
+│   │   ├── bitflags v2.13.2
+│   │   ├── wayland-backend v0.3.17 (*)
+│   │   ├── wayland-client v0.31.15 (*)
+│   │   ├── wayland-scanner v0.31.11 (proc-macro) (*)
+│   │   └── wayland-server v0.31.14
+│   │       ├── bitflags v2.13.2
+│   │       ├── downcast-rs v1.2.1
+│   │       ├── rustix v1.1.5 (*)
+│   │       ├── wayland-backend v0.3.17 (*)
+│   │       └── wayland-scanner v0.31.11 (proc-macro) (*)
+│   ├── wayland-protocols-misc v0.3.12
+│   │   ├── bitflags v2.13.2
+│   │   ├── wayland-backend v0.3.17 (*)
+│   │   ├── wayland-client v0.31.15 (*)
+│   │   ├── wayland-protocols v0.32.13 (*)
+│   │   ├── wayland-scanner v0.31.11 (proc-macro) (*)
+│   │   └── wayland-server v0.31.14 (*)
+│   ├── wayland-protocols-wlr v0.3.12
+│   │   ├── bitflags v2.13.2
+│   │   ├── wayland-backend v0.3.17 (*)
+│   │   ├── wayland-client v0.31.15 (*)
+│   │   ├── wayland-protocols v0.32.13 (*)
+│   │   ├── wayland-scanner v0.31.11 (proc-macro) (*)
+│   │   └── wayland-server v0.31.14 (*)
+│   ├── wayland-server v0.31.14 (*)
+│   ├── winit v0.31.0-beta.3
+│   │   ├── bitflags v2.13.2
+│   │   ├── cursor-icon v1.2.0
+│   │   ├── dpi v0.1.2
+│   │   ├── libc v0.2.191
+│   │   ├── raw-window-handle v0.6.2
+│   │   ├── rustix v1.1.5 (*)
+│   │   ├── smol_str v0.3.6
+│   │   ├── tracing v0.1.44 (*)
+│   │   ├── winit-common v0.31.0-beta.3
+│   │   │   ├── memmap2 v0.9.11 (*)
+│   │   │   ├── smol_str v0.3.6
+│   │   │   ├── tracing v0.1.44 (*)
+│   │   │   ├── winit-core v0.31.0-beta.3
+│   │   │   │   ├── bitflags v2.13.2
+│   │   │   │   ├── cursor-icon v1.2.0
+│   │   │   │   ├── dpi v0.1.2
+│   │   │   │   ├── keyboard-types v0.8.3
+│   │   │   │   │   └── bitflags v2.13.2
+│   │   │   │   ├── raw-window-handle v0.6.2
+│   │   │   │   ├── smol_str v0.3.6
+│   │   │   │   └── url v2.5.8
+│   │   │   │       ├── form_urlencoded v1.2.2
+│   │   │   │       │   └── percent-encoding v2.3.2
+│   │   │   │       ├── idna v1.1.0
+│   │   │   │       │   ├── idna_adapter v1.2.2
+│   │   │   │       │   │   ├── icu_normalizer v2.3.0
+│   │   │   │       │   │   │   ├── icu_collections v2.3.0
+│   │   │   │       │   │   │   │   ├── displaydoc v0.2.7 (proc-macro)
+│   │   │   │       │   │   │   │   │   ├── proc-macro2 v1.0.107 (*)
+│   │   │   │       │   │   │   │   │   ├── quote v1.0.47 (*)
+│   │   │   │       │   │   │   │   │   └── syn v3.0.9 (*)
+│   │   │   │       │   │   │   │   ├── potential_utf v0.1.6
+│   │   │   │       │   │   │   │   │   └── zerovec v0.11.8
+│   │   │   │       │   │   │   │   │       ├── yoke v0.8.3
+│   │   │   │       │   │   │   │   │       │   ├── stable_deref_trait v1.2.1
+│   │   │   │       │   │   │   │   │       │   ├── yoke-derive v0.8.4 (proc-macro)
+│   │   │   │       │   │   │   │   │       │   │   ├── proc-macro2 v1.0.107 (*)
+│   │   │   │       │   │   │   │   │       │   │   ├── quote v1.0.47 (*)
+│   │   │   │       │   │   │   │   │       │   │   ├── syn v3.0.9 (*)
+│   │   │   │       │   │   │   │   │       │   │   └── synstructure v0.14.0
+│   │   │   │       │   │   │   │   │       │   │       ├── proc-macro2 v1.0.107 (*)
+│   │   │   │       │   │   │   │   │       │   │       ├── quote v1.0.47 (*)
+│   │   │   │       │   │   │   │   │       │   │       └── syn v3.0.9 (*)
+│   │   │   │       │   │   │   │   │       │   └── zerofrom v0.1.8
+│   │   │   │       │   │   │   │   │       │       └── zerofrom-derive v0.1.8 (proc-macro)
+│   │   │   │       │   │   │   │   │       │           ├── proc-macro2 v1.0.107 (*)
+│   │   │   │       │   │   │   │   │       │           ├── quote v1.0.47 (*)
+│   │   │   │       │   │   │   │   │       │           ├── syn v3.0.9 (*)
+│   │   │   │       │   │   │   │   │       │           └── synstructure v0.14.0 (*)
+│   │   │   │       │   │   │   │   │       ├── zerofrom v0.1.8 (*)
+│   │   │   │       │   │   │   │   │       └── zerovec-derive v0.11.6 (proc-macro)
+│   │   │   │       │   │   │   │   │           ├── proc-macro2 v1.0.107 (*)
+│   │   │   │       │   │   │   │   │           ├── quote v1.0.47 (*)
+│   │   │   │       │   │   │   │   │           └── syn v3.0.9 (*)
+│   │   │   │       │   │   │   │   ├── utf8_iter v1.0.4
+│   │   │   │       │   │   │   │   ├── yoke v0.8.3 (*)
+│   │   │   │       │   │   │   │   ├── zerofrom v0.1.8 (*)
+│   │   │   │       │   │   │   │   └── zerovec v0.11.8 (*)
+│   │   │   │       │   │   │   ├── icu_normalizer_data v2.3.0
+│   │   │   │       │   │   │   ├── icu_provider v2.3.1
+│   │   │   │       │   │   │   │   ├── displaydoc v0.2.7 (proc-macro) (*)
+│   │   │   │       │   │   │   │   ├── icu_locale_core v2.3.0
+│   │   │   │       │   │   │   │   │   ├── displaydoc v0.2.7 (proc-macro) (*)
+│   │   │   │       │   │   │   │   │   ├── litemap v0.8.3
+│   │   │   │       │   │   │   │   │   ├── tinystr v0.8.4
+│   │   │   │       │   │   │   │   │   │   ├── displaydoc v0.2.7 (proc-macro) (*)
+│   │   │   │       │   │   │   │   │   │   └── zerovec v0.11.8 (*)
+│   │   │   │       │   │   │   │   │   ├── writeable v0.6.4
+│   │   │   │       │   │   │   │   │   └── zerovec v0.11.8 (*)
+│   │   │   │       │   │   │   │   ├── writeable v0.6.4
+│   │   │   │       │   │   │   │   ├── yoke v0.8.3 (*)
+│   │   │   │       │   │   │   │   ├── zerofrom v0.1.8 (*)
+│   │   │   │       │   │   │   │   ├── zerotrie v0.2.5
+│   │   │   │       │   │   │   │   │   ├── displaydoc v0.2.7 (proc-macro) (*)
+│   │   │   │       │   │   │   │   │   ├── yoke v0.8.3 (*)
+│   │   │   │       │   │   │   │   │   └── zerofrom v0.1.8 (*)
+│   │   │   │       │   │   │   │   └── zerovec v0.11.8 (*)
+│   │   │   │       │   │   │   ├── smallvec v1.16.3
+│   │   │   │       │   │   │   └── zerovec v0.11.8 (*)
+│   │   │   │       │   │   └── icu_properties v2.3.0
+│   │   │   │       │   │       ├── displaydoc v0.2.7 (proc-macro) (*)
+│   │   │   │       │   │       ├── icu_collections v2.3.0 (*)
+│   │   │   │       │   │       ├── icu_locale_core v2.3.0 (*)
+│   │   │   │       │   │       ├── icu_properties_data v2.3.0
+│   │   │   │       │   │       ├── icu_provider v2.3.1 (*)
+│   │   │   │       │   │       ├── zerotrie v0.2.5 (*)
+│   │   │   │       │   │       └── zerovec v0.11.8 (*)
+│   │   │   │       │   ├── smallvec v1.16.3
+│   │   │   │       │   └── utf8_iter v1.0.4
+│   │   │   │       └── percent-encoding v2.3.2
+│   │   │   ├── x11-dl v2.21.0
+│   │   │   │   ├── libc v0.2.191
+│   │   │   │   └── once_cell v1.21.4
+│   │   │   │   [build-dependencies]
+│   │   │   │   └── pkg-config v0.3.34
+│   │   │   └── xkbcommon-dl v0.4.2
+│   │   │       ├── bitflags v2.13.2
+│   │   │       ├── dlib v0.5.3 (*)
+│   │   │       ├── log v0.4.34
+│   │   │       ├── once_cell v1.21.4
+│   │   │       └── xkeysym v0.2.1
+│   │   ├── winit-core v0.31.0-beta.3 (*)
+│   │   ├── winit-wayland v0.31.0-beta.3
+│   │   │   ├── bitflags v2.13.2
+│   │   │   ├── calloop v0.14.5 (*)
+│   │   │   ├── cursor-icon v1.2.0
+│   │   │   ├── dpi v0.1.2
+│   │   │   ├── foldhash v0.2.0
+│   │   │   ├── libc v0.2.191
+│   │   │   ├── memmap2 v0.9.11 (*)
+│   │   │   ├── percent-encoding v2.3.2
+│   │   │   ├── raw-window-handle v0.6.2
+│   │   │   ├── rustix v1.1.5 (*)
+│   │   │   ├── smithay-client-toolkit v0.21.1
+│   │   │   │   ├── bitflags v2.13.2
+│   │   │   │   ├── calloop v0.14.5 (*)
+│   │   │   │   ├── calloop-wayland-source v0.4.1
+│   │   │   │   │   ├── calloop v0.14.5 (*)
+│   │   │   │   │   ├── rustix v1.1.5 (*)
+│   │   │   │   │   ├── wayland-backend v0.3.17 (*)
+│   │   │   │   │   └── wayland-client v0.31.15 (*)
+│   │   │   │   ├── cursor-icon v1.2.0
+│   │   │   │   ├── log v0.4.34
+│   │   │   │   ├── memmap2 v0.9.11 (*)
+│   │   │   │   ├── rustix v1.1.5 (*)
+│   │   │   │   ├── thiserror v2.0.21 (*)
+│   │   │   │   ├── wayland-client v0.31.15 (*)
+│   │   │   │   ├── wayland-csd-frame v0.3.0
+│   │   │   │   │   ├── bitflags v2.13.2
+│   │   │   │   │   ├── cursor-icon v1.2.0
+│   │   │   │   │   └── wayland-backend v0.3.17 (*)
+│   │   │   │   ├── wayland-cursor v0.31.14 (*)
+│   │   │   │   ├── wayland-protocols v0.32.13 (*)
+│   │   │   │   ├── wayland-protocols-experimental v20251230.0.3
+│   │   │   │   │   ├── bitflags v2.13.2
+│   │   │   │   │   ├── wayland-backend v0.3.17 (*)
+│   │   │   │   │   ├── wayland-client v0.31.15 (*)
+│   │   │   │   │   ├── wayland-protocols v0.32.13 (*)
+│   │   │   │   │   └── wayland-scanner v0.31.11 (proc-macro) (*)
+│   │   │   │   ├── wayland-protocols-misc v0.3.12 (*)
+│   │   │   │   ├── wayland-protocols-wlr v0.3.12 (*)
+│   │   │   │   ├── wayland-scanner v0.31.11 (proc-macro) (*)
+│   │   │   │   └── xkeysym v0.2.1
+│   │   │   ├── smol_str v0.3.6
+│   │   │   ├── tracing v0.1.44 (*)
+│   │   │   ├── wayland-backend v0.3.17 (*)
+│   │   │   ├── wayland-client v0.31.15 (*)
+│   │   │   ├── wayland-protocols v0.32.13 (*)
+│   │   │   ├── wayland-protocols-plasma v0.3.12
+│   │   │   │   ├── bitflags v2.13.2
+│   │   │   │   ├── wayland-backend v0.3.17 (*)
+│   │   │   │   ├── wayland-client v0.31.15 (*)
+│   │   │   │   ├── wayland-protocols v0.32.13 (*)
+│   │   │   │   └── wayland-scanner v0.31.11 (proc-macro) (*)
+│   │   │   ├── winit-common v0.31.0-beta.3 (*)
+│   │   │   └── winit-core v0.31.0-beta.3 (*)
+│   │   └── winit-x11 v0.31.0-beta.3
+│   │       ├── bitflags v2.13.2
+│   │       ├── bytemuck v1.25.2
+│   │       ├── calloop v0.14.5 (*)
+│   │       ├── cursor-icon v1.2.0
+│   │       ├── dpi v0.1.2
+│   │       ├── libc v0.2.191
+│   │       ├── percent-encoding v2.3.2
+│   │       ├── raw-window-handle v0.6.2
+│   │       ├── rustix v1.1.5 (*)
+│   │       ├── smol_str v0.3.6
+│   │       ├── tracing v0.1.44 (*)
+│   │       ├── winit-common v0.31.0-beta.3 (*)
+│   │       ├── winit-core v0.31.0-beta.3 (*)
+│   │       ├── x11-dl v2.21.0 (*)
+│   │       ├── x11rb v0.13.2
+│   │       │   ├── as-raw-xcb-connection v1.0.1
+│   │       │   ├── gethostname v1.1.0
+│   │       │   │   └── rustix v1.1.5 (*)
+│   │       │   ├── libc v0.2.191
+│   │       │   ├── libloading v0.8.9 (*)
+│   │       │   ├── once_cell v1.21.4
+│   │       │   ├── rustix v1.1.5 (*)
+│   │       │   ├── x11rb-protocol v0.13.2
+│   │       │   └── xcursor v0.3.11
+│   │       └── xkbcommon-dl v0.4.2 (*)
+│   │   [build-dependencies]
+│   │   └── cfg_aliases v0.2.2
+│   └── xkbcommon v0.9.0 (*)
+│   [build-dependencies]
+│   └── gl_generator v0.14.0
+│       ├── khronos_api v3.1.0
+│       ├── log v0.4.34
+│       └── xml-rs v0.8.29
+├── tempfile v3.27.0 (*)
+├── tracing v0.1.44 (*)
+├── tracing-subscriber v0.3.23
+│   ├── matchers v0.2.0
+│   │   └── regex-automata v0.4.18 (*)
+│   ├── nu-ansi-term v0.50.3
+│   ├── once_cell v1.21.4
+│   ├── regex-automata v0.4.18 (*)
+│   ├── sharded-slab v0.1.7
+│   │   └── lazy_static v1.5.1
+│   ├── smallvec v1.16.3
+│   ├── thread_local v1.1.10
+│   │   └── cfg-if v1.0.5
+│   ├── tracing v0.1.44 (*)
+│   ├── tracing-core v0.1.36 (*)
+│   └── tracing-log v0.2.0
+│       ├── log v0.4.34
+│       ├── once_cell v1.21.4
+│       └── tracing-core v0.1.36 (*)
+└── xkbcommon v0.9.0 (*)

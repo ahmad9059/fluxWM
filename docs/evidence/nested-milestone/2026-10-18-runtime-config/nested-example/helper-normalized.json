@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "layout": {
+    "mode": "strip",
+    "gaps": 12.0,
+    "outer_gap": 12.0,
+    "width_presets": [
+      {
+        "fraction": 0.33
+      },
+      {
+        "fraction": 0.5
+      },
+      {
+        "fraction": 0.66
+      }
+    ],
+    "default_width": {
+      "preset": 2
+    },
+    "focus_margin": 24.0,
+    "canvas": {
+      "snap": true,
+      "snap_distance_physical_px": 12.0,
+      "insertion": "right"
+    }
+  },
+  "input": {
+    "keymap": {
+      "layout": "us",
+      "options": ""
+    },
+    "pointer": {
+      "focus_follows_mouse": false,
+      "acceleration": 0.0
+    },
+    "touchpad": {
+      "tap": true,
+      "natural_scroll": true
+    },
+    "gestures": {
+      "pan_fingers": 3,
+      "overview_fingers": 4
+    }
+  },
+  "outputs": [],
+  "animations": {
+    "enabled": true,
+    "reduced_motion": false,
+    "curves": {
+      "camera_spring": {
+        "type": "spring",
+        "mass": 1.0,
+        "stiffness": 320.0,
+        "damping": 36.0
+      },
+      "gentle": {
+        "type": "bezier",
+        "points": [
+          0.2,
+          0.0,
+          0.2,
+          1.0
+        ]
+      }
+    },
+    "camera": {
+      "curve": "camera_spring",
+      "duration_ms": null
+    },
+    "window": {
+      "curve": "gentle",
+      "duration_ms": 180.0
+    },
+    "fade": {
+      "curve": "gentle",
+      "duration_ms": 120.0
+    }
+  },
+  "decoration": {
+    "border": {
+      "width": 2.0,
+      "active": "#89B4FAFF",
+      "inactive": "#45475AFF"
+    },
+    "corner_radius": 0.0,
+    "shadow": {
+      "enabled": true,
+      "radius": 18.0,
+      "opacity": 0.25
+    },
+    "blur": {
+      "enabled": false,
+      "radius": 8.0,
+      "passes": 2
+    }
+  },
+  "bindings": [
+    {
+      "key": {
+        "sym": "Alt+Return"
+      },
+      "action": {
+        "name": "spawn",
+        "argv": [
+          "foot"
+        ]
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+r"
+      },
+      "action": {
+        "name": "reload-config"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+q"
+      },
+      "action": {
+        "name": "close-window"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+Shift+q"
+      },
+      "action": {
+        "name": "quit"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+h"
+      },
+      "action": {
+        "name": "focus",
+        "direction": "left"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+j"
+      },
+      "action": {
+        "name": "focus",
+        "direction": "down"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+k"
+      },
+      "action": {
+        "name": "focus",
+        "direction": "up"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+l"
+      },
+      "action": {
+        "name": "focus",
+        "direction": "right"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+Shift+h"
+      },
+      "action": {
+        "name": "move",
+        "direction": "left"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+Shift+j"
+      },
+      "action": {
+        "name": "move",
+        "direction": "down"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+Shift+k"
+      },
+      "action": {
+        "name": "move",
+        "direction": "up"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+Shift+l"
+      },
+      "action": {
+        "name": "move",
+        "direction": "right"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+c"
+      },
+      "action": {
+        "name": "workspace-mode",
+        "mode": "canvas"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+s"
+      },
+      "action": {
+        "name": "workspace-mode",
+        "mode": "strip"
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+minus"
+      },
+      "action": {
+        "name": "resize",
+        "delta": -48.0
+      }
+    },
+    {
+      "key": {
+        "sym": "Alt+Shift+equal"
+      },
+      "action": {
+        "name": "resize",
+        "delta": 48.0
+      }
+    }
+  ],
+  "rules": [],
+  "autostart": [],
+  "security": {
+    "portal_capture": "consent",
+    "ipc": "same-user"
+  }
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-targets",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 18.653,
+    "helper_sha256": "3b54fa4d792245ccfc8eca4fc3f9f704b90a257343adf9cbd85f5192a1ede13f"
+  },
+  {
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.162,
+    "helper_sha256": "3b54fa4d792245ccfc8eca4fc3f9f704b90a257343adf9cbd85f5192a1ede13f"
+  },
+  {
+    "command": [
+      "cargo",
+      "build",
+      "--workspace",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 5.501,
+    "helper_sha256": "3b54fa4d792245ccfc8eca4fc3f9f704b90a257343adf9cbd85f5192a1ede13f"
+  },
+  {
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.227,
+    "helper_sha256": "3b54fa4d792245ccfc8eca4fc3f9f704b90a257343adf9cbd85f5192a1ede13f"
+  }
+]

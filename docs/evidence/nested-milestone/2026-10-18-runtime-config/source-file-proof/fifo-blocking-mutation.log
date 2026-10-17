@@ -1,0 +1,22 @@
+   Compiling flux-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm-config/crates/flux-config)
+   Compiling fluxwm-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm-config/crates/fluxwm-config)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s
+     Running tests/coordinator.rs (target/debug/deps/coordinator-e3ae9b1a736b4366)
+
+running 1 test
+
+running 1 test
+
+thread 'fifo_without_writer_does_not_block_and_test_process_is_owned_and_reaped' (120303) panicked at crates/fluxwm-config/tests/coordinator.rs:449:13:
+FIFO source worker blocked; owned subprocess was killed and reaped
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test fifo_without_writer_does_not_block_and_test_process_is_owned_and_reaped ... FAILED
+
+failures:
+
+failures:
+    fifo_without_writer_does_not_block_and_test_process_is_owned_and_reaped
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 2.00s
+
+error: test failed, to rerun pass `-p fluxwm-config --test coordinator`

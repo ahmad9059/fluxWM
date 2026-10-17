@@ -1,0 +1,8 @@
+{
+  "case": "geometry-rollback",
+  "endpoints_removed": true,
+  "error": "configuration observation deadline exceeded",
+  "exit_code": 0,
+  "forbidden_autostart_absent": true,
+  "ok": false
+}

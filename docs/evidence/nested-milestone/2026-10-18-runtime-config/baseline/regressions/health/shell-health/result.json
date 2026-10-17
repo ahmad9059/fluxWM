@@ -1,0 +1,767 @@
+{
+  "after_disconnect": {
+    "backend": "nested",
+    "composed_scene": {
+      "popup_surfaces": 0,
+      "surfaces": 0
+    },
+    "configuration": {
+      "applied_generation": null,
+      "last_error": "configuration source or helper I/O failed",
+      "prepared_generation": null,
+      "requested_generation": "1",
+      "status": "failed"
+    },
+    "input_state": {
+      "authorized_buttons": 0,
+      "host_focus": false,
+      "keyboard_grabbed": false,
+      "pointer_grabbed": false,
+      "pressed_keys": 0,
+      "suppressed_keys": 0
+    },
+    "keyboard_bindings": {
+      "entries": 28,
+      "inactive": 1,
+      "runtime_keymap_changes": false,
+      "source": "development-defaults"
+    },
+    "launch_outcomes": [],
+    "live_roles": 0,
+    "mapped_windows": 0,
+    "owned_applications": 0,
+    "pending_launches": 0,
+    "production_ready": false,
+    "runtime": {
+      "compositions": 3,
+      "destroyed": 1,
+      "final_windows": 0,
+      "flush_cycles": 39,
+      "flush_retry_timer_fired": 0,
+      "flush_would_block": 0,
+      "focus_cancelled_buttons": 0,
+      "focus_cancelled_keys": 0,
+      "frames_sent": 1,
+      "host_focus_losses": 1,
+      "ipc_dispatches_after_shutdown": 0,
+      "ipc_drain_timed_out": 0,
+      "maps": 1,
+      "popup_grabs_denied_missing_press": 0,
+      "redraws": 4,
+      "submissions": 2,
+      "unmaps": 0,
+      "wayland_requests": 44
+    },
+    "shell_health": {
+      "capacity": 1024,
+      "clients": [],
+      "interval_ms": 5000,
+      "stats": {
+        "capacity_rejections": 0,
+        "pongs": 4,
+        "recoveries": 1,
+        "send_failures": 0,
+        "sent": 4,
+        "timeouts": 1,
+        "timer_fired": 3
+      },
+      "timeout_ms": 2000,
+      "timer_armed": false
+    }
+  },
+  "binary_sha256": "a69b67dfd6e5a3720f39f828b734d7df03463edbd730cb2446355ff3cdee25ed",
+  "compositor_exit": 0,
+  "disconnect_cleanup_ms": 0.78,
+  "elapsed_seconds": 7.685,
+  "endpoints_removed": true,
+  "executables_unchanged": true,
+  "fixture_exit": 0,
+  "fixture_report": {
+    "before_deadline": {
+      "backend": "nested",
+      "composed_scene": {
+        "popup_surfaces": 0,
+        "surfaces": 0
+      },
+      "configuration": {
+        "applied_generation": null,
+        "last_error": "configuration source or helper I/O failed",
+        "prepared_generation": null,
+        "requested_generation": "1",
+        "status": "failed"
+      },
+      "input_state": {
+        "authorized_buttons": 0,
+        "host_focus": false,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "keyboard_bindings": {
+        "entries": 28,
+        "inactive": 1,
+        "runtime_keymap_changes": false,
+        "source": "development-defaults"
+      },
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 12,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 0,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 13
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "waiting"
+          },
+          {
+            "id": "2",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 1,
+          "recoveries": 0,
+          "send_failures": 0,
+          "sent": 2,
+          "timeouts": 0,
+          "timer_fired": 0
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "before_recovery": {
+      "backend": "nested",
+      "composed_scene": {
+        "popup_surfaces": 0,
+        "surfaces": 0
+      },
+      "configuration": {
+        "applied_generation": null,
+        "last_error": "configuration source or helper I/O failed",
+        "prepared_generation": null,
+        "requested_generation": "1",
+        "status": "failed"
+      },
+      "input_state": {
+        "authorized_buttons": 0,
+        "host_focus": false,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "keyboard_bindings": {
+        "entries": 28,
+        "inactive": 1,
+        "runtime_keymap_changes": false,
+        "source": "development-defaults"
+      },
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 3,
+        "destroyed": 1,
+        "final_windows": 0,
+        "flush_cycles": 25,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 1,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 1,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 4,
+        "submissions": 2,
+        "unmaps": 0,
+        "wayland_requests": 34
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "unresponsive"
+          },
+          {
+            "id": "2",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 1,
+          "recoveries": 0,
+          "send_failures": 0,
+          "sent": 2,
+          "timeouts": 1,
+          "timer_fired": 1
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "before_timeout": {
+      "backend": "nested",
+      "composed_scene": {
+        "popup_surfaces": 0,
+        "surfaces": 0
+      },
+      "configuration": {
+        "applied_generation": null,
+        "last_error": "configuration source or helper I/O failed",
+        "prepared_generation": null,
+        "requested_generation": "1",
+        "status": "failed"
+      },
+      "input_state": {
+        "authorized_buttons": 0,
+        "host_focus": false,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "keyboard_bindings": {
+        "entries": 28,
+        "inactive": 1,
+        "runtime_keymap_changes": false,
+        "source": "development-defaults"
+      },
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 11,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 0,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 13
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "waiting"
+          },
+          {
+            "id": "2",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 1,
+          "recoveries": 0,
+          "send_failures": 0,
+          "sent": 2,
+          "timeouts": 0,
+          "timer_fired": 0
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "before_timeout_sequence": 5,
+    "elapsed_ms": 7582,
+    "error": null,
+    "events": [
+      {
+        "at_ms": 0,
+        "event": {
+          "ping": 1,
+          "primary": true,
+          "wm_object": 4
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "ping": 2,
+          "primary": false,
+          "wm_object": 7
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "pong_sent": 2,
+          "primary": false
+        }
+      },
+      {
+        "at_ms": 2203,
+        "event": {
+          "create": 0,
+          "name": "health-responsive-sibling"
+        }
+      },
+      {
+        "at_ms": 2204,
+        "event": {
+          "bytes": [],
+          "wm_capabilities": 0
+        }
+      },
+      {
+        "at_ms": 2204,
+        "event": {
+          "configure_ack": 0,
+          "serial": 3,
+          "size": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "at_ms": 2208,
+        "event": {
+          "map_commit": 0
+        }
+      },
+      {
+        "at_ms": 2208,
+        "event": {
+          "configure_ack": 0,
+          "serial": 4,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 2225,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 2306
+        }
+      },
+      {
+        "at_ms": 5001,
+        "event": {
+          "ping": 9,
+          "primary": false,
+          "wm_object": 7
+        }
+      },
+      {
+        "at_ms": 5001,
+        "event": {
+          "pong_sent": 9,
+          "primary": false
+        }
+      },
+      {
+        "at_ms": 7377,
+        "event": {
+          "ping": 10,
+          "primary": true,
+          "wm_object": 4
+        }
+      },
+      {
+        "at_ms": 7377,
+        "event": {
+          "pong_sent": 10,
+          "primary": true
+        }
+      }
+    ],
+    "expired": {
+      "backend": "nested",
+      "composed_scene": {
+        "popup_surfaces": 0,
+        "surfaces": 0
+      },
+      "configuration": {
+        "applied_generation": null,
+        "last_error": "configuration source or helper I/O failed",
+        "prepared_generation": null,
+        "requested_generation": "1",
+        "status": "failed"
+      },
+      "input_state": {
+        "authorized_buttons": 0,
+        "host_focus": false,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "keyboard_bindings": {
+        "entries": 28,
+        "inactive": 1,
+        "runtime_keymap_changes": false,
+        "source": "development-defaults"
+      },
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 1,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 14,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 0,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 0,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 1,
+        "submissions": 1,
+        "unmaps": 0,
+        "wayland_requests": 13
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "unresponsive"
+          },
+          {
+            "id": "2",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 1,
+          "recoveries": 0,
+          "send_failures": 0,
+          "sent": 2,
+          "timeouts": 1,
+          "timer_fired": 1
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "expired_sequence": 6,
+    "mode": "shell-health",
+    "no_redraw_during_recovery": true,
+    "no_redraw_during_timeout": true,
+    "no_reprobe_at_ms": 4700,
+    "ok": true,
+    "periodic": {
+      "backend": "nested",
+      "composed_scene": {
+        "popup_surfaces": 0,
+        "surfaces": 0
+      },
+      "configuration": {
+        "applied_generation": null,
+        "last_error": "configuration source or helper I/O failed",
+        "prepared_generation": null,
+        "requested_generation": "1",
+        "status": "failed"
+      },
+      "input_state": {
+        "authorized_buttons": 0,
+        "host_focus": false,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "keyboard_bindings": {
+        "entries": 28,
+        "inactive": 1,
+        "runtime_keymap_changes": false,
+        "source": "development-defaults"
+      },
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 3,
+        "destroyed": 1,
+        "final_windows": 0,
+        "flush_cycles": 35,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 1,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 1,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 4,
+        "submissions": 2,
+        "unmaps": 0,
+        "wayland_requests": 41
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "responsive"
+          },
+          {
+            "id": "2",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 4,
+          "recoveries": 1,
+          "send_failures": 0,
+          "sent": 4,
+          "timeouts": 1,
+          "timer_fired": 3
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "recovered": {
+      "backend": "nested",
+      "composed_scene": {
+        "popup_surfaces": 0,
+        "surfaces": 0
+      },
+      "configuration": {
+        "applied_generation": null,
+        "last_error": "configuration source or helper I/O failed",
+        "prepared_generation": null,
+        "requested_generation": "1",
+        "status": "failed"
+      },
+      "input_state": {
+        "authorized_buttons": 0,
+        "host_focus": false,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "keyboard_bindings": {
+        "entries": 28,
+        "inactive": 1,
+        "runtime_keymap_changes": false,
+        "source": "development-defaults"
+      },
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 3,
+        "destroyed": 1,
+        "final_windows": 0,
+        "flush_cycles": 27,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 1,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 1,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 4,
+        "submissions": 2,
+        "unmaps": 0,
+        "wayland_requests": 36
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "responsive"
+          },
+          {
+            "id": "2",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 2,
+          "recoveries": 1,
+          "send_failures": 0,
+          "sent": 2,
+          "timeouts": 1,
+          "timer_fired": 1
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "retired": {
+      "backend": "nested",
+      "composed_scene": {
+        "popup_surfaces": 0,
+        "surfaces": 0
+      },
+      "configuration": {
+        "applied_generation": null,
+        "last_error": "configuration source or helper I/O failed",
+        "prepared_generation": null,
+        "requested_generation": "1",
+        "status": "failed"
+      },
+      "input_state": {
+        "authorized_buttons": 0,
+        "host_focus": false,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "keyboard_bindings": {
+        "entries": 28,
+        "inactive": 1,
+        "runtime_keymap_changes": false,
+        "source": "development-defaults"
+      },
+      "launch_outcomes": [],
+      "live_roles": 0,
+      "mapped_windows": 0,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 3,
+        "destroyed": 1,
+        "final_windows": 0,
+        "flush_cycles": 37,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 1,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 1,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 4,
+        "submissions": 2,
+        "unmaps": 0,
+        "wayland_requests": 44
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 4,
+          "recoveries": 1,
+          "send_failures": 0,
+          "sent": 4,
+          "timeouts": 1,
+          "timer_fired": 3
+        },
+        "timeout_ms": 2000,
+        "timer_armed": false
+      }
+    },
+    "sibling_frame_while_primary_unresponsive": 1
+  },
+  "fixture_sha256": "3e5d8dfda9b446ad497fa9f437fdf30ba61459dc7b99af74431bb2043128273f",
+  "mode": "shell-health",
+  "ok": true,
+  "quit": {
+    "accepted": true
+  },
+  "stats": {
+    "compositions": 3,
+    "destroyed": 1,
+    "final_windows": 0,
+    "flush_cycles": 43,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 1,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_budget_ms": 250,
+    "ipc_drain_elapsed_ms": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 1,
+    "popup_grabs_denied_missing_press": 0,
+    "redraws": 4,
+    "submissions": 2,
+    "unmaps": 0,
+    "wayland_requests": 44
+  }
+}

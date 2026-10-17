@@ -1,0 +1,57 @@
+{
+  "binary_sha256": "a69b67dfd6e5a3720f39f828b734d7df03463edbd730cb2446355ff3cdee25ed",
+  "binary_unchanged": true,
+  "case": "slow-peer",
+  "controller_eof_ms": 0.22,
+  "elapsed_seconds": 0.964,
+  "endpoints_removed": true,
+  "endpoints_removed_after_cleanup": true,
+  "exit_code": 0,
+  "ok": true,
+  "post_quit_peer_send": "already closed",
+  "process_exit_ms": 264.7,
+  "responses": [
+    {
+      "id": "before",
+      "result": {
+        "backend": "nested",
+        "ipc_version": 1,
+        "name": "FluxWM",
+        "version": "0.1.0-dev"
+      },
+      "state_sequence": "2",
+      "version": 1
+    },
+    {
+      "id": "quit",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "3",
+      "version": 1
+    }
+  ],
+  "stats": {
+    "compositions": 1,
+    "destroyed": 0,
+    "final_windows": 0,
+    "flush_cycles": 13,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 0,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_budget_ms": 250,
+    "ipc_drain_elapsed_ms": 250,
+    "ipc_drain_timed_out": 1,
+    "maps": 0,
+    "popup_grabs_denied_missing_press": 0,
+    "redraws": 1,
+    "submissions": 1,
+    "unmaps": 0,
+    "wayland_requests": 0
+  },
+  "unread_peer_request_bytes_sent": 219264
+}

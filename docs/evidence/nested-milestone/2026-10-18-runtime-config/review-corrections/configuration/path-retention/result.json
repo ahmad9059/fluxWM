@@ -1,0 +1,7 @@
+{
+  "case": "path-retention",
+  "endpoints_removed": true,
+  "exit_code": 0,
+  "forbidden_autostart_absent": true,
+  "ok": true
+}

@@ -1,0 +1,19 @@
+   Compiling fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.89s
+     Running unittests src/main.rs (target/debug/deps/fluxwm-10cfe5f21e92541e)
+
+running 1 test
+
+thread 'config::tests::accepted_request_hides_prepared_generation_before_worker_observes_request' (51674) panicked at crates/fluxwm/src/config.rs:456:9:
+assertion failed: config.completion().is_none()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test config::tests::accepted_request_hides_prepared_generation_before_worker_observes_request ... FAILED
+
+failures:
+
+failures:
+    config::tests::accepted_request_hides_prepared_generation_before_worker_observes_request
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p fluxwm --bin fluxwm`

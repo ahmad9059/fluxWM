@@ -1,0 +1,76 @@
+{
+  "source_commit": "96138f89c86cdedd552a8abd2cd48a6c426fd7f0",
+  "source_branch": "impl/runtime-config",
+  "parallel_author_commits": [
+    "eddbf1c",
+    "a500071deb56d5f2451dba5078d60b2e16084d0e",
+    "7473efc"
+  ],
+  "integrated_component_commits": [
+    "ac76f12",
+    "8f3c643",
+    "13df69a"
+  ],
+  "unfinished_parallel_changes": "tools/smoke_config.py held-input/path-retention draft copied from isolated IPC worktree, corrected and verified by root after agents hit workspace spend cap",
+  "binary_sha256": "a69b67dfd6e5a3720f39f828b734d7df03463edbd730cb2446355ff3cdee25ed",
+  "helper_sha256": "44d6234857448302737c5f7601510993082c9d7e3fefb291f3be6bbdae75cfcf",
+  "fixture_sha256": "3e5d8dfda9b446ad497fa9f437fdf30ba61459dc7b99af74431bb2043128273f",
+  "cargo_lock_sha256": "35ccf4a6ad586a84877d794e3d20fdf37639cee99187b8eb4e9512f3c59c0618",
+  "named_tests": 155,
+  "commands": [
+    {
+      "command": "cargo build --workspace --locked",
+      "exit_code": 0,
+      "elapsed_seconds": 1.632
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked",
+      "exit_code": 0,
+      "elapsed_seconds": 3.923
+    },
+    {
+      "command": "cargo test --workspace --all-targets --locked -- --list",
+      "exit_code": 0,
+      "elapsed_seconds": 0.119
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 1.184
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked",
+      "exit_code": 0,
+      "elapsed_seconds": 0.806
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.232
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008
+    }
+  ],
+  "scope": "Nested startup/manual reload of logical gaps, mode, bindings; unsupported schema categories explicit; full phase6/native/resource/timing not qualified",
+  "configuration_cases_in_summary_order": [
+    "disabled",
+    "invalid-startup",
+    "reload-retention",
+    "input-publication",
+    "path-retention"
+  ],
+  "configuration_harness_sha256": "b72cee29b885d0e3ddb45857890a55675bb29a6b267b89da5a9393a73f1780bf",
+  "source_sha256": {
+    "crates/fluxwm/src/config.rs": "ad5a8cb699a6a0012c0b0c4ae58ce5f4403b50896d7f8573258469f29ca921d8",
+    "crates/fluxwm/src/main.rs": "6d322692b325b8071a4b0cea9ea7ff8408a183b66c33cf30c387c290eb386169",
+    "crates/fluxwm/src/state.rs": "4dab21994c8643fd93a2f99023887ea9197cf7bb9dfae5d5f3c359811d6bcd17",
+    "crates/fluxwm/src/ipc.rs": "bf21a1c64be21a9ae0d620832c72f57ddd118587eb40a79f5e625d2eec3e2439",
+    "crates/fluxwm/src/actions.rs": "7920747287ab9c3d0bfa55bbaab004b86bd2d0ff6e10f51e86f307c7ff432bf3",
+    "crates/fluxwm/src/winit.rs": "9830c947da49df388a005caa67b4ef074b86656217c865504738ad01b82fde36",
+    "crates/flux-config/src/coordinator.rs": "46d8c5b6edd5a2c1f768c49faf569cc194c9ef2e615656feb5fff50dd4c6ca06",
+    "crates/flux-layout/src/lib.rs": "7aa40e6d82b7b2bf4f61779e0c1069ec954f51b90959603682922671be51ecac"
+  }
+}

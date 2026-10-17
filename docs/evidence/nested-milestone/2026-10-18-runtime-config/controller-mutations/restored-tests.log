@@ -1,0 +1,19 @@
+   Compiling fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.93s
+     Running unittests src/main.rs (target/debug/deps/fluxwm-10cfe5f21e92541e)
+
+running 11 tests
+test config::tests::worker_publication_rejects_stale_and_closed_generations ... ok
+test health::tests::timeout_is_once_at_boundary_and_late_pong_recovers_without_duplicate_probe ... ok
+test health::tests::empty_monitor_has_no_timer_or_strong_loop_cycle ... ok
+test health::tests::late_pong_before_timer_service_still_records_missed_deadline ... ok
+test config::tests::accepted_request_hides_prepared_generation_before_worker_observes_request ... ok
+test scene::tests::offscreen_camera_limit_does_not_reject_the_local_scene ... ok
+test scene::tests::snapped_container_edge_has_the_same_half_open_input_boundary ... ok
+test option_tests::source_discovery_is_explicit_and_ignores_relative_xdg_roots ... ok
+test option_tests::configuration_paths_reject_empty_nul_and_expansion_beyond_budget ... ok
+test scene::tests::container_projection_precedes_integer_conversion ... ok
+test config::tests::termination_seals_ready_config_publication ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

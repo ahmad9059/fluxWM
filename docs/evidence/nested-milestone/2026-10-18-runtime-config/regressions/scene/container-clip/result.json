@@ -1,0 +1,88 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--no-config",
+    "--socket",
+    "fluxscene-b82071e8433441c092e50b97",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-example-regressions/scene/container-clip/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-example-regressions/scene/container-clip/stats.json",
+    "--screenshot",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-example-regressions/scene/container-clip/scene.ppm",
+    "--screenshot-after-ms",
+    "700",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "container-clip",
+    "--timeout-ms",
+    "4500"
+  ],
+  "elapsed_ms": 6095,
+  "environment": {
+    "DISPLAY": ":10825",
+    "WAYLAND_DISPLAY": null,
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": "x11",
+    "XDG_RUNTIME_DIR": "/tmp/fluxrt-f9a3fr9z"
+  },
+  "leaked_endpoints_before_harness_cleanup": [],
+  "mode": "container-clip",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "pixels": {
+    "background_rgb": [
+      15,
+      18,
+      23
+    ],
+    "expected_rgb_counts": {
+      "blue": 19200,
+      "cyan": 0,
+      "green": 14400,
+      "red": 19200,
+      "yellow": 14400
+    },
+    "height": 800,
+    "pixel_validation": "exact-row-equality",
+    "right_edge_x280_matches_background": true,
+    "sha256": "7f7460e47c88e7e3cbda59ccd8d559fa1e532d728445a646214e31e22d0fd57c",
+    "width": 1280
+  },
+  "readiness": {
+    "backend": "nested",
+    "ipc_socket": "/tmp/fluxrt-f9a3fr9z/fluxwm/fluxscene-b82071e8433441c092e50b97.sock",
+    "pid": 109738,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxscene-b82071e8433441c092e50b97"
+  },
+  "returncode": 0,
+  "socket": "fluxscene-b82071e8433441c092e50b97",
+  "stats": {
+    "compositions": 6,
+    "destroyed": 1,
+    "final_windows": 0,
+    "flush_cycles": 40,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 5,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 1,
+    "popup_grabs_denied_missing_press": 0,
+    "redraws": 9,
+    "submissions": 4,
+    "unmaps": 0,
+    "wayland_requests": 40
+  }
+}

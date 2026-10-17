@@ -1,0 +1,119 @@
+{
+  "authority_removed": true,
+  "harness_sha256": "904abfc1211238f303526acca785a34bb4c170003d4ab88aa04a7b7df3f6f57f",
+  "ok": true,
+  "package": {
+    "bundle": "target/configure-verified-xvfb",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "parent_environment_unchanged": true,
+  "private_display": ":14981",
+  "private_server_pid": 62409,
+  "runtime_cleanup": {
+    "directory_removed": true,
+    "endpoints_removed_before_cleanup": true,
+    "path": "/tmp/fluxrt-7lufk7ju"
+  },
+  "scope": "owned authenticated X11 software-rendered nested suites; no host input injection",
+  "server_reaped": true,
+  "suites": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/ahmad/Documents/Projects/fluxwm/tools/smoke_scene.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-release-regressions/scene",
+        "--fixture",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture"
+      ],
+      "elapsed_seconds": 24.669,
+      "exit_code": 0,
+      "suite": "scene"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/ahmad/Documents/Projects/fluxwm/tools/smoke_nested.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-release-regressions/nested",
+        "--fixture",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture"
+      ],
+      "elapsed_seconds": 8.999,
+      "exit_code": 0,
+      "suite": "nested"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/ahmad/Documents/Projects/fluxwm/tools/smoke_shutdown.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-release-regressions/shutdown"
+      ],
+      "elapsed_seconds": 1.514,
+      "exit_code": 0,
+      "suite": "shutdown"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/ahmad/Documents/Projects/fluxwm/tools/smoke_ipc_runtime.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-release-regressions/ipc"
+      ],
+      "elapsed_seconds": 0.403,
+      "exit_code": 0,
+      "suite": "ipc"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/ahmad/Documents/Projects/fluxwm/tools/smoke_health.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-release-regressions/health",
+        "--fixture",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture"
+      ],
+      "elapsed_seconds": 10.935,
+      "exit_code": 0,
+      "suite": "health"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/ahmad/Documents/Projects/fluxwm/tools/smoke_configure.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-release-regressions/configure",
+        "--fixture",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture"
+      ],
+      "elapsed_seconds": 1.067,
+      "exit_code": 0,
+      "suite": "configure"
+    }
+  ],
+  "x_socket_removed": true
+}

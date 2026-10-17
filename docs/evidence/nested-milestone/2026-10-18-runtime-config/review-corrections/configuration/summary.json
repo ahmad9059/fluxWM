@@ -1,0 +1,1095 @@
+{
+  "authority_removed": true,
+  "cases": [
+    {
+      "case": "disabled",
+      "endpoints_removed": true,
+      "exit_code": 0,
+      "forbidden_autostart_absent": true,
+      "ok": true,
+      "reload_rejected": {
+        "code": "not_ready",
+        "message": "configuration loading is disabled"
+      },
+      "snapshot": {
+        "diagnostics": {
+          "backend": "nested",
+          "composed_scene": {
+            "popup_surfaces": 0,
+            "surfaces": 0
+          },
+          "configuration": {
+            "applied_generation": null,
+            "last_error": null,
+            "prepared_generation": null,
+            "requested_generation": null,
+            "status": "disabled"
+          },
+          "input_state": {
+            "authorized_buttons": 0,
+            "host_focus": false,
+            "keyboard_grabbed": false,
+            "pointer_grabbed": false,
+            "pressed_keys": 0,
+            "suppressed_keys": 0
+          },
+          "keyboard_bindings": {
+            "entries": 28,
+            "inactive": 1,
+            "runtime_keymap_changes": false,
+            "source": "development-defaults"
+          },
+          "launch_outcomes": [],
+          "live_roles": 0,
+          "mapped_windows": 0,
+          "owned_applications": 0,
+          "pending_launches": 0,
+          "production_ready": false,
+          "runtime": {
+            "compositions": 1,
+            "destroyed": 0,
+            "final_windows": 0,
+            "flush_cycles": 7,
+            "flush_retry_timer_fired": 0,
+            "flush_would_block": 0,
+            "focus_cancelled_buttons": 0,
+            "focus_cancelled_keys": 0,
+            "frames_sent": 0,
+            "host_focus_losses": 1,
+            "ipc_dispatches_after_shutdown": 0,
+            "ipc_drain_timed_out": 0,
+            "maps": 0,
+            "popup_grabs_denied_missing_press": 0,
+            "redraws": 1,
+            "submissions": 1,
+            "unmaps": 0,
+            "wayland_requests": 0
+          },
+          "shell_health": {
+            "capacity": 1024,
+            "clients": [],
+            "interval_ms": 5000,
+            "stats": {
+              "capacity_rejections": 0,
+              "pongs": 0,
+              "recoveries": 0,
+              "send_failures": 0,
+              "sent": 0,
+              "timeouts": 0,
+              "timer_fired": 0
+            },
+            "timeout_ms": 2000,
+            "timer_armed": false
+          }
+        },
+        "effective": {
+          "desired": null,
+          "effective": {
+            "binding_entries": 28,
+            "keymap": "startup-seat-keymap",
+            "layout": {
+              "gaps": 8.0,
+              "mode": "strip"
+            }
+          },
+          "generation": null,
+          "unsupported": [
+            "layout.outer_gap",
+            "layout.width_presets",
+            "layout.default_width",
+            "layout.focus_margin",
+            "layout.canvas",
+            "input",
+            "outputs",
+            "animations",
+            "decoration",
+            "rules",
+            "autostart",
+            "security"
+          ]
+        },
+        "workspaces": {
+          "workspaces": [
+            {
+              "focused": true,
+              "id": "0:0",
+              "mode": "strip",
+              "output": "0:0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": "invalid-startup",
+      "endpoints_removed": true,
+      "exit_code": 0,
+      "forbidden_autostart_absent": true,
+      "ok": true,
+      "snapshot": {
+        "diagnostics": {
+          "backend": "nested",
+          "composed_scene": {
+            "popup_surfaces": 0,
+            "surfaces": 0
+          },
+          "configuration": {
+            "applied_generation": null,
+            "last_error": "configuration bindings failed seat-keymap validation",
+            "prepared_generation": null,
+            "requested_generation": "1",
+            "status": "failed"
+          },
+          "input_state": {
+            "authorized_buttons": 0,
+            "host_focus": false,
+            "keyboard_grabbed": false,
+            "pointer_grabbed": false,
+            "pressed_keys": 0,
+            "suppressed_keys": 0
+          },
+          "keyboard_bindings": {
+            "entries": 28,
+            "inactive": 1,
+            "runtime_keymap_changes": false,
+            "source": "development-defaults"
+          },
+          "launch_outcomes": [],
+          "live_roles": 0,
+          "mapped_windows": 0,
+          "owned_applications": 0,
+          "pending_launches": 0,
+          "production_ready": false,
+          "runtime": {
+            "compositions": 1,
+            "destroyed": 0,
+            "final_windows": 0,
+            "flush_cycles": 4,
+            "flush_retry_timer_fired": 0,
+            "flush_would_block": 0,
+            "focus_cancelled_buttons": 0,
+            "focus_cancelled_keys": 0,
+            "frames_sent": 0,
+            "host_focus_losses": 1,
+            "ipc_dispatches_after_shutdown": 0,
+            "ipc_drain_timed_out": 0,
+            "maps": 0,
+            "popup_grabs_denied_missing_press": 0,
+            "redraws": 1,
+            "submissions": 1,
+            "unmaps": 0,
+            "wayland_requests": 0
+          },
+          "shell_health": {
+            "capacity": 1024,
+            "clients": [],
+            "interval_ms": 5000,
+            "stats": {
+              "capacity_rejections": 0,
+              "pongs": 0,
+              "recoveries": 0,
+              "send_failures": 0,
+              "sent": 0,
+              "timeouts": 0,
+              "timer_fired": 0
+            },
+            "timeout_ms": 2000,
+            "timer_armed": false
+          }
+        },
+        "effective": {
+          "desired": null,
+          "effective": {
+            "binding_entries": 28,
+            "keymap": "startup-seat-keymap",
+            "layout": {
+              "gaps": 8.0,
+              "mode": "strip"
+            }
+          },
+          "generation": null,
+          "unsupported": [
+            "layout.outer_gap",
+            "layout.width_presets",
+            "layout.default_width",
+            "layout.focus_margin",
+            "layout.canvas",
+            "input",
+            "outputs",
+            "animations",
+            "decoration",
+            "rules",
+            "autostart",
+            "security"
+          ]
+        },
+        "workspaces": {
+          "workspaces": [
+            {
+              "focused": true,
+              "id": "0:0",
+              "mode": "strip",
+              "output": "0:0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": "reload-retention",
+      "endpoints_removed": true,
+      "exit_code": 0,
+      "forbidden_autostart_absent": true,
+      "ok": true,
+      "successful_generations": [
+        "1",
+        "2",
+        "5"
+      ]
+    },
+    {
+      "case": "input-publication",
+      "chord_event_index": 24,
+      "complete_key_counts": {
+        "30": {
+          "pressed": 1,
+          "released": 1
+        },
+        "56": {
+          "pressed": 2,
+          "released": 2
+        }
+      },
+      "endpoints_removed": true,
+      "exit_code": 0,
+      "fixture_report": {
+        "buffer_size": [
+          320,
+          240
+        ],
+        "elapsed_ms": 7023,
+        "error": null,
+        "event_file": {
+          "Unix": [
+            47,
+            104,
+            111,
+            109,
+            101,
+            47,
+            97,
+            104,
+            109,
+            97,
+            100,
+            47,
+            68,
+            111,
+            99,
+            117,
+            109,
+            101,
+            110,
+            116,
+            115,
+            47,
+            80,
+            114,
+            111,
+            106,
+            101,
+            99,
+            116,
+            115,
+            47,
+            102,
+            108,
+            117,
+            120,
+            119,
+            109,
+            47,
+            116,
+            97,
+            114,
+            103,
+            101,
+            116,
+            47,
+            114,
+            117,
+            110,
+            116,
+            105,
+            109,
+            101,
+            45,
+            99,
+            111,
+            110,
+            102,
+            105,
+            103,
+            45,
+            99,
+            111,
+            109,
+            112,
+            108,
+            101,
+            116,
+            101,
+            47,
+            105,
+            110,
+            112,
+            117,
+            116,
+            45,
+            112,
+            117,
+            98,
+            108,
+            105,
+            99,
+            97,
+            116,
+            105,
+            111,
+            110,
+            47,
+            105,
+            110,
+            112,
+            117,
+            116,
+            46,
+            101,
+            118,
+            101,
+            110,
+            116,
+            115,
+            46,
+            106,
+            115,
+            111,
+            110,
+            108
+          ]
+        },
+        "event_file_bytes": 2700,
+        "events": [
+          {
+            "at_ms": 0,
+            "event": {
+              "create": 0,
+              "name": "input-A"
+            }
+          },
+          {
+            "at_ms": 0,
+            "event": {
+              "create": 1,
+              "name": "input-B"
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "configure_ack": 0,
+              "serial": 4,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 1
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "configure_ack": 1,
+              "serial": 5,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "configure_ack": 0,
+              "serial": 6,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "keys": [],
+              "popup": null,
+              "root": 0,
+              "serial": 7,
+              "type": "keyboard.enter"
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 0
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 7,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "configure_ack": 1,
+              "serial": 8,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "serial": 9,
+              "type": "keyboard.leave"
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "keys": [],
+              "popup": null,
+              "root": 1,
+              "serial": 9,
+              "type": "keyboard.enter"
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 1
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 9,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 2,
+            "event": {
+              "configure_ack": 0,
+              "serial": 10,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 22,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 239
+            }
+          },
+          {
+            "at_ms": 22,
+            "event": {
+              "frame_done": 1,
+              "timestamp": 239
+            }
+          },
+          {
+            "at_ms": 22,
+            "event": {
+              "observation_ms": 7000,
+              "root": null,
+              "roots": [
+                {
+                  "root": 0,
+                  "title": "input-A"
+                },
+                {
+                  "root": 1,
+                  "title": "input-B"
+                }
+              ],
+              "type": "ready"
+            }
+          },
+          {
+            "at_ms": 85,
+            "event": {
+              "key": 56,
+              "popup": null,
+              "root": 1,
+              "serial": 11,
+              "state": "pressed",
+              "time": 3751100,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 85,
+            "event": {
+              "depressed": 8,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 11,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 560,
+            "event": {
+              "key": 56,
+              "popup": null,
+              "root": 1,
+              "serial": 12,
+              "state": "released",
+              "time": 3751575,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 560,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 12,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 627,
+            "event": {
+              "key": 56,
+              "popup": null,
+              "root": 1,
+              "serial": 14,
+              "state": "pressed",
+              "time": 3751642,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 627,
+            "event": {
+              "depressed": 8,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 14,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 816,
+            "event": {
+              "key": 56,
+              "popup": null,
+              "root": 1,
+              "serial": 17,
+              "state": "released",
+              "time": 3751831,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 816,
+            "event": {
+              "depressed": 0,
+              "group": 0,
+              "latched": 0,
+              "locked": 0,
+              "serial": 17,
+              "type": "keyboard.modifiers"
+            }
+          },
+          {
+            "at_ms": 883,
+            "event": {
+              "key": 30,
+              "popup": null,
+              "root": 1,
+              "serial": 18,
+              "state": "pressed",
+              "time": 3751898,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 952,
+            "event": {
+              "key": 30,
+              "popup": null,
+              "root": 1,
+              "serial": 19,
+              "state": "released",
+              "time": 3751967,
+              "type": "keyboard.key"
+            }
+          },
+          {
+            "at_ms": 7023,
+            "event": {
+              "mapped_through_observation": true,
+              "root": null,
+              "type": "complete"
+            }
+          }
+        ],
+        "mapped_through_observation": true,
+        "mode": "input-probe",
+        "observation_ms": 7000,
+        "ok": true,
+        "physical_input_injected_by_fixture": false,
+        "ready_at_ms": 22,
+        "socket": "/tmp/fluxrt-2gje4v_8/fluxconfig-5f1fb17f600a"
+      },
+      "forbidden_autostart_absent": true,
+      "held_pending_ms": 380.6,
+      "held_pending_samples": [
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        }
+      ],
+      "ok": true,
+      "plain_event_index": 28,
+      "shortcut_snapshot": {
+        "diagnostics": {
+          "backend": "nested",
+          "composed_scene": {
+            "popup_surfaces": 0,
+            "surfaces": 2
+          },
+          "configuration": {
+            "applied_generation": "3",
+            "last_error": null,
+            "prepared_generation": null,
+            "requested_generation": "3",
+            "status": "applied"
+          },
+          "input_state": {
+            "authorized_buttons": 0,
+            "host_focus": true,
+            "keyboard_grabbed": false,
+            "pointer_grabbed": false,
+            "pressed_keys": 0,
+            "suppressed_keys": 0
+          },
+          "keyboard_bindings": {
+            "entries": 4,
+            "inactive": 0,
+            "runtime_keymap_changes": false,
+            "source": "user-config"
+          },
+          "launch_outcomes": [],
+          "live_roles": 2,
+          "mapped_windows": 2,
+          "owned_applications": 0,
+          "pending_launches": 0,
+          "production_ready": false,
+          "runtime": {
+            "compositions": 3,
+            "destroyed": 0,
+            "final_windows": 0,
+            "flush_cycles": 133,
+            "flush_retry_timer_fired": 0,
+            "flush_would_block": 0,
+            "focus_cancelled_buttons": 0,
+            "focus_cancelled_keys": 0,
+            "frames_sent": 10,
+            "host_focus_losses": 1,
+            "ipc_dispatches_after_shutdown": 0,
+            "ipc_drain_timed_out": 0,
+            "maps": 2,
+            "popup_grabs_denied_missing_press": 0,
+            "redraws": 8,
+            "submissions": 3,
+            "unmaps": 0,
+            "wayland_requests": 49
+          },
+          "shell_health": {
+            "capacity": 1024,
+            "clients": [
+              {
+                "id": "1",
+                "status": "responsive"
+              }
+            ],
+            "interval_ms": 5000,
+            "stats": {
+              "capacity_rejections": 0,
+              "pongs": 1,
+              "recoveries": 0,
+              "send_failures": 0,
+              "sent": 1,
+              "timeouts": 0,
+              "timer_fired": 0
+            },
+            "timeout_ms": 2000,
+            "timer_armed": true
+          }
+        },
+        "effective": {
+          "desired": {
+            "binding_entries": 4,
+            "layout": {
+              "gaps": 37.0,
+              "mode": "strip"
+            }
+          },
+          "effective": {
+            "binding_entries": 4,
+            "keymap": "startup-seat-keymap",
+            "layout": {
+              "gaps": 37.0,
+              "mode": "canvas"
+            }
+          },
+          "generation": "3",
+          "unsupported": [
+            "layout.outer_gap",
+            "layout.width_presets",
+            "layout.default_width",
+            "layout.focus_margin",
+            "layout.canvas",
+            "input",
+            "outputs",
+            "animations",
+            "decoration",
+            "rules",
+            "autostart",
+            "security"
+          ]
+        },
+        "workspaces": {
+          "workspaces": [
+            {
+              "focused": true,
+              "id": "0:0",
+              "mode": "canvas",
+              "output": "0:0"
+            }
+          ]
+        }
+      },
+      "superseded_generation": "2",
+      "supersession_observations": [
+        {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "applied"
+        }
+      ],
+      "target": {
+        "height": 800,
+        "ok": true,
+        "pid": 54976,
+        "width": 1280,
+        "window": 2097154
+      }
+    },
+    {
+      "case": "path-retention",
+      "endpoints_removed": true,
+      "exit_code": 0,
+      "forbidden_autostart_absent": true,
+      "ok": true
+    },
+    {
+      "after_windows": [
+        {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_serial": 4,
+            "committed_size": [
+              999999984,
+              800
+            ],
+            "deferred": false,
+            "desired_size": [
+              999999984,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 4,
+            "sent_size": [
+              999999984,
+              800
+            ],
+            "unacknowledged": 0
+          },
+          "focused": true,
+          "geometry": {
+            "height": 800.0,
+            "width": 999999984.0,
+            "x": 0.0,
+            "y": -0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "config-wide-ready",
+          "workspace": "0:0"
+        }
+      ],
+      "before_windows": [
+        {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_serial": 4,
+            "committed_size": [
+              999999984,
+              800
+            ],
+            "deferred": false,
+            "desired_size": [
+              999999984,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 4,
+            "sent_size": [
+              999999984,
+              800
+            ],
+            "unacknowledged": 0
+          },
+          "focused": true,
+          "geometry": {
+            "height": 800.0,
+            "width": 999999984.0,
+            "x": 0.0,
+            "y": -0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "config-wide-ready",
+          "workspace": "0:0"
+        }
+      ],
+      "case": "geometry-rollback",
+      "endpoints_removed": true,
+      "exit_code": 0,
+      "fixture_report": {
+        "elapsed_ms": 6518,
+        "error": null,
+        "events": [
+          {
+            "at_ms": 0,
+            "event": {
+              "create": 0,
+              "name": "config-wide"
+            }
+          },
+          {
+            "at_ms": 0,
+            "event": {
+              "bytes": [],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 0,
+            "event": {
+              "configure_ack": 0,
+              "serial": 3,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "map_commit": 0
+            }
+          },
+          {
+            "at_ms": 4,
+            "event": {
+              "configure_ack": 0,
+              "serial": 4,
+              "size": [
+                999999984,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 16,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 99
+            }
+          }
+        ],
+        "minimum_width": 999999984,
+        "mode": "config-geometry",
+        "ok": true,
+        "ready_frames": 1
+      },
+      "forbidden_autostart_absent": true,
+      "ok": true
+    }
+  ],
+  "executables": {
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm": "076213d6026c5fb1fe7bdfa38ff5fa66173ea7af3ba051447dec19d5e0bfdb75",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-config": "44d6234857448302737c5f7601510993082c9d7e3fefb291f3be6bbdae75cfcf",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture": "b74fa218461175df366a6c2e3b31b40411818532598934749185290df059456c"
+  },
+  "executables_unchanged": true,
+  "harness_sha256": "0a8e084717463e13013f523732890f340d3503e1805e61cea2024abd969e1593",
+  "ok": true,
+  "package": {
+    "bundle": "target/configure-verified-xvfb",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "parent_environment_unchanged": true,
+  "private_display": ":13732",
+  "runtime_cleanup": {
+    "directory_removed": true,
+    "endpoints_removed_before_cleanup": true,
+    "path": "/tmp/fluxrt-2gje4v_8"
+  },
+  "scope": "private nested configuration publication/retention, held Alt deferral and configured key ownership; no host-session injection, native or sustained frame-progress qualification",
+  "server_reaped": true,
+  "x_socket_removed": true
+}

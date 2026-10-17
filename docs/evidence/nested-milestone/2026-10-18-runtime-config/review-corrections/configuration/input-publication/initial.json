@@ -1,0 +1,114 @@
+{
+  "diagnostics": {
+    "backend": "nested",
+    "composed_scene": {
+      "popup_surfaces": 0,
+      "surfaces": 0
+    },
+    "configuration": {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": null,
+      "requested_generation": "1",
+      "status": "applied"
+    },
+    "input_state": {
+      "authorized_buttons": 0,
+      "host_focus": false,
+      "keyboard_grabbed": false,
+      "pointer_grabbed": false,
+      "pressed_keys": 0,
+      "suppressed_keys": 0
+    },
+    "keyboard_bindings": {
+      "entries": 4,
+      "inactive": 0,
+      "runtime_keymap_changes": false,
+      "source": "user-config"
+    },
+    "launch_outcomes": [],
+    "live_roles": 0,
+    "mapped_windows": 0,
+    "owned_applications": 0,
+    "pending_launches": 0,
+    "production_ready": false,
+    "runtime": {
+      "compositions": 1,
+      "destroyed": 0,
+      "final_windows": 0,
+      "flush_cycles": 4,
+      "flush_retry_timer_fired": 0,
+      "flush_would_block": 0,
+      "focus_cancelled_buttons": 0,
+      "focus_cancelled_keys": 0,
+      "frames_sent": 0,
+      "host_focus_losses": 1,
+      "ipc_dispatches_after_shutdown": 0,
+      "ipc_drain_timed_out": 0,
+      "maps": 0,
+      "popup_grabs_denied_missing_press": 0,
+      "redraws": 2,
+      "submissions": 1,
+      "unmaps": 0,
+      "wayland_requests": 0
+    },
+    "shell_health": {
+      "capacity": 1024,
+      "clients": [],
+      "interval_ms": 5000,
+      "stats": {
+        "capacity_rejections": 0,
+        "pongs": 0,
+        "recoveries": 0,
+        "send_failures": 0,
+        "sent": 0,
+        "timeouts": 0,
+        "timer_fired": 0
+      },
+      "timeout_ms": 2000,
+      "timer_armed": false
+    }
+  },
+  "effective": {
+    "desired": {
+      "binding_entries": 4,
+      "layout": {
+        "gaps": 13.0,
+        "mode": "strip"
+      }
+    },
+    "effective": {
+      "binding_entries": 4,
+      "keymap": "startup-seat-keymap",
+      "layout": {
+        "gaps": 13.0,
+        "mode": "strip"
+      }
+    },
+    "generation": "1",
+    "unsupported": [
+      "layout.outer_gap",
+      "layout.width_presets",
+      "layout.default_width",
+      "layout.focus_margin",
+      "layout.canvas",
+      "input",
+      "outputs",
+      "animations",
+      "decoration",
+      "rules",
+      "autostart",
+      "security"
+    ]
+  },
+  "workspaces": {
+    "workspaces": [
+      {
+        "focused": true,
+        "id": "0:0",
+        "mode": "strip",
+        "output": "0:0"
+      }
+    ]
+  }
+}

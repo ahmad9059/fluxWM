@@ -19,6 +19,7 @@ Research date: **2026-10-17**. This folder specifies the product, architecture, 
 | [Ten-phase roadmap](10-roadmap.md) | Dependency order and links to ten detailed work packages |
 | [Decisions and risks](decisions/README.md) | Architecture decisions, unresolved choices, risk mitigation |
 | [Example Lua configuration](examples/config.lua) | Complete proposed configuration example |
+| [Nested runtime Lua configuration](development/runtime-config.md) | Implemented startup/manual gap/mode/binding reload, effective settings and runnable nested example |
 | [Requirement traceability](11-traceability.md) | Requirement → design → phase → verification |
 | [Initial documentation audit](12-documentation-audit.md) | Historical first-pass checks and limits |
 | [Production audit and blockers](13-production-audit.md) | Evidence classification, corrections, unresolved implementation gates |

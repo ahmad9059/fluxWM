@@ -1,0 +1,360 @@
+{
+  "actual_shm_size": [
+    1900,
+    240
+  ],
+  "after_input_move": {
+    "windows": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 6,
+          "committed_size": [
+            280,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            280,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 6,
+          "sent_size": [
+            280,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 280.0,
+          "x": 32.0,
+          "y": 0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "FluxWM fixture oversized-container-clip",
+        "workspace": "0:0"
+      }
+    ]
+  },
+  "after_resize": {
+    "windows": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 2,
+          "committed_size": null,
+          "deferred": false,
+          "desired_size": [
+            280,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 3,
+          "sent_size": [
+            280,
+            800
+          ],
+          "unacknowledged": 1
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 280.0,
+          "x": 0.0,
+          "y": 0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "FluxWM fixture oversized-container-clip",
+        "workspace": "0:0"
+      }
+    ]
+  },
+  "after_settle": {
+    "windows": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 2,
+          "committed_size": null,
+          "deferred": false,
+          "desired_size": [
+            280,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 6,
+          "sent_size": [
+            280,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 280.0,
+          "x": 0.0,
+          "y": 0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "FluxWM fixture oversized-container-clip",
+        "workspace": "0:0"
+      }
+    ]
+  },
+  "before_resize": {
+    "windows": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 2,
+          "committed_size": null,
+          "deferred": false,
+          "desired_size": [
+            640,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 3,
+          "sent_size": [
+            640,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 640.0,
+          "x": 0.0,
+          "y": 0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "FluxWM fixture oversized-container-clip",
+        "workspace": "0:0"
+      }
+    ]
+  },
+  "child_enter_xy": [
+    64.0,
+    0.0
+  ],
+  "elapsed_ms": 1067,
+  "error": null,
+  "events": [
+    {
+      "at_ms": 23,
+      "event": {
+        "create": 0,
+        "name": "oversized-container-clip"
+      }
+    },
+    {
+      "at_ms": 23,
+      "event": {
+        "bytes": [],
+        "wm_capabilities": 0
+      }
+    },
+    {
+      "at_ms": 23,
+      "event": {
+        "configure_ack": 0,
+        "serial": 2,
+        "size": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "at_ms": 40,
+      "event": {
+        "configure_ack": 0,
+        "serial": 3,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 44,
+      "event": {
+        "frame_done": 0,
+        "timestamp": 103
+      }
+    },
+    {
+      "at_ms": 44,
+      "event": {
+        "clip_pointer_enter_child": false,
+        "xy": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "at_ms": 44,
+      "event": {
+        "pointer_enter_primary": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "at_ms": 45,
+      "event": {
+        "configure_ack": 0,
+        "serial": 6,
+        "size": [
+          280,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 1049,
+      "event": {
+        "clip_child_frame": true
+      }
+    },
+    {
+      "at_ms": 1049,
+      "event": {
+        "clip_pointer_leave_child": false
+      }
+    },
+    {
+      "at_ms": 1049,
+      "event": {
+        "clip_pointer_enter_child": true,
+        "xy": [
+          64.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "at_ms": 1067,
+      "event": {
+        "clip_pointer_leave_child": true
+      }
+    }
+  ],
+  "expected_cyan_rgb": [
+    0,
+    255,
+    255
+  ],
+  "expected_rgb_counts": {
+    "blue": 19200,
+    "cyan": 0,
+    "green": 14400,
+    "red": 19200,
+    "yellow": 14400
+  },
+  "expected_right_clip_x": 280,
+  "expected_visible_content_rect": {
+    "height": 240,
+    "width": 280,
+    "x": 0,
+    "y": 0
+  },
+  "input_clip_proof": {
+    "child_after_world_rect": {
+      "height": 80,
+      "width": 80,
+      "x": -32,
+      "y": 0
+    },
+    "child_before_world_rect": {
+      "height": 80,
+      "width": 80,
+      "x": -64,
+      "y": 0
+    },
+    "child_motion_events": 0,
+    "container_after_world_rect": {
+      "width": 280,
+      "x": 32,
+      "y": 0
+    },
+    "ok": true,
+    "pointer_focus_after_move": null,
+    "pointer_outside_container": true,
+    "pointer_still_inside_actual_child": true,
+    "stationary_world_pointer": [
+      0,
+      0
+    ]
+  },
+  "mode": "container-clip",
+  "ok": true,
+  "output_geometry": {
+    "height": 800,
+    "width": 1280,
+    "x": 0,
+    "y": 0
+  },
+  "physical_input_injected": false,
+  "pixel_proof_requires_delayed_compositor_screenshot": true,
+  "requested_container_width": 280,
+  "resize_completed_at_ms": 45,
+  "runtime": {
+    "compositions": 3,
+    "destroyed": 0,
+    "final_windows": 0,
+    "flush_cycles": 22,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 3,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 1,
+    "popup_grabs_denied_missing_press": 0,
+    "redraws": 5,
+    "submissions": 2,
+    "unmaps": 0,
+    "wayland_requests": 27
+  },
+  "settle_ms": 1000,
+  "socket": "/tmp/fluxrt-bv_uohdq/fluxscene-1637ff5c67d246199b8b425d",
+  "workspace_mode": "canvas"
+}

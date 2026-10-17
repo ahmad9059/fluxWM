@@ -1,0 +1,10 @@
+{
+  "command": [
+    "target/debug/fluxwm-config",
+    "--check",
+    "docs/examples/nested-config.lua"
+  ],
+  "exit_code": 0,
+  "helper_sha256": "3b54fa4d792245ccfc8eca4fc3f9f704b90a257343adf9cbd85f5192a1ede13f",
+  "example_sha256": "51f47c3155202d17514a342ec43af53eaf82bdd0ee9d762b20e6e9c2ae77a0ec"
+}

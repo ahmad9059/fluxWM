@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "fluxwm",
+    "--locked",
+    "config::tests::termination_seals_ready_config_publication",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "removed_exact_text": "    pub fn drive_config(&mut self) {\n        if self.stopping\n            || self.shutdown_deadline.is_some()",
+  "replacement_exact_text": "    pub fn drive_config(&mut self) {\n        if self.shutdown_deadline.is_some()",
+  "source_sha256": "ad5a8cb699a6a0012c0b0c4ae58ce5f4403b50896d7f8573258469f29ca921d8",
+  "source_restored_sha256": "ad5a8cb699a6a0012c0b0c4ae58ce5f4403b50896d7f8573258469f29ca921d8"
+}

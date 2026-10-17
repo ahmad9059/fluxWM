@@ -1,0 +1,424 @@
+{
+  "background_keyboard_focus_preserved": true,
+  "elapsed_ms": 188,
+  "error": null,
+  "events": [
+    {
+      "at_ms": 25,
+      "event": {
+        "create": 0,
+        "name": "popup-parent"
+      }
+    },
+    {
+      "at_ms": 25,
+      "event": {
+        "bytes": [],
+        "wm_capabilities": 0
+      }
+    },
+    {
+      "at_ms": 25,
+      "event": {
+        "configure_ack": 0,
+        "serial": 2,
+        "size": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "at_ms": 28,
+      "event": {
+        "map_commit": 0
+      }
+    },
+    {
+      "at_ms": 29,
+      "event": {
+        "configure_ack": 0,
+        "serial": 3,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 29,
+      "event": {
+        "keyboard_enter_popup": null,
+        "keyboard_enter_window": 0
+      }
+    },
+    {
+      "at_ms": 85,
+      "event": {
+        "frame_done": 0,
+        "timestamp": 146
+      }
+    },
+    {
+      "at_ms": 85,
+      "event": {
+        "create_popup": 0,
+        "invalid_grab_serial": null,
+        "parent": 0
+      }
+    },
+    {
+      "at_ms": 87,
+      "event": {
+        "popup_geometry": 0,
+        "rect": [
+          21,
+          21,
+          64,
+          48
+        ]
+      }
+    },
+    {
+      "at_ms": 87,
+      "event": {
+        "popup_configure_ack": 0,
+        "serial": 6
+      }
+    },
+    {
+      "at_ms": 87,
+      "event": {
+        "map_popup_commit": 0
+      }
+    },
+    {
+      "at_ms": 134,
+      "event": {
+        "popup_frame_done": 0,
+        "timestamp": 195
+      }
+    },
+    {
+      "at_ms": 136,
+      "event": {
+        "popup_done": 0
+      }
+    },
+    {
+      "at_ms": 136,
+      "event": {
+        "keyboard_leave": true
+      }
+    },
+    {
+      "at_ms": 136,
+      "event": {
+        "destroy_popup": 0
+      }
+    },
+    {
+      "at_ms": 136,
+      "event": {
+        "bytes": [],
+        "wm_capabilities": 0
+      }
+    },
+    {
+      "at_ms": 136,
+      "event": {
+        "configure_ack": 0,
+        "serial": 9,
+        "size": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "at_ms": 136,
+      "event": {
+        "map_commit": 0
+      }
+    },
+    {
+      "at_ms": 137,
+      "event": {
+        "configure_ack": 0,
+        "serial": 10,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 137,
+      "event": {
+        "keyboard_enter_popup": null,
+        "keyboard_enter_window": 0
+      }
+    },
+    {
+      "at_ms": 152,
+      "event": {
+        "frame_done": 0,
+        "timestamp": 213
+      }
+    },
+    {
+      "at_ms": 152,
+      "event": {
+        "create": 1,
+        "name": "foreground-focus-owner"
+      }
+    },
+    {
+      "at_ms": 152,
+      "event": {
+        "bytes": [],
+        "wm_capabilities": 1
+      }
+    },
+    {
+      "at_ms": 152,
+      "event": {
+        "configure_ack": 1,
+        "serial": 13,
+        "size": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "at_ms": 155,
+      "event": {
+        "map_commit": 1
+      }
+    },
+    {
+      "at_ms": 155,
+      "event": {
+        "configure_ack": 0,
+        "serial": 14,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 155,
+      "event": {
+        "configure_ack": 1,
+        "serial": 15,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 155,
+      "event": {
+        "keyboard_leave": true
+      }
+    },
+    {
+      "at_ms": 155,
+      "event": {
+        "keyboard_enter_popup": null,
+        "keyboard_enter_window": 1
+      }
+    },
+    {
+      "at_ms": 170,
+      "event": {
+        "frame_done": 1,
+        "timestamp": 231
+      }
+    },
+    {
+      "at_ms": 170,
+      "event": {
+        "create_popup": 1,
+        "invalid_grab_serial": 0,
+        "parent": 0
+      }
+    },
+    {
+      "at_ms": 171,
+      "event": {
+        "popup_done": 1
+      }
+    },
+    {
+      "at_ms": 171,
+      "event": {
+        "popup_geometry": 1,
+        "rect": [
+          21,
+          21,
+          64,
+          48
+        ]
+      }
+    },
+    {
+      "at_ms": 171,
+      "event": {
+        "popup_configure_ack": 1,
+        "serial": 18
+      }
+    },
+    {
+      "at_ms": 171,
+      "event": {
+        "destroy_popup": 1
+      }
+    },
+    {
+      "at_ms": 171,
+      "event": {
+        "create_popup": 2,
+        "invalid_grab_serial": null,
+        "parent": 1
+      }
+    },
+    {
+      "at_ms": 171,
+      "event": {
+        "popup_geometry": 2,
+        "rect": [
+          21,
+          21,
+          64,
+          48
+        ]
+      }
+    },
+    {
+      "at_ms": 171,
+      "event": {
+        "popup_configure_ack": 2,
+        "serial": 19
+      }
+    },
+    {
+      "at_ms": 171,
+      "event": {
+        "map_popup_commit": 2
+      }
+    },
+    {
+      "at_ms": 186,
+      "event": {
+        "popup_frame_done": 2,
+        "timestamp": 247
+      }
+    },
+    {
+      "at_ms": 187,
+      "event": {
+        "popup_done": 2
+      }
+    },
+    {
+      "at_ms": 187,
+      "event": {
+        "configure_ack": 0,
+        "serial": 20,
+        "size": [
+          640,
+          800
+        ]
+      }
+    },
+    {
+      "at_ms": 187,
+      "event": {
+        "keyboard_leave": true
+      }
+    },
+    {
+      "at_ms": 187,
+      "event": {
+        "keyboard_enter_popup": null,
+        "keyboard_enter_window": 0
+      }
+    },
+    {
+      "at_ms": 187,
+      "event": {
+        "destroy_popup": 2
+      }
+    },
+    {
+      "at_ms": 187,
+      "event": {
+        "keyboard_leave": true
+      }
+    }
+  ],
+  "final_runtime": {
+    "compositions": 6,
+    "destroyed": 2,
+    "final_windows": 0,
+    "flush_cycles": 46,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 9,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 3,
+    "popup_grabs_denied_missing_press": 1,
+    "redraws": 9,
+    "submissions": 4,
+    "unmaps": 1,
+    "wayland_requests": 123
+  },
+  "invalid_serial_zero_popup_dismissed": true,
+  "mode": "popup-lifecycle",
+  "non_grabbing_popup_dismissed_on_unmap": true,
+  "ok": true,
+  "physical_input_injected": false,
+  "popup_dismissed_on_root_role_destroy": true,
+  "popup_keyboard_enters": 0,
+  "popup_size": [
+    64,
+    48
+  ],
+  "popups": [
+    {
+      "configure_acks": 1,
+      "destroyed": true,
+      "frames": 1,
+      "geometry_configures": 1,
+      "index": 0,
+      "popup_done": 1
+    },
+    {
+      "configure_acks": 1,
+      "destroyed": true,
+      "frames": 0,
+      "geometry_configures": 1,
+      "index": 1,
+      "popup_done": 1
+    },
+    {
+      "configure_acks": 1,
+      "destroyed": true,
+      "frames": 1,
+      "geometry_configures": 1,
+      "index": 2,
+      "popup_done": 1
+    }
+  ],
+  "root_null_unmap_processed": true,
+  "socket": "/tmp/fluxrt-f9a3fr9z/fluxscene-2186538fb0674db6beb31fd5",
+  "stage": "complete"
+}

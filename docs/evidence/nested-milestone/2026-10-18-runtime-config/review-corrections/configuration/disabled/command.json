@@ -1,0 +1,14 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxconfig-fda726eb1a0f",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-complete/disabled/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-complete/disabled/stats.json",
+    "--exit-after-ms",
+    "17000",
+    "--no-config"
+  ]
+}

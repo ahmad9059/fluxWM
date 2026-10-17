@@ -15,17 +15,22 @@ read [configuration status](config.md), [input binding status](input-bindings.md
 
 | Original finding | Verified progress | Remaining closure |
 | --- | --- | --- |
-| CFG-01 generation/ownership | A reusable coordinator owns one active helper, one latest pending source and one completion; actual-helper tests cover stale/foreign candidates, explicit commit-only last-good ownership and shutdown | Connect calloop/startup/reload and publish prepared compositor state atomically; qualify storms, failure boundaries and externally retained snapshots |
-| CFG-05 keymap semantics | `flux-input` resolves real seat keymaps, rejects aliases/code-symbol conflicts and modifier/group triggers; actual XKB and private input tests qualify named cases | Apply user bindings, keymap/device replacement, physical-code end-to-end and accessibility/custom-keymap policy coherently |
-| CFG-10 cancellation | Shutdown cancellation is typed and tested with sleeping helpers, live-image readiness, owned-child reaping and two independently failing mutations | Bound/measure parent compilation and retirement, integrate lifecycle away from dispatch and qualify accepted-work scheduling; no universal kernel deadline is claimed |
+| CFG-01 generation/ownership | A reusable coordinator owns one active source/helper, one latest pending source and one completion; nested startup/manual reload now publishes gap/mode/binding settings with stale-result rejection | Complete schema/device/output transactions, filesystem debounce and qualification of storms/failure boundaries/retained snapshots |
+| CFG-05 keymap semantics | `flux-input` resolves real seat keymaps, rejects aliases/code-symbol conflicts and modifier/group triggers; private tests now execute a user-defined shortcut and defer prepared publication during held Alt | Qualify coherent keymap/device replacement, physical-code end-to-end and accessibility/custom-keymap policy |
+| CFG-10 cancellation | Shutdown cancellation is typed and tested with sleeping helpers, live-image readiness, owned-child reaping and two independently failing mutations | Measure accepted compilation, temporary model clone/relayout and remaining retirement costs; qualify I/O failure and scheduling behavior; no universal kernel deadline is claimed |
 
 These are partial closures. The [retained evidence](../evidence/nested-milestone/2026-10-18-config-bindings/README.md)
 records 142 named workspace tests and exact execution limits. The [initial independent
 Claude review](../reviews/config-bindings-2026-10-18/disposition.md) found a masking
 cancellation oracle; the [focused follow-up](../reviews/config-bindings-followup-2026-10-18/disposition.md)
 found no new high/medium issue within its corrections. Later author-only test fixes
-and mutation proofs are identified explicitly. Full user-config publication remains
-unavailable and phase 6 remains open.
+and mutation proofs are identified explicitly. Partial [runtime publication](runtime-config.md) now applies gaps/mode/bindings; full
+schema application and phase 6 remain open.
+The [runtime integration evidence](../evidence/nested-milestone/2026-10-18-runtime-config/README.md)
+adds 157 named workspace tests, six real configuration cases, a runnable sixteen-binding
+example and two separately frozen [runtime reviews](../reviews/runtime-config-2026-10-18/disposition.md).
+The follow-up's binding-swap oracle was corrected afterward and independently faulted
+by the author; this later work is not presented as having been read by Claude.
 
 ## Evidence examined and reproducible checks
 

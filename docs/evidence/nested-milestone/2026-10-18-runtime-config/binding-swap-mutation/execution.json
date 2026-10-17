@@ -1,0 +1,23 @@
+{
+  "scope": "Preserve old binding table only on subsequent publication while updating layout/generation; initial3-entry user table still installs. Corrected held-input test must detect absent3-to4 binding swap.",
+  "command": [
+    "python3",
+    "tools/smoke_config.py",
+    "--case",
+    "input-publication",
+    "--bundle",
+    "target/configure-verified-xvfb",
+    "--binary",
+    "target/debug/fluxwm",
+    "--artifacts",
+    "target/runtime-config-binding-mutation/runtime"
+  ],
+  "exit_code": 1,
+  "old": "_bindings: Some(std::mem::replace(\n                                &mut self.bindings,\n                                prepared.bindings,\n                            )),",
+  "new": "_bindings: Some(if config.applied.is_some() {\n                                prepared.bindings\n                            } else {\n                                std::mem::replace(&mut self.bindings, prepared.bindings)\n                            }),",
+  "source_sha256": "5a632c62081d0801ff0cc1a5ee188a36c50f25ab93b23f3701db5e14cd79dee0",
+  "test_source_sha256": "3b00841e058c097a07c8beaca97c886e3aa8d891fb3e6231dbee6669b3092db1",
+  "original_binary_sha256": "076213d6026c5fb1fe7bdfa38ff5fa66173ea7af3ba051447dec19d5e0bfdb75",
+  "mutated_binary_sha256": "197d5bd400ebf6d59a00df4cb0f3f0ad5d87bf967a341b10d275ebe206798135",
+  "expected_error": "user binding publication differs"
+}

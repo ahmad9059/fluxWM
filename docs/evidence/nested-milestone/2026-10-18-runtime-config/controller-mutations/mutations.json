@@ -1,0 +1,81 @@
+{
+  "records": [
+    {
+      "mutation": "worker-latest",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "fluxwm",
+        "--locked",
+        "config::tests::worker_publication_rejects_stale_and_closed_generations",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "old": "if c.closed || c.latest != generation {",
+      "new": "if c.closed {",
+      "exit_code": 101,
+      "elapsed_seconds": 0.83,
+      "source_sha256": "f1b6ad3852e7ecc4800b4a57aaab8f0a5dbaa8bf1f8343e2cca18f4703886a6a"
+    },
+    {
+      "mutation": "worker-closed",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "fluxwm",
+        "--locked",
+        "config::tests::worker_publication_rejects_stale_and_closed_generations",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "old": "if c.closed || c.latest != generation {",
+      "new": "if c.latest != generation {",
+      "exit_code": 101,
+      "elapsed_seconds": 0.841,
+      "source_sha256": "f1b6ad3852e7ecc4800b4a57aaab8f0a5dbaa8bf1f8343e2cca18f4703886a6a"
+    },
+    {
+      "mutation": "dispatch-latest",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "fluxwm",
+        "--locked",
+        "config::tests::accepted_request_hides_prepared_generation_before_worker_observes_request",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "old": "if c.retired.is_some() || c.completion.as_ref()?.0 != c.latest {",
+      "new": "if c.retired.is_some() {",
+      "exit_code": 101,
+      "elapsed_seconds": 0.911,
+      "source_sha256": "f1b6ad3852e7ecc4800b4a57aaab8f0a5dbaa8bf1f8343e2cca18f4703886a6a"
+    },
+    {
+      "mutation": "stop-seal",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "fluxwm",
+        "--locked",
+        "config::tests::termination_seals_ready_config_publication",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "old": "    pub fn drive_config(&mut self) {\n        if self.stopping\n            || self.shutdown_deadline.is_some()",
+      "new": "    pub fn drive_config(&mut self) {\n        if self.shutdown_deadline.is_some()",
+      "exit_code": 101,
+      "elapsed_seconds": 1.042,
+      "source_sha256": "f1b6ad3852e7ecc4800b4a57aaab8f0a5dbaa8bf1f8343e2cca18f4703886a6a"
+    }
+  ],
+  "source_restored_sha256": "f1b6ad3852e7ecc4800b4a57aaab8f0a5dbaa8bf1f8343e2cca18f4703886a6a"
+}

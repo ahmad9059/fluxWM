@@ -1,0 +1,642 @@
+{
+  "chord_event_index": 24,
+  "complete_key_counts": {
+    "30": {
+      "pressed": 1,
+      "released": 1
+    },
+    "56": {
+      "pressed": 2,
+      "released": 2
+    }
+  },
+  "endpoints_removed": true,
+  "exit_code": 0,
+  "fixture_report": {
+    "buffer_size": [
+      320,
+      240
+    ],
+    "elapsed_ms": 7024,
+    "error": null,
+    "event_file": {
+      "Unix": [
+        47,
+        104,
+        111,
+        109,
+        101,
+        47,
+        97,
+        104,
+        109,
+        97,
+        100,
+        47,
+        68,
+        111,
+        99,
+        117,
+        109,
+        101,
+        110,
+        116,
+        115,
+        47,
+        80,
+        114,
+        111,
+        106,
+        101,
+        99,
+        116,
+        115,
+        47,
+        102,
+        108,
+        117,
+        120,
+        119,
+        109,
+        47,
+        116,
+        97,
+        114,
+        103,
+        101,
+        116,
+        47,
+        114,
+        117,
+        110,
+        116,
+        105,
+        109,
+        101,
+        45,
+        99,
+        111,
+        110,
+        102,
+        105,
+        103,
+        45,
+        102,
+        105,
+        110,
+        97,
+        108,
+        47,
+        105,
+        110,
+        112,
+        117,
+        116,
+        45,
+        112,
+        117,
+        98,
+        108,
+        105,
+        99,
+        97,
+        116,
+        105,
+        111,
+        110,
+        47,
+        105,
+        110,
+        112,
+        117,
+        116,
+        46,
+        101,
+        118,
+        101,
+        110,
+        116,
+        115,
+        46,
+        106,
+        115,
+        111,
+        110,
+        108
+      ]
+    },
+    "event_file_bytes": 2700,
+    "events": [
+      {
+        "at_ms": 0,
+        "event": {
+          "create": 0,
+          "name": "input-A"
+        }
+      },
+      {
+        "at_ms": 0,
+        "event": {
+          "create": 1,
+          "name": "input-B"
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "bytes": [],
+          "wm_capabilities": 0
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "configure_ack": 0,
+          "serial": 4,
+          "size": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "bytes": [],
+          "wm_capabilities": 1
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "configure_ack": 1,
+          "serial": 5,
+          "size": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "configure_ack": 0,
+          "serial": 6,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "keys": [],
+          "popup": null,
+          "root": 0,
+          "serial": 7,
+          "type": "keyboard.enter"
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "keyboard_enter_popup": null,
+          "keyboard_enter_window": 0
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "depressed": 0,
+          "group": 0,
+          "latched": 0,
+          "locked": 0,
+          "serial": 7,
+          "type": "keyboard.modifiers"
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "configure_ack": 1,
+          "serial": 8,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "serial": 9,
+          "type": "keyboard.leave"
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "keyboard_leave": true
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "keys": [],
+          "popup": null,
+          "root": 1,
+          "serial": 9,
+          "type": "keyboard.enter"
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "keyboard_enter_popup": null,
+          "keyboard_enter_window": 1
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "depressed": 0,
+          "group": 0,
+          "latched": 0,
+          "locked": 0,
+          "serial": 9,
+          "type": "keyboard.modifiers"
+        }
+      },
+      {
+        "at_ms": 2,
+        "event": {
+          "configure_ack": 0,
+          "serial": 10,
+          "size": [
+            640,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 23,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 242
+        }
+      },
+      {
+        "at_ms": 23,
+        "event": {
+          "frame_done": 1,
+          "timestamp": 242
+        }
+      },
+      {
+        "at_ms": 23,
+        "event": {
+          "observation_ms": 7000,
+          "root": null,
+          "roots": [
+            {
+              "root": 0,
+              "title": "input-A"
+            },
+            {
+              "root": 1,
+              "title": "input-B"
+            }
+          ],
+          "type": "ready"
+        }
+      },
+      {
+        "at_ms": 87,
+        "event": {
+          "key": 56,
+          "popup": null,
+          "root": 1,
+          "serial": 11,
+          "state": "pressed",
+          "time": 3275814,
+          "type": "keyboard.key"
+        }
+      },
+      {
+        "at_ms": 87,
+        "event": {
+          "depressed": 8,
+          "group": 0,
+          "latched": 0,
+          "locked": 0,
+          "serial": 11,
+          "type": "keyboard.modifiers"
+        }
+      },
+      {
+        "at_ms": 545,
+        "event": {
+          "key": 56,
+          "popup": null,
+          "root": 1,
+          "serial": 12,
+          "state": "released",
+          "time": 3276273,
+          "type": "keyboard.key"
+        }
+      },
+      {
+        "at_ms": 545,
+        "event": {
+          "depressed": 0,
+          "group": 0,
+          "latched": 0,
+          "locked": 0,
+          "serial": 12,
+          "type": "keyboard.modifiers"
+        }
+      },
+      {
+        "at_ms": 608,
+        "event": {
+          "key": 56,
+          "popup": null,
+          "root": 1,
+          "serial": 14,
+          "state": "pressed",
+          "time": 3276336,
+          "type": "keyboard.key"
+        }
+      },
+      {
+        "at_ms": 608,
+        "event": {
+          "depressed": 8,
+          "group": 0,
+          "latched": 0,
+          "locked": 0,
+          "serial": 14,
+          "type": "keyboard.modifiers"
+        }
+      },
+      {
+        "at_ms": 795,
+        "event": {
+          "key": 56,
+          "popup": null,
+          "root": 1,
+          "serial": 17,
+          "state": "released",
+          "time": 3276523,
+          "type": "keyboard.key"
+        }
+      },
+      {
+        "at_ms": 795,
+        "event": {
+          "depressed": 0,
+          "group": 0,
+          "latched": 0,
+          "locked": 0,
+          "serial": 17,
+          "type": "keyboard.modifiers"
+        }
+      },
+      {
+        "at_ms": 859,
+        "event": {
+          "key": 30,
+          "popup": null,
+          "root": 1,
+          "serial": 18,
+          "state": "pressed",
+          "time": 3276586,
+          "type": "keyboard.key"
+        }
+      },
+      {
+        "at_ms": 924,
+        "event": {
+          "key": 30,
+          "popup": null,
+          "root": 1,
+          "serial": 19,
+          "state": "released",
+          "time": 3276651,
+          "type": "keyboard.key"
+        }
+      },
+      {
+        "at_ms": 7024,
+        "event": {
+          "mapped_through_observation": true,
+          "root": null,
+          "type": "complete"
+        }
+      }
+    ],
+    "mapped_through_observation": true,
+    "mode": "input-probe",
+    "observation_ms": 7000,
+    "ok": true,
+    "physical_input_injected_by_fixture": false,
+    "ready_at_ms": 23,
+    "socket": "/tmp/fluxrt-mza4jvx4/fluxconfig-910757a9784c"
+  },
+  "forbidden_autostart_absent": true,
+  "held_pending_ms": 382.35,
+  "held_pending_samples": [
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    }
+  ],
+  "ok": true,
+  "plain_event_index": 28,
+  "shortcut_snapshot": {
+    "diagnostics": {
+      "backend": "nested",
+      "composed_scene": {
+        "popup_surfaces": 0,
+        "surfaces": 2
+      },
+      "configuration": {
+        "applied_generation": "2",
+        "last_error": null,
+        "prepared_generation": null,
+        "requested_generation": "2",
+        "status": "applied"
+      },
+      "input_state": {
+        "authorized_buttons": 0,
+        "host_focus": true,
+        "keyboard_grabbed": false,
+        "pointer_grabbed": false,
+        "pressed_keys": 0,
+        "suppressed_keys": 0
+      },
+      "keyboard_bindings": {
+        "entries": 4,
+        "inactive": 0,
+        "runtime_keymap_changes": false,
+        "source": "user-config"
+      },
+      "launch_outcomes": [],
+      "live_roles": 2,
+      "mapped_windows": 2,
+      "owned_applications": 0,
+      "pending_launches": 0,
+      "production_ready": false,
+      "runtime": {
+        "compositions": 3,
+        "destroyed": 0,
+        "final_windows": 0,
+        "flush_cycles": 120,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 10,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 2,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 8,
+        "submissions": 3,
+        "unmaps": 0,
+        "wayland_requests": 49
+      },
+      "shell_health": {
+        "capacity": 1024,
+        "clients": [
+          {
+            "id": "1",
+            "status": "responsive"
+          }
+        ],
+        "interval_ms": 5000,
+        "stats": {
+          "capacity_rejections": 0,
+          "pongs": 1,
+          "recoveries": 0,
+          "send_failures": 0,
+          "sent": 1,
+          "timeouts": 0,
+          "timer_fired": 0
+        },
+        "timeout_ms": 2000,
+        "timer_armed": true
+      }
+    },
+    "effective": {
+      "desired": {
+        "binding_entries": 4,
+        "layout": {
+          "gaps": 31.0,
+          "mode": "strip"
+        }
+      },
+      "effective": {
+        "binding_entries": 4,
+        "keymap": "startup-seat-keymap",
+        "layout": {
+          "gaps": 31.0,
+          "mode": "canvas"
+        }
+      },
+      "generation": "2",
+      "unsupported": [
+        "layout.outer_gap",
+        "layout.width_presets",
+        "layout.default_width",
+        "layout.focus_margin",
+        "layout.canvas",
+        "input",
+        "outputs",
+        "animations",
+        "decoration",
+        "rules",
+        "autostart",
+        "security"
+      ]
+    },
+    "workspaces": {
+      "workspaces": [
+        {
+          "focused": true,
+          "id": "0:0",
+          "mode": "canvas",
+          "output": "0:0"
+        }
+      ]
+    }
+  },
+  "target": {
+    "height": 800,
+    "ok": true,
+    "pid": 41693,
+    "width": 1280,
+    "window": 2097154
+  }
+}

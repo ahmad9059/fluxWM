@@ -1,0 +1,130 @@
+{
+  "authority_removed": true,
+  "cases": [
+    {
+      "before_new_table_event_index": 22,
+      "case": "input-publication",
+      "endpoints_removed": true,
+      "error": "user binding publication differs",
+      "exit_code": 0,
+      "forbidden_autostart_absent": true,
+      "held_pending_ms": 381.03,
+      "held_pending_samples": [
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": "2",
+          "requested_generation": "2",
+          "status": "pending"
+        }
+      ],
+      "ok": false,
+      "superseded_generation": "2",
+      "supersession_observations": [
+        {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "applied"
+        }
+      ],
+      "target": {
+        "height": 800,
+        "ok": true,
+        "pid": 60155,
+        "width": 1280,
+        "window": 2097154
+      }
+    }
+  ],
+  "executables": {
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm": "197d5bd400ebf6d59a00df4cb0f3f0ad5d87bf967a341b10d275ebe206798135",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-config": "44d6234857448302737c5f7601510993082c9d7e3fefb291f3be6bbdae75cfcf",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture": "b74fa218461175df366a6c2e3b31b40411818532598934749185290df059456c"
+  },
+  "executables_unchanged": true,
+  "harness_sha256": "3b00841e058c097a07c8beaca97c886e3aa8d891fb3e6231dbee6669b3092db1",
+  "ok": false,
+  "package": {
+    "bundle": "target/configure-verified-xvfb",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "parent_environment_unchanged": true,
+  "private_display": ":18637",
+  "runtime_cleanup": {
+    "directory_removed": true,
+    "endpoints_removed_before_cleanup": true,
+    "path": "/tmp/fluxrt-mxy8tdz5"
+  },
+  "scope": "private nested configuration publication/retention, held Alt deferral and configured key ownership; no host-session injection, native or sustained frame-progress qualification",
+  "server_reaped": true,
+  "x_socket_removed": true
+}

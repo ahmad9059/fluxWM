@@ -1,0 +1,21 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "-p",
+    "fluxwm-config",
+    "--test",
+    "coordinator",
+    "fifo_without_writer_does_not_block_and_test_process_is_owned_and_reaped",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "source_before_sha256": "46d8c5b6edd5a2c1f768c49faf569cc194c9ef2e615656feb5fff50dd4c6ca06",
+  "mutation": "remove only O_NONBLOCK from source open flags",
+  "returncode": 101,
+  "elapsed_ms": 2623,
+  "expected_assertion_observed": true,
+  "source_restored_sha256": "46d8c5b6edd5a2c1f768c49faf569cc194c9ef2e615656feb5fff50dd4c6ca06"
+}

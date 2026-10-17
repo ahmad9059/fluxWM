@@ -1,0 +1,36 @@
+   Compiling fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.94s
+     Running unittests src/main.rs (target/debug/deps/fluxwm-10cfe5f21e92541e)
+
+running 1 test
+
+thread 'config::tests::termination_seals_ready_config_publication' (38833) panicked at crates/fluxwm/src/config.rs:439:13:
+
+running 1 test
+
+thread 'config::tests::termination_seals_ready_config_publication' (38835) panicked at crates/fluxwm/src/config.rs:500:9:
+assertion `left == right` failed
+  left: Object {"desired": Object {"binding_entries": Number(3), "layout": Object {"gaps": Number(12.0), "mode": String("strip")}}, "effective": Object {"binding_entries": Number(3), "keymap": String("startup-seat-keymap"), "layout": Object {"gaps": Number(12.0), "mode": String("strip")}}, "generation": String("1"), "unsupported": Array [String("layout.outer_gap"), String("layout.width_presets"), String("layout.default_width"), String("layout.focus_margin"), String("layout.canvas"), String("input"), String("outputs"), String("animations"), String("decoration"), String("rules"), String("autostart"), String("security")]}
+ right: Object {"desired": Null, "effective": Object {"binding_entries": Number(28), "keymap": String("startup-seat-keymap"), "layout": Object {"gaps": Number(8.0), "mode": String("strip")}}, "generation": Null, "unsupported": Array [String("layout.outer_gap"), String("layout.width_presets"), String("layout.default_width"), String("layout.focus_margin"), String("layout.canvas"), String("input"), String("outputs"), String("animations"), String("decoration"), String("rules"), String("autostart"), String("security")]}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test config::tests::termination_seals_ready_config_publication ... FAILED
+
+failures:
+
+failures:
+    config::tests::termination_seals_ready_config_publication
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test config::tests::termination_seals_ready_config_publication ... FAILED
+
+failures:
+
+failures:
+    config::tests::termination_seals_ready_config_publication
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p fluxwm --bin fluxwm`

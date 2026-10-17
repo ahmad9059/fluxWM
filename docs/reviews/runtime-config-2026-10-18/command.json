@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independently review frozen runtime config integration 96138f8 using Read/Grep only inside this frozen cwd. No commands/tests/writes/agents/network/outside paths. Up to 24 read/search calls then substantive report with concrete HIGH/MEDIUM findings or none, trigger/path/closure test and limits. Focus crates/fluxwm/src/config.rs (outer preparation worker owns inner ConfigCoordinator, pending path/generations/completion/retirement, pure Rust bindings, publication/deferral/shutdown), main.rs/state.rs/actions.rs/ipc.rs/winit.rs integration, flux-config/src/coordinator.rs new worker-owned request_path read, flux-layout::reconfigure, and tools/smoke_config.py real test oracles. Actual pinned Smithay/xkbcommon sources are under upstream/. Startup seat map serialized under lock and reconstructed only on worker; logical gap/mode/bindings swap betweenbatches; no native keymap/device replacement. Check late/stale publication, notification/lock races, retirement drops, signal/timer/fatal/host-close stop sealing, helper ownership, path bounds/regular file NONBLOCK/symlink behavior, model geometry rollback and whether tests prove claims. Config-reload acceptance is not application; source/eval/binding work stays offdispatch, layout clone/reconfigure/relayout remains O(windows) ondispatch. ConfigModel supports gap<=1024 vs schema4096; >1024 rejected. Unsupported schema categories explicitly reported in effective summary: outer gap, width/default/focus/canvas, input,outputs,animations,decoration,rules,autostart,security. Phase6 unfinished; no full schema, resource timing, filesystem consistency/kernel walltime, native/soak/production claims. File reads can delay shutdown despite workerownership. Review actual reachable defects and test gaps, distinguish hypothetical futureintegration. Do not infer runtime success from author logs or certify production readiness. Include inspected controls and clear scope limits.",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "32",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-review-snapshot"
+}

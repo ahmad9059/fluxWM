@@ -1,0 +1,13 @@
+{
+  "claude-report.md": "2d29a05faa6aa22a98cefe43365a04a7a8a41269af92d3339503e5e7c91d860b",
+  "command.json": "3285b92c2f00715fca34db3579ab531bd04f042cb6befc038f98d5bd3d8e69c5",
+  "disposition.md": "f41a6ccfc9ec8a5d40d329d5afa17aec6fade0b5f92980292c0ed7dca662449b",
+  "execution.json": "83e67dc3214e3c6c557ba445648b0d03cfc0a2dd67820b3cf4ca3b0c68ea5b89",
+  "input-manifest.json": "14d8581623377c59cd494caec183b578784b0efd37f21904708cd310eaafa608",
+  "process.json": "0ba96481febe19ff174430b2b1b226d74599283929acb082bf74b67918480b21",
+  "prompt.txt": "bcd749f6da4abd9ff91fbef2d6ba4cbd5686809da0071fef8b8b3e8372c93df2",
+  "snapshot.json": "6662099028e94f70bdd46a674186a7c571220fe61344ee4b89c6bb5b67e6777f",
+  "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout.json": "33e37560364b4bdd7f615b43a9ffcedd610444e6c36b888a169044d5af164c29",
+  "verified-execution.json": "23287bdb9f280a37872755d70299ac83c966b7a0a58aa746aececceb31266477"
+}

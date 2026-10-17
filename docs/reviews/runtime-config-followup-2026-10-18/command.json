@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independent focused follow-up of frozen 0d12c40. Read/Grep only within this frozen cwd, no commands/tests/edits/agents/network/outsidepaths. 12-20 calls then concrete reachable HIGH/MEDIUM findings or none, checked controls, exact remaining test gaps and limits. Previous review of96138f8 found no reachable HIGH/MEDIUM product defect but2MEDIUM gaps: M1 runtime livegeometryrollback not reached by gap2048cap case; M2 runtime prepared supersession/latest gates untested. Read new tools/smoke_config.py extra_case geometry-rollback/input-publication/path-retention and crates/fluxwm-fixture/src/main.rs::config_geometry/options. Geometry fixture minwidth999999984 withinitialgap13 thenreloadgap32/canvas/extraAlt+a binding must reach exact runtime geometry error and preserve ID/geometry/mode/bindings/generation, thenrecovergap8. Boundary1024accepted1025exactnestedlimitmessage. HeldAlt scenario observesgenerationNprepared, thenacceptsN+1andobservespreparedwhileheld,release observesonlynewgen, actualAlt+a route. This is not a deterministic allthreads race test. Read new crates/fluxwm/src/config.rs tests worker_publication_rejects_stale_and_closed_generations and accepted_request_hides_prepared_generation_before_worker_observes_request: parked owned testworker intentionally holds deterministic request-before-observation interval. Production logic unchanged except comment clarifies temporarylayoutclone drops ondispatch. Separately sourceopen adds O_NOCTTY before rejectingnonregular descriptor; old components already have realfile/FIFO/symlink/oversize/nonUTF8/path tests in crates/fluxwm-config/tests/coordinator.rs. Nonconfigsmoke harnesses add --no-config to avoidcallerconfigdiscovery. Check test oracles are strong enough and actual fixtureprotocolworks bysource; do not relyonauthorlogs orclaimexecution. Fullschema/device/output/keymaptransactions, automaticwatch/debounce, native, arbitraryscheduling/resource/soak remainopen. Legacydocs maydescribeearlier3caseharness; sourceiscurrent. Distinguish reachablebugs fromcoverageholes and speculativehardening. No productioncertification.",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "28",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/runtime-config-followup-snapshot"
+}

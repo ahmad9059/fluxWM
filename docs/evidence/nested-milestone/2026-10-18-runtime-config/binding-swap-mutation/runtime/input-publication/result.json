@@ -1,0 +1,92 @@
+{
+  "before_new_table_event_index": 22,
+  "case": "input-publication",
+  "endpoints_removed": true,
+  "error": "user binding publication differs",
+  "exit_code": 0,
+  "forbidden_autostart_absent": true,
+  "held_pending_ms": 381.03,
+  "held_pending_samples": [
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    },
+    {
+      "applied_generation": "1",
+      "last_error": null,
+      "prepared_generation": "2",
+      "requested_generation": "2",
+      "status": "pending"
+    }
+  ],
+  "ok": false,
+  "superseded_generation": "2",
+  "supersession_observations": [
+    {
+      "applied_generation": "3",
+      "last_error": null,
+      "prepared_generation": null,
+      "requested_generation": "3",
+      "status": "applied"
+    }
+  ],
+  "target": {
+    "height": 800,
+    "ok": true,
+    "pid": 60155,
+    "width": 1280,
+    "window": 2097154
+  }
+}

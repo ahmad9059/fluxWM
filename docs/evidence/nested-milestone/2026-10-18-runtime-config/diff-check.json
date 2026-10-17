@@ -1,0 +1,41 @@
+{
+  "raw_check": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "output": "docs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log:143: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log:155: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log:170: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log:172: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log:174: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log:176: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log:178: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log:296: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log:143: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log:168: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log:170: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log:172: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log:174: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log:176: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log:178: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log:298: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-runtime-config/controller-mutations/restored-tests.log:19: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:149: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:151: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:168: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:170: trailing whitespace.\n+test tests::managed_child_drop_kills_and_reaps_and_wait_caches_exit ... oktest tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:182: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:184: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:186: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:188: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:190: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log:310: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log:140: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log:142: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log:173: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log:175: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log:177: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log:179: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log:181: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log:301: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-runtime-config/source-file-proof/tests.log:72: new blank line at EOF.\ndocs/evidence/nested-milestone/2026-10-18-runtime-config/stop-mutation/restored.log:9: new blank line at EOF.\n"
+  },
+  "source_and_docs_check": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-runtime-config/controller-mutations/restored-tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-runtime-config/source-file-proof/tests.log",
+      ":(exclude)docs/evidence/nested-milestone/2026-10-18-runtime-config/stop-mutation/restored.log"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  "excluded_paths": [
+    "docs/evidence/nested-milestone/2026-10-18-runtime-config/baseline/checks/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-runtime-config/checks/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-runtime-config/controller-mutations/restored-tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-runtime-config/nested-example-final/ci-checks/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-runtime-config/review-corrections/checks/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-runtime-config/source-file-proof/tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-runtime-config/stop-mutation/restored.log"
+  ],
+  "reason": "Retain exact raw libtest console bytes, including subprocess trailing spaces and terminal blank lines; no normalization of execution evidence."
+}
