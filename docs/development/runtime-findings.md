@@ -1,6 +1,6 @@
 # Runtime integration findings and remaining production gates
 
-Date: 2026-10-17. Implementation snapshot: `4a87922945decff827da5a18213d9f5d57fca6eb`. This supplements the historical [implementation audit](../24-implementation-readiness-audit.md). It does not replace its unclosed phase gates or certify production readiness. [Runtime behavior](runtime.md) describes the executable; [build setup](build.md) describes dependencies and CI.
+Date: 2026-10-17. Initial integration snapshot: `4a87922945decff827da5a18213d9f5d57fca6eb`; subsequent independent-review fixes: `1b956fe`. This supplements the historical [implementation audit](../24-implementation-readiness-audit.md). It does not replace its unclosed phase gates or certify production readiness. [Runtime behavior](runtime.md) describes the executable; [build setup](build.md) describes dependencies and CI.
 
 ## Findings addressed in this snapshot
 
@@ -36,3 +36,7 @@ Production operations still need target-matrix CI execution, reproducible packag
 The [integrated evidence bundle](../evidence/nested-milestone/2026-10-17-integrated/README.md) preserves 94 distinct passing tests, build/check logs and real nested/IPC/slow-reader runs. Each runtime suite records exact binary hashes and keeps its original artifacts; the compact committed bundle links results to this snapshot. Tests cover individual paths, not all permutations. The slow-reader case is stronger than merely sleeping a client: it observes actual server backpressure before attempting recovery. Source-only fixes above retain explicit missing closure tests instead of being promoted by adjacent successes.
 
 The independent Claude review and its disposition are recorded separately from author tests. Review input stability is checked by hashing the frozen tree before and after inspection. A read/search-only reviewer cannot execute tests, inspect hardware or certify completeness.
+
+## Independent runtime review follow-through
+
+[Claude’s frozen-snapshot review and author disposition](../reviews/runtime-2026-10-17/disposition.md) add four medium findings. The stationary pointer feedback was reproduced on the reviewed binary (33 extra motions/32 feedback commits) and suppressed after correction (0/0) using the same real fixture. Popup-grab retirement, current-press authorization and denial dismissal have later source fixes but retain missing live input closure tests. Non-grabbing popup-tree dismissal on root unmap remains open. DnD requests are now cancelled and capability=false until full source-client/current-input admission is implemented. Absolute non-finite input and startup ECHILD handling were also corrected. These changes were not independently re-reviewed by Claude.

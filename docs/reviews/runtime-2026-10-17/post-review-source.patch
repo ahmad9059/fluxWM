@@ -1,0 +1,722 @@
+diff --git a/crates/fluxwm-fixture/src/main.rs b/crates/fluxwm-fixture/src/main.rs
+index becc23f..f8fb683 100644
+--- a/crates/fluxwm-fixture/src/main.rs
++++ b/crates/fluxwm-fixture/src/main.rs
+@@ -13,8 +13,8 @@ use std::{
+ use wayland_client::{
+     Connection, Dispatch, EventQueue, Proxy, QueueHandle, WEnum, delegate_noop,
+     protocol::{
+-        wl_buffer, wl_callback, wl_compositor, wl_registry, wl_seat, wl_shm, wl_shm_pool,
+-        wl_surface,
++        wl_buffer, wl_callback, wl_compositor, wl_pointer, wl_registry, wl_seat, wl_shm,
++        wl_shm_pool, wl_surface,
+     },
+ };
+ use wayland_protocols::xdg::shell::client::{xdg_surface, xdg_toplevel, xdg_wm_base};
+@@ -53,6 +53,16 @@ struct State {
+     next_sync: u32,
+     error: Option<String>,
+     invalid_move_attempted: bool,
++    pointer_feedback_enabled: bool,
++    pointer: Option<wl_pointer::WlPointer>,
++    pointer_on_primary: bool,
++    pointer_xy: Option<(f64, f64)>,
++    pointer_enters: u32,
++    pointer_leaves: u32,
++    stationary_motions: u32,
++    changing_motions: u32,
++    commit_on_motion: bool,
++    feedback_commits: u32,
+ }
+ impl State {
+     fn new(start: Instant) -> Self {
+@@ -71,6 +81,16 @@ impl State {
+             next_sync: 1,
+             error: None,
+             invalid_move_attempted: false,
++            pointer_feedback_enabled: false,
++            pointer: None,
++            pointer_on_primary: false,
++            pointer_xy: None,
++            pointer_enters: 0,
++            pointer_leaves: 0,
++            stationary_motions: 0,
++            changing_motions: 0,
++            commit_on_motion: false,
++            feedback_commits: 0,
+         }
+     }
+     fn record(&mut self, event: Json) {
+@@ -192,7 +212,9 @@ fn poll_fd(fd: i32, events: i16, deadline: Instant) -> Result<i16> {
+             return Ok(descriptor.revents);
+         }
+         if result == 0 {
+-            return Err("fixture event deadline expired".into());
++            // poll's millisecond timeout can round down; recheck the absolute
++            // deadline rather than reporting an early timeout.
++            continue;
+         }
+         let error = std::io::Error::last_os_error();
+         if error.kind() != std::io::ErrorKind::Interrupted {
+@@ -470,7 +492,80 @@ delegate_noop!(State:ignore wl_compositor::WlCompositor);
+ delegate_noop!(State:ignore wl_surface::WlSurface);
+ delegate_noop!(State:ignore wl_shm_pool::WlShmPool);
+ delegate_noop!(State:ignore wl_buffer::WlBuffer);
+-delegate_noop!(State:ignore wl_seat::WlSeat);
++impl Dispatch<wl_seat::WlSeat, ()> for State {
++    fn event(
++        state: &mut Self,
++        seat: &wl_seat::WlSeat,
++        event: wl_seat::Event,
++        _: &(),
++        _: &Connection,
++        qh: &QueueHandle<Self>,
++    ) {
++        if let wl_seat::Event::Capabilities {
++            capabilities: WEnum::Value(capabilities),
++        } = event
++            && state.pointer_feedback_enabled
++            && state.pointer.is_none()
++            && capabilities.contains(wl_seat::Capability::Pointer)
++        {
++            state.pointer = Some(seat.get_pointer(qh, ()));
++        }
++    }
++}
++impl Dispatch<wl_pointer::WlPointer, ()> for State {
++    fn event(
++        state: &mut Self,
++        _: &wl_pointer::WlPointer,
++        event: wl_pointer::Event,
++        _: &(),
++        _: &Connection,
++        _: &QueueHandle<Self>,
++    ) {
++        match event {
++            wl_pointer::Event::Enter {
++                surface,
++                surface_x,
++                surface_y,
++                ..
++            } => {
++                state.pointer_on_primary =
++                    state.windows.first().is_some_and(|w| w.surface == surface);
++                if state.pointer_on_primary {
++                    state.pointer_enters += 1;
++                    state.pointer_xy = Some((surface_x, surface_y));
++                    state.record(json!({"pointer_enter_primary":[surface_x,surface_y]}));
++                }
++            }
++            wl_pointer::Event::Leave { .. } => {
++                if state.pointer_on_primary {
++                    state.pointer_leaves += 1;
++                }
++                state.pointer_on_primary = false;
++            }
++            wl_pointer::Event::Motion {
++                surface_x,
++                surface_y,
++                ..
++            } if state.pointer_on_primary => {
++                let xy = (surface_x, surface_y);
++                if state.pointer_xy == Some(xy) {
++                    state.stationary_motions += 1;
++                } else {
++                    state.changing_motions += 1;
++                }
++                state.pointer_xy = Some(xy);
++                // Reproduce cursor-updating clients while bounding this fixture's
++                // feedback-generated requests even against a broken compositor.
++                if state.commit_on_motion && state.feedback_commits < 32 {
++                    state.windows[0].surface.damage(0, 0, 1, 1);
++                    state.windows[0].surface.commit();
++                    state.feedback_commits += 1;
++                }
++            }
++            _ => {}
++        }
++    }
++}
+ fn lifecycle(
+     connection: &Connection,
+     queue: &mut EventQueue<State>,
+@@ -838,14 +933,178 @@ fn slow_reader(timeout: Duration) -> Json {
+     evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+     evidence
+ }
++fn observe_for(
++    connection: &Connection,
++    queue: &mut EventQueue<State>,
++    state: &mut State,
++    duration: Duration,
++    deadline: Instant,
++) -> Result<()> {
++    let stop = Instant::now()
++        .checked_add(duration)
++        .ok_or("observation deadline overflow")?;
++    if stop > deadline {
++        return Err("insufficient fixture deadline for observation interval".into());
++    }
++    loop {
++        queue.dispatch_pending(state).map_err(|e| e.to_string())?;
++        if let Some(error) = state.error.take() {
++            return Err(error);
++        }
++        flush_without_reading(connection, queue, deadline)?;
++        if Instant::now() >= stop {
++            return Ok(());
++        }
++        let Some(guard) = queue.prepare_read() else {
++            continue;
++        };
++        match poll_fd(connection.as_fd().as_raw_fd(), libc::POLLIN, stop) {
++            Ok(events) if events & libc::POLLIN != 0 => match guard.read() {
++                Ok(_) => {}
++                Err(wayland_client::backend::WaylandError::Io(e))
++                    if e.kind() == std::io::ErrorKind::WouldBlock => {}
++                Err(e) => return Err(e.to_string()),
++            },
++            Ok(events) => return Err(format!("observation socket error {events}")),
++            Err(_) if Instant::now() >= stop => return Ok(()),
++            Err(error) => return Err(error),
++        }
++    }
++}
++fn pointer_feedback(timeout: Duration) -> Json {
++    let start = Instant::now();
++    let deadline = start + timeout;
++    let mut evidence = json!({"mode":"pointer-feedback","ok":false,"settle_ms":200,"observation_ms":400,"maximum_feedback_commits":32,"allowed_stationary_motions_after_seed":1});
++    let result = (|| -> Result<()> {
++        let path = display_path()?;
++        evidence["socket"] = json!(path);
++        let connection = connect(&path, deadline)?;
++        let mut queue = connection.new_event_queue::<State>();
++        let qh = queue.handle();
++        let mut state = State::new(start);
++        state.pointer_feedback_enabled = true;
++        connection.display().get_registry(&qh, ());
++        let sync = state.sync(&connection, &qh);
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "pointer registry",
++            |s| s.last_sync >= sync,
++        )?;
++        let sync = state.sync(&connection, &qh);
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "pointer seat binding",
++            |s| s.last_sync >= sync,
++        )?;
++        if state.compositor.is_none()
++            || state.wm.is_none()
++            || state.shm.is_none()
++            || state.pointer.is_none()
++        {
++            return Err("missing pointer/compositor/SHM/XDG fixture prerequisites".into());
++        }
++        let first = state.create(&qh, "stationary-pointer-feedback");
++        state.windows[first].surface.commit();
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "pointer configure",
++            |s| s.windows[first].configures >= 1,
++        )?;
++        state.map(first, &qh)?;
++        until(
++            &connection,
++            &mut queue,
++            &mut state,
++            deadline,
++            "pointer enter and mapped frame",
++            |s| s.pointer_on_primary && s.windows[first].frames >= 1,
++        )?;
++        observe_for(
++            &connection,
++            &mut queue,
++            &mut state,
++            Duration::from_millis(200),
++            deadline,
++        )?;
++        if state.pointer_xy != Some((0.0, 0.0)) || !state.pointer_on_primary {
++            return Err(format!(
++                "initial pointer is not stationary at fixture origin: {:?}; run without host pointer interaction",
++                state.pointer_xy
++            ));
++        }
++        let ipc = std::env::var_os("FLUXWM_SOCKET")
++            .ok_or("pointer-feedback requires FLUXWM_SOCKET diagnostics")?;
++        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
++        let before = diagnostics.snapshot(deadline)?;
++        let baseline = (
++            state.stationary_motions,
++            state.changing_motions,
++            state.pointer_enters,
++            state.pointer_leaves,
++        );
++        evidence["before"] = before.clone();
++        evidence["initial_pointer_xy"] = json!(state.pointer_xy);
++        evidence["baseline_stationary_motions"] = json!(baseline.0);
++        state.commit_on_motion = true;
++        state.windows[first].surface.damage(0, 0, 1, 1);
++        state.windows[first].surface.commit();
++        observe_for(
++            &connection,
++            &mut queue,
++            &mut state,
++            Duration::from_millis(400),
++            deadline,
++        )?;
++        state.commit_on_motion = false;
++        let after = diagnostics.snapshot(deadline)?;
++        let stationary = state.stationary_motions - baseline.0;
++        evidence["after"] = after.clone();
++        evidence["stationary_motions_after_seed"] = json!(stationary);
++        evidence["feedback_commits"] = json!(state.feedback_commits);
++        evidence["changing_motions_after_seed"] = json!(state.changing_motions - baseline.1);
++        evidence["redraw_delta"] =
++            json!(counter(&after, "redraws").saturating_sub(counter(&before, "redraws")));
++        evidence["composition_delta"] =
++            json!(counter(&after, "compositions").saturating_sub(counter(&before, "compositions")));
++        evidence["events"] = json!(state.events);
++        if state.changing_motions != baseline.1
++            || state.pointer_enters != baseline.2
++            || state.pointer_leaves != baseline.3
++        {
++            return Err(
++                "pointer moved or focus changed during no-input interval; contaminated run".into(),
++            );
++        }
++        if stationary > 1 {
++            return Err(format!(
++                "stationary pointer feedback: {stationary} repeated motions after one seed commit (maximum 1)"
++            ));
++        }
++        Ok(())
++    })();
++    evidence["ok"] = json!(result.is_ok());
++    evidence["error"] = json!(result.err());
++    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
++    evidence
++}
+ fn main() {
+     let args = std::env::args().skip(1).collect::<Vec<_>>();
+     let parsed = match args.as_slice() {
+-        [mode] if mode == "lifecycle" || mode == "slow-reader" => {
++        [mode] if mode == "lifecycle" || mode == "slow-reader" || mode == "pointer-feedback" => {
+             Ok((mode.as_str(), Duration::from_secs(5)))
+         }
+         [mode, flag, value]
+-            if (mode == "lifecycle" || mode == "slow-reader") && flag == "--timeout-ms" =>
++            if (mode == "lifecycle" || mode == "slow-reader" || mode == "pointer-feedback")
++                && flag == "--timeout-ms" =>
+         {
+             value
+                 .parse::<u64>()
+@@ -854,10 +1113,13 @@ fn main() {
+                 .map(|n| (mode.as_str(), Duration::from_millis(n)))
+                 .ok_or("timeout must be 1..=5000 ms")
+         }
+-        _ => Err("usage: fluxwm-fixture lifecycle|slow-reader [--timeout-ms 1..5000]"),
++        _ => Err(
++            "usage: fluxwm-fixture lifecycle|slow-reader|pointer-feedback [--timeout-ms 1..5000]",
++        ),
+     };
+     let result = match parsed {
+         Ok(("slow-reader", timeout)) => slow_reader(timeout),
++        Ok(("pointer-feedback", timeout)) => pointer_feedback(timeout),
+         Ok((_, timeout)) => run(timeout),
+         Err(error) => json!({"ok":false,"error":error}),
+     };
+@@ -941,6 +1203,24 @@ mod tests {
+         assert!(start.elapsed() < Duration::from_secs(1));
+     }
+     #[test]
++    fn idle_observation_waits_for_its_interval_without_false_timeout() {
++        let (client, _server) = UnixStream::pair().unwrap();
++        let connection = Connection::from_socket(client).unwrap();
++        let mut queue = connection.new_event_queue::<State>();
++        let start = Instant::now();
++        let mut state = State::new(start);
++        observe_for(
++            &connection,
++            &mut queue,
++            &mut state,
++            Duration::from_millis(30),
++            start + Duration::from_secs(1),
++        )
++        .unwrap();
++        assert!(start.elapsed() >= Duration::from_millis(30));
++        assert!(start.elapsed() < Duration::from_secs(1));
++    }
++    #[test]
+     fn missing_socket_fails_without_blocking() {
+         let deadline = Instant::now() + Duration::from_millis(100);
+         assert!(connect(Path::new("/no-such-fluxwm-fixture-socket"), deadline).is_err());
+diff --git a/crates/fluxwm/src/handlers/mod.rs b/crates/fluxwm/src/handlers/mod.rs
+index 9248ba4..73d9fb8 100644
+--- a/crates/fluxwm/src/handlers/mod.rs
++++ b/crates/fluxwm/src/handlers/mod.rs
+@@ -8,8 +8,7 @@ use crate::Fluxwm;
+ // Wl Seat
+ //
+ 
+-use smithay::input::dnd::{DnDGrab, DndGrabHandler, GrabType, Source};
+-use smithay::input::pointer::Focus;
++use smithay::input::dnd::{DndGrabHandler, GrabType, Source};
+ use smithay::input::{Seat, SeatHandler, SeatState};
+ use smithay::reexports::wayland_server::Resource;
+ use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
+@@ -66,30 +65,14 @@ impl WaylandDndGrabHandler for Fluxwm {
+         &mut self,
+         source: S,
+         _icon: Option<WlSurface>,
+-        seat: Seat<Self>,
+-        serial: Serial,
+-        type_: GrabType,
++        _seat: Seat<Self>,
++        _serial: Serial,
++        _type_: GrabType,
+     ) {
+-        match type_ {
+-            GrabType::Pointer => {
+-                let Some(ptr) = seat.get_pointer() else {
+-                    source.cancel();
+-                    return;
+-                };
+-                let Some(start_data) = ptr.grab_start_data() else {
+-                    source.cancel();
+-                    return;
+-                };
+-
+-                // create a dnd grab to start the operation
+-                let grab = DnDGrab::new_pointer(&self.display_handle, start_data, source, seat);
+-                ptr.set_grab(self, grab, serial, Focus::Keep);
+-            }
+-            GrabType::Touch => {
+-                // fluxwm lacks touch handling
+-                source.cancel();
+-            }
+-        }
++        // The pinned protocol helper checks a grab serial but this generic
++        // callback does not establish source-client/active-press ownership.
++        // Keep DnD unavailable until that full admission policy is implemented.
++        source.cancel();
+     }
+ }
+ 
+diff --git a/crates/fluxwm/src/handlers/xdg_shell.rs b/crates/fluxwm/src/handlers/xdg_shell.rs
+index c2baa6a..8f9c55e 100644
+--- a/crates/fluxwm/src/handlers/xdg_shell.rs
++++ b/crates/fluxwm/src/handlers/xdg_shell.rs
+@@ -148,29 +148,41 @@ impl XdgShellHandler for Fluxwm {
+     }
+ 
+     fn grab(&mut self, surface: PopupSurface, seat: wl_seat::WlSeat, serial: Serial) {
++        self.cleanup_popup_grab();
+         let Some(seat) = Seat::from_resource(&seat) else {
++            surface.send_popup_done();
+             return;
+         };
+         // Only an active same-client pointer press authorizes a new popup grab.
+         // Keyboard/touch initiated grabs remain unsupported until their input
+         // serial provenance is tracked explicitly.
+-        if check_grab(&seat, surface.wl_surface(), serial).is_none() {
++        if !self
++            .pointer_presses
++            .values()
++            .any(|pressed| *pressed == serial)
++            || check_grab(&seat, surface.wl_surface(), serial).is_none()
++        {
+             surface.send_popup_done();
+             return;
+         }
+-        let kind = PopupKind::Xdg(surface);
++        let kind = PopupKind::Xdg(surface.clone());
+         let Ok(root) = find_popup_root_surface(&kind) else {
++            surface.send_popup_done();
+             return;
+         };
+         let Some(id) = self.window_id(&root) else {
++            surface.send_popup_done();
+             return;
+         };
+         if !self.windows.get(id).is_some_and(|item| item.mapped) {
++            surface.send_popup_done();
+             return;
+         }
+         let Ok(mut grab) = self.popups.grab_popup(root, kind, &seat, serial) else {
++            surface.send_popup_done();
+             return;
+         };
++        self.popup_grab = Some((id, grab.clone()));
+         if let Some(keyboard) = seat.get_keyboard() {
+             if keyboard.is_grabbed()
+                 && !(keyboard.has_grab(serial)
+@@ -208,6 +220,7 @@ impl XdgShellHandler for Fluxwm {
+ 
+     fn popup_destroyed(&mut self, _surface: PopupSurface) {
+         self.popups.cleanup();
++        self.cleanup_popup_grab();
+         self.request_redraw();
+     }
+ }
+diff --git a/crates/fluxwm/src/input.rs b/crates/fluxwm/src/input.rs
+index 74f4565..41c3e6f 100644
+--- a/crates/fluxwm/src/input.rs
++++ b/crates/fluxwm/src/input.rs
+@@ -27,6 +27,12 @@ impl Fluxwm {
+         }
+         let location = pointer.current_location();
+         let under = self.surface_under(location);
++        if pointer.current_focus() == under.as_ref().map(|(surface, _)| surface.clone())
++            && self.pointer_scene_target == under
++        {
++            return;
++        }
++        self.pointer_scene_target = under.clone();
+         pointer.motion(
+             self,
+             under,
+@@ -109,6 +115,7 @@ impl Fluxwm {
+                     f64::from(geometry.loc.y) + f64::from(geometry.size.h) - 0.001,
+                 );
+                 let under = self.surface_under(pos);
++                self.pointer_scene_target = under.clone();
+                 pointer.motion(
+                     self,
+                     under,
+@@ -128,13 +135,30 @@ impl Fluxwm {
+                     return;
+                 };
+ 
++                if output_geo.size.w <= 0 || output_geo.size.h <= 0 {
++                    return;
++                }
+                 let pos = event.position_transformed(output_geo.size) + output_geo.loc.to_f64();
++                if !pos.x.is_finite() || !pos.y.is_finite() {
++                    return;
++                }
++                let pos = smithay::utils::Point::from((
++                    pos.x.clamp(
++                        f64::from(output_geo.loc.x),
++                        f64::from(output_geo.loc.x + output_geo.size.w) - 1.0,
++                    ),
++                    pos.y.clamp(
++                        f64::from(output_geo.loc.y),
++                        f64::from(output_geo.loc.y + output_geo.size.h) - 1.0,
++                    ),
++                ));
+ 
+                 let serial = SERIAL_COUNTER.next_serial();
+ 
+                 let pointer = self.seat.get_pointer().unwrap();
+ 
+                 let under = self.surface_under(pos);
++                self.pointer_scene_target = under.clone();
+ 
+                 pointer.motion(
+                     self,
+@@ -175,6 +199,7 @@ impl Fluxwm {
+                 if !pointer.is_grabbed() {
+                     let location = pointer.current_location();
+                     let under = self.surface_under(location);
++                    self.pointer_scene_target = under.clone();
+                     pointer.motion(
+                         self,
+                         under,
+@@ -185,6 +210,11 @@ impl Fluxwm {
+                         },
+                     );
+                 }
++                if button_state == ButtonState::Pressed {
++                    self.pointer_presses.insert(button, serial);
++                } else {
++                    self.pointer_presses.remove(&button);
++                }
+                 pointer.button(
+                     self,
+                     &ButtonEvent {
+diff --git a/crates/fluxwm/src/ipc.rs b/crates/fluxwm/src/ipc.rs
+index 4f63c78..8a6f0f1 100644
+--- a/crates/fluxwm/src/ipc.rs
++++ b/crates/fluxwm/src/ipc.rs
+@@ -45,7 +45,7 @@ impl Fluxwm {
+             Method::Capabilities => Ok(json!({
+                 "backend":"nested", "subscriptions":false, "config_reload":false,
+                 "actions":["focus","move","pan","resize","workspace-mode","close-window","spawn","quit"],
+-                "secure_lock":false,"capture":false,"native_session":false,"x11_clients":false,
++                "secure_lock":false,"capture":false,"drag_and_drop":false,"native_session":false,"x11_clients":false,
+                 "frame_clock":"virtual-60hz", "host_presentation_observed":false,
+             })),
+             Method::Windows => {
+diff --git a/crates/fluxwm/src/main.rs b/crates/fluxwm/src/main.rs
+index fda4521..21968e6 100644
+--- a/crates/fluxwm/src/main.rs
++++ b/crates/fluxwm/src/main.rs
+@@ -102,9 +102,12 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
+ pub(crate) struct SupervisedChild(pub Child);
+ impl Drop for SupervisedChild {
+     fn drop(&mut self) {
+-        if self.0.try_wait().ok().flatten().is_none() {
+-            let _ = self.0.kill();
++        match self.0.try_wait() {
++            Ok(Some(_)) => return,
++            Err(error) if error.raw_os_error() == Some(libc::ECHILD) => return,
++            _ => (),
+         }
++        let _ = self.0.kill();
+         let _ = self.0.wait();
+     }
+ }
+diff --git a/crates/fluxwm/src/state.rs b/crates/fluxwm/src/state.rs
+index 8ea16c1..c0a24f3 100644
+--- a/crates/fluxwm/src/state.rs
++++ b/crates/fluxwm/src/state.rs
+@@ -61,7 +61,10 @@ pub struct Fluxwm {
+     flush_retry_pending: bool,
+     pub ipc: Option<flux_ipc::EventLoopDriver<Fluxwm>>,
+     pub ipc_requested: bool,
++    pub popup_grab: Option<(WindowId, smithay::desktop::PopupGrab<Self>)>,
++    pub pointer_presses: std::collections::BTreeMap<u32, smithay::utils::Serial>,
+     pub pointer_focus_dirty: bool,
++    pub pointer_scene_target: Option<(WlSurface, Point<f64, Logical>)>,
+     pub suppressed_keys: std::collections::BTreeSet<u32>,
+     pub spawned: Vec<flux_process::ManagedChild>,
+     pub spawn_worker: Option<flux_process::SpawnWorker>,
+@@ -174,7 +177,10 @@ impl Fluxwm {
+             flush_retry_pending: false,
+             ipc: None,
+             ipc_requested: true,
++            popup_grab: None,
++            pointer_presses: Default::default(),
+             pointer_focus_dirty: true,
++            pointer_scene_target: None,
+             suppressed_keys: Default::default(),
+             spawned: Vec::new(),
+             spawn_worker: None,
+@@ -531,6 +537,85 @@ impl Fluxwm {
+         }
+     }
+ 
++    pub fn cleanup_popup_grab(&mut self) {
++        let Some((root, mut grab)) = self.popup_grab.take() else {
++            return;
++        };
++        let visible = self.windows.get(root).is_some_and(|item| item.mapped)
++            && self
++                .layout
++                .placements()
++                .iter()
++                .any(|p| p.window == root && p.visible);
++        if !visible {
++            grab.ungrab(smithay::desktop::PopupUngrabStrategy::All);
++        }
++        if !grab.has_ended() {
++            // Destroying a nested child may leave its parent grab alive. Repair
++            // keyboard focus now, without waiting for another physical event.
++            if let Some(keyboard) = self.seat.get_keyboard()
++                && keyboard
++                    .with_grab(|serial, active| {
++                        (serial == grab.serial() || Some(serial) == grab.previous_serial())
++                            && active.is::<smithay::desktop::PopupKeyboardGrab<Self>>()
++                    })
++                    .unwrap_or(false)
++                && keyboard.current_focus() != grab.current_grab()
++            {
++                keyboard.set_focus(self, grab.current_grab(), SERIAL_COUNTER.next_serial());
++            }
++            self.popup_grab = Some((root, grab));
++            return;
++        }
++        // Release only wrappers installed by this tracked popup chain. Another
++        // subsystem's grab must not be cancelled merely because this chain ended.
++        let matches = |serial| serial == grab.serial() || Some(serial) == grab.previous_serial();
++        if let Some(keyboard) = self.seat.get_keyboard()
++            && keyboard
++                .with_grab(|serial, active| {
++                    matches(serial) && active.is::<smithay::desktop::PopupKeyboardGrab<Self>>()
++                })
++                .unwrap_or(false)
++        {
++            keyboard.unset_grab(self);
++        }
++        if let Some(pointer) = self.seat.get_pointer()
++            && pointer
++                .with_grab(|serial, active| {
++                    matches(serial) && active.is::<smithay::desktop::PopupPointerGrab<Self>>()
++                })
++                .unwrap_or(false)
++        {
++            // Update pending focus before the ended popup wrapper restores it.
++            let location = pointer.current_location();
++            let under = self.surface_under(location);
++            self.pointer_scene_target = under.clone();
++            let serial = SERIAL_COUNTER.next_serial();
++            let time = smithay::backend::input::InputTime::now();
++            pointer.motion(
++                self,
++                under,
++                &smithay::input::pointer::MotionEvent {
++                    location,
++                    serial,
++                    time,
++                },
++            );
++            if pointer
++                .with_grab(|serial, active| {
++                    matches(serial) && active.is::<smithay::desktop::PopupPointerGrab<Self>>()
++                })
++                .unwrap_or(false)
++            {
++                pointer.unset_grab(self, serial, time);
++            }
++            pointer.frame(self);
++        }
++        self.pointer_focus_dirty = true;
++        self.restore_keyboard_focus();
++        self.bump_sequence();
++    }
++
+     pub fn finish_dispatch(&mut self) {
+         let dead: Vec<_> = self
+             .windows
+@@ -553,7 +638,9 @@ impl Fluxwm {
+         self.reap_children();
+         self.space.refresh();
+         self.popups.cleanup();
++        self.cleanup_popup_grab();
+         self.drive_ipc();
++        self.cleanup_popup_grab();
+         self.refresh_pointer_focus();
+         self.flush_wayland();
+     }
+diff --git a/tools/smoke_ipc_runtime.py b/tools/smoke_ipc_runtime.py
+index e33e8d5..2108a87 100644
+--- a/tools/smoke_ipc_runtime.py
++++ b/tools/smoke_ipc_runtime.py
+@@ -99,13 +99,14 @@ def main():
+             ipc = Path(published['ipc_socket'])
+             replies = exchange([request('version', ident=str(i)) for i in range(17)], half_close=True)
+             require(all('result' in v for v in replies), '17-request half-close pipeline failed')
+-            changed, invalid = exchange([request('action', {'name': 'workspace-mode', 'mode': 'canvas'}), request('version', version=99)])
++            before, changed, invalid = exchange([request('version'), request('action', {'name': 'workspace-mode', 'mode': 'canvas'}), request('version', version=99)])
++            require(int(changed['state_sequence']) > int(before['state_sequence']), 'action did not advance sequence')
+             require('result' in changed and invalid.get('error', {}).get('code') == 'unsupported_version', 'sequence test envelopes failed')
+             require(changed['state_sequence'] == invalid['state_sequence'], 'transport error has stale state sequence')
+             bad, capability, locked = exchange([request('action', {'name': 'quit', 'unexpected': True}), request('capabilities'), request('action', {'name': 'lock'})])
+             require(bad.get('error', {}).get('code') == 'invalid_params', 'unknown action field accepted')
+             require(locked.get('error', {}).get('code') == 'not_ready', 'unimplemented lock accepted')
+-            require(all(capability['result'][k] is False for k in ('native_session', 'capture', 'secure_lock', 'x11_clients')), 'unsupported capability advertised')
++            require(all(capability['result'][k] is False for k in ('native_session', 'capture', 'secure_lock', 'x11_clients', 'drag_and_drop')), 'unsupported capability advertised')
+             # Missing executable completes asynchronously without killing worker.
+             missing = exchange([request('action', {'name': 'spawn', 'argv': ['/fluxwm-missing-' + uuid.uuid4().hex]})])[0]
+             require('result' in missing, 'launch queue did not accept missing executable job')

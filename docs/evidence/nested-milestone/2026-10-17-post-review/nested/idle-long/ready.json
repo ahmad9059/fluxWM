@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/run/user/1000/fluxwm/fluxsmoke-9d87b1166ca14111b58fa4b4.sock",
+  "pid": 213919,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxsmoke-9d87b1166ca14111b58fa4b4"
+}

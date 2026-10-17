@@ -1,0 +1,17 @@
+{
+  "snapshot.json": "65a317b3fbb2eab6d61c52fad01dc58d056c44a8f95ffa16dbfa84877ed04ede",
+  "post-review-source.patch": "a01ba4cd504649dc35a44d8fc075cc69ed8b5d3bd53d9ed50133a00bde9db029",
+  "attempt1-stdout.json": "afacbe72660130bcf458d3c864fa2e8fdadf6928d449fb8bf342223749266f8e",
+  "attempt1-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "post-review-changes.json": "12860744890699c3ab91e457eddafa1c666b52ff9f985b029ba0c953adb52cb3",
+  "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "prompt.txt": "0b63e71da5e316c9464eb5b9ea5a0816633251d5edd4619aac95ba6f86fa81ad",
+  "verified-execution.json": "8163f6a07a6e194473e3dc35e3b1f2b69d77ee0c2d3709d77b2eb402860b7022",
+  "attempt1-execution.json": "299d0c7cb48265a6462fbd7fcb9a99bb5b2f0110ab582283dfe7d6fb231ef8b9",
+  "stdout.json": "632477580b4e2fb960f6cc10f16eb3378dfd912c98619dbf6f045565966a879d",
+  "claude-report.md": "f611d7186cfe56e8311562cbdb194b9d3e852ee0a520429271b29a91671c9f97",
+  "input-manifest.json": "ec91b53e0a6e9b2671b429a429f1088922f7f030ddfb95749fd5e359b9a4cbe9",
+  "execution.json": "a84f28c6d8f96688b36b4d821ea60bac85d281c7789c403700b455853f65d588",
+  "disposition.md": "c6938ce6f1439c059b487988540c05c8a2d2110e118c8a8628a80e9a71a11d37",
+  "attempt1-prompt.txt": "0b63e71da5e316c9464eb5b9ea5a0816633251d5edd4619aac95ba6f86fa81ad"
+}

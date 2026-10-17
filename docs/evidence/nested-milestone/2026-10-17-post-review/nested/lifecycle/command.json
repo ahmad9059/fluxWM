@@ -1,0 +1,35 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--socket",
+    "fluxsmoke-52d6f9b0576641cb960f833b",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/54335827d4f642f5b6dedc2bb59cec82/lifecycle/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/54335827d4f642f5b6dedc2bb59cec82/lifecycle/stats.json",
+    "--screenshot",
+    "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/54335827d4f642f5b6dedc2bb59cec82/lifecycle/first-map.ppm",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "lifecycle",
+    "--timeout-ms",
+    "4500"
+  ],
+  "environment": {
+    "DISPLAY": ":1",
+    "WAYLAND_DISPLAY": "wayland-1",
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": null,
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "name": "lifecycle",
+  "ok": false,
+  "socket": "fluxsmoke-52d6f9b0576641cb960f833b"
+}

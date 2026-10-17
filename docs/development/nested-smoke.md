@@ -79,3 +79,5 @@ This establishes one successful nested developer smoke on the recorded graphical
 Compact historical evidence is committed at [nested milestone evidence](../evidence/nested-milestone/2026-10-17-initial-passing/manifest.json). It includes the original summary, fixture stdout JSON, and each scenario's readiness/stats/result metadata with copy hashes. The large P6 is retained only at its original local path, with its SHA-256 recorded in the manifest. This snapshot identifies work-in-progress source by its tested executable hash and is not a committed release qualification. A final integrated revision must rerun the harness and retain a separate evidence bundle; this historical pass must not be silently relabeled as the later revision.
 
 The [integrated evidence bundle](../evidence/nested-milestone/2026-10-17-integrated/README.md) records final runtime tests and the complementary [slow-reader fixture](slow-reader-fixture.md).
+
+[Post-review evidence](../evidence/nested-milestone/2026-10-17-post-review/README.md) repeats these checks after independent-review fixes and adds a mapped [stationary pointer feedback regression](pointer-feedback-fixture.md).

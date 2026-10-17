@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/run/user/1000/fluxwm/fluxwm-ipc-4879c97561554863.sock",
+  "pid": 213318,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxwm-ipc-4879c97561554863"
+}

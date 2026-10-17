@@ -1,0 +1,14 @@
+{
+  "upstream_commit": "023b78b1c5a05ca512767cacc07efca55fae8be4",
+  "author_checked_local_source": true,
+  "reviewer_checked_upstream_source": false,
+  "files": {
+    "src/input/pointer/mod.rs": "5bf7095ca92125a42a4dc5d4b8f1b5ba20682dda5e25d9bcf70171f86c1e1ad3",
+    "src/wayland/seat/pointer.rs": "7fbd73f5cbf979351e62150088f1e23970553f6e7549d1d4dc5b19f7fe5cb050",
+    "src/input/keyboard/mod.rs": "9098c17cd641d3a0b5a3f983485f37d7dc83af2823478e2e0985805bb3161fe7",
+    "src/desktop/wayland/popup/grab.rs": "1e2986348452b7de8de8698a8ef7e9b38031b2ceef0843a8b363e18bfe18dab3",
+    "src/desktop/wayland/popup/manager.rs": "6e24ad570e38e1fa6f851bc897a00e4af0217529647a253c0f60e548d81e1355",
+    "src/wayland/shell/xdg/handlers/surface/popup.rs": "02ec77c80ae8625d254507740bc1ae4b3b545f1e26c6e4bba2b37068ad2f43d1",
+    "src/wayland/selection/data_device/device.rs": "0bcc505052e4467112c0666c9dc40ada68a64e2b7e6ea17a71648e1cc5cf7b98"
+  }
+}

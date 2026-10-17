@@ -1,0 +1,78 @@
+{
+  "source_commit": "1b956fe",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "build",
+        "--workspace",
+        "--locked"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--locked"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "cargo",
+        "doc",
+        "--workspace",
+        "--no-deps",
+        "--locked"
+      ],
+      "environment_overrides": {
+        "RUSTDOCFLAGS": "-D warnings"
+      },
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "tools/check_docs.py",
+        "--report",
+        "/tmp/fluxwm-post-review-docs.json"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "distinct_tests": 95,
+  "extra_filtered_process_fixture_pass_reports": 3,
+  "sources": {
+    "nested": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-nested/54335827d4f642f5b6dedc2bb59cec82",
+    "ipc": "/home/ahmad/Documents/Projects/fluxwm/target/smoke-ipc/37e5805a6b674867888face18e97a6a1",
+    "final-fixtures": "/home/ahmad/Documents/Projects/fluxwm/target/post-review-fixtures/b15fb02c50344b7f9149372574a00328",
+    "pointer-before": "/home/ahmad/Documents/Projects/fluxwm-layout/target/pointer-feedback/20975a9327ce4b09ac47c7127807cee7",
+    "pointer-after-same-fixture": "/home/ahmad/Documents/Projects/fluxwm-layout/target/pointer-feedback/ef4bc75db6e549509173fb6a0c0e0749"
+  },
+  "binary_sha256": "09c5ec4b5b1de9fd7a426bd9d95a953a6d48a5b0b0041a35640d3b14913b3e5c",
+  "scope": "Author-executed cached Linux nested checks after independent review. No live popup-grab, native/hardware, full phase or production qualification."
+}

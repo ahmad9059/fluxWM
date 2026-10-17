@@ -1,0 +1,16 @@
+{
+  "reviewed_commit": "4a87922945decff827da5a18213d9f5d57fca6eb",
+  "post_review_implementation_commit": "1b956fe3460b177263afa9b141ea7c7981b6cf4b",
+  "independently_re_reviewed": false,
+  "author_checks": "Post-review evidence bundle",
+  "changed_runtime_inputs": {
+    "crates/fluxwm-fixture/src/main.rs": "edd0c3a092a518ae3eb872b05da456a82d998d37c77c0a94f72ff6ee9194cbd9",
+    "crates/fluxwm/src/handlers/mod.rs": "78041881c3d76c57657617f41a1f0211e71c56ec61fcd0c0eb2252210ed95b4e",
+    "crates/fluxwm/src/handlers/xdg_shell.rs": "8b5a04b258b427379e683a07d5746128dba2e436212e0e31efa20be86fb0134a",
+    "crates/fluxwm/src/input.rs": "b9d83d2b22a67eefb3ce6c0f81b38a5377de1af3ad3e43d375a1ba11529519f6",
+    "crates/fluxwm/src/ipc.rs": "348b09d85ed087082050676fbaf3a8b3fff9673c28f4c5671938d968f9c7aaa6",
+    "crates/fluxwm/src/main.rs": "8205910048a03ed8252fff0ad82729b7e5e5335d4d64dc8171704e28f9657c98",
+    "crates/fluxwm/src/state.rs": "d19e1ad32cd2ba2b1e0aca1f058ff86400a64fed09ed632f9fe289ff8bc69cf7",
+    "tools/smoke_ipc_runtime.py": "c8d4fdfa82f58998b59beae12109f54fefdeea5bea45f05591d1c3694363d851"
+  }
+}
