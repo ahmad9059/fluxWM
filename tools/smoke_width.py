@@ -2,6 +2,7 @@
 """Configured future-column widths on an authenticated owned private display."""
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import subprocess
@@ -28,8 +29,9 @@ def run(binary, fixture, directory, environment):
     try:
         case.start()
         initial = case.await_status('applied')['configuration']['applied_generation']
-        viewport = case.ipc('outputs.list')['outputs'][0]['geometry']['width']
-        widths = [400, 760, viewport * .25, 600, 600, 480]
+        output = case.ipc('outputs.list')['outputs'][0]['geometry']
+        viewport, height = output['width'], output['height']
+        widths = [400, 760, max(1, viewport * .25), 600, 600, 480]
         child_environment = dict(environment, WAYLAND_DISPLAY=case.instance, FLUXWM_SOCKET=str(case.ipc_path))
         logs = [(case.directory / n).open('wb') for n in ['fixture.stdout.log', 'fixture.stderr.log']]
         command = [str(fixture), 'config-width', '--timeout-ms', '10000']
@@ -54,7 +56,8 @@ def run(binary, fixture, directory, environment):
         for count, default, preset in [(2, '{logical_px=760}', 400), (3, '{fraction=0.25}', 400), (4, '{preset=1}', 600)]:
             case.replace(source(default, preset))
             accepted = case.reload()
-            case.await_status('applied', accepted)
+            terminal = case.await_status('applied', accepted)
+            require(terminal['configuration']['applied_generation'] == accepted, 'applied generation differs from accepted width request')
             snapshot = case.snapshot('applied-%s' % count)
             expected = {'logical_px': widths[count-1]} if count != 3 else {'fraction': .25}
             require(snapshot['effective']['effective']['layout']['default_width'] == expected, 'resolved effective default differs')
@@ -70,7 +73,8 @@ def run(binary, fixture, directory, environment):
         case.result['after-failed-reload'] = case.wait(lambda: members(5))
         case.replace(source('{logical_px=480}'))
         recovered = case.reload()
-        case.await_status('applied', recovered)
+        terminal = case.await_status('applied', recovered)
+        require(terminal['configuration']['applied_generation'] == recovered, 'recovered generation differs')
         case.result['recovered_windows'] = case.wait(lambda: members(6))
         case.wait(lambda: client.poll() is not None, 4)
         require((case.directory / 'fixture.stdout.log').stat().st_size < 1024 * 1024, 'fixture report too large')
@@ -78,7 +82,13 @@ def run(binary, fixture, directory, environment):
         require(client.returncode == 0 and report['ok'], 'fixture protocol failure')
         require(len(report['windows']) == 6 and all(w['frames'] >= 1 for w in report['windows']), 'initial frames missing')
         for i, window in enumerate(report['windows']):
-            require(window['configure_sizes'][-1][0] == round(widths[i]), 'wire configure width differs for member%s' % i)
+            # Model sizes are positive and <=1e9. Match Rust's positive .5-away
+            # rounding rather than Python's ties-to-even round().
+            expected = math.floor(widths[i] + .5)
+            sizes = window['configure_sizes']
+            positive = [size for size in sizes if size[0] > 0]
+            require(positive and all(size[0] == expected for size in positive), 'wire configure width differs for member%s' % i)
+            require(sizes[-1][1] == height and all(size[1] in [0, height] for size in sizes), 'wire configure height differs for member%s' % i)
         case.result.update(ok=True, fixture_report=report, expected_widths=widths, generations=[initial, applied, rejected, recovered])
     except Exception as error:
         case.result['error'] = str(error)
@@ -134,7 +144,7 @@ def main():
         result['parent_environment_unchanged'] = dict(os.environ) == parent
         result['ok'] &= all(result.get(key) is True for key in ['authority_removed','server_reaped','x_socket_removed','parent_environment_unchanged','executables_unchanged'])
         write_json(directory / 'summary.json', result)
-    print(json.dumps({'ok': result['ok'], 'error': result.get('error'), 'artifacts': str(directory)}))
+    print(json.dumps({'ok': result['ok'], 'error': result.get('error') or result.get('case', {}).get('error'), 'artifacts': str(directory)}))
     return 0 if result['ok'] else 1
 
 if __name__ == '__main__':

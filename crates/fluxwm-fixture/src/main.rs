@@ -2934,8 +2934,8 @@ fn configure_stream(timeout: Duration) -> Json {
     evidence
 }
 
-/// Layout rejection must not confuse protocol buffer ownership with scene
-/// membership. Keep the client alive so it can unmap and retry smaller hints.
+/// Admit six windows as the parent reloads fixed, fraction and preset defaults.
+/// Existing windows stay live to expose accidental retroactive width changes.
 fn config_width(timeout: Duration) -> Json {
     let start = Instant::now();
     let deadline = start + timeout;
@@ -3022,6 +3022,7 @@ fn config_width(timeout: Duration) -> Json {
     evidence
 }
 
+/// Keep a wide mapped member alive through rejected and recovered logical reloads.
 fn config_geometry(timeout: Duration) -> Json {
     let start = Instant::now();
     let deadline = start + timeout;
@@ -3078,6 +3079,8 @@ fn config_geometry(timeout: Duration) -> Json {
     evidence
 }
 
+/// Layout rejection must not confuse buffer ownership with scene membership.
+/// Keep the client alive so it can unmap and retry smaller hints.
 fn configure_admission(timeout: Duration) -> Json {
     let start = Instant::now();
     let deadline = start + timeout;

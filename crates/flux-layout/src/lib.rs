@@ -1340,6 +1340,47 @@ mod tests {
         assert_eq!(format!("{l:?}"), before);
     }
     #[test]
+    fn rejected_and_remapped_admissions_use_the_current_default_without_stealing_focus() {
+        let mut l = layout();
+        l.reconfigure_with_default_width(8., LayoutMode::Strip, WidthPolicy::Fixed(760.))
+            .unwrap();
+        l.insert(
+            id(0),
+            SizeConstraints {
+                min: Size {
+                    width: MAX_COORD - 600.,
+                    height: 1.,
+                },
+                max: None,
+            },
+        )
+        .unwrap();
+        let before = format!("{l:?}");
+        assert_eq!(
+            l.insert_with_focus(id(1), SizeConstraints::default(), false),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_eq!(format!("{l:?}"), before);
+        l.reconfigure_with_default_width(8., LayoutMode::Strip, WidthPolicy::Fixed(400.))
+            .unwrap();
+        l.insert_with_focus(id(1), SizeConstraints::default(), false)
+            .unwrap();
+        assert_eq!(l.focused(), Some(id(0)));
+        assert_eq!(rect(&l, id(1)).width, 400.);
+        l.remove(id(1)).unwrap();
+        l.reconfigure_with_default_width(
+            8.,
+            LayoutMode::Strip,
+            WidthPolicy::ViewportFraction(0.25),
+        )
+        .unwrap();
+        l.insert_with_focus(id(1), SizeConstraints::default(), false)
+            .unwrap();
+        assert_eq!(rect(&l, id(1)).width, 250.);
+        assert_eq!(l.focused(), Some(id(0)));
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
     fn configured_width_still_honors_each_client_size_constraints() {
         let mut l = layout();
         l.reconfigure_with_default_width(8., LayoutMode::Strip, WidthPolicy::Fixed(200.))
