@@ -67,13 +67,33 @@ fn drain(reader: &mut impl Read, bytes: &mut Vec<u8>, bound: usize, label: &str)
 }
 /// Evaluate a bounded source snapshot in a fresh exec-based helper, kill/reap on any
 /// failure, validate the normalized result again, and compile regexes in Rust.
-/// Caller must serialize reload requests (one active and one coalesced pending).
+/// This is blocking worker-thread work. ConfigCoordinator supplies bounded asynchronous ownership.
 #[cfg(target_os = "linux")]
 pub fn load_with_helper(
     helper: &Path,
     source: &[u8],
     limits: HelperLimits,
 ) -> Result<CompiledConfig> {
+    load_with_helper_cancellable(
+        helper,
+        source,
+        limits,
+        &std::sync::atomic::AtomicBool::new(false),
+        |_| {},
+    )
+}
+
+#[cfg(target_os = "linux")]
+pub(crate) fn load_with_helper_cancellable(
+    helper: &Path,
+    source: &[u8],
+    limits: HelperLimits,
+    cancelled: &std::sync::atomic::AtomicBool,
+    on_spawn: impl FnOnce(u32),
+) -> Result<CompiledConfig> {
+    if cancelled.load(std::sync::atomic::Ordering::Acquire) {
+        return Err(ConfigError::Cancelled);
+    }
     if source.len() > MAX_SOURCE_BYTES {
         return Err(invalid("config source exceeds 1 MiB"));
     }
@@ -130,6 +150,7 @@ pub fn load_with_helper(
         });
     }
     let mut child = Reap(command.spawn()?);
+    on_spawn(child.0.id());
     let mut stdin = child.0.stdin.take();
     let mut stdout = child.0.stdout.take().expect("piped stdout");
     let mut stderr = child.0.stderr.take().expect("piped stderr");
@@ -142,6 +163,9 @@ pub fn load_with_helper(
     loop {
         if start.elapsed() >= limits.deadline {
             return Err(ConfigError::Timeout);
+        }
+        if cancelled.load(std::sync::atomic::Ordering::Acquire) {
+            return Err(ConfigError::Cancelled);
         }
         if let Some(input) = stdin.as_mut() {
             match input.write(&source[written..]) {
@@ -191,6 +215,17 @@ pub fn load_with_helper(
     Err(invalid(
         "configuration helper containment is currently qualified only for Linux",
     ))
+}
+
+#[cfg(not(target_os = "linux"))]
+pub(crate) fn load_with_helper_cancellable(
+    helper: &Path,
+    source: &[u8],
+    limits: HelperLimits,
+    _cancelled: &std::sync::atomic::AtomicBool,
+    _on_spawn: impl FnOnce(u32),
+) -> Result<CompiledConfig> {
+    load_with_helper(helper, source, limits)
 }
 
 #[cfg(all(test, target_os = "linux"))]
