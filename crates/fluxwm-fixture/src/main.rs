@@ -3065,6 +3065,91 @@ fn configure_admission(timeout: Duration) -> Json {
             |s| s.windows[healthy].frames > frames,
         )?;
         evidence["healthy_frame_after_recovery"] = json!(true);
+
+        // Aggregate capacity can recover without any new commit from a static
+        // rejected client. Its originally requested frame must then complete.
+        let blocker = state.create(&qh, "admission-blocker");
+        state.windows[blocker]
+            .toplevel
+            .set_min_size(600_000_000, 240);
+        state.windows[blocker].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "aggregate blocker configure",
+            |s| s.windows[blocker].configures > 0,
+        )?;
+        state.map(blocker, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "aggregate blocker frame",
+            |s| s.windows[blocker].frames > 0,
+        )?;
+        let waiting = state.create(&qh, "admission-static");
+        state.windows[waiting]
+            .toplevel
+            .set_min_size(500_000_000, 240);
+        state.windows[waiting].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "aggregate waiting configure",
+            |s| s.windows[waiting].configures > 0,
+        )?;
+        state.map(waiting, &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let rejected = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture admission-static",
+            deadline,
+        )?;
+        evidence["aggregate_rejected"] = rejected.clone();
+        if rejected["buffered"] != true
+            || rejected["mapped"] != false
+            || rejected["admission_error"].as_str().is_none()
+        {
+            return Err("aggregate case lacks buffered rejected role".into());
+        }
+        state.windows[blocker].toplevel.destroy();
+        state.windows[blocker].xdg.destroy();
+        state.windows[blocker].surface.destroy();
+        state.windows[blocker].destroyed = true;
+        if let Some(buffer) = state.windows[blocker].buffer.take() {
+            buffer.destroy();
+        }
+        // No wl_surface.commit or replacement-buffer request on waiting from
+        // here onward. Normal configure acknowledgments remain enabled.
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let automatic = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture admission-static",
+            deadline,
+        )?;
+        evidence["aggregate_after_blocker_destroy"] = automatic.clone();
+        if automatic["mapped"] != true
+            || automatic["buffered"] != true
+            || !automatic["admission_error"].is_null()
+            || automatic["id"] != rejected["id"]
+            || automatic["focused"] != false
+        {
+            return Err("static rejected role did not recover without another surface commit, or stole focus".into());
+        }
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "static retained buffer gets frame after capacity returns",
+            |s| s.windows[waiting].frames > 0,
+        )?;
+        evidence["aggregate_recovery_without_new_surface_commit"] = json!(true);
         Ok(())
     })();
     evidence["ok"] = json!(result.is_ok());

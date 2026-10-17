@@ -492,6 +492,45 @@ impl Fluxwm {
     }
 
     pub fn relayout(&mut self) {
+        // Capacity depends on the other members and viewport, not just the
+        // rejected client's hints. Retry retained buffers on model changes so
+        // a static client does not need to commit again after capacity returns.
+        // One arena-order pass (at most the 1,024 owned roles), no timer or
+        // recursive relayout. Recovery preserves the current selection.
+        let pending: Vec<_> = self
+            .windows
+            .iter()
+            .filter_map(|(id, item)| {
+                (item.buffered
+                    && !item.mapped
+                    && item.admission_error.is_some()
+                    && item.window.alive())
+                .then_some(id)
+            })
+            .collect();
+        let mut admitted = false;
+        for id in pending {
+            let surface = self
+                .windows
+                .get(id)
+                .and_then(|item| item.window.toplevel())
+                .expect("live rejected role in one dispatch")
+                .wl_surface()
+                .clone();
+            if self
+                .layout
+                .insert_with_focus(id, self.constraints_for(&surface), false)
+                .is_ok()
+            {
+                let item = self.windows.get_mut(id).expect("live dispatch ID");
+                item.mapped = true;
+                item.admission_error = None;
+                self.stats.maps += 1;
+                self.bump_sequence();
+                admitted = true;
+                tracing::info!(%id, "window_admission_recovered");
+            }
+        }
         for placement in self.layout.placements() {
             let Some(item) = self.windows.get(placement.window) else {
                 continue;
@@ -524,6 +563,9 @@ impl Fluxwm {
         // Release seat wrappers only after all scene removals are authoritative;
         // cleanup repairs keyboard/pointer focus using the completed layout.
         self.cleanup_popup_grab();
+        if admitted {
+            self.restore_keyboard_focus();
+        }
         self.request_redraw();
     }
 
