@@ -62,8 +62,11 @@ Keys normalize modifier ordering and `Logo` to `Super` and reject duplicate norm
 chords, invalid modifier tokens, uppercase single letters and invalid evdev ranges.
 Canonical xkb keysym existence and actual keymap/layout matching must be resolved by
 the input integration; accepting a syntactically plausible name does not prove it is
-a real keysym. Strings use Rust regex syntax with 4 KiB pattern bounds, 1 MiB compiled
-size/DFA limits and a nesting limit of 64. The 1,024-rule bound is an admission bound,
+a real keysym. Strings use Rust regex syntax with 4 KiB pattern bounds, per-pattern compiled-size/DFA limits of at most 1 MiB and a nesting limit of 64.
+A shared 32 MiB engine-size budget is apportioned across all patterns, separately
+for compiled programs and lazy DFA caches; configurations near the rule limit
+receive smaller per-pattern allowances. These limits do not bound exact RSS.
+The 1,024-rule bound is an admission bound,
 not evidence of acceptable full-rule-set latency or RSS; benchmark/fuzz qualification
 remains required.
 

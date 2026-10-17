@@ -99,11 +99,20 @@ fn supervisor_reaps_timeout_and_bounds_diagnostic_and_result_pipes() {
     );
     // Check no matching unreaped child remains after timeout (waitpid only sees ours).
     script(&helper, "import sys\nsys.stdout.write('x'*5000000)\n");
-    assert!(load_with_helper(&helper, b"", limits).is_err());
+    let error = load_with_helper(&helper, b"", limits).expect_err("oversized result accepted");
+    assert!(
+        error.to_string().contains("helper result exceeds"),
+        "{error}"
+    );
     script(&helper, "import sys\nsys.stderr.write('x'*20000)\n");
-    assert!(load_with_helper(&helper, b"", limits).is_err());
-    script(&helper, "print('{\\\"schema_version\\\":1} trailing')\n");
-    assert!(load_with_helper(&helper, b"", limits).is_err());
+    let error = load_with_helper(&helper, b"", limits).expect_err("oversized diagnostic accepted");
+    assert!(
+        error.to_string().contains("helper diagnostic exceeds"),
+        "{error}"
+    );
+    script(&helper, r#"print('{"schema_version":1} trailing')"#);
+    let error = load_with_helper(&helper, b"", limits).expect_err("trailing junk accepted");
+    assert!(error.to_string().contains("trailing characters"), "{error}");
     fs::remove_dir_all(dir).unwrap();
 }
 #[cfg(target_os = "linux")]
