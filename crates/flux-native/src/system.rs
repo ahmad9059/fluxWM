@@ -427,18 +427,51 @@ impl<D: 'static> Drop for Driver<D> {
         self.stop();
     }
 }
-// Stop a precomputed batch if a notification synchronously shuts down its owner.
-// Deliver the first item even if initialization sealed admission, so failures
-// remain observable; never deliver later ready events after stop/drop.
-fn dispatch_events<E>(
-    events: impl IntoIterator<Item = E>,
-    mut notify: impl FnMut(E),
+// Closed admission suppresses ready/input events, while terminal diagnostics
+// and the final inactive transition remain observable, including after failure.
+fn dispatch_events(
+    events: impl IntoIterator<Item = NativeEvent>,
+    mut notify: impl FnMut(NativeEvent),
     live: impl Fn() -> bool,
 ) {
     for event in events {
-        notify(event);
-        if !live() {
-            break;
+        if live()
+            || matches!(
+                event,
+                NativeEvent::Failure { .. } | NativeEvent::SessionActive(false)
+            )
+        {
+            notify(event);
+        }
+    }
+}
+// Pause active DRM even when a later initialization step returns early. The
+// guard is disarmed only when ownership moves into the prepared GPU domain.
+struct PauseOnDrop<T> {
+    resource: Option<T>,
+    pause: fn(&mut T),
+}
+impl<T> PauseOnDrop<T> {
+    fn new(resource: T, pause: fn(&mut T)) -> Self {
+        Self {
+            resource: Some(resource),
+            pause,
+        }
+    }
+    fn disarm(mut self) -> T {
+        self.resource.take().expect("pending resource owned")
+    }
+}
+impl<T> std::ops::Deref for PauseOnDrop<T> {
+    type Target = T;
+    fn deref(&self) -> &T {
+        self.resource.as_ref().expect("pending resource owned")
+    }
+}
+impl<T> Drop for PauseOnDrop<T> {
+    fn drop(&mut self) {
+        if let Some(resource) = &mut self.resource {
+            (self.pause)(resource);
         }
     }
 }
@@ -458,7 +491,11 @@ impl<D: 'static> Kernel<D> {
     }
     fn retire(&mut self, id: u64) {
         // Hotplug must not restore a connector snapshot captured before change.
-        retire_paused(self.gpus.remove(&id), |gpu| gpu.drm.pause());
+        retire_paused(self.gpus.remove(&id), |gpu| {
+            if gpu.drm.is_active() {
+                gpu.drm.pause();
+            }
+        });
     }
     fn stop(&mut self) {
         self.model.stop();
@@ -524,7 +561,10 @@ impl<D: 'static> Kernel<D> {
         let mut events = vec![NativeEvent::SessionActive(true)];
         let ids: Vec<_> = self.paths.keys().copied().collect();
         for id in ids {
-            self.retire(id);
+            if self.gpus.contains_key(&id) {
+                self.retire(id);
+                events.push(NativeEvent::GpuRemoved(id));
+            }
             events.extend(self.prepare(id, weak));
         }
         events
@@ -627,6 +667,7 @@ impl<D: 'static> Kernel<D> {
         let result = self.create_gpu(ticket, weak);
         let success = result.is_ok();
         if self.model.complete(ticket, success).is_err() {
+            retire_paused(result.ok(), |gpu| gpu.drm.pause());
             return vec![Self::failure(Some(id), Stage::Lifecycle)];
         }
         match result {
@@ -666,6 +707,7 @@ impl<D: 'static> Kernel<D> {
         // false preserves current connector state; this foundation creates no surfaces.
         let (drm, notifier) =
             DrmDevice::new(fd.clone(), false).map_err(|_| Failure::at(Stage::DrmInitialize))?;
+        let drm = PauseOnDrop::new(drm, DrmDevice::pause);
         let resources = drm
             .resource_handles()
             .map_err(|_| Failure::at(Stage::DrmResources))?;
@@ -719,7 +761,7 @@ impl<D: 'static> Kernel<D> {
             _source: Registration::new(self.handle.clone(), token),
             _renderer: renderer,
             _gbm: gbm,
-            drm,
+            drm: drm.disarm(),
             _seat_device: seat_device,
             ticket,
             info,
@@ -981,21 +1023,65 @@ mod tests {
         }
     }
     #[test]
-    fn notification_shutdown_cancels_remaining_batch() {
+    fn notification_shutdown_suppresses_ready_but_preserves_terminal_events() {
         let live = Cell::new(true);
         let mut seen = vec![];
+        let events = [
+            NativeEvent::SessionActive(true),
+            NativeEvent::GpuRemoved(1),
+            NativeEvent::Failure {
+                device: None,
+                error: Failure::at(Stage::Lifecycle),
+            },
+            NativeEvent::SessionActive(false),
+        ];
         dispatch_events(
-            [1, 2, 3],
+            events,
             |event| {
-                seen.push(event);
+                seen.push(match event {
+                    NativeEvent::SessionActive(true) => "active",
+                    NativeEvent::SessionActive(false) => "inactive",
+                    NativeEvent::Failure { .. } => "failure",
+                    _ => panic!("nonterminal event delivered after shutdown"),
+                });
                 live.set(false);
             },
             || live.get(),
         );
-        assert_eq!(seen, [1]);
-        // Initialization errors remain observable after admission is sealed.
-        dispatch_events([4, 5], |event| seen.push(event), || false);
-        assert_eq!(seen, [1, 4]);
+        assert_eq!(seen, ["active", "failure", "inactive"]);
+        let mut terminal = vec![];
+        dispatch_events(
+            [
+                NativeEvent::Failure {
+                    device: None,
+                    error: Failure::at(Stage::InputSetup),
+                },
+                NativeEvent::SessionActive(false),
+            ],
+            |event| terminal.push(matches!(event, NativeEvent::SessionActive(false))),
+            || false,
+        );
+        assert_eq!(terminal, [false, true]);
+    }
+    #[test]
+    fn partial_initialization_guard_pauses_on_error_and_disarms_on_handoff() {
+        struct Device(Rc<Cell<bool>>);
+        impl Drop for Device {
+            fn drop(&mut self) {
+                assert!(self.0.get(), "unpaused KMS restore");
+            }
+        }
+        fn prepare(paused: Rc<Cell<bool>>) -> Result<(), ()> {
+            let _guard = PauseOnDrop::new(Device(paused), |device| device.0.set(true));
+            Err(())
+        }
+        let paused = Rc::new(Cell::new(false));
+        assert!(prepare(paused.clone()).is_err());
+        assert!(paused.get());
+        paused.set(false);
+        let device = PauseOnDrop::new(Device(paused.clone()), |device| device.0.set(true)).disarm();
+        assert!(!paused.get(), "handoff must preserve active resource");
+        device.0.set(true);
     }
     #[test]
     fn retirement_pauses_before_drop_and_ignores_absent_resources() {
