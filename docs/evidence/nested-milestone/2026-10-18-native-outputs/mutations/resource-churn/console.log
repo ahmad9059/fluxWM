@@ -1,0 +1,21 @@
+   Compiling flux-native v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.62s
+     Running unittests src/lib.rs (target/debug/deps/flux_native-b06d11e922a393ac)
+
+running 1 test
+
+thread 'system::discovery::tests::detects_resource_churn_but_accepts_resource_reordering' (120381) panicked at crates/flux-native/src/system/discovery.rs:470:9:
+assertion `left == right` failed
+  left: None
+ right: Some(Failure { stage: OutputTopology, errno: None })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test system::discovery::tests::detects_resource_churn_but_accepts_resource_reordering ... FAILED
+
+failures:
+
+failures:
+    system::discovery::tests::detects_resource_churn_but_accepts_resource_reordering
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 30 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p flux-native --lib`

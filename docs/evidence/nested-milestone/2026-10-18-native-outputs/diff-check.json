@@ -1,0 +1,31 @@
+{
+  "raw_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "raw_exit": 2,
+  "excluded_exact_producer_paths": [
+    "docs/evidence/nested-milestone/2026-10-18-native-outputs/checks/default-tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-native-outputs/checks/native-tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-native-outputs/diff-check-raw.log",
+    "docs/evidence/nested-milestone/2026-10-18-native-outputs/producer-scripts/run-native-output-followup-review.py",
+    "docs/evidence/nested-milestone/2026-10-18-native-outputs/producer-scripts/run-native-output-review.py"
+  ],
+  "scoped_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-outputs/checks/default-tests.log",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-outputs/checks/native-tests.log",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-outputs/diff-check-raw.log",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-outputs/producer-scripts/run-native-output-followup-review.py",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-outputs/producer-scripts/run-native-output-review.py"
+  ],
+  "scoped_exit": 0,
+  "scope": "Exact raw console and executed review-driver bytes retained. No implementation source excluded. Raw log is staged check before adding the raw log itself."
+}

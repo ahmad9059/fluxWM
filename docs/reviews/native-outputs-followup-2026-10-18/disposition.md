@@ -1,0 +1,13 @@
+# Author disposition: native output follow-up
+
+Claude Opus 5.5 independently inspected frozen `99e3dac`, including the previously omitted pinned Smithay free plane helpers. The [unedited report](claude-report.md), [execution](execution.json), [manifest](input-manifest.json) and [verified trace](verified-execution.json) retain its actual scope. It used Read/Grep only, wrote nothing and ran no tests or hardware. Its findings are static review evidence.
+
+The report finds **no reachable high or medium defect in the inspected snapshot**, accepts discovery failure isolation and the corrected unknown-reference error classification, and explicitly retains the **unmeasured format-pair-cap risk**. Context preservation does not establish that candidate output planning supports a target GPU with more than 256 pairs. Filtering/capping negotiated candidates and gathering actual target counts remain follow-up work before hardware support can be claimed.
+
+The reviewer verifies that discovery failure yields no plan/raw modes while renderer/GBM/DRM ownership survives, Failure remains observable after context-only GpuReady, and the manual probe reports unhealthy initialization on that event. Later registration/lifecycle failures still retire resources without publishing a stale plan. An empty successful plan differs from a failure.
+
+With the added primary file, the reviewer confirms actual CRTC filtering, primary classification and shared-plane merging. It confirms implicit/INVALID entries in both plane and renderer sets and the consistency of exact-pair intersection. INVALID is not Linear: future allocation/commit must handle it as implicit. Missing universal-plane support may produce no compatible routes, not an error. Missing plane type metadata can panic upstream; actual fault recovery is unqualified. Smithay plane errors currently lose errno while retaining their failure stage.
+
+Later author `ce8db00` bounds reference-list validation before set construction while preserving InvalidTopology, and `8376a85` replaces the duplicate-pair capacity fixture with 257 distinct modifier pairs. These changes are author-tested after the frozen follow-up; no third independent read is implied. The earlier duplicate-pair fixture limitation in the unedited report accurately describes the frozen input.
+
+Event-contract tests still call the production helper rather than the whole native Driver; discovery fixtures do not execute DRM ioctls/property parsing, upstream panic paths, universal-plane failure, actual formats or any KMS transaction. The two-by-two exhaustive oracle is not all-size graph or hardware qualification. Full phase 3 and all other production gates remain open.

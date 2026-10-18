@@ -1,0 +1,13 @@
+{
+  "origin_records": 42,
+  "all_retained_origin_hashes_match": true,
+  "successful_checks": 11,
+  "registered_test_names": 209,
+  "registered_set_coverage": true,
+  "negative_controls_rejected": 3,
+  "new_gui_runs": 0,
+  "nested_binary_continuity_verified": true,
+  "readonly_audit_passed": true,
+  "final_binary_hashes_match_now": true,
+  "scope": "Author integrity verification; no native session/output/hardware execution and no production certification."
+}

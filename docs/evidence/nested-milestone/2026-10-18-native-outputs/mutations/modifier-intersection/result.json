@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "flux-native",
+    "--features",
+    "system",
+    "--locked",
+    "exact_modifier_intersection_is_required_and_serializes_losslessly",
+    "--",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "original_sha256": "7d1a9c70951e173bbf5294df7b7751c14e1382db242ce33c9b30a54bf69ae3a1",
+  "mutated_sha256": "86b4f4e610de4a0aca5c137562c7f0582ebc09034a5eac77ed91a170b5e17dc4",
+  "source_restored": true
+}

@@ -1,0 +1,10 @@
+{
+  "devices": [
+    "57857",
+    "57858"
+  ],
+  "gpu_contexts_created": 0,
+  "native_compositor": false,
+  "scope": "read-only udev inventory; no native desktop qualification",
+  "session_opened": false
+}

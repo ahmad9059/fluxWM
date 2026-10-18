@@ -1,0 +1,19 @@
+   Compiling flux-native v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.66s
+     Running unittests src/lib.rs (target/debug/deps/flux_native-b06d11e922a393ac)
+
+running 1 test
+
+thread 'output::tests::exact_modifier_intersection_is_required_and_serializes_losslessly' (119712) panicked at crates/flux-native/src/output.rs:645:9:
+assertion failed: plan(&topology).unwrap().assignments.is_empty()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test output::tests::exact_modifier_intersection_is_required_and_serializes_losslessly ... FAILED
+
+failures:
+
+failures:
+    output::tests::exact_modifier_intersection_is_required_and_serializes_losslessly
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 30 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p flux-native --lib`

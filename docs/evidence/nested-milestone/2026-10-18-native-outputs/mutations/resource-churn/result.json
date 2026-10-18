@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "flux-native",
+    "--features",
+    "system",
+    "--locked",
+    "detects_resource_churn_but_accepts_resource_reordering",
+    "--",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "original_sha256": "44727bdfc8f2e459514605239aa51410f4780bfa37f19469a22210b913315922",
+  "mutated_sha256": "cf63b77b1cf7d067c7ce02ff325ad81af76691d6d7c691827ccd0d8c95805403",
+  "source_restored": true
+}

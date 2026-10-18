@@ -1,0 +1,4 @@
+{
+  "commit": "8376a856db2b7f23d66c2bb06ce270e774de24eb",
+  "scope": "Native output discovery/route candidates only; no --session, native device or hardware output execution. New GUI runs=0; identical nested executables reference previous qualification."
+}

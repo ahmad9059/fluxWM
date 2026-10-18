@@ -61,3 +61,9 @@ Read the [final summary](final-summary.md), [follow-up report](claude-followup.m
 [Claude’s native report](native-foundation-2026-10-18/claude-report.md) independently reads frozen `0647fb3` in 26 Read/Grep calls. The [disposition](native-foundation-2026-10-18/disposition.md) records two medium defects, later author fixes and explicit Driver/input/hardware coverage gaps. All 100 frozen hashes match. No native desktop or phase completion is certified.
 
 The [native follow-up](native-foundation-followup-2026-10-18/disposition.md) reviews `846d9cf` in 20 calls, accepts the original fixes, and finds partial-initialization KMS restore still reachable. Subsequent author code adds guarded initialization and corrects terminal notifications; those later changes are explicitly outside the frozen read. An earlier API-failed attempt is preserved separately.
+
+## Native output candidate review
+
+[Claude’s candidate-planning report](native-outputs-2026-10-18/claude-report.md) reads `341ebbf` in 22 Read/Grep calls. The [disposition](native-outputs-2026-10-18/disposition.md) records a conditional, unmeasured format-pair-cap risk, subsequent failure isolation and reference validation corrections. The initial snapshot omitted the upstream free plane helper; the follow-up includes it. No native hardware or production qualification is claimed.
+
+The [native output follow-up](native-outputs-followup-2026-10-18/disposition.md) inspects `99e3dac`, now with the free upstream plane helper. It finds no reachable high/medium defect within scope, accepts failure isolation, and retains the unmeasured format-pair cap and actual adapter/hardware gaps. Later bounded-reference and distinct-pair fixture changes are identified as author work.

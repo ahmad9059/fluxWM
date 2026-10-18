@@ -1,0 +1,170 @@
+{
+  "checks/native-test-list.log": {
+    "source": "target/native-output-release-checks/native-test-list.log",
+    "sha256": "3ea9446b3040ec0157f2f959fd19412cb5450b246037ec3bde9c6af62b9ff5bb"
+  },
+  "checks/clippy.log": {
+    "source": "target/native-output-release-checks/clippy.log",
+    "sha256": "8798ee58d32de2652370845c8dc21192f06f9ca830d502d86e170e963736f639"
+  },
+  "checks/build-default.log": {
+    "source": "target/native-output-release-checks/build-default.log",
+    "sha256": "4cf86278c1e6d659943a46a3d7e3da429ac15be90f0f17742e24ef85228e7d3e"
+  },
+  "checks/checks.json": {
+    "source": "target/native-output-release-checks/checks.json",
+    "sha256": "b257330e4de458a2b0d747e84aefd92cedc72343687226c9b53e78879a0f7aa3"
+  },
+  "checks/diff.log": {
+    "source": "target/native-output-release-checks/diff.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "checks/nested-binary-continuity.json": {
+    "source": "target/native-output-release-checks/nested-binary-continuity.json",
+    "sha256": "da902536c1f07b4191bd6c43bb0de761fbbf6ba04936f4185ca9f245c87498aa"
+  },
+  "checks/default-tests.log": {
+    "source": "target/native-output-release-checks/default-tests.log",
+    "sha256": "0220c4b047faaf5fda09c15df9e55e827834cce6c045098f101762fb0db8cf47"
+  },
+  "checks/fmt.log": {
+    "source": "target/native-output-release-checks/fmt.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "checks/check.log": {
+    "source": "target/native-output-release-checks/check.log",
+    "sha256": "af74cbd84e40486b566858746fc3c4a0821b13074255bf5ec605c9e9e5a6d2f9"
+  },
+  "checks/native-tests.log": {
+    "source": "target/native-output-release-checks/native-tests.log",
+    "sha256": "3fa8a2c5b0d6023ffbefa1227e8c6a2a1514463bcac8072b1251721782a1b4f7"
+  },
+  "checks/build-native.log": {
+    "source": "target/native-output-release-checks/build-native.log",
+    "sha256": "e97691ab19f1743ac4cf78f7464631e08fcb3396f39af3d20a872b7164ee57fa"
+  },
+  "checks/docs.log": {
+    "source": "target/native-output-release-checks/docs.log",
+    "sha256": "24af4b405291fa310fcecc259ca22e49eaa88fef17143dee13cb71b9c63c6dea"
+  },
+  "checks/executables.json": {
+    "source": "target/native-output-release-checks/executables.json",
+    "sha256": "55cd2e7a643863b2f185d64e08e27f54b0dfb265f10c1787a2dd236a4cf32176"
+  },
+  "checks/rustdoc.log": {
+    "source": "target/native-output-release-checks/rustdoc.log",
+    "sha256": "1f91f046f8c491b49d1bff30c5de95978856bda481ae0d3af6a39f9a5a833365"
+  },
+  "checks/test-inventory.json": {
+    "source": "target/native-output-release-checks/test-inventory.json",
+    "sha256": "55dfe4f6eb7fdba84eb9067bf9f74ebd8d2298560b08a8fb4574fa1eb2479513"
+  },
+  "mutations/summary.json": {
+    "source": "target/native-output-final-mutations/summary.json",
+    "sha256": "bc381fc3f64b978aa4f5ca1493c03840ba0197cf65e240242e8900fdd8a17521"
+  },
+  "mutations/resource-churn/mutated.rs": {
+    "source": "target/native-output-final-mutations/resource-churn/mutated.rs",
+    "sha256": "cf63b77b1cf7d067c7ce02ff325ad81af76691d6d7c691827ccd0d8c95805403"
+  },
+  "mutations/resource-churn/result.json": {
+    "source": "target/native-output-final-mutations/resource-churn/result.json",
+    "sha256": "935d8b2693ae91db8d19e2e54965a165794290ad7ff53d1f787114ba4abc306b"
+  },
+  "mutations/resource-churn/original.rs": {
+    "source": "target/native-output-final-mutations/resource-churn/original.rs",
+    "sha256": "44727bdfc8f2e459514605239aa51410f4780bfa37f19469a22210b913315922"
+  },
+  "mutations/resource-churn/console.log": {
+    "source": "target/native-output-final-mutations/resource-churn/console.log",
+    "sha256": "a976f4db21348e8a9eb34ac949cc2d4adbecc160751d6dbf512447f7671be289"
+  },
+  "mutations/residual-rerouting/mutated.rs": {
+    "source": "target/native-output-final-mutations/residual-rerouting/mutated.rs",
+    "sha256": "98134882ad5c5e6807aed804b7c526379f3a414c0eb0b7c70e6f5c95d4b87a1c"
+  },
+  "mutations/residual-rerouting/result.json": {
+    "source": "target/native-output-final-mutations/residual-rerouting/result.json",
+    "sha256": "1c1dc0870a3f868c6688cec54c58ed61055062794d3fb7c6db40bbfc68629453"
+  },
+  "mutations/residual-rerouting/original.rs": {
+    "source": "target/native-output-final-mutations/residual-rerouting/original.rs",
+    "sha256": "7d1a9c70951e173bbf5294df7b7751c14e1382db242ce33c9b30a54bf69ae3a1"
+  },
+  "mutations/residual-rerouting/console.log": {
+    "source": "target/native-output-final-mutations/residual-rerouting/console.log",
+    "sha256": "683d863392957b0ff5bdb8af6eecda1302b17ef82b032a9ff17ac924b9b4b8c5"
+  },
+  "mutations/modifier-intersection/mutated.rs": {
+    "source": "target/native-output-final-mutations/modifier-intersection/mutated.rs",
+    "sha256": "86b4f4e610de4a0aca5c137562c7f0582ebc09034a5eac77ed91a170b5e17dc4"
+  },
+  "mutations/modifier-intersection/result.json": {
+    "source": "target/native-output-final-mutations/modifier-intersection/result.json",
+    "sha256": "d9a1f24b7299aacf0bb7b69d8dac668c96d4273d3a3b6ddb78fb503823c6144d"
+  },
+  "mutations/modifier-intersection/original.rs": {
+    "source": "target/native-output-final-mutations/modifier-intersection/original.rs",
+    "sha256": "7d1a9c70951e173bbf5294df7b7751c14e1382db242ce33c9b30a54bf69ae3a1"
+  },
+  "mutations/modifier-intersection/console.log": {
+    "source": "target/native-output-final-mutations/modifier-intersection/console.log",
+    "sha256": "e59de0cf20e547f4f97238e06f3b78b87af5d2525897018e353191d6080cb94f"
+  },
+  "readonly-audit/result.json": {
+    "source": "target/native-output-release-audit/result.json",
+    "sha256": "8b3ced5db252ace4ff95226016f68e3ffc02d51fbfc556e06d2b4ff13fa49e46"
+  },
+  "readonly-audit/stderr.log": {
+    "source": "target/native-output-release-audit/stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "readonly-audit/stdout.json": {
+    "source": "target/native-output-release-audit/stdout.json",
+    "sha256": "98eedb22620c801b0a462194cd99e121b0140f05257daa94de1c105274672966"
+  },
+  "producer-scripts/run-native-output-release-checks.py": {
+    "source": "target/run-native-output-release-checks.py",
+    "sha256": "7a47204b96701a4ef51a21251c33d61266fe83d28da2ee1a40eb2ce0dbf52a53"
+  },
+  "producer-scripts/verify-native-output-release.py": {
+    "source": "target/verify-native-output-release.py",
+    "sha256": "2722db3d8f0f8c983d74b66794acfe4e686f33398d7d04f96b905f7c028db4ea"
+  },
+  "producer-scripts/run-native-output-review.py": {
+    "source": "target/run-native-output-review.py",
+    "sha256": "aa8389b68aaf25921abe8171803b584a2511b367d89dac1eefb6099bd9dead2b"
+  },
+  "producer-scripts/run-native-output-followup-review.py": {
+    "source": "target/run-native-output-followup-review.py",
+    "sha256": "b3256bc9575f97b99bc076ba29dfba15300240142952c3cbc84a03b0965a7884"
+  },
+  "producer-scripts/prove-native-output-final-controls.py": {
+    "source": "target/prove-native-output-final-controls.py",
+    "sha256": "57c0ec4d2b818872cfc85016307d785ae5c1d27ec6fe74b0c333ec8f1fc9b3b9"
+  },
+  "producer-scripts/retain-native-output-evidence.py": {
+    "source": "target/retain-native-output-evidence.py",
+    "sha256": "67b98c5672adc7856f48152d5d19891a47fe346c164d00823608187bd68ec813"
+  },
+  "producer-scripts/verify-retain-native-review.py": {
+    "source": "target/verify-retain-native-review.py",
+    "sha256": "623642971f510bafc3b4879a8abe84d6ba172104e0cb8b5fc90c68644763f91e"
+  },
+  "harness-sources/check_native_probe.py": {
+    "source": "tools/check_native_probe.py",
+    "sha256": "b9a40f92bc89e75cd2ff4158de41842fa2afee6bc28c1b12e0819c1dd4507a57"
+  },
+  "producer-source/output.rs": {
+    "source": "crates/flux-native/src/output.rs",
+    "sha256": "35a32f6e6e6d01ef76a74a8647810049746244211a962a603b3d8c8356e071e3"
+  },
+  "producer-source/system.rs": {
+    "source": "crates/flux-native/src/system.rs",
+    "sha256": "b365132ed13911ff6bb0baec437151a7249e6dde17a8d37c60066d5985b8af18"
+  },
+  "producer-source/system/discovery.rs": {
+    "source": "crates/flux-native/src/system/discovery.rs",
+    "sha256": "e656fdcd3c7284e0915fe304c3dc0b884315b7121f101384b940a700b9ff1adc"
+  }
+}

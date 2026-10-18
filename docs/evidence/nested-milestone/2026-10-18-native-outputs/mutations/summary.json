@@ -1,0 +1,56 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "flux-native",
+      "--features",
+      "system",
+      "--locked",
+      "exhaustive_two_by_two_resource_graphs_match_independent_oracle",
+      "--",
+      "--nocapture"
+    ],
+    "exit_code": 101,
+    "original_sha256": "7d1a9c70951e173bbf5294df7b7751c14e1382db242ce33c9b30a54bf69ae3a1",
+    "mutated_sha256": "98134882ad5c5e6807aed804b7c526379f3a414c0eb0b7c70e6f5c95d4b87a1c",
+    "source_restored": true
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "flux-native",
+      "--features",
+      "system",
+      "--locked",
+      "exact_modifier_intersection_is_required_and_serializes_losslessly",
+      "--",
+      "--nocapture"
+    ],
+    "exit_code": 101,
+    "original_sha256": "7d1a9c70951e173bbf5294df7b7751c14e1382db242ce33c9b30a54bf69ae3a1",
+    "mutated_sha256": "86b4f4e610de4a0aca5c137562c7f0582ebc09034a5eac77ed91a170b5e17dc4",
+    "source_restored": true
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "flux-native",
+      "--features",
+      "system",
+      "--locked",
+      "detects_resource_churn_but_accepts_resource_reordering",
+      "--",
+      "--nocapture"
+    ],
+    "exit_code": 101,
+    "original_sha256": "44727bdfc8f2e459514605239aa51410f4780bfa37f19469a22210b913315922",
+    "mutated_sha256": "cf63b77b1cf7d067c7ce02ff325ad81af76691d6d7c691827ccd0d8c95805403",
+    "source_restored": true
+  }
+]

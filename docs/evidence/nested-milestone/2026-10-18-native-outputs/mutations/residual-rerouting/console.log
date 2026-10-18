@@ -1,0 +1,21 @@
+   Compiling flux-native v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.69s
+     Running unittests src/lib.rs (target/debug/deps/flux_native-b06d11e922a393ac)
+
+running 1 test
+
+thread 'output::tests::exhaustive_two_by_two_resource_graphs_match_independent_oracle' (119055) panicked at crates/flux-native/src/output.rs:553:13:
+assertion `left == right` failed: mask=1639
+  left: 1
+ right: 2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test output::tests::exhaustive_two_by_two_resource_graphs_match_independent_oracle ... FAILED
+
+failures:
+
+failures:
+    output::tests::exhaustive_two_by_two_resource_graphs_match_independent_oracle
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 30 filtered out; finished in 0.05s
+
+error: test failed, to rerun pass `-p flux-native --lib`
