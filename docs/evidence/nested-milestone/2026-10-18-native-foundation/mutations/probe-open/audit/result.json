@@ -1,0 +1,34 @@
+{
+  "ok": false,
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-native-probe",
+    "--check"
+  ],
+  "scope": "owned ptrace child --check only; denies native device open/ioctl, connect, process/thread creation and later exec; no native session qualification",
+  "general_security_sandbox": false,
+  "binary_sha256": "dda3cf60cd60d0752fedf00b1227ec398cf25af2155abf7570216f4af0f73805",
+  "harness_sha256": "56bc9bc244c32ea2d4a707eea467bd9e3f1733edfa23be38c77b6ffd6e637326",
+  "syscall_stops": 3565,
+  "checked_open_calls": 440,
+  "blocked_calls": [
+    {
+      "syscall": 257,
+      "reason": "native-device-open"
+    }
+  ],
+  "owned_pid": 43412,
+  "exit_code": 0,
+  "probe": {
+    "devices": [
+      "57857",
+      "57858"
+    ],
+    "gpu_contexts_created": 0,
+    "native_compositor": false,
+    "scope": "read-only udev inventory; no native desktop qualification",
+    "session_opened": false
+  },
+  "child_reaped": true,
+  "binary_unchanged": true,
+  "parent_environment_unchanged": true
+}

@@ -1,0 +1,31 @@
+   Compiling flux-native v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-native)
+warning: unused variable: `lease`
+   --> crates/flux-native/src/system.rs:209:5
+    |
+209 |     lease: L,
+    |     ^^^^^ help: if this is intentional, prefix it with an underscore: `_lease`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `flux-native` (lib) generated 1 warning (run `cargo fix --lib -p flux-native` to apply 1 suggestion)
+warning: `flux-native` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.74s
+     Running unittests src/lib.rs (target/debug/deps/flux_native-b06d11e922a393ac)
+
+running 1 test
+
+thread 'system::tests::reentrant_removal_keeps_broker_and_session_until_dispatcher_fd_retires' (42539) panicked at crates/flux-native/src/system.rs:924:9:
+assertion `left == right` failed
+  left: ["open", "renderer", "gbm", "drm", "close", "seat-owner", "callback-end", "notifier"]
+ right: ["open", "renderer", "gbm", "drm", "callback-end", "notifier", "close", "seat-owner"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test system::tests::reentrant_removal_keeps_broker_and_session_until_dispatcher_fd_retires ... FAILED
+
+failures:
+
+failures:
+    system::tests::reentrant_removal_keeps_broker_and_session_until_dispatcher_fd_retires
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p flux-native --lib`

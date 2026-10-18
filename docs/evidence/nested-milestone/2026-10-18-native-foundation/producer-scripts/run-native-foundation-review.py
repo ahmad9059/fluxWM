@@ -1,0 +1,33 @@
+import hashlib,json,os,signal,subprocess,time
+from pathlib import Path
+root=Path.cwd(); out=root/'target/native-foundation-review'; out.mkdir(); frozen=root/'target/native-foundation-review-snapshot'; frozen.mkdir()
+commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+paths=subprocess.check_output(['git','ls-files'],text=True).splitlines()
+selected=[p for p in paths if p.startswith('crates/') or (p.startswith('tools/') and p.endswith('.py')) or p in ['.github/workflows/linux.yml','docs/development/native-foundation.md','Cargo.toml','Cargo.lock','README.md','docs/development/autostart.md','docs/development/production-status-2026-10-18.md','docs/development/runtime-config.md','docs/development/runtime-findings.md','docs/10-roadmap.md']]
+manifest={}
+for name in selected:
+    data=subprocess.check_output(['git','show',commit+':'+name]); path=frozen/name; path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(data);manifest[name]=hashlib.sha256(data).hexdigest()
+def write(name,data): (out/name).write_text(json.dumps(data,indent=2)+'\n')
+upstream=Path('/home/ahmad/.cargo/git/checkouts/smithay-312425d48e59d8c8/023b78b')
+primary=[(upstream, 'smithay',p) for p in ['Cargo.toml','src/backend/session/libseat.rs','src/backend/session/mod.rs','src/backend/libinput/mod.rs','src/backend/drm/device/mod.rs','src/backend/drm/device/fd.rs','src/backend/drm/device/atomic.rs','src/backend/drm/device/legacy.rs','src/backend/allocator/gbm.rs','src/backend/egl/context.rs','src/backend/egl/display.rs','src/backend/renderer/gles/mod.rs','src/utils/fd.rs']]
+registry=Path('/home/ahmad/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f')
+primary += [(registry/'calloop-0.14.5','calloop',p) for p in ['Cargo.toml','src/sources/mod.rs','src/loop_logic.rs']]
+primary += [(registry/'input-0.10.0','input',p) for p in ['Cargo.toml','src/lib.rs','src/context.rs']]
+for base,package,name in primary:
+ data=(base/name).read_bytes();relative='upstream/'+package+'/'+name;path=frozen/relative;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data);manifest[relative]=hashlib.sha256(data).hexdigest()
+write('input-manifest.json',manifest);write('snapshot.json',dict(commit=commit,frozen=str(frozen),files=len(manifest)))
+prompt='Independently review frozen FluxWM native session/device foundation. Read/Grep only inside this frozen cwd. No commands/tests, writes, agents, network or outside paths. Use roughly18-26 focused tool calls and report concrete reachable HIGH/MEDIUM defects (or none), test/oracle gaps, checked controls and limits. Source crates/flux-native/src/{lifecycle,system,probe}.rs, tests/probe.rs, tools/check_native_probe.py, .github/workflows/linux.yml, docs/development/native-foundation.md. Main fluxwm remains nested-only: this optional stage does not create output surfaces or implement modesets/render/presentation, full device/input policy or native desktop. No phase/hardware qualification. Driver code has not been run with real libseat/DRM/input; only compiling, mock resource/lifecycle tests, read-only probe and an owned ptrace child audit. Do not execute it. Actual pinned dependencies are copied under upstream/smithay, upstream/calloop, upstream/input. Inspect ownership assumptions there rather than assuming close semantics. libseat adapter ignores flags and requires Session::close; SeatDevice enforces/validates CLOEXEC/NONBLOCK, broker original FD lives separately from Smithay private duplicate. InputSession also enforces flags/transfers FD to libinput and accounts returned closes. Registration guards drop notifier before graphics/broker; BUT reentrant self-removal leaves dispatcher pinned. Shared pin_lease holds broker/session owner in source callback; pinned calloop drops source before callback. Rc seat notifier owner must outlive all fd/context cleanup, even Driver drop inside callback and partial init/error/loop-first drop. Model epochs/generations gate work and stale DRM events across pause/change/reuse/stop, finite capacity16/counters fail-closed. Ready means context only. Raw import versus render format counts are distinct. Session probe has fifteen-second event-loop interval after init, not universal deadline; pinned DrmDevice Drop can restore prior KMS state, so explicit manual --session requires separate VT and is unexecuted. Probe read-only --check constructs only udev inventory, no seat/device opens, reports no native compositor. Trusted-binary Linux x86-64 ptrace auditor is a regression tool, explicitly not arbitrary-program security sandbox. It follows its own child, denies native device path open and DRM/input ioctl/connect/fork/clone/laterexec/io_uring, validates hash/reaping/env. Look for real audit false passes, dangerous signalling, syscall accounting, ABI/stop/failure errors. Author deliberate mutations: dropping callback pin makes real calloop self-removal order test fail; dropping ready epoch guard fails after resume; adding a forbidden nonexistent native path open to --check is blocked before kernel open and fails audit despite healthy metadata. Exact normal source restored. These are author claims, not your executed results. Check tests truly exercise production helper rather than duplicate controls. Physical GPU/session/error/provider-loss behavior and full native app integration remain OPEN; libseat upstream unwraps are documented. CI job is configured but no hosted pass is claimed. Report file/line and concrete reachable trigger for bugs, separate missing later features and limited current scope. No production certification.'
+(out/'prompt.txt').write_text(prompt+'\n')
+argv=['claude','-p',prompt,'--output-format','json','--verbose','--tools','Read,Grep','--allowedTools','Read,Grep','--strict-mcp-config','--mcp-config','{"mcpServers":{}}','--disable-slash-commands','--no-session-persistence','--max-turns','34','--permission-mode','plan']
+write('command.json',dict(argv=argv,cwd=str(frozen)))
+started=time.monotonic()
+with (out/'stdout.json').open('wb') as stdout,(out/'stderr.log').open('wb') as stderr:
+    p=subprocess.Popen(argv,cwd=frozen,stdout=stdout,stderr=stderr,start_new_session=True)
+    write('process.json',dict(pid=p.pid,pgid=os.getpgid(p.pid)))
+    try: code=p.wait(timeout=480)
+    except subprocess.TimeoutExpired:
+        os.killpg(p.pid,signal.SIGTERM)
+        try:code=p.wait(timeout=5)
+        except subprocess.TimeoutExpired:os.killpg(p.pid,signal.SIGKILL);code=p.wait()
+write('execution.json',dict(exit_code=code,duration_seconds=round(time.monotonic()-started,3),snapshot_unchanged=all(hashlib.sha256((frozen/k).read_bytes()).hexdigest()==v for k,v in manifest.items())))
+print(json.dumps(dict(exit_code=code,review=str(out))))

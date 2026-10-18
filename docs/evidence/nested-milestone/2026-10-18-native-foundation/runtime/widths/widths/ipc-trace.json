@@ -1,0 +1,4514 @@
+[
+  {
+    "request": {
+      "id": "238c11077e6d4517a397fa8a36b2fd55",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "238c11077e6d4517a397fa8a36b2fd55",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "1",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "1",
+          "requested_generation": "1",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "1",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 2,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "3",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "ec6d1703d641443a954eefea61aaf348",
+      "method": "outputs.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "ec6d1703d641443a954eefea61aaf348",
+      "result": {
+        "outputs": [
+          {
+            "geometry": {
+              "height": 800,
+              "width": 1280,
+              "x": 0,
+              "y": 0
+            },
+            "id": "0:0",
+            "name": "nested-1",
+            "scale": 1.0
+          }
+        ]
+      },
+      "state_sequence": "3",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "02184e846c6042ca9d80eac46cdfa88c",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "02184e846c6042ca9d80eac46cdfa88c",
+      "result": {
+        "windows": []
+      },
+      "state_sequence": "3",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "490afa5f34b342629f4b03ab58f50398",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "490afa5f34b342629f4b03ab58f50398",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 3,
+              "committed_size": null,
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 4,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "FluxWM fixture width-0",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "11",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "2f944194d723414fb0494ba253596b58",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "2f944194d723414fb0494ba253596b58",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 4,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "13",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "730eb72a8aea47cdad3110d50691edc3",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "730eb72a8aea47cdad3110d50691edc3",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "1",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "1",
+          "requested_generation": "1",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 1
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "1",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 1,
+        "mapped_windows": 1,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 2,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 28,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 1,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 1,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 3,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 28
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "13",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "d694914f73784545b376476825b3a3ce",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "d694914f73784545b376476825b3a3ce",
+      "result": {
+        "accepted": true,
+        "generation": "2"
+      },
+      "state_sequence": "14",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "9ebf8ad2c3164ad98e089f9e40d58961",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "9ebf8ad2c3164ad98e089f9e40d58961",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "1",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "1",
+          "requested_generation": "1",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 1
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 1,
+        "mapped_windows": 1,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 2,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 32,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 1,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 1,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 3,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 28
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "14",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "890d7b8cae1944dca4d668578b27ab0b",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "890d7b8cae1944dca4d668578b27ab0b",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "2",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "2",
+          "requested_generation": "2",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 1
+        },
+        "configuration": {
+          "applied_generation": "2",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "2",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 1,
+        "mapped_windows": 1,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 2,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 40,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 2,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 1,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 4,
+          "submissions": 2,
+          "unmaps": 0,
+          "wayland_requests": 28
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "16",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "e3cadb3aa1164cd5b5fe3dbff0ce7c2e",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "e3cadb3aa1164cd5b5fe3dbff0ce7c2e",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "2",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "2",
+          "requested_generation": "2",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 1
+        },
+        "configuration": {
+          "applied_generation": "2",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "2",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 1,
+        "mapped_windows": 1,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 2,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 42,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 2,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 1,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 4,
+          "submissions": 2,
+          "unmaps": 0,
+          "wayland_requests": 28
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "16",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "66b31c25bfb745b4a8773d151ef15b8f",
+      "method": "config.effective",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "66b31c25bfb745b4a8773d151ef15b8f",
+      "result": {
+        "desired": {
+          "autostart_entries": 0,
+          "binding_entries": 2,
+          "layout": {
+            "default_width": {
+              "logical_px": 760.0
+            },
+            "gaps": 12.0,
+            "mode": "strip",
+            "width_presets": [
+              {
+                "logical_px": 400.0
+              },
+              {
+                "fraction": 0.25
+              }
+            ]
+          }
+        },
+        "effective": {
+          "binding_entries": 2,
+          "keymap": "startup-seat-keymap",
+          "layout": {
+            "default_width": {
+              "logical_px": 760.0
+            },
+            "gaps": 12.0,
+            "mode": "strip"
+          }
+        },
+        "generation": "2",
+        "unsupported": [
+          "layout.outer_gap",
+          "layout.focus_margin",
+          "layout.canvas",
+          "input",
+          "outputs",
+          "animations",
+          "decoration",
+          "rules",
+          "security"
+        ]
+      },
+      "state_sequence": "16",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "44506fde3ca84fc98f2d494748aa8f33",
+      "method": "workspaces.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "44506fde3ca84fc98f2d494748aa8f33",
+      "result": {
+        "workspaces": [
+          {
+            "focused": true,
+            "id": "0:0",
+            "mode": "strip",
+            "output": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "16",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "eb47a58af4484d7f82603d5e9381f5f0",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "eb47a58af4484d7f82603d5e9381f5f0",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 4,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "16",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "37bd2765493c4bb1aaf3c81ede6c5c08",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "37bd2765493c4bb1aaf3c81ede6c5c08",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 10,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "25",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "5f1c4007d1774f41a27546fd0602ad68",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "5f1c4007d1774f41a27546fd0602ad68",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "2",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "2",
+          "requested_generation": "2",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 2
+        },
+        "configuration": {
+          "applied_generation": "2",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "2",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 3,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 64,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 4,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 2,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 2,
+          "unmaps": 0,
+          "wayland_requests": 49
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "25",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "3a58c0fc0f964f208f78e36b94837d67",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "3a58c0fc0f964f208f78e36b94837d67",
+      "result": {
+        "accepted": true,
+        "generation": "3"
+      },
+      "state_sequence": "26",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "4e7a4f8d7aee424899e8143bbb07ff00",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "4e7a4f8d7aee424899e8143bbb07ff00",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "2",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "2",
+          "requested_generation": "2",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 2
+        },
+        "configuration": {
+          "applied_generation": "2",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 3,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 68,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 4,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 2,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 2,
+          "unmaps": 0,
+          "wayland_requests": 49
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "26",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "43f41c9021ec4032b5d345d83503912c",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "43f41c9021ec4032b5d345d83503912c",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "3",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 2
+        },
+        "configuration": {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 3,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 76,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 6,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 2,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 6,
+          "submissions": 3,
+          "unmaps": 0,
+          "wayland_requests": 49
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "28",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "04a08cc34a0347c3a062ae6ac43475f5",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "04a08cc34a0347c3a062ae6ac43475f5",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "3",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 2
+        },
+        "configuration": {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 2,
+        "mapped_windows": 2,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 3,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 78,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 6,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 2,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 6,
+          "submissions": 3,
+          "unmaps": 0,
+          "wayland_requests": 49
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "28",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "c51d931d9c644e9c9045e28d571aca18",
+      "method": "config.effective",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "c51d931d9c644e9c9045e28d571aca18",
+      "result": {
+        "desired": {
+          "autostart_entries": 0,
+          "binding_entries": 2,
+          "layout": {
+            "default_width": {
+              "fraction": 0.25
+            },
+            "gaps": 12.0,
+            "mode": "strip",
+            "width_presets": [
+              {
+                "logical_px": 400.0
+              },
+              {
+                "fraction": 0.25
+              }
+            ]
+          }
+        },
+        "effective": {
+          "binding_entries": 2,
+          "keymap": "startup-seat-keymap",
+          "layout": {
+            "default_width": {
+              "fraction": 0.25
+            },
+            "gaps": 12.0,
+            "mode": "strip"
+          }
+        },
+        "generation": "3",
+        "unsupported": [
+          "layout.outer_gap",
+          "layout.focus_margin",
+          "layout.canvas",
+          "input",
+          "outputs",
+          "animations",
+          "decoration",
+          "rules",
+          "security"
+        ]
+      },
+      "state_sequence": "28",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "81f5cd21619d42b29dcb3a598af63ea7",
+      "method": "workspaces.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "81f5cd21619d42b29dcb3a598af63ea7",
+      "result": {
+        "workspaces": [
+          {
+            "focused": true,
+            "id": "0:0",
+            "mode": "strip",
+            "output": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "28",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "0dfda71c1ada4a44b668509643281a2f",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "0dfda71c1ada4a44b668509643281a2f",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 10,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "28",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "4fe5a7b748a94004a473db620e2926c2",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "4fe5a7b748a94004a473db620e2926c2",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 13,
+              "committed_size": null,
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 15,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "FluxWM fixture width-2",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "35",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "08eaf80e0a5b4138afe468e1a497a1e9",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "08eaf80e0a5b4138afe468e1a497a1e9",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 15,
+              "committed_size": [
+                320,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 15,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-2-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "37",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "941c60f14ac64c97b6dd3beaa7b9762b",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "941c60f14ac64c97b6dd3beaa7b9762b",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "3",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 3
+        },
+        "configuration": {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 3,
+        "mapped_windows": 3,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 4,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 103,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 9,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 3,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 7,
+          "submissions": 3,
+          "unmaps": 0,
+          "wayland_requests": 70
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "37",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "ffbaafcc93824ee7bbf81b9dbddc3a2c",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "ffbaafcc93824ee7bbf81b9dbddc3a2c",
+      "result": {
+        "accepted": true,
+        "generation": "4"
+      },
+      "state_sequence": "38",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "cd9f6958295347df9426c5f20a68c1db",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "cd9f6958295347df9426c5f20a68c1db",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "3",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 3
+        },
+        "configuration": {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 3,
+        "mapped_windows": 3,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 4,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 107,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 9,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 3,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 7,
+          "submissions": 3,
+          "unmaps": 0,
+          "wayland_requests": 70
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "38",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "17a094d545eb464fa0b7350e745ea0c3",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "17a094d545eb464fa0b7350e745ea0c3",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 3
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 3,
+        "mapped_windows": 3,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 4,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 112,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 12,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 3,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 8,
+          "submissions": 4,
+          "unmaps": 0,
+          "wayland_requests": 70
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "40",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "38c35cac7c6e4205b5dea2a550aa4f9d",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "38c35cac7c6e4205b5dea2a550aa4f9d",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 3
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 3,
+        "mapped_windows": 3,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 4,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 114,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 12,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 3,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 8,
+          "submissions": 4,
+          "unmaps": 0,
+          "wayland_requests": 70
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "40",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "92a15bde3a694c27a3ef7f465c5c2fec",
+      "method": "config.effective",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "92a15bde3a694c27a3ef7f465c5c2fec",
+      "result": {
+        "desired": {
+          "autostart_entries": 0,
+          "binding_entries": 2,
+          "layout": {
+            "default_width": {
+              "preset": 1
+            },
+            "gaps": 12.0,
+            "mode": "strip",
+            "width_presets": [
+              {
+                "logical_px": 600.0
+              },
+              {
+                "fraction": 0.25
+              }
+            ]
+          }
+        },
+        "effective": {
+          "binding_entries": 2,
+          "keymap": "startup-seat-keymap",
+          "layout": {
+            "default_width": {
+              "logical_px": 600.0
+            },
+            "gaps": 12.0,
+            "mode": "strip"
+          }
+        },
+        "generation": "4",
+        "unsupported": [
+          "layout.outer_gap",
+          "layout.focus_margin",
+          "layout.canvas",
+          "input",
+          "outputs",
+          "animations",
+          "decoration",
+          "rules",
+          "security"
+        ]
+      },
+      "state_sequence": "40",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "2f8d04660dee4e50b44608232e4f2941",
+      "method": "workspaces.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "2f8d04660dee4e50b44608232e4f2941",
+      "result": {
+        "workspaces": [
+          {
+            "focused": true,
+            "id": "0:0",
+            "mode": "strip",
+            "output": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "43",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "69c42c1c686a43bbb54044034e0a7780",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "69c42c1c686a43bbb54044034e0a7780",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 15,
+              "committed_size": [
+                320,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 15,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-2-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": false,
+            "configure": {
+              "committed_serial": null,
+              "committed_size": null,
+              "deferred": false,
+              "desired_size": null,
+              "initial_sent": true,
+              "last_acked_serial": null,
+              "sent_size": null,
+              "unacknowledged": 1
+            },
+            "focused": false,
+            "geometry": null,
+            "id": "3:0",
+            "mapped": false,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "FluxWM fixture width-3",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "43",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "9ebd11dd3ad84242ad0fff782ba79625",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "9ebd11dd3ad84242ad0fff782ba79625",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 15,
+              "committed_size": [
+                320,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 20,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-2-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 21,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 21,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 1516.0,
+              "y": -0.0
+            },
+            "id": "3:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-3-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "49",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "b46f9d22ec354e90b954fe22781f0434",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "b46f9d22ec354e90b954fe22781f0434",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 2
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 4,
+        "mapped_windows": 4,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 5,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 133,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 14,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 4,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 9,
+          "submissions": 4,
+          "unmaps": 0,
+          "wayland_requests": 91
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "49",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "a716f2e6ace94a98be1f66bd80539253",
+      "method": "config.effective",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "a716f2e6ace94a98be1f66bd80539253",
+      "result": {
+        "desired": {
+          "autostart_entries": 0,
+          "binding_entries": 2,
+          "layout": {
+            "default_width": {
+              "preset": 1
+            },
+            "gaps": 12.0,
+            "mode": "strip",
+            "width_presets": [
+              {
+                "logical_px": 600.0
+              },
+              {
+                "fraction": 0.25
+              }
+            ]
+          }
+        },
+        "effective": {
+          "binding_entries": 2,
+          "keymap": "startup-seat-keymap",
+          "layout": {
+            "default_width": {
+              "logical_px": 600.0
+            },
+            "gaps": 12.0,
+            "mode": "strip"
+          }
+        },
+        "generation": "4",
+        "unsupported": [
+          "layout.outer_gap",
+          "layout.focus_margin",
+          "layout.canvas",
+          "input",
+          "outputs",
+          "animations",
+          "decoration",
+          "rules",
+          "security"
+        ]
+      },
+      "state_sequence": "49",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "3d6fba2795f840068484391754b7d8e7",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "3d6fba2795f840068484391754b7d8e7",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 2
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 4,
+        "mapped_windows": 4,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 5,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 137,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 14,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 4,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 9,
+          "submissions": 4,
+          "unmaps": 0,
+          "wayland_requests": 91
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "49",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "2745603302b641acab6da202b4b23cb9",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "2745603302b641acab6da202b4b23cb9",
+      "result": {
+        "accepted": true,
+        "generation": "5"
+      },
+      "state_sequence": "50",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "7eb06c35cdb842abb12759630dccaf25",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "7eb06c35cdb842abb12759630dccaf25",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 2
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "5",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 4,
+        "mapped_windows": 4,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 5,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 141,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 14,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 4,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 9,
+          "submissions": 4,
+          "unmaps": 0,
+          "wayland_requests": 91
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "50",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "19c7cb5c314246acb88bdf9c9cf75759",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "19c7cb5c314246acb88bdf9c9cf75759",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 2
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": "configuration schema or source validation failed",
+          "prepared_generation": null,
+          "requested_generation": "5",
+          "status": "failed"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 4,
+        "mapped_windows": 4,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 5,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 147,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 16,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 4,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 10,
+          "submissions": 5,
+          "unmaps": 0,
+          "wayland_requests": 91
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "51",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "9330dfb8f74d4813baf3ea14490ed29a",
+      "method": "config.effective",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "9330dfb8f74d4813baf3ea14490ed29a",
+      "result": {
+        "desired": {
+          "autostart_entries": 0,
+          "binding_entries": 2,
+          "layout": {
+            "default_width": {
+              "preset": 1
+            },
+            "gaps": 12.0,
+            "mode": "strip",
+            "width_presets": [
+              {
+                "logical_px": 600.0
+              },
+              {
+                "fraction": 0.25
+              }
+            ]
+          }
+        },
+        "effective": {
+          "binding_entries": 2,
+          "keymap": "startup-seat-keymap",
+          "layout": {
+            "default_width": {
+              "logical_px": 600.0
+            },
+            "gaps": 12.0,
+            "mode": "strip"
+          }
+        },
+        "generation": "4",
+        "unsupported": [
+          "layout.outer_gap",
+          "layout.focus_margin",
+          "layout.canvas",
+          "input",
+          "outputs",
+          "animations",
+          "decoration",
+          "rules",
+          "security"
+        ]
+      },
+      "state_sequence": "51",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "b532f1650ce04723ba7891dffbf45b8a",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "b532f1650ce04723ba7891dffbf45b8a",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 15,
+              "committed_size": [
+                320,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 20,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-2-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 21,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 21,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 1516.0,
+              "y": -0.0
+            },
+            "id": "3:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-3-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "51",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "330d1253acdf48999cf9817da34eb3e4",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "330d1253acdf48999cf9817da34eb3e4",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 15,
+              "committed_size": [
+                320,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 20,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-2-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 21,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 25,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 1516.0,
+              "y": -0.0
+            },
+            "id": "3:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-3-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 24,
+              "committed_size": null,
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 26,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 2128.0,
+              "y": -0.0
+            },
+            "id": "4:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "FluxWM fixture width-4",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "58",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "8b6ea9a4ff3f4c3e8bb09eb49e6679e0",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "8b6ea9a4ff3f4c3e8bb09eb49e6679e0",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 15,
+              "committed_size": [
+                320,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 20,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-2-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 21,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 25,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 1516.0,
+              "y": -0.0
+            },
+            "id": "3:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-3-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 26,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 26,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 2128.0,
+              "y": -0.0
+            },
+            "id": "4:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-4-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "60",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "ed0ee26bb0454b269967f48ddae1b7bc",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "ed0ee26bb0454b269967f48ddae1b7bc",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 3
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": "configuration schema or source validation failed",
+          "prepared_generation": null,
+          "requested_generation": "5",
+          "status": "failed"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 5,
+        "mapped_windows": 5,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 6,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 170,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 19,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 5,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 11,
+          "submissions": 5,
+          "unmaps": 0,
+          "wayland_requests": 112
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "60",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "4e56ce7110634f18a9ebeffd18068c73",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "4e56ce7110634f18a9ebeffd18068c73",
+      "result": {
+        "accepted": true,
+        "generation": "6"
+      },
+      "state_sequence": "61",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "5978ce89db524f2a9719d4134b657485",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "5978ce89db524f2a9719d4134b657485",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 3
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "6",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 5,
+        "mapped_windows": 5,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 6,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 174,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 19,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 5,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 11,
+          "submissions": 5,
+          "unmaps": 0,
+          "wayland_requests": 112
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "61",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "c1e77ae363234cb5bb1b40bdca05706d",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "c1e77ae363234cb5bb1b40bdca05706d",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "6",
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": "6",
+          "requested_generation": "6",
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 3
+        },
+        "configuration": {
+          "applied_generation": "6",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "6",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 2,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 6,
+        "mapped_windows": 5,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 6,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 183,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 22,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 5,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 12,
+          "submissions": 6,
+          "unmaps": 0,
+          "wayland_requests": 118
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [
+            {
+              "id": "1",
+              "status": "responsive"
+            }
+          ],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 1,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 1,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": true
+        }
+      },
+      "state_sequence": "66",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "2173a9c3a37444d8a680159e561b0ed0",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "2173a9c3a37444d8a680159e561b0ed0",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 15,
+              "committed_size": [
+                320,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 20,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-2-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 21,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 25,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 1516.0,
+              "y": -0.0
+            },
+            "id": "3:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-3-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 26,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 26,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 2128.0,
+              "y": -0.0
+            },
+            "id": "4:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-4-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": false,
+            "configure": {
+              "committed_serial": null,
+              "committed_size": null,
+              "deferred": false,
+              "desired_size": null,
+              "initial_sent": true,
+              "last_acked_serial": null,
+              "sent_size": null,
+              "unacknowledged": 1
+            },
+            "focused": false,
+            "geometry": null,
+            "id": "5:0",
+            "mapped": false,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "FluxWM fixture width-5",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "66",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "5f52a6bcda254c829274416662c91299",
+      "method": "windows.list",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "5f52a6bcda254c829274416662c91299",
+      "result": {
+        "windows": [
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 4,
+              "committed_size": [
+                400,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                400,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 9,
+              "sent_size": [
+                400,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 400.0,
+              "x": 0.0,
+              "y": -0.0
+            },
+            "id": "0:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-0-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 10,
+              "committed_size": [
+                760,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                760,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 14,
+              "sent_size": [
+                760,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 760.0,
+              "x": 412.0,
+              "y": -0.0
+            },
+            "id": "1:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-1-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 15,
+              "committed_size": [
+                320,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                320,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 20,
+              "sent_size": [
+                320,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 320.0,
+              "x": 1184.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-2-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 21,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 25,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 1516.0,
+              "y": -0.0
+            },
+            "id": "3:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-3-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 26,
+              "committed_size": [
+                600,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                600,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 31,
+              "sent_size": [
+                600,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": false,
+            "geometry": {
+              "height": 800.0,
+              "width": 600.0,
+              "x": 2128.0,
+              "y": -0.0
+            },
+            "id": "4:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-4-ready",
+            "workspace": "0:0"
+          },
+          {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_serial": 32,
+              "committed_size": [
+                480,
+                800
+              ],
+              "deferred": false,
+              "desired_size": [
+                480,
+                800
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 32,
+              "sent_size": [
+                480,
+                800
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "geometry": {
+              "height": 800.0,
+              "width": 480.0,
+              "x": 2740.0,
+              "y": -0.0
+            },
+            "id": "5:0",
+            "mapped": true,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "width-5-ready",
+            "workspace": "0:0"
+          }
+        ]
+      },
+      "state_sequence": "72",
+      "version": 1
+    }
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "commit": "736fef298a68065e43f1cff777a03cd79d5b70e8",
+  "scope": "Optional native foundation; no real seat/GPU/input session or output presentation executed. Source mutations predate follow-up fixes; exact original/mutated bytes retained. Final binaries built after all cargo checks before GUI tests.",
+  "excluded": "ELF executables, Xauthority cookies, screenshots, GPG keyrings, full environment and native hardware inventory paths are not retained."
+}

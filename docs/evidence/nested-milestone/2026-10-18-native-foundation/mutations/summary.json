@@ -1,0 +1,65 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "flux-native",
+      "--features",
+      "system",
+      "--locked",
+      "reentrant_removal_keeps_broker_and_session_until_dispatcher_fd_retires",
+      "--",
+      "--nocapture"
+    ],
+    "original_sha256": "4a28df35679ab5b6ce9e5c0abeac3bebb88c8241de41c19a9513d0d11cc1cce6",
+    "mutated_sha256": "811610e7026f5d51f00e17419f036f7487ceb85d5d6d22149ba5ca8a4e6aecd1",
+    "exit_code": 101,
+    "source_restored": true,
+    "restored_sha256": "4a28df35679ab5b6ce9e5c0abeac3bebb88c8241de41c19a9513d0d11cc1cce6"
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "flux-native",
+      "--features",
+      "system",
+      "--locked",
+      "pause_resume_and_changed_state_reject_old_completion",
+      "--",
+      "--nocapture"
+    ],
+    "original_sha256": "bac6c2645b4c0d3a0961ec3a4d9b1f5f4dfccabd9bb13ee6db7e0374c0630627",
+    "mutated_sha256": "e9522bd1239a67b6479da52f828161da5939c0396646828b31b7fdc354bb9fe8",
+    "exit_code": 101,
+    "source_restored": true,
+    "restored_sha256": "bac6c2645b4c0d3a0961ec3a4d9b1f5f4dfccabd9bb13ee6db7e0374c0630627"
+  },
+  {
+    "commands": [
+      [
+        "cargo",
+        "build",
+        "-p",
+        "flux-native",
+        "--features",
+        "system",
+        "--locked"
+      ],
+      [
+        "python3",
+        "tools/check_native_probe.py",
+        "--artifacts",
+        "target/native-control-mutations/probe-open/audit"
+      ]
+    ],
+    "original_sha256": "efea853a8e20315c038b355c0e2e0bf868895c8279b2437cf2c33d3fabdbb451",
+    "mutated_sha256": "a63b16031c87ad78d8f3bbbd3b0a9d34f2b332f6f81ac76b1c6debce1e3b3149",
+    "build_exit_code": 0,
+    "audit_exit_code": 1,
+    "source_restored": true,
+    "restored_sha256": "efea853a8e20315c038b355c0e2e0bf868895c8279b2437cf2c33d3fabdbb451"
+  }
+]

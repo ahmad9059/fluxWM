@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/tmp/fluxrt-zn22ws4d/fluxwm/fluxwm-shutdown-2247d3674c5b.sock",
+  "pid": 94294,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxwm-shutdown-2247d3674c5b"
+}

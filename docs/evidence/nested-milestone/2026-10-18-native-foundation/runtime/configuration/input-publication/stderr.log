@@ -1,0 +1,5 @@
+2026-10-18T13:16:20.205222Z  INFO fluxwm::state: development bindings absent from selected keymap inactive=1
+2026-10-18T13:16:20.480516Z  INFO fluxwm::state: window_mapped id=0:0
+2026-10-18T13:16:20.480819Z  INFO fluxwm::state: window_mapped id=1:0
+2026-10-18T13:16:27.502704Z  INFO fluxwm::state: toplevel_destroyed id=0:0
+2026-10-18T13:16:27.502844Z  INFO fluxwm::state: toplevel_destroyed id=1:0

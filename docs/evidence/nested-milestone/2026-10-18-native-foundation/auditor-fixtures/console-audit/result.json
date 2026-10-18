@@ -1,0 +1,30 @@
+{
+  "ok": false,
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/console",
+    "--check"
+  ],
+  "scope": "owned ptrace child --check only; denies native device open/ioctl, connect, process/thread creation and later exec; no native session qualification",
+  "general_security_sandbox": false,
+  "binary_sha256": "9944698b1cbe5df4ff1a1ad414fa8d48f3a928d866ca09cac81ef60b1b54f8ea",
+  "harness_sha256": "b9a40f92bc89e75cd2ff4158de41842fa2afee6bc28c1b12e0819c1dd4507a57",
+  "syscall_stops": 71,
+  "checked_open_calls": 3,
+  "blocked_calls": [
+    {
+      "syscall": 257,
+      "reason": "native-device-open"
+    }
+  ],
+  "owned_pid": 87917,
+  "exit_code": 0,
+  "probe": {
+    "session_opened": false,
+    "gpu_contexts_created": 0,
+    "native_compositor": false
+  },
+  "child_reaped": true,
+  "binary_unchanged": true,
+  "harness_unchanged": true,
+  "parent_environment_unchanged": true
+}

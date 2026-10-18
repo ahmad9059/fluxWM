@@ -1,0 +1,148 @@
+{
+  "after_windows": [
+    {
+      "admission_error": null,
+      "app_id": "org.fluxwm.Fixture",
+      "buffered": true,
+      "configure": {
+        "committed_serial": 4,
+        "committed_size": [
+          999999984,
+          800
+        ],
+        "deferred": false,
+        "desired_size": [
+          999999984,
+          800
+        ],
+        "initial_sent": true,
+        "last_acked_serial": 4,
+        "sent_size": [
+          999999984,
+          800
+        ],
+        "unacknowledged": 0
+      },
+      "focused": true,
+      "geometry": {
+        "height": 800.0,
+        "width": 999999984.0,
+        "x": 0.0,
+        "y": -0.0
+      },
+      "id": "0:0",
+      "mapped": true,
+      "responsiveness": {
+        "id": "1",
+        "status": "responsive"
+      },
+      "title": "config-wide-ready",
+      "workspace": "0:0"
+    }
+  ],
+  "before_windows": [
+    {
+      "admission_error": null,
+      "app_id": "org.fluxwm.Fixture",
+      "buffered": true,
+      "configure": {
+        "committed_serial": 4,
+        "committed_size": [
+          999999984,
+          800
+        ],
+        "deferred": false,
+        "desired_size": [
+          999999984,
+          800
+        ],
+        "initial_sent": true,
+        "last_acked_serial": 4,
+        "sent_size": [
+          999999984,
+          800
+        ],
+        "unacknowledged": 0
+      },
+      "focused": true,
+      "geometry": {
+        "height": 800.0,
+        "width": 999999984.0,
+        "x": 0.0,
+        "y": -0.0
+      },
+      "id": "0:0",
+      "mapped": true,
+      "responsiveness": {
+        "id": "1",
+        "status": "responsive"
+      },
+      "title": "config-wide-ready",
+      "workspace": "0:0"
+    }
+  ],
+  "case": "geometry-rollback",
+  "endpoints_removed": true,
+  "exit_code": 0,
+  "fixture_report": {
+    "elapsed_ms": 6527,
+    "error": null,
+    "events": [
+      {
+        "at_ms": 0,
+        "event": {
+          "create": 0,
+          "name": "config-wide"
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "bytes": [],
+          "wm_capabilities": 0
+        }
+      },
+      {
+        "at_ms": 1,
+        "event": {
+          "configure_ack": 0,
+          "serial": 3,
+          "size": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "at_ms": 5,
+        "event": {
+          "map_commit": 0
+        }
+      },
+      {
+        "at_ms": 5,
+        "event": {
+          "configure_ack": 0,
+          "serial": 4,
+          "size": [
+            999999984,
+            800
+          ]
+        }
+      },
+      {
+        "at_ms": 25,
+        "event": {
+          "frame_done": 0,
+          "timestamp": 138
+        }
+      }
+    ],
+    "minimum_width": 999999984,
+    "mode": "config-geometry",
+    "ok": true,
+    "ready_frames": 1
+  },
+  "forbidden_autostart_absent": true,
+  "ok": true
+}

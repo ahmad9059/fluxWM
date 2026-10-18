@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independently review the native foundation follow-up. Read/Grep only within this frozen snapshot, no writes, commands, tests, network, agents or outside paths. Focus on crates/flux-native/src/system.rs and probe.rs, tools/check_native_probe.py, tools/test_native_probe_audit.py, docs/development/native-foundation.md and relevant pinned upstream. Prior review of 0647fb3 found M1 hotplug retirement dropped active DrmDevice causing stale KMS restore; M2 auditor missed creat, file handles, console/vendor paths and VT/vendor ioctls; L1 notification batches continued after synchronous stop. Current source uses retire_paused for all prepared GPU retirement (pause before field drop), dispatch_events stops batches when model closed, probe health requires active nonclosed and nonempty ready GPUs. Partial-init active DrmDevice drop still potentially restores KMS; explicitly documented/manual unexecuted. Audit uses PTRACE_GET_SYSCALL_INFO to reject incompatible ABI and entry/exit independent of toggles, child PDEATHSIG plus ptrace EXITKILL, creat/open/at/at2 paths, deny /dev except null zero full random urandom, filehandle calls and K/E/V/F/d ioctls, resolves child proc aliases, compares harness hash too. Owned harmless compiled fixtures exercise actual denial syscalls plus normal pass. Author reports 7 fixtures pass and native tests pass, not your executed results. Remaining Kernel/Driver/input-pin callback fault and hardware gaps explicitly documented; full native output integration out of scope. Review the fixes and new bugs, report concrete remaining HIGH/MEDIUM issues, lower issues, whether previous findings addressed and precise test limits. Inspect actual code/upstream and do not infer production or hardware certification. Roughly12-20 focused tool calls, read only.",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "34",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-followup-retry-snapshot"
+}

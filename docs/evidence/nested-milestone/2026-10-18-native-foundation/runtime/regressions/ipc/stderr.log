@@ -1,0 +1,2 @@
+2026-10-18T13:17:14.526488Z  INFO fluxwm::state: development bindings absent from selected keymap inactive=1
+2026-10-18T13:17:14.628369Z  WARN fluxwm::state: application launch failed operation=3 error=No such file or directory (os error 2)

@@ -1,0 +1,25 @@
+{
+  "commands": [
+    [
+      "cargo",
+      "build",
+      "-p",
+      "flux-native",
+      "--features",
+      "system",
+      "--locked"
+    ],
+    [
+      "python3",
+      "tools/check_native_probe.py",
+      "--artifacts",
+      "target/native-control-mutations/probe-open/audit"
+    ]
+  ],
+  "original_sha256": "efea853a8e20315c038b355c0e2e0bf868895c8279b2437cf2c33d3fabdbb451",
+  "mutated_sha256": "a63b16031c87ad78d8f3bbbd3b0a9d34f2b332f6f81ac76b1c6debce1e3b3149",
+  "build_exit_code": 0,
+  "audit_exit_code": 1,
+  "source_restored": true,
+  "restored_sha256": "efea853a8e20315c038b355c0e2e0bf868895c8279b2437cf2c33d3fabdbb451"
+}

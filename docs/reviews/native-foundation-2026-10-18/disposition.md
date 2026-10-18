@@ -1,0 +1,16 @@
+# Author disposition: native foundation review
+
+Claude Opus 5.5 independently read frozen `0647fb3`. The [unedited report](claude-report.md), [raw completion](stdout.json), [command](command.json), [prompt](prompt.txt), [execution](execution.json), [input manifest](input-manifest.json) and [verified trace](verified-execution.json) retain the record. The actual trace contains 26 Read/Grep calls, all within the frozen snapshot; all 100 input hashes match, with no permission denials. The reviewer ran no tests and did not independently verify author execution claims.
+
+The review found no high and two medium defects. Later author commit `846d9cf` addresses both:
+
+- **M1 — stale KMS restore on hotplug:** all prepared GPU retirement now pauses the DRM device before field destruction. The production `retire_paused` helper has a drop-order oracle which fails if the resource remains active. This suppresses upstream active-device restore on Changed, Removed and stop. It does not qualify actual native hotplug, master release, provider faults or partial-initialization cleanup. A partial-initialization failure can still drop an active DRM device; documentation explicitly retains the separate-VT requirement.
+- **M2 — incomplete syscall/device audit:** the auditor covers creat and file-handle syscalls, denies device paths except five harmless runtime devices, and checks VT/vendor ioctl families. Kernel syscall-info identifies entry/exit and ABI; unsupported ABI fails. Seven compiled owned-child fixtures exercise the normal path and actual denied creat/vendor/console/ioctl/handle/compatibility syscalls. No native device is opened by those fixtures.
+
+The author also corrected L1: a synchronous stop during a notification cancels the remaining precomputed batch, with a shared-helper test. Child-relative proc/fd aliases address L2. Kernel ABI reporting addresses L3. L4 remains: kernel/provider calls during initialization have no universal cancellation deadline; SIGINT/SIGTERM are handled after initialization reaches dispatch.
+
+An empty or inactive manual probe now fails healthy initialization; the pure predicate has an explicit test. Auditor hashes are compared, parent-death signalling covers the pre-EXITKILL interval, and CI logs structured audit results. Fresh artifact directories remain required. Parent-environment preservation does not inspect or sanitize the inherited child environment. The auditor is for a trusted executable/environment, not a security sandbox.
+
+Full Kernel/Driver activation and callback admission/invalidation still lack device-free integration tests. Input-pin/session-owner/real Driver reentrant shutdown are not covered by the GPU helper test. The prior epoch mutation checks the lifecycle predicate, not deletion of the DRM callback check. These gaps are now explicit in the development guide. JSON scope declarations do not prove absence of device access; the observed syscall audit is separate evidence. CI execution/artifact hosting and native device/fault qualification remain open.
+
+The review does not certify a production window manager or close phase 3. A separate frozen follow-up reviews the fixes; its report and scope are retained independently.

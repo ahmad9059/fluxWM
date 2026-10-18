@@ -1,0 +1,20 @@
+{
+  "ok": false,
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/compat",
+    "--check"
+  ],
+  "scope": "owned ptrace child --check only; denies native device open/ioctl, connect, process/thread creation and later exec; no native session qualification",
+  "general_security_sandbox": false,
+  "binary_sha256": "9944698b1cbe5df4ff1a1ad414fa8d48f3a928d866ca09cac81ef60b1b54f8ea",
+  "harness_sha256": "b9a40f92bc89e75cd2ff4158de41842fa2afee6bc28c1b12e0819c1dd4507a57",
+  "syscall_stops": 61,
+  "checked_open_calls": 2,
+  "blocked_calls": [],
+  "owned_pid": 87925,
+  "error": "unsupported syscall ABI",
+  "child_reaped": true,
+  "binary_unchanged": true,
+  "harness_unchanged": true,
+  "parent_environment_unchanged": true
+}

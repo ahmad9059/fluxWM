@@ -1,0 +1,15 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxconfig-3ca260dbb80d",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/autostart/session-budget/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/autostart/session-budget/stats.json",
+    "--exit-after-ms",
+    "17000",
+    "--config",
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/autostart/session-budget/config.lua"
+  ]
+}

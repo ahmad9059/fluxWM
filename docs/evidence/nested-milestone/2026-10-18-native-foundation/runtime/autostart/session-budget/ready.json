@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/tmp/fluxrt-phx20ty5/fluxwm/fluxconfig-3ca260dbb80d.sock",
+  "pid": 92035,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxconfig-3ca260dbb80d"
+}

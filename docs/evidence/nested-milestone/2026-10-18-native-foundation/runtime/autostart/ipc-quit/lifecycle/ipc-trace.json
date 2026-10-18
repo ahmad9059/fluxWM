@@ -1,0 +1,5346 @@
+[
+  {
+    "request": {
+      "id": "bcb954421fb046eb9d5442c89fa51d52",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "bcb954421fb046eb9d5442c89fa51d52",
+      "result": {
+        "autostart": {
+          "active_complete": false,
+          "active_generation": null,
+          "closed": false,
+          "enabled": true,
+          "entries": [],
+          "error": null,
+          "observed_generation": null,
+          "requested_generation": "1",
+          "retained_argv_bytes": 0,
+          "settled": false
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "1",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 1,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "2",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "ae968f51099740c8852aa2d0c7b0235b",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "ae968f51099740c8852aa2d0c7b0235b",
+      "result": {
+        "autostart": {
+          "active_complete": false,
+          "active_generation": "1",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "0",
+              "change_deferred": false,
+              "desired": false,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": null,
+              "pid": null,
+              "slot": 0,
+              "starts": "0",
+              "state": "never-started"
+            },
+            {
+              "attempts": "0",
+              "change_deferred": false,
+              "desired": false,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": null,
+              "pid": null,
+              "slot": 1,
+              "starts": "0",
+              "state": "never-started"
+            },
+            {
+              "attempts": "0",
+              "change_deferred": false,
+              "desired": false,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "fast",
+              "index": null,
+              "pid": null,
+              "slot": 2,
+              "starts": "0",
+              "state": "never-started"
+            },
+            {
+              "attempts": "0",
+              "change_deferred": false,
+              "desired": false,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": null,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "never-started"
+            }
+          ],
+          "error": null,
+          "observed_generation": "1",
+          "requested_generation": "1",
+          "retained_argv_bytes": 0,
+          "settled": false
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "1",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 3,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "3",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "5beb5247b2c14f0397f37a5ffb7cc6e9",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "5beb5247b2c14f0397f37a5ffb7cc6e9",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "1",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": 92012,
+              "slot": 2,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "1",
+          "requested_generation": "1",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "1",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 9,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "7",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "4ca278eaa7d84b3ab55f451c5496b45f",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "4ca278eaa7d84b3ab55f451c5496b45f",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "1",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "1",
+          "requested_generation": "1",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "1",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 13,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "8",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "9705438069a441ab8f03e02412837bbc",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "9705438069a441ab8f03e02412837bbc",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "1",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "1",
+          "requested_generation": "1",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "1",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 15,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "8",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "c019e8eed7fb4cf7a59854e505722c1a",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "c019e8eed7fb4cf7a59854e505722c1a",
+      "result": {
+        "accepted": true,
+        "generation": "2"
+      },
+      "state_sequence": "9",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "2d8fe877e743423e99c2bea6487fa3a8",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "2d8fe877e743423e99c2bea6487fa3a8",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "1",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "1",
+          "requested_generation": "1",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "1",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "2",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 19,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 2,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "9",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "419c7af1d5c543efbebbad9e4e6f8ecd",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "419c7af1d5c543efbebbad9e4e6f8ecd",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "2",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 2,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 0,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 1,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "2",
+          "requested_generation": "2",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "2",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "2",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 24,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 3,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "11",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "71cea8a279b04e5aa733d89d30d30b27",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "71cea8a279b04e5aa733d89d30d30b27",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "2",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 2,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 0,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 1,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "2",
+          "requested_generation": "2",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "2",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "2",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 26,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 3,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "11",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "71ffeb61d241452eba0bc10f4c60b530",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "71ffeb61d241452eba0bc10f4c60b530",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "2",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 2,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 0,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 1,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "2",
+          "requested_generation": "2",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "2",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "2",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 28,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 3,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "11",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "921b744d63854e21a7d868837c0e2442",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "921b744d63854e21a7d868837c0e2442",
+      "result": {
+        "accepted": true,
+        "generation": "3"
+      },
+      "state_sequence": "12",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "b53dfb36ae994e22a6d652a12a9576db",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "b53dfb36ae994e22a6d652a12a9576db",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "2",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 2,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 0,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 1,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "2",
+          "requested_generation": "2",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "2",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 32,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 3,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "12",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "aaef0ff74c31436ca20d61788312c703",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "aaef0ff74c31436ca20d61788312c703",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": true,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "3",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 37,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 4,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "14",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "c04e39aa386e4270b3463d8e39b9dc76",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "c04e39aa386e4270b3463d8e39b9dc76",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": true,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "3",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 39,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 4,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "14",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "ca9390fb34be4121abb7f4d463bd3ec5",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "ca9390fb34be4121abb7f4d463bd3ec5",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": true,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "3",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "3",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 41,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 4,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "14",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "8e8474fd5c944df3a05a605532604970",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "8e8474fd5c944df3a05a605532604970",
+      "result": {
+        "accepted": true,
+        "generation": "4"
+      },
+      "state_sequence": "15",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "747a425125064e14afedff25fcecc206",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "747a425125064e14afedff25fcecc206",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": true,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "3",
+          "retained_argv_bytes": 728,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "3",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 45,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 4,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "15",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "5fdac79e3ff84c34a7bbbe07e870ad97",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "5fdac79e3ff84c34a7bbbe07e870ad97",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": true,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "4",
+          "retained_argv_bytes": 728,
+          "settled": false
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 52,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "16",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "071b090270244fc5b29994558d84ea30",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "071b090270244fc5b29994558d84ea30",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "3",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "1",
+              "change_deferred": true,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92010,
+              "slot": 0,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "3",
+          "requested_generation": "4",
+          "retained_argv_bytes": 728,
+          "settled": false
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 54,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "16",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "5e706bf34f0e45ceae08dc82a7bde7ad",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "5e706bf34f0e45ceae08dc82a7bde7ad",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92022,
+              "slot": 0,
+              "starts": "2",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 734,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 57,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "18",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "d7b3044821df4930b3b88145aabefd55",
+      "method": "config.effective",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "d7b3044821df4930b3b88145aabefd55",
+      "result": {
+        "desired": {
+          "autostart_entries": 4,
+          "binding_entries": 1,
+          "layout": {
+            "default_width": {
+              "preset": 2
+            },
+            "gaps": 12.0,
+            "mode": "strip",
+            "width_presets": [
+              {
+                "fraction": 0.33
+              },
+              {
+                "fraction": 0.5
+              },
+              {
+                "fraction": 0.66
+              }
+            ]
+          }
+        },
+        "effective": {
+          "binding_entries": 1,
+          "keymap": "startup-seat-keymap",
+          "layout": {
+            "default_width": {
+              "fraction": 0.5
+            },
+            "gaps": 12.0,
+            "mode": "strip"
+          }
+        },
+        "generation": "4",
+        "unsupported": [
+          "layout.outer_gap",
+          "layout.focus_margin",
+          "layout.canvas",
+          "input",
+          "outputs",
+          "animations",
+          "decoration",
+          "rules",
+          "security"
+        ]
+      },
+      "state_sequence": "18",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "83484122c56e46768ff9c6f64504b355",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "83484122c56e46768ff9c6f64504b355",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92022,
+              "slot": 0,
+              "starts": "2",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 734,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "4",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 61,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "18",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "8a047deb999c4fdabf917bc5c41d87ae",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "8a047deb999c4fdabf917bc5c41d87ae",
+      "result": {
+        "accepted": true,
+        "generation": "5"
+      },
+      "state_sequence": "19",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "8ec73093c9f649358bbc5b584aa71f34",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "8ec73093c9f649358bbc5b584aa71f34",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92022,
+              "slot": 0,
+              "starts": "2",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 734,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "5",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 65,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "19",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "61112d35752c4e1db50108e137d7922b",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "61112d35752c4e1db50108e137d7922b",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92022,
+              "slot": 0,
+              "starts": "2",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 734,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": "configuration bindings failed seat-keymap validation",
+          "prepared_generation": null,
+          "requested_generation": "5",
+          "status": "failed"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 69,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "20",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "a1b7e49c5dcf4fd7a7d19248f12b6066",
+      "method": "config.effective",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "a1b7e49c5dcf4fd7a7d19248f12b6066",
+      "result": {
+        "desired": {
+          "autostart_entries": 4,
+          "binding_entries": 1,
+          "layout": {
+            "default_width": {
+              "preset": 2
+            },
+            "gaps": 12.0,
+            "mode": "strip",
+            "width_presets": [
+              {
+                "fraction": 0.33
+              },
+              {
+                "fraction": 0.5
+              },
+              {
+                "fraction": 0.66
+              }
+            ]
+          }
+        },
+        "effective": {
+          "binding_entries": 1,
+          "keymap": "startup-seat-keymap",
+          "layout": {
+            "default_width": {
+              "fraction": 0.5
+            },
+            "gaps": 12.0,
+            "mode": "strip"
+          }
+        },
+        "generation": "4",
+        "unsupported": [
+          "layout.outer_gap",
+          "layout.focus_margin",
+          "layout.canvas",
+          "input",
+          "outputs",
+          "animations",
+          "decoration",
+          "rules",
+          "security"
+        ]
+      },
+      "state_sequence": "20",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "7588370de13a4d0ba914d5a09c6775e9",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "7588370de13a4d0ba914d5a09c6775e9",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92022,
+              "slot": 0,
+              "starts": "2",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 734,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": "configuration bindings failed seat-keymap validation",
+          "prepared_generation": null,
+          "requested_generation": "5",
+          "status": "failed"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 73,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "20",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "9fba0468c8084deaaec992d9c447d0bd",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "9fba0468c8084deaaec992d9c447d0bd",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92022,
+              "slot": 0,
+              "starts": "2",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 734,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": "configuration bindings failed seat-keymap validation",
+          "prepared_generation": null,
+          "requested_generation": "5",
+          "status": "failed"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 75,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "20",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "32e6d5b659004ff483b4cd7ef21496f3",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "32e6d5b659004ff483b4cd7ef21496f3",
+      "result": {
+        "accepted": true,
+        "generation": "6"
+      },
+      "state_sequence": "21",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "6c87b4cb31bf4d42aab1320f29515146",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "6c87b4cb31bf4d42aab1320f29515146",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "4",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92022,
+              "slot": 0,
+              "starts": "2",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "4",
+          "requested_generation": "4",
+          "retained_argv_bytes": 734,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "4",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "6",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 79,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 5,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "21",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "b5b1252d657a45c8916fbdf18b9294be",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "b5b1252d657a45c8916fbdf18b9294be",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "6",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": false,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "a",
+              "index": null,
+              "pid": null,
+              "slot": 0,
+              "starts": "2",
+              "state": "removed"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 0,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 1,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 2,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "6",
+          "requested_generation": "6",
+          "retained_argv_bytes": 497,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "6",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "6",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 86,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 6,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "23",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "65ef986a447241ec93b5e80b9e3579d9",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "65ef986a447241ec93b5e80b9e3579d9",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "6",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": false,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "a",
+              "index": null,
+              "pid": null,
+              "slot": 0,
+              "starts": "2",
+              "state": "removed"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 0,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 1,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 2,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "6",
+          "requested_generation": "6",
+          "retained_argv_bytes": 497,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "6",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "6",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 88,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 6,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "23",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "30bf387393c042ec87ef99cbf169fa46",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "30bf387393c042ec87ef99cbf169fa46",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "6",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": false,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "a",
+              "index": null,
+              "pid": null,
+              "slot": 0,
+              "starts": "2",
+              "state": "removed"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 0,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 1,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 2,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "6",
+          "requested_generation": "6",
+          "retained_argv_bytes": 497,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "6",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "6",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 90,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 6,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "23",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "80223eeedc364762ae6ca386a18a71bb",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "80223eeedc364762ae6ca386a18a71bb",
+      "result": {
+        "accepted": true,
+        "generation": "7"
+      },
+      "state_sequence": "24",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "e2e72782d5c644269ca10cbe184124e9",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "e2e72782d5c644269ca10cbe184124e9",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "6",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": false,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "a",
+              "index": null,
+              "pid": null,
+              "slot": 0,
+              "starts": "2",
+              "state": "removed"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 0,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 1,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 2,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "6",
+          "requested_generation": "6",
+          "retained_argv_bytes": 497,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "6",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "7",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 94,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 6,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "24",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "fc3cf097d8004767b129b7bbf9d9e627",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "fc3cf097d8004767b129b7bbf9d9e627",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "7",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": null,
+              "slot": 0,
+              "starts": "2",
+              "state": "once-suppressed"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "7",
+          "requested_generation": "7",
+          "retained_argv_bytes": 497,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "7",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "7",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 99,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 7,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "26",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "96bbf5291c974fffbd18fb0712ae921a",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "96bbf5291c974fffbd18fb0712ae921a",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "7",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": null,
+              "slot": 0,
+              "starts": "2",
+              "state": "once-suppressed"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "7",
+          "requested_generation": "7",
+          "retained_argv_bytes": 497,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "7",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "7",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 101,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 7,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "26",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "09a4c819895a4009a16defce6f8f0bb4",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "09a4c819895a4009a16defce6f8f0bb4",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "7",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": null,
+              "slot": 0,
+              "starts": "2",
+              "state": "once-suppressed"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "7",
+          "requested_generation": "7",
+          "retained_argv_bytes": 497,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "7",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "7",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 103,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 7,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "26",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "6dbb7bdb28be4b1599f2f74b3b1e3480",
+      "method": "config.reload",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "6dbb7bdb28be4b1599f2f74b3b1e3480",
+      "result": {
+        "accepted": true,
+        "generation": "8"
+      },
+      "state_sequence": "27",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "07518c7906514a0fba20a67f303dec62",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "07518c7906514a0fba20a67f303dec62",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "7",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": null,
+              "slot": 0,
+              "starts": "2",
+              "state": "once-suppressed"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "7",
+          "requested_generation": "7",
+          "retained_argv_bytes": 497,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "7",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "8",
+          "status": "pending"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 107,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 7,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "27",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "bd45d1840d624a9bb2bae8219b9a9c69",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "bd45d1840d624a9bb2bae8219b9a9c69",
+      "result": {
+        "autostart": {
+          "active_complete": false,
+          "active_generation": "8",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "3",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92033,
+              "slot": 0,
+              "starts": "3",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": 2,
+              "error": "autostart executable could not be started",
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "0",
+              "state": "failed"
+            }
+          ],
+          "error": null,
+          "observed_generation": "8",
+          "requested_generation": "8",
+          "retained_argv_bytes": 735,
+          "settled": false
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "8",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "8",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 114,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 8,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "30",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "e2bde22c18dd4c888aa7bde85df59c88",
+      "method": "diagnostics",
+      "params": {},
+      "version": 1
+    },
+    "response": {
+      "id": "e2bde22c18dd4c888aa7bde85df59c88",
+      "result": {
+        "autostart": {
+          "active_complete": true,
+          "active_generation": "8",
+          "closed": false,
+          "enabled": true,
+          "entries": [
+            {
+              "attempts": "3",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "a",
+              "index": 0,
+              "pid": 92033,
+              "slot": 0,
+              "starts": "3",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": null,
+              "exit_signal": null,
+              "id": "b",
+              "index": 1,
+              "pid": 92011,
+              "slot": 1,
+              "starts": "1",
+              "state": "running"
+            },
+            {
+              "attempts": "1",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "fast",
+              "index": 2,
+              "pid": null,
+              "slot": 2,
+              "starts": "1",
+              "state": "exited"
+            },
+            {
+              "attempts": "2",
+              "change_deferred": false,
+              "desired": true,
+              "errno": null,
+              "error": null,
+              "exit_code": 0,
+              "exit_signal": null,
+              "id": "missing",
+              "index": 3,
+              "pid": null,
+              "slot": 3,
+              "starts": "1",
+              "state": "exited"
+            }
+          ],
+          "error": null,
+          "observed_generation": "8",
+          "requested_generation": "8",
+          "retained_argv_bytes": 714,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 0
+        },
+        "configuration": {
+          "applied_generation": "8",
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": "8",
+          "status": "applied"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 1,
+          "inactive": 0,
+          "runtime_keymap_changes": false,
+          "source": "user-config"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 1,
+          "destroyed": 0,
+          "final_windows": 0,
+          "flush_cycles": 118,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 0,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 0,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 8,
+          "submissions": 1,
+          "unmaps": 0,
+          "wayland_requests": 0
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 0,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 0,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "state_sequence": "32",
+      "version": 1
+    }
+  },
+  {
+    "request": {
+      "id": "c032e38765a845a5a02cc309b850046f",
+      "method": "action",
+      "params": {
+        "name": "quit"
+      },
+      "version": 1
+    },
+    "response": {
+      "id": "c032e38765a845a5a02cc309b850046f",
+      "result": {
+        "accepted": true
+      },
+      "state_sequence": "33",
+      "version": 1
+    }
+  }
+]

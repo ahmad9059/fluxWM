@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "config-width",
+    "--timeout-ms",
+    "10000"
+  ]
+}

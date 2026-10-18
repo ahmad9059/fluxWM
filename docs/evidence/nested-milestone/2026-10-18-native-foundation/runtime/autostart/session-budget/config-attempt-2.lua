@@ -1,0 +1,1 @@
+return {schema_version=1,bindings={{key={sym="Super+r"},action={name="reload-config"}}},autostart={{id="excess",argv={"/usr/bin/touch","/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/autostart/session-budget/forbidden-autostart"},restart_on_change=true}}}

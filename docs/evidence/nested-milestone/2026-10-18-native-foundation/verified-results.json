@@ -1,0 +1,12 @@
+{
+  "public_origin_hashes_match": 441,
+  "successful_check_rows": 11,
+  "registered_tests": 195,
+  "successful_gui_harnesses": 5,
+  "successful_auditor_fixture_expectations": 7,
+  "final_readonly_audit": true,
+  "final_binary_hashes_match_now": true,
+  "gui_binary_hashes_match_final_build": true,
+  "gui_harness_hashes_match": true,
+  "scope": "Author evidence integrity; no native session/hardware execution or production certification."
+}

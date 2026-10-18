@@ -1,0 +1,31 @@
+{
+  "raw_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "raw_exit": 2,
+  "excluded_exact_producer_paths": [
+    "docs/evidence/nested-milestone/2026-10-18-native-foundation/checks/default-tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-native-foundation/checks/native-tests.log",
+    "docs/evidence/nested-milestone/2026-10-18-native-foundation/diff-check-raw.log",
+    "docs/evidence/nested-milestone/2026-10-18-native-foundation/producer-scripts/run-native-foundation-followup-retry.py",
+    "docs/evidence/nested-milestone/2026-10-18-native-foundation/producer-scripts/run-native-foundation-followup.py"
+  ],
+  "scoped_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-foundation/checks/default-tests.log",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-foundation/checks/native-tests.log",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-foundation/diff-check-raw.log",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-foundation/producer-scripts/run-native-foundation-followup-retry.py",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-native-foundation/producer-scripts/run-native-foundation-followup.py"
+  ],
+  "scoped_exit": 0,
+  "scope": "Exact-byte producer logs and executed review-driver trailing prompt spaces retained. No implementation source excluded. Raw log is the initial staged check before the raw log itself was added."
+}

@@ -1,0 +1,15 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxconfig-28af7fd3eb38",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/configuration/invalid-startup/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/configuration/invalid-startup/stats.json",
+    "--exit-after-ms",
+    "17000",
+    "--config",
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/configuration/invalid-startup/config.lua"
+  ]
+}

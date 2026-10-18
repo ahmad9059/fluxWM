@@ -1,0 +1,19 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "flux-native",
+    "--features",
+    "system",
+    "--locked",
+    "reentrant_removal_keeps_broker_and_session_until_dispatcher_fd_retires",
+    "--",
+    "--nocapture"
+  ],
+  "original_sha256": "4a28df35679ab5b6ce9e5c0abeac3bebb88c8241de41c19a9513d0d11cc1cce6",
+  "mutated_sha256": "811610e7026f5d51f00e17419f036f7487ceb85d5d6d22149ba5ca8a4e6aecd1",
+  "exit_code": 101,
+  "source_restored": true,
+  "restored_sha256": "4a28df35679ab5b6ce9e5c0abeac3bebb88c8241de41c19a9513d0d11cc1cce6"
+}

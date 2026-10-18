@@ -1,0 +1,32 @@
+{
+  "autostart": {
+    "active_complete": true,
+    "active_generation": "3",
+    "closed": true,
+    "enabled": true,
+    "entries": [],
+    "error": null,
+    "observed_generation": "3",
+    "requested_generation": "3",
+    "retained_argv_bytes": 0,
+    "settled": true
+  },
+  "redraws": 8,
+  "submissions": 3,
+  "compositions": 3,
+  "maps": 1,
+  "unmaps": 0,
+  "destroyed": 1,
+  "frames_sent": 3,
+  "final_windows": 0,
+  "wayland_requests": 30,
+  "flush_cycles": 82,
+  "flush_would_block": 0,
+  "flush_retry_timer_fired": 0,
+  "ipc_drain_timed_out": 0,
+  "host_focus_losses": 1,
+  "focus_cancelled_keys": 0,
+  "focus_cancelled_buttons": 0,
+  "popup_grabs_denied_missing_press": 0,
+  "ipc_dispatches_after_shutdown": 0
+}

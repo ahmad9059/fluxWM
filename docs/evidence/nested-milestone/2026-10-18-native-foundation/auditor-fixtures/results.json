@@ -1,0 +1,130 @@
+{
+  "source_sha256": "3164f48c396391603c76545a7f880883dda00591be911408bbf5d9e4e2bb9f37",
+  "binary_sha256": "9944698b1cbe5df4ff1a1ad414fa8d48f3a928d866ca09cac81ef60b1b54f8ea",
+  "cases": [
+    {
+      "case": "normal",
+      "expected": null,
+      "observed": [
+        null
+      ],
+      "ok": true,
+      "command": [
+        "python3",
+        "tools/check_native_probe.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/normal",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/normal-audit"
+      ],
+      "exit_code": 0
+    },
+    {
+      "case": "creat",
+      "expected": "native-device-open",
+      "observed": [
+        "native-device-open",
+        null
+      ],
+      "ok": true,
+      "command": [
+        "python3",
+        "tools/check_native_probe.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/creat",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/creat-audit"
+      ],
+      "exit_code": 1
+    },
+    {
+      "case": "vendor",
+      "expected": "native-device-open",
+      "observed": [
+        "native-device-open",
+        null
+      ],
+      "ok": true,
+      "command": [
+        "python3",
+        "tools/check_native_probe.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/vendor",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/vendor-audit"
+      ],
+      "exit_code": 1
+    },
+    {
+      "case": "console",
+      "expected": "native-device-open",
+      "observed": [
+        "native-device-open",
+        null
+      ],
+      "ok": true,
+      "command": [
+        "python3",
+        "tools/check_native_probe.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/console",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/console-audit"
+      ],
+      "exit_code": 1
+    },
+    {
+      "case": "ioctl",
+      "expected": "native-device-ioctl-family",
+      "observed": [
+        "native-device-ioctl-family",
+        null
+      ],
+      "ok": true,
+      "command": [
+        "python3",
+        "tools/check_native_probe.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/ioctl",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/ioctl-audit"
+      ],
+      "exit_code": 1
+    },
+    {
+      "case": "handle",
+      "expected": "file-handle-access",
+      "observed": [
+        "file-handle-access",
+        null
+      ],
+      "ok": true,
+      "command": [
+        "python3",
+        "tools/check_native_probe.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/handle",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/handle-audit"
+      ],
+      "exit_code": 1
+    },
+    {
+      "case": "compat",
+      "expected": "unsupported syscall ABI",
+      "observed": [
+        "unsupported syscall ABI"
+      ],
+      "ok": true,
+      "command": [
+        "python3",
+        "tools/check_native_probe.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/compat",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/native-auditor-creation-fixtures-v2/compat-audit"
+      ],
+      "exit_code": 1
+    }
+  ]
+}

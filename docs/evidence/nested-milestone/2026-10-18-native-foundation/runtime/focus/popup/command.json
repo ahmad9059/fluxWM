@@ -1,0 +1,20 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/focus/fluxwm",
+    "--no-config",
+    "--socket",
+    "fluxfocus-eb606e45c03f47ba",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/focus/popup/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/focus/popup/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/native-foundation-qualified-gui/focus/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

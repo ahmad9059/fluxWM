@@ -1,0 +1,19 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "flux-native",
+    "--features",
+    "system",
+    "--locked",
+    "pause_resume_and_changed_state_reject_old_completion",
+    "--",
+    "--nocapture"
+  ],
+  "original_sha256": "bac6c2645b4c0d3a0961ec3a4d9b1f5f4dfccabd9bb13ee6db7e0374c0630627",
+  "mutated_sha256": "e9522bd1239a67b6479da52f828161da5939c0396646828b31b7fdc354bb9fe8",
+  "exit_code": 101,
+  "source_restored": true,
+  "restored_sha256": "bac6c2645b4c0d3a0961ec3a4d9b1f5f4dfccabd9bb13ee6db7e0374c0630627"
+}

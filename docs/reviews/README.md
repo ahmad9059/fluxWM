@@ -55,3 +55,9 @@ The initial worktree changed during review; the reviewer disclosed that and rere
 ## Completed follow-up and final outcome
 
 Read the [final summary](final-summary.md), [follow-up report](claude-followup.md), [follow-up disposition](followup-disposition.md), and [final focused review](claude-final.md). The final reviewer found no remaining high/medium contradictions in its focused scope. Low edits made afterward are listed explicitly, with author verification and changed-file hashes.
+
+## Optional native foundation review
+
+[Claude’s native report](native-foundation-2026-10-18/claude-report.md) independently reads frozen `0647fb3` in 26 Read/Grep calls. The [disposition](native-foundation-2026-10-18/disposition.md) records two medium defects, later author fixes and explicit Driver/input/hardware coverage gaps. All 100 frozen hashes match. No native desktop or phase completion is certified.
+
+The [native follow-up](native-foundation-followup-2026-10-18/disposition.md) reviews `846d9cf` in 20 calls, accepts the original fixes, and finds partial-initialization KMS restore still reachable. Subsequent author code adds guarded initialization and corrects terminal notifications; those later changes are explicitly outside the frozen read. An earlier API-failed attempt is preserved separately.

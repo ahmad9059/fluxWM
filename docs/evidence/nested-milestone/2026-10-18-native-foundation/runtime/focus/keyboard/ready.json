@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/tmp/fluxrt-62zuce3t/fluxwm/fluxfocus-04a230c5c8824281.sock",
+  "pid": 94923,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxfocus-04a230c5c8824281"
+}

@@ -1,0 +1,3 @@
+   Compiling flux-native v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-native)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.56s
+{"ok": false, "error": null, "checked_open_calls": 440, "blocked_calls": [{"syscall": 257, "reason": "native-device-open"}], "child_reaped": true}
