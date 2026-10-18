@@ -1,5 +1,6 @@
 //! Bounded render-target allocation/test coordinator. It never requests a live
 //! commit; the platform adapter is responsible for an atomic TEST_ONLY request.
+pub mod routes;
 use crate::output::{Assignment, Format, Plan};
 use serde::Serialize;
 
@@ -15,6 +16,7 @@ pub enum TestStage {
     NoTargets,
     Budget,
     StaleTopology,
+    TopologyConflict,
     Properties,
     Allocate,
     AllocatedFormat,
@@ -67,6 +69,10 @@ pub trait Backend {
     ) -> Result<Self::Target, TestFailure>;
     fn test_only(&mut self, targets: &[Self::Target]) -> Result<(), TestFailure>;
     fn cleanup_failures(&self) -> u64;
+    /// Runs after every owned target has dropped, including on partial failure.
+    fn finish_cleanup(&mut self) -> Result<(), TestFailure> {
+        Ok(())
+    }
 }
 fn formats(assignment: &Assignment) -> Vec<Format> {
     // Known four-byte RGB render targets. Policy does not alias ARGB/XRGB or
@@ -184,7 +190,17 @@ pub fn run<B: Backend>(plan: &Plan, backend: &mut B) -> TestReport {
         // targets retire before checking cleanup accounting below, on all paths.
     })();
     report.failure = result.err();
-    let failures = backend.cleanup_failures();
+    let final_cleanup = if report.attempts > 0 {
+        backend.finish_cleanup()
+    } else {
+        Ok(())
+    };
+    let failures = backend
+        .cleanup_failures()
+        .saturating_add(u64::from(final_cleanup.is_err()));
+    if report.failure.is_none() {
+        report.failure = final_cleanup.err();
+    }
     report.cleanup_failures = failures.to_string();
     if failures > 0 && report.failure.is_none() {
         report.failure = Some(TestFailure::at(TestStage::Cleanup));
@@ -253,6 +269,7 @@ mod tests {
         failures: Cell<u64>,
         log: RefCell<Vec<&'static str>>,
         fail_cleanup: Cell<bool>,
+        cached: Cell<usize>,
     }
     struct Target(Rc<Shared>);
     impl Drop for Target {
@@ -271,6 +288,7 @@ mod tests {
         failures: Vec<TestFailure>,
         formats: Vec<Format>,
         test_failure: bool,
+        cache_failure: bool,
     }
     impl Backend for Mock {
         type Target = Target;
@@ -287,7 +305,21 @@ mod tests {
                 return Err(*error);
             }
             self.shared.live.set(self.shared.live.get() + 1);
+            self.shared.cached.set(self.shared.cached.get() + 1);
             Ok(Target(self.shared.clone()))
+        }
+        fn finish_cleanup(&mut self) -> Result<(), TestFailure> {
+            assert_eq!(
+                self.shared.live.get(),
+                0,
+                "cache cleanup precedes target retirement"
+            );
+            self.shared.log.borrow_mut().push("cache-cleanup");
+            if self.cache_failure {
+                return Err(TestFailure::at(TestStage::Cleanup));
+            }
+            self.shared.cached.set(0);
+            Ok(())
         }
         fn test_only(&mut self, targets: &[Target]) -> Result<(), TestFailure> {
             assert_eq!(self.shared.live.get(), targets.len());
@@ -312,7 +344,14 @@ mod tests {
         assert_eq!(report.nominal_bytes, (2 * 1920 * 1080 * 4u64).to_string());
         assert_eq!(
             *backend.shared.log.borrow(),
-            ["prepare", "prepare", "test", "drop", "drop"]
+            [
+                "prepare",
+                "prepare",
+                "test",
+                "drop",
+                "drop",
+                "cache-cleanup"
+            ]
         );
         assert_eq!(backend.shared.live.get(), 0);
     }
@@ -423,6 +462,9 @@ mod tests {
                     self.0.prepare(a, f)
                 }
             }
+            fn finish_cleanup(&mut self) -> Result<(), TestFailure> {
+                self.0.finish_cleanup()
+            }
             fn test_only(&mut self, _: &[Target]) -> Result<(), TestFailure> {
                 panic!("partial batch cannot be tested")
             }
@@ -432,7 +474,10 @@ mod tests {
         assert_eq!(report.failure.unwrap().stage, TestStage::StaleTopology);
         assert!(report.tested_targets.is_empty());
         assert_eq!(backend.0.shared.live.get(), 0);
-        assert_eq!(*backend.0.shared.log.borrow(), ["prepare", "drop"]);
+        assert_eq!(
+            *backend.0.shared.log.borrow(),
+            ["prepare", "drop", "cache-cleanup"]
+        );
     }
     #[test]
     fn failed_joint_test_preserves_error_and_cleans_every_target() {
@@ -463,6 +508,23 @@ mod tests {
         assert_eq!(report.failure.unwrap().stage, TestStage::Cleanup);
         assert_eq!(report.cleanup_failures, "1");
         assert!(report.tested_targets.is_empty());
+    }
+    #[test]
+    fn renderer_cache_retires_after_targets_and_errors_cannot_pass() {
+        let mut backend = Mock::default();
+        let report = run(&plan(1), &mut backend);
+        assert!(report.ok);
+        assert_eq!(backend.shared.cached.get(), 0);
+        let mut backend = Mock {
+            cache_failure: true,
+            ..Default::default()
+        };
+        let report = run(&plan(1), &mut backend);
+        assert!(!report.ok);
+        assert_eq!(report.failure.unwrap().stage, TestStage::Cleanup);
+        assert_eq!(report.cleanup_failures, "1");
+        assert!(report.tested_targets.is_empty());
+        assert_eq!(backend.shared.live.get(), 0);
     }
     #[test]
     fn allocation_retries_have_a_global_attempt_budget() {

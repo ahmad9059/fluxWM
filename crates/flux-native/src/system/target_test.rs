@@ -19,11 +19,7 @@ use smithay::{
     },
     utils::{Rectangle, Transform},
 };
-use std::{
-    cell::Cell,
-    collections::{BTreeMap, BTreeSet},
-    rc::Rc,
-};
+use std::{cell::Cell, collections::BTreeMap, rc::Rc};
 fn fail(stage: TestStage) -> TestFailure {
     TestFailure::at(stage)
 }
@@ -106,7 +102,6 @@ struct Target {
     _dmabuf: Dmabuf,
     _buffer: GbmBuffer,
     assignment: Assignment,
-    connector: Properties,
     crtc: Properties,
     plane: Properties,
 }
@@ -131,6 +126,11 @@ impl Backend for Adapter<'_> {
     }
     fn cleanup_failures(&self) -> u64 {
         self.failures.get()
+    }
+    fn finish_cleanup(&mut self) -> Result<(), TestFailure> {
+        self.renderer
+            .cleanup_texture_cache()
+            .map_err(|_| fail(TestStage::Cleanup))
     }
     fn prepare(&mut self, a: &Assignment, format: Format) -> Result<Target, TestFailure> {
         if !self.drm.is_active() {
@@ -271,7 +271,6 @@ impl Backend for Adapter<'_> {
             _dmabuf: dmabuf,
             _buffer: buffer,
             assignment: a.clone(),
-            connector: connector_properties,
             crtc: crtc_properties,
             plane: plane_properties,
         })
@@ -280,20 +279,84 @@ impl Backend for Adapter<'_> {
         if !self.drm.is_active() || !self.drm.is_atomic() {
             return Err(fail(TestStage::Inactive));
         }
+        use crate::target::routes::{Route, reconcile};
+        let resources = self
+            .drm
+            .resource_handles()
+            .map_err(|e| io(TestStage::StaleTopology, e))?;
+        if resources.connectors().len() > crate::output::MAX_CONNECTORS
+            || resources.crtcs().len() > crate::output::MAX_CRTCS
+        {
+            return Err(fail(TestStage::Budget));
+        }
+        let mut connector_properties = BTreeMap::new();
+        let mut connector_routes = vec![];
+        for connector in resources.connectors() {
+            let properties = Properties::read(self.drm, *connector)?;
+            let value = properties
+                .values
+                .get("CRTC_ID")
+                .ok_or_else(|| fail(TestStage::Properties))?
+                .1;
+            let crtc = u32::try_from(value).map_err(|_| fail(TestStage::StaleTopology))?;
+            connector_routes.push(Route {
+                id: (*connector).into(),
+                crtc: (crtc != 0).then_some(crtc),
+            });
+            connector_properties.insert(u32::from(*connector), properties);
+        }
+        let planes = self
+            .drm
+            .plane_handles()
+            .map_err(|e| io(TestStage::Properties, e))?;
+        if planes.len() > 256 {
+            return Err(fail(TestStage::Budget));
+        }
+        let mut plane_routes = vec![];
+        for plane in planes {
+            let info = self
+                .drm
+                .get_plane(plane)
+                .map_err(|e| io(TestStage::Properties, e))?;
+            plane_routes.push(Route {
+                id: plane.into(),
+                crtc: info.crtc().map(u32::from),
+            });
+        }
+        let assignments: Vec<_> = targets
+            .iter()
+            .map(|target| target.assignment.clone())
+            .collect();
+        let crtcs: Vec<_> = resources.crtcs().iter().map(|id| u32::from(*id)).collect();
+        let reconciled = reconcile(&assignments, &connector_routes, &plane_routes, &crtcs)?;
         let mut request = AtomicModeReq::new();
-        let crtcs: BTreeSet<_> = targets.iter().map(|t| t.assignment.crtc).collect();
-        let primary: BTreeSet<_> = targets.iter().map(|t| t.assignment.primary_plane).collect();
+        for (connector, crtc) in &reconciled.connectors {
+            connector_properties[connector].set(
+                &mut request,
+                "CRTC_ID",
+                u64::from(crtc.unwrap_or(0)),
+            )?;
+        }
+        for crtc in &reconciled.disabled_crtcs {
+            let properties = Properties::read(self.drm, handle::<control::crtc::Handle>(*crtc)?)?;
+            properties.set(&mut request, "ACTIVE", 0)?;
+            properties.set(&mut request, "MODE_ID", 0)?;
+        }
         for target in targets {
             let a = &target.assignment;
+            if connector_properties[&a.connector]
+                .values
+                .get("non-desktop")
+                .is_some_and(|(_, value)| *value != 0)
+            {
+                return Err(fail(TestStage::StaleTopology));
+            }
             let Object::Framebuffer(fb) = target.framebuffer.object else {
                 unreachable!()
             };
             let Object::Blob(blob) = target.mode_blob.object else {
                 unreachable!()
             };
-            target
-                .connector
-                .set(&mut request, "CRTC_ID", u64::from(a.crtc))?;
             target.crtc.set(&mut request, "ACTIVE", 1)?;
             target.crtc.set(&mut request, "MODE_ID", blob)?;
             for (name, value) in [
@@ -313,29 +376,10 @@ impl Backend for Adapter<'_> {
             target.plane.optional(&mut request, "rotation", 1);
             target.plane.optional(&mut request, "alpha", 65535);
         }
-        // Remove overlay/cursor state on the tested CRTCs from this hypothetical
-        // request. No live change is made, and unrelated CRTCs are untouched.
-        let planes = self
-            .drm
-            .plane_handles()
-            .map_err(|e| io(TestStage::Properties, e))?;
-        if planes.len() > 256 {
-            return Err(fail(TestStage::Budget));
-        }
-        for plane in planes {
-            let info = self
-                .drm
-                .get_plane(plane)
-                .map_err(|e| io(TestStage::Properties, e))?;
-            if !primary.contains(&u32::from(plane))
-                && info
-                    .crtc()
-                    .is_some_and(|crtc| crtcs.contains(&u32::from(crtc)))
-            {
-                let properties = Properties::read(self.drm, plane)?;
-                properties.set(&mut request, "FB_ID", 0)?;
-                properties.set(&mut request, "CRTC_ID", 0)?;
-            }
+        for plane in &reconciled.cleared_planes {
+            let properties = Properties::read(self.drm, handle::<control::plane::Handle>(*plane)?)?;
+            properties.set(&mut request, "FB_ID", 0)?;
+            properties.set(&mut request, "CRTC_ID", 0)?;
         }
         self.drm
             .atomic_commit(flags(), request)
