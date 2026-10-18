@@ -1,0 +1,7 @@
+{
+  "backend": "nested",
+  "ipc_socket": "/tmp/fluxrt-qwyamt2q/fluxwm/fluxscene-70491fa5f2e041a7a69b8fd7.sock",
+  "pid": 214518,
+  "status": "dispatch-ready",
+  "wayland_display": "fluxscene-70491fa5f2e041a7a69b8fd7"
+}

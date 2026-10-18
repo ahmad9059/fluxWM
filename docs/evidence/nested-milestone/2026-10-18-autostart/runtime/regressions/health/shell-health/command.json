@@ -1,0 +1,20 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--no-config",
+    "--socket",
+    "fluxhealth-a3145946ef814e9c",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/health/shell-health/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/health/shell-health/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "shell-health",
+    "--timeout-ms",
+    "12000"
+  ]
+}

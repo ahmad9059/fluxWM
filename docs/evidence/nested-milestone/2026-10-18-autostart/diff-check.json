@@ -1,0 +1,25 @@
+{
+  "full_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "full_exit_code": 2,
+  "full_output": "docs/evidence/nested-milestone/2026-10-18-autostart/checks/tests.log:154: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-autostart/checks/tests.log:159: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-autostart/checks/tests.log:176: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-autostart/checks/tests.log:184: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-autostart/checks/tests.log:186: trailing whitespace.\n+test tests::child_fixture_entry ... \ndocs/evidence/nested-milestone/2026-10-18-autostart/checks/tests.log:363: new blank line at EOF.\n",
+  "scoped_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)docs/evidence/nested-milestone/2026-10-18-autostart/checks/tests.log"
+  ],
+  "scoped_exit_code": 0,
+  "scoped_output": "",
+  "raw_console_exclusions": [
+    "docs/evidence/nested-milestone/2026-10-18-autostart/checks/tests.log"
+  ],
+  "reason": "Preserve exact producer console bytes; all exclusions are named raw logs, never source or authored prose"
+}

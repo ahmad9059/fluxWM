@@ -1,0 +1,20 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--no-config",
+    "--socket",
+    "fluxhealth-2d03f6b822404b6c",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/configure/configure-admission/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/configure/configure-admission/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "configure-admission",
+    "--timeout-ms",
+    "5000"
+  ]
+}

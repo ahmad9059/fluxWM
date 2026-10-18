@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "flux-process",
+    "--locked",
+    "superseded_retirement",
+    "--",
+    "--nocapture"
+  ],
+  "original_sha256": "b01a2a22eea1a5488f3a536f1323084145661f313c961ea1408c34795674c354",
+  "mutated_sha256": "0d92377b2bae1650886e22df08f9e720e83e2a9ee1dc27cf16950d85698c37a7",
+  "exit_code": 101,
+  "restored_sha256": "b01a2a22eea1a5488f3a536f1323084145661f313c961ea1408c34795674c354",
+  "source_restored": true
+}

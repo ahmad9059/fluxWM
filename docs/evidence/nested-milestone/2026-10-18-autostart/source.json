@@ -1,0 +1,7 @@
+{
+  "implementation_commit": "11fc6b28dc403891a09b3c32abbd8a9a97c22e88",
+  "reviewed_initial": "72771fc",
+  "reviewed_corrections": "85f030a",
+  "scope": "Nested autostart direct-child ownership only; no complete phase or production qualification",
+  "selected_artifact_count": 382
+}

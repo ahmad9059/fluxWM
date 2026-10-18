@@ -1,0 +1,20 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/focus/fluxwm",
+    "--no-config",
+    "--socket",
+    "fluxfocus-e1a6f4ac31054d50",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/focus/popup/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/focus/popup/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/focus/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/focus/fluxwm",
+    "--no-config",
+    "--socket",
+    "fluxfocus-a1647afcb6d34b7b",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/focus/keyboard/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/focus/keyboard/stats.json",
+    "--exit-after-ms",
+    "18000"
+  ],
+  "fixture": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/focus/fixture",
+    "input-probe",
+    "--timeout-ms",
+    "10000"
+  ]
+}

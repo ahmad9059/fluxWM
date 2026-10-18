@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "flux-process",
+    "--locked",
+    "superseded_prefix_cannot_exceed_retained_history_budget",
+    "--",
+    "--nocapture"
+  ],
+  "original_sha256": "28a24357eda234dd9f14341b4fa852ad6959fc9d80b8aaa23ebbac3b1fe4503f",
+  "mutated_sha256": "a5a603687c3f9dc6abec51b339b3add952aa3486e435a8e25cb58d6ca3e2fb79",
+  "exit_code": 101,
+  "source_restored": true,
+  "restored_sha256": "28a24357eda234dd9f14341b4fa852ad6959fc9d80b8aaa23ebbac3b1fe4503f"
+}

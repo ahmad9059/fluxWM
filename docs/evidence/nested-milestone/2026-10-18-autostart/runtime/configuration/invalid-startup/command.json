@@ -1,0 +1,15 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxconfig-14b9d5273af5",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/invalid-startup/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/invalid-startup/stats.json",
+    "--exit-after-ms",
+    "17000",
+    "--config",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/invalid-startup/config.lua"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxconfig-5ee4a10a201b",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/geometry-rollback/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/geometry-rollback/stats.json",
+    "--exit-after-ms",
+    "17000",
+    "--config",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/geometry-rollback/config.lua"
+  ]
+}

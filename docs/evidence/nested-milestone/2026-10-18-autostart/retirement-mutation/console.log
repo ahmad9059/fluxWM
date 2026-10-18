@@ -1,0 +1,19 @@
+   Compiling flux-process v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-process)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.72s
+     Running unittests src/lib.rs (target/debug/deps/flux_process-a67bc72a4a26b17f)
+
+running 1 test
+
+thread 'autostart::tests::superseded_retirement_restores_original_argv_for_restartable_identity' (185024) panicked at crates/flux-process/src/autostart.rs:879:9:
+assertion failed: latest.entries[0].pid.is_some()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test autostart::tests::superseded_retirement_restores_original_argv_for_restartable_identity ... FAILED
+
+failures:
+
+failures:
+    autostart::tests::superseded_retirement_restores_original_argv_for_restartable_identity
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 18 filtered out; finished in 0.27s
+
+error: test failed, to rerun pass `-p flux-process --lib`

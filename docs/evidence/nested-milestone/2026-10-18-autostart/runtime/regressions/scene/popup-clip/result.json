@@ -1,0 +1,91 @@
+{
+  "child_environment_overrides": {
+    "RUST_LOG": "fluxwm=info"
+  },
+  "command": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--backend",
+    "nested",
+    "--no-config",
+    "--socket",
+    "fluxscene-f57c5812cfe64a21b064e927",
+    "--exit-after-ms",
+    "6000",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/scene/popup-clip/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/scene/popup-clip/stats.json",
+    "--screenshot",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/scene/popup-clip/scene.ppm",
+    "--screenshot-after-ms",
+    "700",
+    "--",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+    "popup-clip",
+    "--timeout-ms",
+    "4500"
+  ],
+  "elapsed_ms": 6085,
+  "environment": {
+    "DISPLAY": ":15830",
+    "WAYLAND_DISPLAY": null,
+    "WAYLAND_SOCKET": null,
+    "WINIT_UNIX_BACKEND": "x11",
+    "XDG_RUNTIME_DIR": "/tmp/fluxrt-qwyamt2q"
+  },
+  "leaked_endpoints_before_harness_cleanup": [],
+  "mode": "popup-clip",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "pixels": {
+    "background_rgb": [
+      15,
+      18,
+      23
+    ],
+    "expected_rgb_counts": {
+      "blue": 19200,
+      "cyan": 0,
+      "green": 14400,
+      "magenta": 4800,
+      "red": 16320,
+      "yellow": 14400
+    },
+    "height": 800,
+    "pixel_validation": "exact-row-equality",
+    "popup_paints_above_own_root": true,
+    "popup_visible_outside_root_clip": true,
+    "right_edge_x312_matches_background": true,
+    "sha256": "242256d40e68581fa5c61525af9677f8bbd12719ce97c12f66da0c5c0f89c2c5",
+    "width": 1280
+  },
+  "readiness": {
+    "backend": "nested",
+    "ipc_socket": "/tmp/fluxrt-qwyamt2q/fluxwm/fluxscene-f57c5812cfe64a21b064e927.sock",
+    "pid": 214865,
+    "status": "dispatch-ready",
+    "wayland_display": "fluxscene-f57c5812cfe64a21b064e927"
+  },
+  "returncode": 0,
+  "socket": "fluxscene-f57c5812cfe64a21b064e927",
+  "stats": {
+    "compositions": 5,
+    "destroyed": 1,
+    "final_windows": 0,
+    "flush_cycles": 39,
+    "flush_retry_timer_fired": 0,
+    "flush_would_block": 0,
+    "focus_cancelled_buttons": 0,
+    "focus_cancelled_keys": 0,
+    "frames_sent": 5,
+    "host_focus_losses": 1,
+    "ipc_dispatches_after_shutdown": 0,
+    "ipc_drain_timed_out": 0,
+    "maps": 1,
+    "popup_grabs_denied_missing_press": 0,
+    "redraws": 9,
+    "submissions": 4,
+    "unmaps": 0,
+    "wayland_requests": 47
+  }
+}

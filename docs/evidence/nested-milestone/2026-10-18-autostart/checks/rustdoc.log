@@ -1,0 +1,5 @@
+    Checking flux-process v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-process)
+ Documenting flux-process v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-process)
+ Documenting fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.67s
+   Generated /home/ahmad/Documents/Projects/fluxwm/target/doc/flux_config/index.html and 10 other files

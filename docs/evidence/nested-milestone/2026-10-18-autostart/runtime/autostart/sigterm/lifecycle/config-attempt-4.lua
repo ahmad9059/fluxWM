@@ -1,0 +1,1 @@
+return {schema_version=1,bindings={{key={sym="Super+FluxwmDefinitelyUnknownKeysym"},action={name="reload-config"}}},autostart={{id="forbidden",argv={"/usr/bin/touch","/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/autostart/sigterm/lifecycle/forbidden-autostart"},restart_on_change=true}}}

@@ -1,0 +1,15 @@
+{
+  "compositor": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--socket",
+    "fluxconfig-8c0dfbc9c7df",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/reload-retention/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/reload-retention/stats.json",
+    "--exit-after-ms",
+    "17000",
+    "--config",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/configuration/reload-retention/config.lua"
+  ]
+}

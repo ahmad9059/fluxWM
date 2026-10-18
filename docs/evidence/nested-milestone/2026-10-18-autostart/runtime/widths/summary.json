@@ -1,0 +1,1350 @@
+{
+  "authority_removed": true,
+  "case": {
+    "after-failed-reload": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 4,
+          "committed_size": [
+            400,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            400,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 9,
+          "sent_size": [
+            400,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 400.0,
+          "x": 0.0,
+          "y": -0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-0-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 10,
+          "committed_size": [
+            760,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            760,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 14,
+          "sent_size": [
+            760,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 760.0,
+          "x": 412.0,
+          "y": -0.0
+        },
+        "id": "1:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-1-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 15,
+          "committed_size": [
+            320,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            320,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 20,
+          "sent_size": [
+            320,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 320.0,
+          "x": 1184.0,
+          "y": -0.0
+        },
+        "id": "2:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-2-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 21,
+          "committed_size": [
+            600,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            600,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 25,
+          "sent_size": [
+            600,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 600.0,
+          "x": 1516.0,
+          "y": -0.0
+        },
+        "id": "3:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-3-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 26,
+          "committed_size": [
+            600,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            600,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 26,
+          "sent_size": [
+            600,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 600.0,
+          "x": 2128.0,
+          "y": -0.0
+        },
+        "id": "4:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-4-ready",
+        "workspace": "0:0"
+      }
+    ],
+    "case": "widths",
+    "endpoints_removed": true,
+    "exit_code": 0,
+    "expected_widths": [
+      400,
+      760,
+      320.0,
+      600,
+      600,
+      480
+    ],
+    "fixture_report": {
+      "elapsed_ms": 1664,
+      "error": null,
+      "events": [
+        {
+          "at_ms": 1,
+          "event": {
+            "create": 0,
+            "name": "width-0"
+          }
+        },
+        {
+          "at_ms": 1,
+          "event": {
+            "bytes": [],
+            "wm_capabilities": 0
+          }
+        },
+        {
+          "at_ms": 1,
+          "event": {
+            "configure_ack": 0,
+            "serial": 3,
+            "size": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "at_ms": 4,
+          "event": {
+            "map_commit": 0
+          }
+        },
+        {
+          "at_ms": 4,
+          "event": {
+            "configure_ack": 0,
+            "serial": 4,
+            "size": [
+              400,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 14,
+          "event": {
+            "frame_done": 0,
+            "timestamp": 137
+          }
+        },
+        {
+          "at_ms": 37,
+          "event": {
+            "create": 1,
+            "name": "width-1"
+          }
+        },
+        {
+          "at_ms": 37,
+          "event": {
+            "bytes": [],
+            "wm_capabilities": 1
+          }
+        },
+        {
+          "at_ms": 37,
+          "event": {
+            "configure_ack": 1,
+            "serial": 8,
+            "size": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "at_ms": 40,
+          "event": {
+            "map_commit": 1
+          }
+        },
+        {
+          "at_ms": 41,
+          "event": {
+            "configure_ack": 0,
+            "serial": 9,
+            "size": [
+              400,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 41,
+          "event": {
+            "configure_ack": 1,
+            "serial": 10,
+            "size": [
+              760,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 45,
+          "event": {
+            "frame_done": 1,
+            "timestamp": 168
+          }
+        },
+        {
+          "at_ms": 57,
+          "event": {
+            "create": 2,
+            "name": "width-2"
+          }
+        },
+        {
+          "at_ms": 57,
+          "event": {
+            "bytes": [],
+            "wm_capabilities": 2
+          }
+        },
+        {
+          "at_ms": 57,
+          "event": {
+            "configure_ack": 2,
+            "serial": 13,
+            "size": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "at_ms": 60,
+          "event": {
+            "map_commit": 2
+          }
+        },
+        {
+          "at_ms": 61,
+          "event": {
+            "configure_ack": 1,
+            "serial": 14,
+            "size": [
+              760,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 61,
+          "event": {
+            "configure_ack": 2,
+            "serial": 15,
+            "size": [
+              320,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 63,
+          "event": {
+            "frame_done": 2,
+            "timestamp": 186
+          }
+        },
+        {
+          "at_ms": 77,
+          "event": {
+            "create": 3,
+            "name": "width-3"
+          }
+        },
+        {
+          "at_ms": 77,
+          "event": {
+            "bytes": [],
+            "wm_capabilities": 3
+          }
+        },
+        {
+          "at_ms": 77,
+          "event": {
+            "configure_ack": 3,
+            "serial": 19,
+            "size": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "at_ms": 80,
+          "event": {
+            "map_commit": 3
+          }
+        },
+        {
+          "at_ms": 81,
+          "event": {
+            "configure_ack": 2,
+            "serial": 20,
+            "size": [
+              320,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 81,
+          "event": {
+            "configure_ack": 3,
+            "serial": 21,
+            "size": [
+              600,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 95,
+          "event": {
+            "frame_done": 3,
+            "timestamp": 218
+          }
+        },
+        {
+          "at_ms": 120,
+          "event": {
+            "create": 4,
+            "name": "width-4"
+          }
+        },
+        {
+          "at_ms": 120,
+          "event": {
+            "bytes": [],
+            "wm_capabilities": 4
+          }
+        },
+        {
+          "at_ms": 120,
+          "event": {
+            "configure_ack": 4,
+            "serial": 24,
+            "size": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "at_ms": 123,
+          "event": {
+            "map_commit": 4
+          }
+        },
+        {
+          "at_ms": 124,
+          "event": {
+            "configure_ack": 3,
+            "serial": 25,
+            "size": [
+              600,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 124,
+          "event": {
+            "configure_ack": 4,
+            "serial": 26,
+            "size": [
+              600,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 129,
+          "event": {
+            "frame_done": 4,
+            "timestamp": 252
+          }
+        },
+        {
+          "at_ms": 152,
+          "event": {
+            "create": 5,
+            "name": "width-5"
+          }
+        },
+        {
+          "at_ms": 152,
+          "event": {
+            "bytes": [],
+            "wm_capabilities": 5
+          }
+        },
+        {
+          "at_ms": 152,
+          "event": {
+            "configure_ack": 5,
+            "serial": 30,
+            "size": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "at_ms": 155,
+          "event": {
+            "map_commit": 5
+          }
+        },
+        {
+          "at_ms": 155,
+          "event": {
+            "configure_ack": 4,
+            "serial": 31,
+            "size": [
+              600,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 155,
+          "event": {
+            "configure_ack": 5,
+            "serial": 32,
+            "size": [
+              480,
+              800
+            ]
+          }
+        },
+        {
+          "at_ms": 162,
+          "event": {
+            "frame_done": 5,
+            "timestamp": 285
+          }
+        }
+      ],
+      "mode": "config-width",
+      "ok": true,
+      "windows": [
+        {
+          "configure_sizes": [
+            [
+              0,
+              0
+            ],
+            [
+              400,
+              800
+            ],
+            [
+              400,
+              800
+            ]
+          ],
+          "frames": 1,
+          "index": 0
+        },
+        {
+          "configure_sizes": [
+            [
+              0,
+              0
+            ],
+            [
+              760,
+              800
+            ],
+            [
+              760,
+              800
+            ]
+          ],
+          "frames": 1,
+          "index": 1
+        },
+        {
+          "configure_sizes": [
+            [
+              0,
+              0
+            ],
+            [
+              320,
+              800
+            ],
+            [
+              320,
+              800
+            ]
+          ],
+          "frames": 1,
+          "index": 2
+        },
+        {
+          "configure_sizes": [
+            [
+              0,
+              0
+            ],
+            [
+              600,
+              800
+            ],
+            [
+              600,
+              800
+            ]
+          ],
+          "frames": 1,
+          "index": 3
+        },
+        {
+          "configure_sizes": [
+            [
+              0,
+              0
+            ],
+            [
+              600,
+              800
+            ],
+            [
+              600,
+              800
+            ]
+          ],
+          "frames": 1,
+          "index": 4
+        },
+        {
+          "configure_sizes": [
+            [
+              0,
+              0
+            ],
+            [
+              480,
+              800
+            ]
+          ],
+          "frames": 1,
+          "index": 5
+        }
+      ]
+    },
+    "forbidden_autostart_absent": true,
+    "generations": [
+      "1",
+      "4",
+      "5",
+      "6"
+    ],
+    "initial_windows": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 4,
+          "committed_size": [
+            400,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            400,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 4,
+          "sent_size": [
+            400,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 400.0,
+          "x": 0.0,
+          "y": -0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-0-ready",
+        "workspace": "0:0"
+      }
+    ],
+    "ok": true,
+    "recovered_windows": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 4,
+          "committed_size": [
+            400,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            400,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 9,
+          "sent_size": [
+            400,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 400.0,
+          "x": 0.0,
+          "y": -0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-0-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 10,
+          "committed_size": [
+            760,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            760,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 14,
+          "sent_size": [
+            760,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 760.0,
+          "x": 412.0,
+          "y": -0.0
+        },
+        "id": "1:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-1-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 15,
+          "committed_size": [
+            320,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            320,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 20,
+          "sent_size": [
+            320,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 320.0,
+          "x": 1184.0,
+          "y": -0.0
+        },
+        "id": "2:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-2-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 21,
+          "committed_size": [
+            600,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            600,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 25,
+          "sent_size": [
+            600,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 600.0,
+          "x": 1516.0,
+          "y": -0.0
+        },
+        "id": "3:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-3-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 26,
+          "committed_size": [
+            600,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            600,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 31,
+          "sent_size": [
+            600,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 600.0,
+          "x": 2128.0,
+          "y": -0.0
+        },
+        "id": "4:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-4-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 32,
+          "committed_size": [
+            480,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            480,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 32,
+          "sent_size": [
+            480,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 480.0,
+          "x": 2740.0,
+          "y": -0.0
+        },
+        "id": "5:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-5-ready",
+        "workspace": "0:0"
+      }
+    ],
+    "windows-2": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 4,
+          "committed_size": [
+            400,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            400,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 9,
+          "sent_size": [
+            400,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 400.0,
+          "x": 0.0,
+          "y": -0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-0-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 10,
+          "committed_size": [
+            760,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            760,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 10,
+          "sent_size": [
+            760,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 760.0,
+          "x": 412.0,
+          "y": -0.0
+        },
+        "id": "1:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-1-ready",
+        "workspace": "0:0"
+      }
+    ],
+    "windows-3": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 4,
+          "committed_size": [
+            400,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            400,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 9,
+          "sent_size": [
+            400,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 400.0,
+          "x": 0.0,
+          "y": -0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-0-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 10,
+          "committed_size": [
+            760,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            760,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 14,
+          "sent_size": [
+            760,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 760.0,
+          "x": 412.0,
+          "y": -0.0
+        },
+        "id": "1:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-1-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 15,
+          "committed_size": [
+            320,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            320,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 15,
+          "sent_size": [
+            320,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 320.0,
+          "x": 1184.0,
+          "y": -0.0
+        },
+        "id": "2:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-2-ready",
+        "workspace": "0:0"
+      }
+    ],
+    "windows-4": [
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 4,
+          "committed_size": [
+            400,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            400,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 9,
+          "sent_size": [
+            400,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 400.0,
+          "x": 0.0,
+          "y": -0.0
+        },
+        "id": "0:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-0-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 10,
+          "committed_size": [
+            760,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            760,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 14,
+          "sent_size": [
+            760,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 760.0,
+          "x": 412.0,
+          "y": -0.0
+        },
+        "id": "1:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-1-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 15,
+          "committed_size": [
+            320,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            320,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 20,
+          "sent_size": [
+            320,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": false,
+        "geometry": {
+          "height": 800.0,
+          "width": 320.0,
+          "x": 1184.0,
+          "y": -0.0
+        },
+        "id": "2:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-2-ready",
+        "workspace": "0:0"
+      },
+      {
+        "admission_error": null,
+        "app_id": "org.fluxwm.Fixture",
+        "buffered": true,
+        "configure": {
+          "committed_serial": 21,
+          "committed_size": [
+            600,
+            800
+          ],
+          "deferred": false,
+          "desired_size": [
+            600,
+            800
+          ],
+          "initial_sent": true,
+          "last_acked_serial": 21,
+          "sent_size": [
+            600,
+            800
+          ],
+          "unacknowledged": 0
+        },
+        "focused": true,
+        "geometry": {
+          "height": 800.0,
+          "width": 600.0,
+          "x": 1516.0,
+          "y": -0.0
+        },
+        "id": "3:0",
+        "mapped": true,
+        "responsiveness": {
+          "id": "1",
+          "status": "responsive"
+        },
+        "title": "width-3-ready",
+        "workspace": "0:0"
+      }
+    ]
+  },
+  "executables": {
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm": "2d62ec27513e8ff834c958bd3c38bec35016820530e6f179c65c24abc5adbd23",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-config": "fad91a79452390715eaadf5863db95ed2e01aebc5508f74fa140fab4091343e6",
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture": "8b5bfdc3e71e3e6bbcb2b147cc66a445dbcdd49e280f06d2189ba453e9799e0d"
+  },
+  "executables_unchanged": true,
+  "harness_sha256": "204a342c98807561c339af2b404f63c4f09387c9b99d29f7b21caa01f8410c20",
+  "ok": true,
+  "package": {
+    "bundle": "target/configure-verified-xvfb",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "parent_environment_unchanged": true,
+  "runtime_cleanup": {
+    "directory_removed": true,
+    "endpoints_removed_before_cleanup": true,
+    "path": "/tmp/fluxrt-pkc9v3xz"
+  },
+  "scope": "Configured future-column widths, retained existing columns, invalid-preset retention and real configure/frame events; no native/presentation/soak qualification",
+  "server_reaped": true,
+  "x_socket_removed": true
+}

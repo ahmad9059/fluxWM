@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+    "--no-config",
+    "--socket",
+    "fluxwm-shutdown-999beb038e7c",
+    "--ready-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/shutdown/pipeline/ready.json",
+    "--stats-file",
+    "/home/ahmad/Documents/Projects/fluxwm/target/autostart-postreview-gui/regressions/shutdown/pipeline/stats.json",
+    "--exit-after-ms",
+    "10000"
+  ],
+  "host_environment_saved": false
+}
