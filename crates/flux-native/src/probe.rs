@@ -93,15 +93,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let after = driver.snapshot();
     let close_failures = driver.close_failures();
     drop(driver);
+    let initialization_healthy = !before.closed && state.failure_events == 0 && close_failures == 0;
     println!(
         "{}",
         serde_json::to_string_pretty(
-            &json!({"scope":"manual native initialization only; no frame or desktop qualification","native_compositor":false,"event_loop_budget_ms":15000,"universal_shutdown_deadline":false,"before_stop":before,"after_stop":after,"prepared_gpus":gpus,"input_events":state.input_events,"gpu_preparations":state.gpu_preparations,"gpu_removals":state.gpu_removals,"session_transitions":state.session_transitions,"vblanks":state.vblanks,"failures":state.failures,"failure_events":state.failure_events,"failures_truncated":state.failure_events>32,"close_failures":close_failures})
+            &json!({"scope":"manual native initialization only; no frame or desktop qualification","native_compositor":false,"initialization_healthy":initialization_healthy,"event_loop_budget_ms":15000,"universal_shutdown_deadline":false,"before_stop":before,"after_stop":after,"prepared_gpus":gpus,"input_events":state.input_events,"gpu_preparations":state.gpu_preparations,"gpu_removals":state.gpu_removals,"session_transitions":state.session_transitions,"vblanks":state.vblanks,"failures":state.failures,"failure_events":state.failure_events,"failures_truncated":state.failure_events>32,"close_failures":close_failures})
         )?
     );
     // Keep the dispatcher (and blocked termination signals) through cleanup.
     drop(event_loop);
     drop(signal_owner);
+    if !initialization_healthy {
+        return Err("native initialization or cleanup reported failures".into());
+    }
     Ok(())
 }
 fn help() {

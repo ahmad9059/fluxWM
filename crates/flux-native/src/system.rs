@@ -47,6 +47,8 @@ pub enum Stage {
     InputSetup,
     InputResume,
     DeviceOpen,
+    DeviceClose,
+    SeatControl,
     DeviceMismatch,
     DeviceFlags,
     DeviceDuplicate,
@@ -75,6 +77,11 @@ impl std::fmt::Display for Failure {
     }
 }
 impl std::error::Error for Failure {}
+impl AsErrno for Failure {
+    fn as_errno(&self) -> Option<i32> {
+        self.errno
+    }
+}
 #[derive(Clone, Debug, Serialize)]
 pub struct GpuInfo {
     pub device: String,
@@ -82,6 +89,7 @@ pub struct GpuInfo {
     pub session_epoch: String,
     pub connectors: usize,
     pub crtcs: usize,
+    pub import_formats: usize,
     pub render_formats: usize,
 }
 /// Input events are not stored in snapshots. Callers own their routing policy.
@@ -111,15 +119,7 @@ struct SeatDevice<S: Session + Clone> {
     _owner: Option<Rc<dyn Any>>,
 }
 impl<S: Session + Clone> SeatDevice<S> {
-    fn open(session: S, path: &Path, close_failures: Rc<Cell<u64>>) -> Result<Self, Failure> {
-        Self::open_with(session, path, close_failures, enforce_flags)
-    }
-    fn open_with(
-        mut session: S,
-        path: &Path,
-        close_failures: Rc<Cell<u64>>,
-        configure: impl FnOnce(&OwnedFd) -> std::io::Result<()>,
-    ) -> Result<Self, Failure> {
+    fn open(mut session: S, path: &Path, close_failures: Rc<Cell<u64>>) -> Result<Self, Failure> {
         if !session.is_active() {
             return Err(Failure::at(Stage::Inactive));
         }
@@ -138,7 +138,7 @@ impl<S: Session + Clone> SeatDevice<S> {
             close_failures,
             _owner: None,
         };
-        configure(device.fd.as_ref().expect("owned descriptor")).map_err(|e| Failure {
+        enforce_flags(device.fd.as_ref().expect("owned descriptor")).map_err(|e| Failure {
             stage: Stage::DeviceFlags,
             errno: e.raw_os_error(),
         })?;
@@ -182,6 +182,42 @@ fn enforce_flags(fd: &OwnedFd) -> std::io::Result<()> {
         }
     }
     Ok(())
+}
+// libinput's session interface also routes through the flag-enforcing owner.
+// Transfer its original FD to libinput; close_restricted returns it here.
+#[derive(Clone)]
+struct InputSession<S: Session + Clone> {
+    session: S,
+    close_failures: Rc<Cell<u64>>,
+}
+impl<S: Session + Clone> Session for InputSession<S> {
+    type Error = Failure;
+    fn open(&mut self, path: &Path, _flags: OFlags) -> Result<OwnedFd, Failure> {
+        let mut device = SeatDevice::open(self.session.clone(), path, self.close_failures.clone())?;
+        Ok(device.fd.take().expect("owned input descriptor"))
+    }
+    fn close(&mut self, fd: OwnedFd) -> Result<(), Failure> {
+        self.session.close(fd).map_err(|e| {
+            self.close_failures
+                .set(self.close_failures.get().saturating_add(1));
+            Failure {
+                stage: Stage::DeviceClose,
+                errno: e.as_errno(),
+            }
+        })
+    }
+    fn change_vt(&mut self, vt: i32) -> Result<(), Failure> {
+        self.session.change_vt(vt).map_err(|e| Failure {
+            stage: Stage::SeatControl,
+            errno: e.as_errno(),
+        })
+    }
+    fn is_active(&self) -> bool {
+        self.session.is_active()
+    }
+    fn seat(&self) -> String {
+        self.session.seat()
+    }
 }
 /// Read-only udev inventory. This does not open a seat, DRM node or input device.
 pub fn device_ids(seat: &str) -> Result<Vec<String>, Failure> {
@@ -467,9 +503,14 @@ impl<D: 'static> Kernel<D> {
         events
     }
     fn init_input(&mut self, weak: &Weak<RefCell<Self>>) -> Result<(), Failure> {
-        let mut input = Libinput::new_with_udev::<LibinputSessionInterface<LibSeatSession>>(
-            self.session.clone().into(),
-        );
+        let mut input =
+            Libinput::new_with_udev::<LibinputSessionInterface<InputSession<LibSeatSession>>>(
+                InputSession {
+                    session: self.session.clone(),
+                    close_failures: self.close_failures.clone(),
+                }
+                .into(),
+            );
         input
             .udev_assign_seat(&self.session.seat())
             .map_err(|_| Failure::at(Stage::InputSetup))?;
@@ -613,7 +654,12 @@ impl<D: 'static> Kernel<D> {
             session_epoch: ticket.session_epoch.to_string(),
             connectors: resources.connectors().len(),
             crtcs: resources.crtcs().len(),
-            render_formats: renderer.dmabuf_formats().iter().count(),
+            import_formats: renderer.dmabuf_formats().iter().count(),
+            render_formats: renderer
+                .egl_context()
+                .dmabuf_render_formats()
+                .iter()
+                .count(),
         };
         let handle = (self.handle)().ok_or_else(|| Failure::at(Stage::SourceRegistration))?;
         let weak = weak.clone();
@@ -669,6 +715,7 @@ mod tests {
         active: bool,
         fail_open: bool,
         fail_close: bool,
+        path_only: bool,
     }
     impl Session for MockSession {
         type Error = ();
@@ -676,6 +723,15 @@ mod tests {
             self.log.borrow_mut().push("open");
             if self.fail_open {
                 return Err(());
+            }
+            if self.path_only {
+                use std::os::unix::fs::OpenOptionsExt;
+                return std::fs::OpenOptions::new()
+                    .read(true)
+                    .custom_flags(libc::O_PATH)
+                    .open("/dev/null")
+                    .map(Into::into)
+                    .map_err(|_| ());
             }
             let fd: OwnedFd = std::fs::OpenOptions::new()
                 .read(true)
@@ -715,6 +771,7 @@ mod tests {
             active: true,
             fail_open: false,
             fail_close: false,
+            path_only: false,
         }
     }
     #[test]
@@ -744,17 +801,14 @@ mod tests {
     #[test]
     fn failed_post_open_setup_still_closes_broker_device_once() {
         let log = Log::default();
-        let result = SeatDevice::open_with(
-            session(log.clone()),
-            Path::new("fixture"),
-            Rc::new(Cell::new(0)),
-            |_| Err(std::io::Error::from_raw_os_error(libc::EPERM)),
-        );
+        let mut s = session(log.clone());
+        s.path_only = true;
+        let result = SeatDevice::open(s, Path::new("fixture"), Rc::new(Cell::new(0)));
         let Err(error) = result else {
-            panic!("injected setup failure accepted")
+            panic!("O_PATH flag enforcement failure accepted")
         };
         assert_eq!(error.stage, Stage::DeviceFlags);
-        assert_eq!(error.errno, Some(libc::EPERM));
+        assert_eq!(error.errno, Some(libc::EBADF));
         assert_eq!(*log.borrow(), ["open", "close"]);
     }
     #[test]
@@ -796,6 +850,54 @@ mod tests {
         drop(event_loop);
         assert!(upgrade().is_none());
         drop(registration);
+    }
+    #[test]
+    fn input_adapter_enforces_flags_transfers_ownership_and_accounts_close_failure() {
+        let log = Log::default();
+        let mut s = session(log.clone());
+        s.fail_close = true;
+        let failures = Rc::new(Cell::new(0));
+        let mut input = InputSession {
+            session: s,
+            close_failures: failures.clone(),
+        };
+        let fd = input.open(Path::new("fixture"), OFlags::RDWR).unwrap();
+        assert_eq!(
+            *log.borrow(),
+            ["open"],
+            "temporary owner must not close the transferred FD"
+        );
+        unsafe {
+            assert_ne!(
+                libc::fcntl(fd.as_raw_fd(), libc::F_GETFD) & libc::FD_CLOEXEC,
+                0
+            );
+            assert_ne!(
+                libc::fcntl(fd.as_raw_fd(), libc::F_GETFL) & libc::O_NONBLOCK,
+                0
+            );
+        }
+        assert_eq!(input.close(fd).unwrap_err().stage, Stage::DeviceClose);
+        assert_eq!(failures.get(), 1);
+        assert_eq!(*log.borrow(), ["open", "close"]);
+    }
+    #[test]
+    fn input_adapter_flag_failure_closes_without_transferring_or_retrying() {
+        let log = Log::default();
+        let mut s = session(log.clone());
+        s.path_only = true;
+        let mut input = InputSession {
+            session: s,
+            close_failures: Rc::new(Cell::new(0)),
+        };
+        assert_eq!(
+            input
+                .open(Path::new("fixture"), OFlags::RDWR)
+                .unwrap_err()
+                .stage,
+            Stage::DeviceFlags
+        );
+        assert_eq!(*log.borrow(), ["open", "close"]);
     }
     struct Trace {
         log: Log,
@@ -913,6 +1015,7 @@ mod tests {
                     session_epoch: "1".into(),
                     connectors: 0,
                     crtcs: 0,
+                    import_formats: 0,
                     render_formats: 0,
                 },
             }),
