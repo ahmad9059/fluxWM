@@ -59,3 +59,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 [Configured width defaults](config-widths.md) extend Lua application to new admissions using fixed/fraction policies and one-based preset references. Desired/effective queries distinguish the requested tag from the normalized policy; existing column policies remain intact.
 
 [Autostart ownership](autostart.md) defines named/positional identity, reload behavior, bounds, diagnostics and direct-child shutdown. [Current production gaps](production-status-2026-10-18.md) records evidence and closure requirements.
+
+- [Native output discovery and candidate routing](native-outputs.md): bounded topology, exact format candidates, resource matching and unimplemented KMS/presentation requirements.

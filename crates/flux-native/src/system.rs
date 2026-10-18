@@ -2,6 +2,7 @@
 //! Explicit Linux seat/device initialization. This module does not create DRM
 //! surfaces or advertise a native desktop capability. Smithay may restore prior
 //! DRM state during teardown; the explicit session probe requires a separate VT.
+mod discovery;
 use crate::{Lifecycle, Snapshot, Ticket};
 use serde::Serialize;
 use smithay::{
@@ -20,7 +21,6 @@ use smithay::{
     },
     reexports::{
         calloop::{Dispatcher, LoopHandle, RegistrationToken},
-        drm::control::Device as _,
         input::Libinput,
         rustix::fs::OFlags,
     },
@@ -57,6 +57,8 @@ pub enum Stage {
     EglInitialize,
     RendererInitialize,
     DrmResources,
+    OutputDiscovery,
+    OutputTopology,
     DrmEvent,
     Lifecycle,
     Inactive,
@@ -91,6 +93,7 @@ pub struct GpuInfo {
     pub crtcs: usize,
     pub import_formats: usize,
     pub render_formats: usize,
+    pub output_plan: crate::output::Plan,
 }
 /// Input events are not stored in snapshots. Callers own their routing policy.
 pub enum NativeEvent {
@@ -280,6 +283,7 @@ struct OwnedGpu<S: Session + Clone, R, G, D> {
     _seat_device: Rc<SeatDevice<S>>,
     ticket: Ticket,
     info: GpuInfo,
+    _output_modes: BTreeMap<u32, Vec<smithay::reexports::drm::control::Mode>>,
 }
 type Gpu = OwnedGpu<LibSeatSession, GlesRenderer, GbmDevice<DrmDeviceFd>, DrmDevice>;
 type Notify<D> = Rc<dyn Fn(NativeEvent, &mut D)>;
@@ -708,22 +712,35 @@ impl<D: 'static> Kernel<D> {
         let (drm, notifier) =
             DrmDevice::new(fd.clone(), false).map_err(|_| Failure::at(Stage::DrmInitialize))?;
         let drm = PauseOnDrop::new(drm, DrmDevice::pause);
-        let resources = drm
-            .resource_handles()
-            .map_err(|_| Failure::at(Stage::DrmResources))?;
         let gbm = GbmDevice::new(fd).map_err(|_| Failure::at(Stage::GbmInitialize))?;
         let display = unsafe { EGLDisplay::new(gbm.clone()) }
             .map_err(|_| Failure::at(Stage::EglInitialize))?;
         let context = EGLContext::new(&display).map_err(|_| Failure::at(Stage::EglInitialize))?;
         let renderer = unsafe { GlesRenderer::new(context) }
             .map_err(|_| Failure::at(Stage::RendererInitialize))?;
+        let inventory = discovery::discover(
+            &drm,
+            renderer
+                .egl_context()
+                .dmabuf_render_formats()
+                .iter()
+                .take(crate::output::MAX_FORMATS + 1)
+                .map(|format| crate::output::Format {
+                    code: format.code as u32,
+                    modifier: format.modifier.into(),
+                })
+                .collect(),
+        )?;
+        let output_plan = crate::output::plan(&inventory.topology)
+            .map_err(|_| Failure::at(Stage::OutputTopology))?;
         let info = GpuInfo {
             device: ticket.device.to_string(),
             generation: ticket.generation.to_string(),
             session_epoch: ticket.session_epoch.to_string(),
-            connectors: resources.connectors().len(),
-            crtcs: resources.crtcs().len(),
+            connectors: inventory.topology.connectors.len(),
+            crtcs: inventory.topology.crtcs.len(),
             import_formats: renderer.dmabuf_formats().iter().count(),
+            output_plan,
             render_formats: renderer
                 .egl_context()
                 .dmabuf_render_formats()
@@ -765,6 +782,7 @@ impl<D: 'static> Kernel<D> {
             _seat_device: seat_device,
             ticket,
             info,
+            _output_modes: inventory.modes,
         })
     }
 }
@@ -1152,6 +1170,7 @@ mod tests {
                 drm: trace("drm"),
                 _seat_device: lease,
                 ticket: t,
+                _output_modes: BTreeMap::new(),
                 info: GpuInfo {
                     device: "1".into(),
                     generation: "1".into(),
@@ -1160,6 +1179,7 @@ mod tests {
                     crtcs: 0,
                     import_formats: 0,
                     render_formats: 0,
+                    output_plan: crate::output::Plan::default(),
                 },
             }),
         };
