@@ -93,7 +93,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let after = driver.snapshot();
     let close_failures = driver.close_failures();
     drop(driver);
-    let initialization_healthy = !before.closed && state.failure_events == 0 && close_failures == 0;
+    let initialization_healthy = initialization_healthy(
+        before.active,
+        before.closed,
+        gpus.len(),
+        state.failure_events,
+        close_failures,
+    );
     println!(
         "{}",
         serde_json::to_string_pretty(
@@ -112,4 +118,33 @@ fn help() {
     println!(
         "fluxwm-native-probe --check | --session\n--check: read-only udev inventory; opens no seat/DRM/input devices.\n--session: manual physical-VT initialization, libinput and GPU context probe; exits after a 15-second event-loop interval.\nNo compositor output surfaces are created. Smithay may change/restore DRM state during initialization/teardown; use a separate physical VT. This is not the FluxWM native compositor. Kernel/library calls have no universal deadline."
     );
+}
+
+fn initialization_healthy(
+    active: bool,
+    closed: bool,
+    gpu_count: usize,
+    failures: u64,
+    close_failures: u64,
+) -> bool {
+    active && !closed && gpu_count > 0 && failures == 0 && close_failures == 0
+}
+#[cfg(test)]
+mod tests {
+    use super::initialization_healthy;
+    #[test]
+    fn empty_or_inactive_initialization_is_not_healthy() {
+        assert!(initialization_healthy(true, false, 1, 0, 0));
+        for (active, closed, gpus, failures, closes) in [
+            (false, false, 1, 0, 0),
+            (true, true, 1, 0, 0),
+            (true, false, 0, 0, 0),
+            (true, false, 1, 1, 0),
+            (true, false, 1, 0, 1),
+        ] {
+            assert!(!initialization_healthy(
+                active, closed, gpus, failures, closes
+            ));
+        }
+    }
 }

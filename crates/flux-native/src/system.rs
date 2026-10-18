@@ -337,9 +337,11 @@ impl<D: 'static> Driver<D> {
                 }
             };
             let notify = kernel.borrow().notify.clone();
-            for event in events {
-                notify(event, data);
-            }
+            dispatch_events(
+                events,
+                |event| notify(event, data),
+                || !kernel.borrow().model.closed(),
+            );
         }));
         kernel.borrow_mut().seat_owner = Some(owner.clone());
         let mut driver = Self {
@@ -370,9 +372,11 @@ impl<D: 'static> Driver<D> {
                 let Some(kernel) = weak.upgrade() else { return };
                 let events = kernel.borrow_mut().udev(event, &Rc::downgrade(&kernel));
                 let notify = kernel.borrow().notify.clone();
-                for event in events {
-                    notify(event, data);
-                }
+                dispatch_events(
+                    events,
+                    |event| notify(event, data),
+                    || !kernel.borrow().model.closed(),
+                );
             })
             .map_err(|_| Failure::at(Stage::SourceRegistration))?;
         driver
@@ -423,6 +427,28 @@ impl<D: 'static> Drop for Driver<D> {
         self.stop();
     }
 }
+// Stop a precomputed batch if a notification synchronously shuts down its owner.
+// Deliver the first item even if initialization sealed admission, so failures
+// remain observable; never deliver later ready events after stop/drop.
+fn dispatch_events<E>(
+    events: impl IntoIterator<Item = E>,
+    mut notify: impl FnMut(E),
+    live: impl Fn() -> bool,
+) {
+    for event in events {
+        notify(event);
+        if !live() {
+            break;
+        }
+    }
+}
+// Apply the pause before any fields retire. This suppresses Smithay's implicit
+// active-device KMS restore on Changed/Removed/stop; no surfaces exist yet.
+fn retire_paused<T>(resource: Option<T>, pause: impl FnOnce(&mut T)) {
+    if let Some(mut resource) = resource {
+        pause(&mut resource);
+    }
+}
 impl<D: 'static> Kernel<D> {
     fn failure(device: Option<u64>, stage: Stage) -> NativeEvent {
         NativeEvent::Failure {
@@ -431,7 +457,8 @@ impl<D: 'static> Kernel<D> {
         }
     }
     fn retire(&mut self, id: u64) {
-        self.gpus.remove(&id);
+        // Hotplug must not restore a connector snapshot captured before change.
+        retire_paused(self.gpus.remove(&id), |gpu| gpu.drm.pause());
     }
     fn stop(&mut self) {
         self.model.stop();
@@ -952,6 +979,36 @@ mod tests {
         fn unregister(&mut self, p: &mut Poll) -> smithay::reexports::calloop::Result<()> {
             self.source.unregister(p)
         }
+    }
+    #[test]
+    fn notification_shutdown_cancels_remaining_batch() {
+        let live = Cell::new(true);
+        let mut seen = vec![];
+        dispatch_events(
+            [1, 2, 3],
+            |event| {
+                seen.push(event);
+                live.set(false);
+            },
+            || live.get(),
+        );
+        assert_eq!(seen, [1]);
+        // Initialization errors remain observable after admission is sealed.
+        dispatch_events([4, 5], |event| seen.push(event), || false);
+        assert_eq!(seen, [1, 4]);
+    }
+    #[test]
+    fn retirement_pauses_before_drop_and_ignores_absent_resources() {
+        struct Device(Rc<Cell<bool>>);
+        impl Drop for Device {
+            fn drop(&mut self) {
+                assert!(self.0.get(), "active drop would restore stale KMS state");
+            }
+        }
+        let paused = Rc::new(Cell::new(false));
+        retire_paused(Some(Device(paused.clone())), |device| device.0.set(true));
+        assert!(paused.get());
+        retire_paused(None::<Device>, |_| panic!("no device to pause"));
     }
     type TestGpu = OwnedGpu<MockSession, Trace, Trace, Trace>;
     #[derive(Default)]

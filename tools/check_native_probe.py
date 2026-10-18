@@ -14,6 +14,8 @@ import time
 # Linux x86-64 ptrace ABI, not a portable syscall decoder. Unsupported hosts fail.
 TRACEME, PEEKDATA, SYSCALL, GETREGS, SETREGS, SETOPTIONS = 0, 2, 24, 12, 13, 0x4200
 TRACESYSGOOD, TRACEEXEC, EXITKILL = 1, 0x10, 0x100000
+GET_SYSCALL_INFO = 0x420e
+AUDIT_ARCH_X86_64 = 0xc000003e
 MASK = 2**64 - 1
 FIELDS = ('r15 r14 r13 r12 rbp rbx r11 r10 r9 r8 rax rcx rdx rsi rdi '
           'orig_rax rip cs eflags rsp ss fs_base gs_base ds es fs gs').split()
@@ -21,6 +23,15 @@ FIELDS = ('r15 r14 r13 r12 rbp rbx r11 r10 r9 r8 rax rcx rdx rsi rdi '
 
 class Registers(ctypes.Structure):
     _fields_ = [(name, ctypes.c_ulonglong) for name in FIELDS]
+
+
+class SyscallInfo(ctypes.Structure):
+    # The entry member is the largest payload we read. Linux may report a
+    # larger union size; ptrace copies only our supplied buffer length.
+    _fields_ = [('op', ctypes.c_uint8), ('reserved', ctypes.c_uint8),
+                ('flags', ctypes.c_uint16), ('arch', ctypes.c_uint32),
+                ('ip', ctypes.c_uint64), ('sp', ctypes.c_uint64),
+                ('payload', ctypes.c_uint64 * 7)]
 
 
 LIBC = ctypes.CDLL(None, use_errno=True)
@@ -50,14 +61,17 @@ def remote_string(pid, address):
 
 
 def open_path(pid, registers, number):
-    if number == 2:  # open
+    if number in (2, 85):  # open / creat
         name = remote_string(pid, registers.rdi)
         directory = -100
     else:  # openat / openat2
         name = remote_string(pid, registers.rsi)
         directory = ctypes.c_longlong(registers.rdi).value
-    if name.startswith("/proc/self/"):
-        name = "/proc/%s/" % pid + name[len("/proc/self/"):]
+    for alias in ("/proc/self/", "/proc/thread-self/", "/dev/fd/"):
+        if name.startswith(alias):
+            prefix = "/proc/%s/fd/" % pid if alias == "/dev/fd/" else "/proc/%s/" % pid
+            name = prefix + name[len(alias):]
+            break
     if os.path.isabs(name):
         return os.path.realpath(name)
     base = os.readlink('/proc/%s/cwd' % pid) if directory == -100 else os.readlink('/proc/%s/fd/%s' % (pid, directory))
@@ -65,9 +79,12 @@ def open_path(pid, registers, number):
 
 
 def privileged(path):
-    return (path.startswith('/dev/dri/') or path.startswith('/dev/input/') or
-            path.startswith('/dev/pts/') or path == '/dev/tty' or
-            (path.startswith('/dev/tty') and path[len('/dev/tty'):].isdigit()))
+    if not path.startswith('/dev/'):
+        return False
+    # Permit the harmless devices used by the loader/runtime; fail closed on
+    # other device paths, including vendor GPUs and console/VT interfaces.
+    return path not in {'/dev/null', '/dev/zero', '/dev/full',
+                        '/dev/random', '/dev/urandom'}
 
 
 def wait_owned(pid, deadline):
@@ -95,6 +112,7 @@ def main():
               'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
               'harness_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
               'syscall_stops': 0, 'checked_open_calls': 0, 'blocked_calls': []}
+    parent_pid = os.getpid()
     pid = None
     reaped = False
     try:
@@ -103,6 +121,11 @@ def main():
             pid = os.fork()
             if pid == 0:
                 try:
+                    # Cover parent death before PTRACE_O_EXITKILL is installed.
+                    if LIBC.prctl(1, signal.SIGKILL, 0, 0, 0) != 0:
+                        os._exit(125)
+                    if os.getppid() != parent_pid:
+                        os._exit(125)
                     os.dup2(stdout.fileno(), 1); os.dup2(stderr.fileno(), 2)
                     null = os.open('/dev/null', os.O_RDONLY | os.O_CLOEXEC)
                     os.dup2(null, 0)
@@ -127,7 +150,6 @@ def main():
                 reaped = os.WIFEXITED(status) or os.WIFSIGNALED(status)
                 raise RuntimeError('owned trace child failed before initial stop')
             ptrace(SETOPTIONS, pid, 0, TRACESYSGOOD | TRACEEXEC | EXITKILL)
-            entering = True
             executed = False
             blocked = False
             ptrace(SYSCALL, pid)
@@ -152,18 +174,26 @@ def main():
                     raise RuntimeError('owned trace syscall budget exceeded')
                 registers = Registers()
                 ptrace(GETREGS, pid, 0, ctypes.byref(registers))
-                if entering:
+                info = SyscallInfo()
+                size = ptrace(GET_SYSCALL_INFO, pid, ctypes.sizeof(info), ctypes.byref(info))
+                if size < 24 or info.op not in (1, 2):
+                    raise RuntimeError('missing kernel syscall entry/exit information')
+                if info.arch != AUDIT_ARCH_X86_64:
+                    raise RuntimeError('unsupported syscall ABI')
+                if info.op == 1:
                     blocked = False
                     number = registers.orig_rax
                     reason = None
                     if executed:
                         if number & 0x40000000:
                             reason = 'unsupported-syscall-ABI'
-                        elif number in (2, 257, 437):
+                        elif number in (2, 85, 257, 437):
                             result['checked_open_calls'] += 1
                             path = open_path(pid, registers, number)
                             if privileged(path):
                                 reason = 'native-device-open'
+                        elif number in (303, 304):
+                            reason = 'file-handle-access'
                         elif number == 42:
                             reason = 'connect'
                         elif number in (56, 57, 58, 435):
@@ -172,8 +202,8 @@ def main():
                             reason = 'later-exec'
                         elif number == 16:
                             request_type = (registers.rsi >> 8) & 0xff
-                            if request_type in (ord('d'), ord('E')):
-                                reason = 'drm-or-input-ioctl'
+                            if request_type in (ord('d'), ord('E'), ord('K'), ord('V'), ord('F')):
+                                reason = 'native-device-ioctl-family'
                             else:
                                 try:
                                     target = os.readlink('/proc/%s/fd/%s' % (pid, registers.rdi))
@@ -193,7 +223,6 @@ def main():
                 elif blocked:
                     registers.rax = (-errno.EPERM) & MASK
                     ptrace(SETREGS, pid, 0, ctypes.byref(registers))
-                entering = not entering
                 ptrace(SYSCALL, pid)
         output = json.loads((directory / 'stdout.json').read_text())
         result['probe'] = output
@@ -220,8 +249,9 @@ def main():
                 result['ownership_lost'] = True
         result['child_reaped'] = reaped
         result['binary_unchanged'] = hashlib.sha256(binary.read_bytes()).hexdigest() == result['binary_sha256']
+        result['harness_unchanged'] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest() == result['harness_sha256']
         result['parent_environment_unchanged'] = dict(os.environ) == parent
-        result['ok'] &= reaped and result['binary_unchanged'] and result['parent_environment_unchanged']
+        result['ok'] &= reaped and result['binary_unchanged'] and result['harness_unchanged'] and result['parent_environment_unchanged']
         (directory / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps({key: result.get(key) for key in ['ok','error','checked_open_calls','blocked_calls','child_reaped']}))
     return 0 if result['ok'] else 1

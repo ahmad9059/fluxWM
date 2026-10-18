@@ -127,3 +127,12 @@ jobs:
 
       - name: Audit read-only check on an owned child
         run: python3 tools/check_native_probe.py --artifacts target/native-probe-audit
+
+      - name: Exercise auditor denial fixtures
+        run: python3 tools/test_native_probe_audit.py --artifacts target/native-probe-denial-tests
+
+      - name: Record audit results in job logs
+        if: always()
+        run: |
+          test ! -f target/native-probe-audit/result.json || cat target/native-probe-audit/result.json
+          test ! -f target/native-probe-denial-tests/results.json || cat target/native-probe-denial-tests/results.json
