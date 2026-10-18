@@ -151,7 +151,7 @@ fn unique_ids(ids: impl IntoIterator<Item = u32>, cap: usize) -> Result<BTreeSet
     Ok(set)
 }
 fn references(ids: &[u32], known: &BTreeSet<u32>) -> Result<(), PlanError> {
-    let refs = unique_ids(ids.iter().copied(), known.len())?;
+    let refs = unique_ids(ids.iter().copied(), usize::MAX)?;
     if !refs.is_subset(known) {
         return Err(PlanError::InvalidTopology);
     }
@@ -739,5 +739,8 @@ mod tests {
         bad.planes[0].formats = vec![format(); MAX_FORMATS + 1];
         assert_eq!(plan(&bad), Err(PlanError::Capacity));
         assert_eq!(plan(&Topology::default()), Ok(Plan::default()));
+        bad = topology.clone();
+        bad.encoders.clear();
+        assert_eq!(plan(&bad), Err(PlanError::InvalidTopology));
     }
 }

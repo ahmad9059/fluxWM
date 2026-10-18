@@ -21,6 +21,7 @@ use smithay::{
     },
     reexports::{
         calloop::{Dispatcher, LoopHandle, RegistrationToken},
+        drm::control::Device as _,
         input::Libinput,
         rustix::fs::OFlags,
     },
@@ -93,7 +94,8 @@ pub struct GpuInfo {
     pub crtcs: usize,
     pub import_formats: usize,
     pub render_formats: usize,
-    pub output_plan: crate::output::Plan,
+    pub output_plan: Option<crate::output::Plan>,
+    pub output_failure: Option<Failure>,
 }
 /// Input events are not stored in snapshots. Callers own their routing policy.
 pub enum NativeEvent {
@@ -431,6 +433,19 @@ impl<D: 'static> Drop for Driver<D> {
         self.stop();
     }
 }
+// Context readiness survives an output-discovery failure. Consumers must gate
+// output work on the explicit plan; the separate failure remains observable.
+fn prepared_events(device: u64, info: GpuInfo) -> Vec<NativeEvent> {
+    let failure = info.output_failure;
+    let mut events = vec![NativeEvent::GpuReady(info)];
+    if let Some(error) = failure {
+        events.push(NativeEvent::Failure {
+            device: Some(device),
+            error,
+        });
+    }
+    events
+}
 // Closed admission suppresses ready/input events, while terminal diagnostics
 // and the final inactive transition remain observable, including after failure.
 fn dispatch_events(
@@ -678,7 +693,7 @@ impl<D: 'static> Kernel<D> {
             Ok(gpu) => {
                 let info = gpu.info.clone();
                 self.gpus.insert(id, gpu);
-                vec![NativeEvent::GpuReady(info)]
+                prepared_events(id, info)
             }
             Err(error) => vec![NativeEvent::Failure {
                 device: Some(id),
@@ -718,7 +733,10 @@ impl<D: 'static> Kernel<D> {
         let context = EGLContext::new(&display).map_err(|_| Failure::at(Stage::EglInitialize))?;
         let renderer = unsafe { GlesRenderer::new(context) }
             .map_err(|_| Failure::at(Stage::RendererInitialize))?;
-        let inventory = discovery::discover(
+        let resources = drm
+            .resource_handles()
+            .map_err(|_| Failure::at(Stage::DrmResources))?;
+        let outputs = discovery::prepare(
             &drm,
             renderer
                 .egl_context()
@@ -730,17 +748,16 @@ impl<D: 'static> Kernel<D> {
                     modifier: format.modifier.into(),
                 })
                 .collect(),
-        )?;
-        let output_plan = crate::output::plan(&inventory.topology)
-            .map_err(|_| Failure::at(Stage::OutputTopology))?;
+        );
         let info = GpuInfo {
             device: ticket.device.to_string(),
             generation: ticket.generation.to_string(),
             session_epoch: ticket.session_epoch.to_string(),
-            connectors: inventory.topology.connectors.len(),
-            crtcs: inventory.topology.crtcs.len(),
+            connectors: resources.connectors().len(),
+            crtcs: resources.crtcs().len(),
             import_formats: renderer.dmabuf_formats().iter().count(),
-            output_plan,
+            output_plan: outputs.plan,
+            output_failure: outputs.failure,
             render_formats: renderer
                 .egl_context()
                 .dmabuf_render_formats()
@@ -782,7 +799,7 @@ impl<D: 'static> Kernel<D> {
             _seat_device: seat_device,
             ticket,
             info,
-            _output_modes: inventory.modes,
+            _output_modes: outputs.modes,
         })
     }
 }
@@ -1041,6 +1058,38 @@ mod tests {
         }
     }
     #[test]
+    fn output_failure_reports_context_readiness_and_explicit_missing_plan() {
+        let failure = Failure::at(Stage::OutputTopology);
+        let info = GpuInfo {
+            device: "42".into(),
+            generation: "1".into(),
+            session_epoch: "1".into(),
+            connectors: 1,
+            crtcs: 1,
+            import_formats: 1,
+            render_formats: 257,
+            output_plan: None,
+            output_failure: Some(failure),
+        };
+        let events = prepared_events(42, info.clone());
+        assert!(
+            matches!(&events[0], NativeEvent::GpuReady(info) if info.output_plan.is_none() && info.output_failure == Some(failure))
+        );
+        assert!(
+            matches!(&events[1], NativeEvent::Failure {device:Some(42), error} if *error == failure)
+        );
+        assert_eq!(events.len(), 2);
+        let events = prepared_events(
+            42,
+            GpuInfo {
+                output_plan: Some(crate::output::Plan::default()),
+                output_failure: None,
+                ..info
+            },
+        );
+        assert_eq!(events.len(), 1);
+    }
+    #[test]
     fn notification_shutdown_suppresses_ready_but_preserves_terminal_events() {
         let live = Cell::new(true);
         let mut seen = vec![];
@@ -1179,7 +1228,8 @@ mod tests {
                     crtcs: 0,
                     import_formats: 0,
                     render_formats: 0,
-                    output_plan: crate::output::Plan::default(),
+                    output_plan: Some(crate::output::Plan::default()),
+                    output_failure: None,
                 },
             }),
         };

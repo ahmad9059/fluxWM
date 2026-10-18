@@ -1,6 +1,6 @@
 # Native output discovery and candidate routing
 
-The optional native driver now acquires connector/mode, encoder/CRTC and primary-plane metadata after GPU initialization. It computes independent output routes before publishing GPU readiness. `GpuInfo.output_plan` is a **candidate plan**, not a plane reservation, buffer allocation, KMS test, display configuration or presented frame. Main FluxWM remains nested-only. The manual `--session` probe remains unexecuted here and still requires a separate authorized VT; `--check` continues to perform udev inventory only.
+The optional native driver now acquires connector/mode, encoder/CRTC and primary-plane metadata after GPU initialization. It attempts independent output-route discovery before publishing GPU context readiness. Discovery success supplies `GpuInfo.output_plan`; failure supplies a null plan and `output_failure`, retaining the initialized GPU context and emitting a separate failure event. An empty successful plan (outputless) differs from an unavailable plan. The manual probe still reports failures and exits unsuccessfully on discovery errors. `GpuInfo.output_plan` is a **candidate plan**, not a plane reservation, buffer allocation, KMS test, display configuration or presented frame. Main FluxWM remains nested-only. The manual `--session` probe remains unexecuted here and still requires a separate authorized VT; `--check` continues to perform udev inventory only.
 
 ## Acquisition and identity
 
@@ -12,7 +12,7 @@ Acquisition validates bounded counts, nonzero/unique IDs, references, raw/policy
 
 ## Routing and mode policy
 
-The planner builds a unit-capacity residual network from connectors through encoders and CRTCs to primary planes. Every resource can serve at most one independent output. Augmenting paths can reroute an earlier flexible assignment to accommodate a constrained connector. The resulting number of routes is maximal for the supplied compatibility graph; cloning, MST bandwidth/link limits, GPU-wide constraints and actual buffer/KMS feasibility require subsequent backend testing and are not inferred from that graph.
+The planner builds a unit-capacity residual network from connectors through encoders and CRTCs to primary planes. Every resource can serve at most one independent output. Augmenting paths can reroute an earlier flexible assignment to accommodate a constrained connector. The resulting number of routes is maximum for the supplied compatibility graph; cloning, MST bandwidth/link limits, GPU-wide constraints and actual buffer/KMS feasibility require subsequent backend testing and are not inferred from that graph.
 
 Sorting resource IDs makes results independent of discovery order. Current encoder/CRTC preferences order ties, but this is not a minimum-disruption optimizer and does not promise to preserve all existing assignments. No live output exists in this stage. Publication and rollback of an existing display configuration remain separate work.
 
@@ -22,7 +22,7 @@ A plane is eligible only if its format/modifier set intersects the renderer's re
 
 ## Bounds and verification
 
-Current admission limits are 64 connectors, 128 encoders, 32 CRTCs, 128 primary planes, 256 modes per connector, 256 formats per plane/renderer, and 256 connector properties. Exceeding a limit fails GPU preparation with a discovery/topology stage rather than returning a silently truncated plan. These are implementation limits, not qualified hardware support limits.
+Current admission limits are 64 connectors, 128 encoders, 32 CRTCs, 128 primary planes, 256 modes per connector, 256 formats per plane/renderer, and 256 connector properties. The format limit counts **format/modifier pairs**, not unique format codes; hardware with many modifiers can exceed it, and target-GPU sufficiency has not been measured. Exceeding a limit produces an explicit unavailable output plan with a discovery/topology failure rather than silent truncation or discarding the GPU context. These are implementation limits, not qualified hardware support limits.
 
 ```sh
 cargo test -p flux-native --locked
@@ -37,3 +37,7 @@ The acquisition suite drives the production query coordinator through a fixture 
 ## Next integration requirements
 
 Before enabling a native desktop, extend the owned GPU domain to output-manager/surface/plane claims, GBM buffers, front/pending frames and render completion. Select compatible formats/modifiers through actual allocation and KMS testing. Retain prior working configurations on failed output transactions, supply an acknowledged fifteen-second preview/revert, and make outputless recovery preserve workspaces. Only publish output globals/scene state after the hardware transaction's required success point. Then integrate rendering and input into the main compositor and qualify VT/hotplug/suspend/device loss on physical hardware. The complete [phase-3 gate](../phases/03-gpu-backend.md) remains open.
+
+Pinned Smithay primary-plane discovery calls an `unreachable!()` branch if plane-type metadata is absent (`src/backend/drm/mod.rs::plane_type`). That upstream panic path, malformed property/blob behavior and kernel/vendor faults are not exercised or converted to a successful discovery result by these fixtures. Native fault recovery remains open.
+
+Independent review of `341ebbf` found no high planner defect and raised a hardware-dependent format-pair-cap risk, not a measured target-GPU failure. Later author changes isolate output discovery failure from GPU context readiness, preserve an explicit failure event/missing plan, and correct unknown-reference error classification. A test supplies 257 renderer pairs and requires unavailable output discovery; another checks the context-ready plus failure event contract. Initial review lacked the free Smithay plane helper; the follow-up snapshot includes it. Real adapter/property tests remain open.

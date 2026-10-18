@@ -264,6 +264,34 @@ impl Query for DrmQuery<'_> {
             .collect()
     }
 }
+pub(super) struct PreparedOutputs<M> {
+    pub plan: Option<output::Plan>,
+    pub failure: Option<Failure>,
+    pub modes: BTreeMap<u32, Vec<M>>,
+}
+fn finish<M>(inventory: Result<Inventory<M>, Failure>) -> PreparedOutputs<M> {
+    match inventory.and_then(|inventory| {
+        let plan = output::plan(&inventory.topology).map_err(|_| invalid())?;
+        Ok((plan, inventory.modes))
+    }) {
+        Ok((plan, modes)) => PreparedOutputs {
+            plan: Some(plan),
+            failure: None,
+            modes,
+        },
+        Err(failure) => PreparedOutputs {
+            plan: None,
+            failure: Some(failure),
+            modes: BTreeMap::new(),
+        },
+    }
+}
+pub(super) fn prepare(
+    drm: &DrmDevice,
+    render_formats: Vec<Format>,
+) -> PreparedOutputs<control::Mode> {
+    finish(discover(drm, render_formats))
+}
 pub(super) fn discover(drm: &DrmDevice, render_formats: Vec<Format>) -> Result<Inventory, Failure> {
     let resources = drm.resource_handles().map_err(io)?;
     acquire(
@@ -389,6 +417,19 @@ mod tests {
                 }],
             )])
         }
+    }
+    #[test]
+    fn format_pair_capacity_failure_is_an_explicit_unavailable_plan() {
+        let mut query = fixture();
+        let prepared = finish(acquire(&mut query, vec![format(); output::MAX_FORMATS + 1]));
+        assert!(prepared.plan.is_none());
+        assert_eq!(prepared.failure, Some(invalid()));
+        assert!(prepared.modes.is_empty());
+        assert_eq!(query.calls, 1);
+        let prepared = finish(acquire(&mut fixture(), vec![format()]));
+        assert!(prepared.plan.is_some());
+        assert!(prepared.failure.is_none());
+        assert_eq!(prepared.modes.len(), 2);
     }
     #[test]
     fn acquisition_retains_original_modes_and_shared_plane_has_one_owner() {
