@@ -151,7 +151,12 @@ fn unique_ids(ids: impl IntoIterator<Item = u32>, cap: usize) -> Result<BTreeSet
     Ok(set)
 }
 fn references(ids: &[u32], known: &BTreeSet<u32>) -> Result<(), PlanError> {
-    let refs = unique_ids(ids.iter().copied(), usize::MAX)?;
+    // No valid reference list can exceed the known resource set. Reject before
+    // building a set, preserving bounded work and InvalidTopology classification.
+    if ids.len() > known.len() {
+        return Err(PlanError::InvalidTopology);
+    }
+    let refs = unique_ids(ids.iter().copied(), known.len())?;
     if !refs.is_subset(known) {
         return Err(PlanError::InvalidTopology);
     }
@@ -741,6 +746,9 @@ mod tests {
         assert_eq!(plan(&Topology::default()), Ok(Plan::default()));
         bad = topology.clone();
         bad.encoders.clear();
+        assert_eq!(plan(&bad), Err(PlanError::InvalidTopology));
+        bad = topology.clone();
+        bad.connectors[0].encoders = (1..=10_000).collect();
         assert_eq!(plan(&bad), Err(PlanError::InvalidTopology));
     }
 }
