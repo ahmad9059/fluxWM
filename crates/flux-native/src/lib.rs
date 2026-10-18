@@ -2,6 +2,7 @@
 //! context, not an output, successful modeset, frame or desktop qualification.
 mod lifecycle;
 pub mod output;
+pub mod target;
 pub use lifecycle::*;
 #[cfg(feature = "system")]
 pub mod system;

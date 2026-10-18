@@ -3,6 +3,7 @@
 //! surfaces or advertise a native desktop capability. Smithay may restore prior
 //! DRM state during teardown; the explicit session probe requires a separate VT.
 mod discovery;
+mod target_test;
 use crate::{Lifecycle, Snapshot, Ticket};
 use serde::Serialize;
 use smithay::{
@@ -407,6 +408,47 @@ impl<D: 'static> Driver<D> {
             }
         }
         Ok(driver)
+    }
+    /// Explicit manual allocation/render/atomic TEST_ONLY diagnostic. It does
+    /// not create a surface or submit a frame. No resources escape this call.
+    pub fn test_output_targets(&mut self, device: u64) -> crate::target::TestReport {
+        let mut kernel = self.kernel.borrow_mut();
+        let current = kernel
+            .gpus
+            .get(&device)
+            .is_some_and(|gpu| kernel.model.is_ready(gpu.ticket));
+        let plan = if current {
+            kernel
+                .gpus
+                .get(&device)
+                .and_then(|gpu| gpu.info.output_plan.clone())
+        } else {
+            None
+        };
+        let Some(plan) = plan else {
+            return crate::target::TestReport {
+                ok: false,
+                planned_targets: 0,
+                unassigned_connectors: 0,
+                attempts: 0,
+                nominal_bytes: "0".into(),
+                tested_targets: vec![],
+                failure: Some(crate::target::TestFailure::at(if current {
+                    crate::target::TestStage::MissingPlan
+                } else {
+                    crate::target::TestStage::Inactive
+                })),
+                cleanup_failures: "0".into(),
+            };
+        };
+        let gpu = kernel.gpus.get_mut(&device).expect("current GPU owned");
+        target_test::test(
+            &gpu.drm,
+            &gpu._gbm,
+            &mut gpu._renderer,
+            &gpu._output_modes,
+            &plan,
+        )
     }
     pub fn snapshot(&self) -> Snapshot {
         self.kernel.borrow().model.snapshot()

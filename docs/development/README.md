@@ -61,3 +61,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 [Autostart ownership](autostart.md) defines named/positional identity, reload behavior, bounds, diagnostics and direct-child shutdown. [Current production gaps](production-status-2026-10-18.md) records evidence and closure requirements.
 
 - [Native output discovery and candidate routing](native-outputs.md): bounded topology, exact format candidates, resource matching and unimplemented KMS/presentation requirements.
+
+- [Native RGB target allocation and atomic test](native-target-test.md): manual opt-in, fixed TEST_ONLY flags, owned resource retirement and unqualified hardware paths.

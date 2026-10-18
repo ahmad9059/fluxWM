@@ -23,6 +23,17 @@ fn help_and_invalid_options_do_not_start_session_mode() {
     let help = Command::new(binary).arg("--help").output().unwrap();
     assert!(help.status.success());
     assert!(String::from_utf8_lossy(&help.stdout).contains("--session"));
-    let bad = Command::new(binary).arg("--session=bad").output().unwrap();
-    assert!(!bad.status.success());
+    for args in [
+        vec!["--session=bad"],
+        vec!["--test-outputs"],
+        vec!["--check", "--test-outputs"],
+    ] {
+        let bad = Command::new(binary)
+            .args(args)
+            .env("LIBSEAT_BACKEND", "fluxwm-no-such-backend")
+            .output()
+            .unwrap();
+        assert!(!bad.status.success());
+        assert!(String::from_utf8_lossy(&bad.stderr).contains("expected --check"));
+    }
 }
