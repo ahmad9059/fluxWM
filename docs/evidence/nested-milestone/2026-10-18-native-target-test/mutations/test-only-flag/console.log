@@ -1,0 +1,21 @@
+   Compiling flux-native v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.77s
+     Running unittests src/lib.rs (target/debug/deps/flux_native-b06d11e922a393ac)
+
+running 1 test
+
+thread 'system::target_test::tests::kernel_request_flags_always_test_only_without_events_or_nonblock' (240186) panicked at crates/flux-native/src/system/target_test.rs:413:9:
+assertion `left == right` failed
+  left: AtomicCommitFlags(ALLOW_MODESET)
+ right: AtomicCommitFlags(TEST_ONLY | ALLOW_MODESET)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test system::target_test::tests::kernel_request_flags_always_test_only_without_events_or_nonblock ... FAILED
+
+failures:
+
+failures:
+    system::target_test::tests::kernel_request_flags_always_test_only_without_events_or_nonblock
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 43 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p flux-native --lib`

@@ -1,0 +1,4 @@
+{
+  "commit": "c2e86ed8ef6e2b03aaf23eb60a0aef800bea7475",
+  "scope": "Compiled manual GBM/GLES/atomic TEST_ONLY adapter; no --session or native target diagnostic executed. Device-free fixtures and --check syscall audit only. New GUI runs=0, exact nested binary continuity retained."
+}

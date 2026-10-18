@@ -67,3 +67,9 @@ The [native follow-up](native-foundation-followup-2026-10-18/disposition.md) rev
 [Claude’s candidate-planning report](native-outputs-2026-10-18/claude-report.md) reads `341ebbf` in 22 Read/Grep calls. The [disposition](native-outputs-2026-10-18/disposition.md) records a conditional, unmeasured format-pair-cap risk, subsequent failure isolation and reference validation corrections. The initial snapshot omitted the upstream free plane helper; the follow-up includes it. No native hardware or production qualification is claimed.
 
 The [native output follow-up](native-outputs-followup-2026-10-18/disposition.md) inspects `99e3dac`, now with the free upstream plane helper. It finds no reachable high/medium defect within scope, accepts failure isolation, and retains the unmeasured format-pair cap and actual adapter/hardware gaps. Later bounded-reference and distinct-pair fixture changes are identified as author work.
+
+## Native RGB target diagnostic review
+
+[Claude’s target-diagnostic report](native-target-test-2026-10-18/claude-report.md) reads `abadd20` with 23 Read/Grep calls. The [disposition](native-target-test-2026-10-18/disposition.md) records two medium cache-lifetime/topology-oracle defects and subsequent source corrections. Actual GBM/GLES/DRM testing remains unexecuted.
+
+The [target-diagnostic follow-up](native-target-test-followup-2026-10-18/disposition.md) independently reads `c2e86ed`, accepts the two medium corrections and finds no reachable high/medium issue in that scope. Inherited properties, incomplete side-effect reporting, conservative route failures, actual request-builder/renderer behavior and hardware remain open.

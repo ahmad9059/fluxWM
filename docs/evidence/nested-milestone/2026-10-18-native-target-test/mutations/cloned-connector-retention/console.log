@@ -1,0 +1,21 @@
+   Compiling flux-native v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.78s
+     Running unittests src/lib.rs (target/debug/deps/flux_native-b06d11e922a393ac)
+
+running 1 test
+
+thread 'target::routes::tests::detaches_unplanned_clones_and_preserves_unrelated_routes' (241779) panicked at crates/flux-native/src/target/routes.rs:168:9:
+assertion `left == right` failed
+  left: Some(10)
+ right: None
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test target::routes::tests::detaches_unplanned_clones_and_preserves_unrelated_routes ... FAILED
+
+failures:
+
+failures:
+    target::routes::tests::detaches_unplanned_clones_and_preserves_unrelated_routes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 43 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p flux-native --lib`

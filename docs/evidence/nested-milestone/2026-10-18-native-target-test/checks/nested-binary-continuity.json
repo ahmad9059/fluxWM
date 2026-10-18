@@ -1,0 +1,12 @@
+{
+  "prior_evidence": "docs/evidence/nested-milestone/2026-10-18-native-foundation/runtime/execution.json",
+  "prior_record_sha256": "1f0d03d7f1bdcb2b1e7354b9c41a35b30fae823cb146ece7429d42d2782b497a",
+  "unchanged_nested_binaries": {
+    "fluxwm": true,
+    "fluxwm-config": true,
+    "fluxwm-fixture": true
+  },
+  "prior_successful_gui_runs": 5,
+  "new_gui_runs": 0,
+  "scope": "Same compositor/config/fixture bytes as prior GUI qualification. New probe audited separately; no new GUI or native hardware execution."
+}

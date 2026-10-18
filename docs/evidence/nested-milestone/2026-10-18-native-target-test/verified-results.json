@@ -1,0 +1,13 @@
+{
+  "origin_records": 52,
+  "all_retained_origin_hashes_match": true,
+  "successful_checks": 11,
+  "registered_test_names": 224,
+  "registered_set_coverage": true,
+  "negative_controls_rejected": 5,
+  "new_gui_runs": 0,
+  "nested_binary_continuity_verified": true,
+  "readonly_audit_passed": true,
+  "final_binary_hashes_match_now": true,
+  "scope": "Author integrity verification. No --session, native RGB allocation/render/fence/ioctl TEST_ONLY or physical presentation executed."
+}

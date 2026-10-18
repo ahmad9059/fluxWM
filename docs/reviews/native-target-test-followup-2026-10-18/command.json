@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independently review frozen native target diagnostic follow-up c2e86ed. Read/Grep only within snapshot, no writes, tests, commands, network, outside paths or agents. About12-20 calls. Prior review abadd20 found M1 GLES cached imports stayed pinned after target return; M2 existing cloned connectors or moved resources changed meaning of successful hypothetical atomic test. Current code: target::run calls Backend.finish_cleanup only AFTER targets/local resource closure drops on success or failure if attempts>0; actual Adapter calls Renderer::cleanup_texture_cache; error adds cleanup failure, invalidates ok and clears tested metadata, while earlier primary error is preserved. Tests mock cache lifetime/errors, not actual GLES. Note pinned GlesFrame::finish_internal also calls cleanup during finish, but current live target dmabufs make entries survive then; final post-retirement cleanup is the actual fix. M2 new target/routes.rs pure shared reconciler checks bounded unique source snapshot, desired selected routes, detaches unplanned clones on tested CRTCs, emits ALL known connector routes (unrelated unchanged captured values), disables source CRTCs that lose final connector and clears non-selected planes on tested/disabled CRTCs. Selected primary moved from unrelated surviving-output CRTC is rejected TopologyConflict, no optimizer/backtracking claimed. Actual Adapter queries resources/all connectors CRCT_ID/all plane current routes, calls reconciler, constructs request accordingly then fixed TEST_ONLY|ALLOW_MODESET; no DrmSurface or live commit. It applies fresh connector route/property map and checks non-desktop again; disabled source MODE_ID=0 ACTIVE=0, clearing FB_ID=0 CRTC_ID=0. Test freshness still only request-time snapshot, not hardware reservation. Check whether medium findings fixed and any new reachable HIGH/MEDIUM errors, stale resource reuse/cleanup/lifetime/order, route reconciliation logical defects or false-success oracle, missing property requests, flags or unbounded application work. Files src/target.rs, target/routes.rs, system/target_test.rs, Driver test_output_targets and probe health as needed. All pinned upstream primary files from previous review are provided. Manual --session --test-outputs remains UNEXECUTED. Shared coordinator/route/flags/parser/health fixtures are author evidence only; real property/framebuffer/blob/GBM/EGL/atomic/fence/provider paths unrun. Nominal pixels not actual GPU-memory/RSS bound. Original low local-drop-order/implicit allocation false negatives/multi-GPU strictness now documented. No native output presentation, page-flips, live commit, safe-preview or hardware/production qualification. Report concrete findings with paths/triggers, checked fixes, remaining lows/test gaps; no certification.",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "34",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/native-target-followup-review-snapshot"
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "flux-native",
+    "--features",
+    "system",
+    "--locked",
+    "all_targets_live_during_joint_test_and_retire_before_return",
+    "--",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "original_sha256": "d977c48213ddccfea0e54cf2999cf691bc8172bfe82baa555316219ebd0694c5",
+  "mutated_sha256": "004d8e5fc928119639e99171b20c125dfcd9033479b613486c6886889289da92",
+  "source_restored": true
+}

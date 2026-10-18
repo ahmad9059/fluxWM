@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "flux-native",
+    "--features",
+    "system",
+    "--locked",
+    "detaches_unplanned_clones_and_preserves_unrelated_routes",
+    "--",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "original_sha256": "e740592432ac7038221b1070945d8d93ba3e23af6bd9ee5a7d5299b085b0eead",
+  "mutated_sha256": "db5b85298f02857cda527535ca9c38f83bc523d0c79bc25dba377976669b4d39",
+  "source_restored": true
+}
