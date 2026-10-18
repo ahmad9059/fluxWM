@@ -421,7 +421,15 @@ mod tests {
     #[test]
     fn format_pair_capacity_failure_is_an_explicit_unavailable_plan() {
         let mut query = fixture();
-        let prepared = finish(acquire(&mut query, vec![format(); output::MAX_FORMATS + 1]));
+        let prepared = finish(acquire(
+            &mut query,
+            (0..=output::MAX_FORMATS)
+                .map(|modifier| Format {
+                    modifier: modifier as u64,
+                    ..format()
+                })
+                .collect(),
+        ));
         assert!(prepared.plan.is_none());
         assert_eq!(prepared.failure, Some(invalid()));
         assert!(prepared.modes.is_empty());
