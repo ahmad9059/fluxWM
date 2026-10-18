@@ -1,3 +1,6 @@
 /target/
 /tools/__pycache__/
 *.profraw
+
+# Local Node tooling must not add dependency trees to this Rust workspace.
+node_modules/
