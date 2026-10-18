@@ -15,6 +15,7 @@ See the [current nested runtime milestone](runtime.md) and [bounded nested smoke
 | [flux-ipc / fluxctl](ipc.md) | Unix transport and command-line client | Nested query/action dispatch implemented; subscriptions unavailable |
 | [flux-scene](scene.md) | Immutable checked window geometry and ordered clip/hit candidates | [Runtime scene integration](runtime-scene.md) adds copied Wayland input regions and clipped elements; native/transaction ownership remains open |
 | [flux-process](autostart.md) | Bounded launch worker and named/positional autostart ownership | Direct children only; session dependencies/readiness/descendants and universal shutdown bounds remain open |
+| [flux-native](native-foundation.md) | Device lifecycle model and opt-in Linux session/GPU initialization | Separate probe; main compositor native output/render/input integration and hardware qualification remain open |
 | `fluxwm` | Smithay nested compositor bootstrap | Managed map/unmap, gated capabilities, bounded redraw and cleanup; full protocol/native qualification open |
 
 ## Reproduce checks

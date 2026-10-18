@@ -86,3 +86,44 @@ jobs:
 
       - name: Check real configuration CLI in its supervised helper
         run: cargo run --locked -p fluxwm-config -- --check docs/examples/config.lua > /tmp/fluxwm-effective-config.json
+
+  native-foundation:
+    name: Native foundation / device-free checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+
+      - name: Install native build headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            build-essential ca-certificates git pkg-config python3 libxkbcommon-dev \
+            libseat-dev libudev-dev libinput-dev libgbm-dev libdrm-dev
+
+      - name: Install pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt --component clippy
+          pkg-config --modversion libseat libudev libinput gbm libdrm
+
+      - name: Check native system targets
+        run: cargo check -p flux-native --features system --all-targets --locked
+
+      - name: Test model and mocked resource ownership without a seat
+        env:
+          DISPLAY: ''
+          WAYLAND_DISPLAY: ''
+          WAYLAND_SOCKET: ''
+          LIBSEAT_BACKEND: fluxwm-no-such-backend
+        run: cargo test -p flux-native --features system --locked
+
+      - name: Check native clippy
+        run: cargo clippy -p flux-native --features system --all-targets --locked -- -D warnings
+
+      - name: Build initialization probe
+        run: cargo build -p flux-native --features system --locked
+
+      - name: Audit read-only check on an owned child
+        run: python3 tools/check_native_probe.py --artifacts target/native-probe-audit

@@ -35,6 +35,7 @@ Research date: **2026-10-17**. This folder specifies the product, architecture, 
 | [Initial implementation audit](24-implementation-readiness-audit.md) | Historical snapshot findings and executable evidence |
 | [Current production gaps](development/production-status-2026-10-18.md) | Present source boundaries, edge cases and required closure evidence |
 | [Autostart ownership](development/autostart.md) | Stable identity, once/restart behavior, budgets and asynchronous effect diagnostics |
+| [Native session/device foundation](development/native-foundation.md) | Optional platform layer, ownership tests, read-only probe and remaining phase-3 work |
 | [Runnable nested milestone](development/runtime.md) | Actual CLI, controls, IPC, lifecycle and rendering evidence boundaries |
 | [Shared composed scene](development/runtime-scene.md) | Actual buffer geometry, copied input regions and separate root/popup clips |
 | [Runtime findings and remaining gates](development/runtime-findings.md) | Integrated runtime fixes, actual tests and unqualified production behavior |

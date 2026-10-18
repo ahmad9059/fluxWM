@@ -1,0 +1,22 @@
+[package]
+name = "flux-native"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = []
+system = ["dep:smithay", "dep:calloop"]
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+libc.workspace = true
+calloop = { version = "=0.14.5", optional = true, features = ["signals"] }
+smithay = { git = "https://github.com/Smithay/smithay", rev = "023b78b1c5a05ca512767cacc07efca55fae8be4", default-features = false, optional = true, features = ["backend_session_libseat", "backend_udev", "backend_libinput", "backend_drm", "backend_gbm", "renderer_gl"] }
+
+[[bin]]
+name = "fluxwm-native-probe"
+path = "src/probe.rs"
+required-features = ["system"]

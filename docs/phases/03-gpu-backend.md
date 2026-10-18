@@ -1,6 +1,6 @@
 # Phase 3: Native GPU backend and output lifecycle
 
-Status: planned. **Dependencies:** Phase 2.
+Status: foundation in progress; native output/hardware gate unqualified. **Dependencies:** Phase 2.
 
 ## Objective
 
@@ -45,3 +45,7 @@ Retain [ordering contracts](../14-state-machines.md), [resources/trust](../17-re
 ## Required follow-up review tasks
 
 Implement the B17 minimal font/shaping/fallback spike and record candidate dependency/build results. Early display preview has a developer-only nonblocking stdin/TTY acknowledgement and 15-second safe revert; it does not require phase-6 fluxctl or phase-5 text UI. Phase-3 GPU-05 coverage is only the compositor-owned primary-plane variant; client direct scanout is phase 9.
+
+## Implementation foothold
+
+The [native session/device foundation](../development/native-foundation.md) now adds an optional libseat/udev/libinput/DRM/GBM/GLES layer, explicit broker descriptor ownership, epoch/generation gates and a separate initialization probe. Device-free tests and read-only inventory do not implement or qualify native output rendering, transactions, physical input or the exit gate. Main FluxWM remains nested-only.
