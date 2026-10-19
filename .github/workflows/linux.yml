@@ -122,6 +122,25 @@ jobs:
       - name: Check native clippy
         run: cargo clippy -p flux-native --features system --all-targets --locked -- -D warnings
 
+      - name: Check native compositor frontend
+        run: cargo clippy -p fluxwm --features native --all-targets --locked -- -D warnings
+
+      - name: Test native frontend without a device session
+        env:
+          DISPLAY: ''
+          WAYLAND_DISPLAY: ''
+          WAYLAND_SOCKET: ''
+          LIBSEAT_BACKEND: fluxwm-no-such-backend
+        run: cargo test -p fluxwm --features native --locked
+
+      - name: Document native compositor frontend
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc -p fluxwm --features native --no-deps --locked
+
+      - name: Build native compositor frontend
+        run: cargo build -p fluxwm --features native --locked
+
       - name: Build initialization probe
         run: cargo build -p flux-native --features system --locked
 

@@ -32,8 +32,12 @@ impl SeatHandler for Fluxwm {
     fn cursor_image(
         &mut self,
         _seat: &Seat<Self>,
-        _image: smithay::input::pointer::CursorImageStatus,
+        image: smithay::input::pointer::CursorImageStatus,
     ) {
+        self.cursor_image = image;
+        if self.backend == "native" {
+            self.request_redraw();
+        }
     }
 
     fn focus_changed(&mut self, seat: &Seat<Self>, focused: Option<&WlSurface>) {

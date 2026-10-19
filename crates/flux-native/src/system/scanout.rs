@@ -14,12 +14,17 @@ use smithay::{
     backend::{
         allocator::gbm::GbmDevice,
         drm::{DrmDevice, DrmDeviceFd},
-        renderer::{Renderer, gles::GlesRenderer},
+        renderer::{
+            Renderer,
+            gles::{GlesRenderer, GlesTarget},
+            sync::SyncPoint,
+        },
         session::libseat::LibSeatSession,
     },
     reexports::drm::control,
+    utils::{Physical, Size},
 };
-use std::{collections::BTreeMap, io, os::fd::AsFd, rc::Rc};
+use std::{any::Any, collections::BTreeMap, io, os::fd::AsFd, rc::Rc};
 
 #[derive(Clone, Copy, Debug, Serialize)]
 pub enum PreviewStage {
@@ -27,6 +32,8 @@ pub enum PreviewStage {
     Busy,
     Admission,
     Prepare,
+    Render,
+    EventStream,
     Capture,
     Test,
     Submit,
@@ -81,8 +88,20 @@ struct OwnedTarget {
     target: Target,
     _seat: Rc<SeatDevice<LibSeatSession>>,
 }
+enum Scene {
+    Color([u8; 4]),
+    Content(Rc<dyn Any>),
+}
+impl Scene {
+    fn content<T: 'static>(&self) -> Option<Rc<T>> {
+        match self {
+            Self::Content(scene) => scene.clone().downcast().ok(),
+            Self::Color(_) => None,
+        }
+    }
+}
 struct State {
-    queue: FrameQueue<OwnedTarget, [u8; 4]>,
+    queue: FrameQueue<OwnedTarget, Scene>,
     rollback: RestoreState,
     fd: DrmDeviceFd,
     assignment: Assignment,
@@ -161,7 +180,7 @@ impl Output {
                         target,
                         _seat: ctx.seat.clone(),
                     },
-                    value,
+                    Scene::Color(value),
                 ))
             })
             .map_err(|e| match e {
@@ -205,6 +224,11 @@ impl Output {
                 return Err(PreviewFailure::at(PreviewStage::Admission));
             }
         };
+        if last_failure.is_some() {
+            // A failed initial ioctl is not a startup-stream quiescence proof.
+            // Even a colliding old cookie must never reopen frame admission.
+            queue.invalidate();
+        }
         Ok(Self {
             state: Some(Box::new(State {
                 queue,
@@ -225,7 +249,10 @@ impl Output {
         PreviewInfo {
             connector: s.assignment.connector,
             queue: s.queue.snapshot(),
-            visible_color: s.queue.visible_scene().copied(),
+            visible_color: s.queue.visible_scene().and_then(|scene| match scene {
+                Scene::Color(color) => Some(*color),
+                Scene::Content(_) => None,
+            }),
             last_failure: s.last_failure,
             rollback_completed: s.rollback_completed,
             rollback_cleanup_errors: s.rollback.cleanup_errors(),
@@ -233,7 +260,7 @@ impl Output {
     }
     pub fn complete(&mut self, ticket: Ticket, event: crate::drm_events::Flip) {
         let s = self.state.as_mut().expect("live output owned");
-        if s.queue.complete(ticket, event) != frames::Completion::Ignored {
+        if s.queue.complete(ticket, event) == frames::Completion::Presented {
             s.last_failure = None;
         }
     }
@@ -244,7 +271,37 @@ impl Output {
             .queue
             .invalidate();
     }
+    pub fn content<T: 'static>(&self) -> Option<Rc<T>> {
+        self.state.as_ref()?.queue.visible_scene()?.content()
+    }
     pub fn submit(&mut self, ctx: &mut Context<'_>, value: [u8; 4]) -> Result<(), PreviewFailure> {
+        self.submit_with(ctx, value, |_, _| Ok(Scene::Color(value)))
+    }
+    pub fn render<T: 'static>(
+        &mut self,
+        ctx: &mut Context<'_>,
+        compose: impl FnOnce(
+            &mut GlesRenderer,
+            &mut GlesTarget<'_>,
+            Size<i32, Physical>,
+        ) -> Result<(Rc<T>, SyncPoint), String>,
+    ) -> Result<(), PreviewFailure> {
+        self.submit_with(ctx, [0, 0, 0, 255], |renderer, target| {
+            target
+                .compose(renderer, compose)
+                .map(|scene| Scene::Content(scene))
+                .map_err(|failure| PreviewFailure {
+                    stage: PreviewStage::Render,
+                    errno: failure.errno,
+                })
+        })
+    }
+    fn submit_with(
+        &mut self,
+        ctx: &mut Context<'_>,
+        value: [u8; 4],
+        compose: impl FnOnce(&mut GlesRenderer, &mut Target) -> Result<Scene, PreviewFailure>,
+    ) -> Result<(), PreviewFailure> {
         let s = self.state.as_mut().expect("live output owned");
         let status = s.queue.snapshot();
         if !status.active || status.closed || status.faulted || s.rollback_completed {
@@ -256,7 +313,7 @@ impl Output {
         let prepared = ctx
             .pool
             .prepare(bytes(&s.assignment)?, || {
-                let (target, _) = target_test::prepare_live(
+                let (mut target, _) = target_test::prepare_live(
                     ctx.drm,
                     ctx.gbm,
                     ctx.renderer,
@@ -269,18 +326,28 @@ impl Output {
                     stage: PreviewStage::Prepare,
                     errno: e.errno,
                 })?;
+                let scene = compose(ctx.renderer, &mut target)?;
                 Ok((
                     OwnedTarget {
                         target,
                         _seat: ctx.seat.clone(),
                     },
-                    value,
+                    scene,
                 ))
             })
             .map_err(|e| match e {
                 frames::PreparationError::Backend(e) => e,
                 _ => PreviewFailure::at(PreviewStage::Admission),
-            })?;
+            });
+        let prepared = match prepared {
+            Ok(frame) => frame,
+            Err(error) => {
+                ctx.renderer
+                    .cleanup_texture_cache()
+                    .map_err(|_| PreviewFailure::at(PreviewStage::Cleanup))?;
+                return Err(error);
+            }
+        };
         let result = s.queue.submit(prepared, |cookie, owned| {
             let request = match owned.target.flip_request() {
                 Ok(r) => r,
@@ -298,11 +365,25 @@ impl Output {
         });
         match result {
             Ok(_) => Ok(()),
-            Err(SubmitError::Uncertain(e)) | Err(SubmitError::Rejected { error: e, .. }) => {
-                s.last_failure = Some(e);
-                Err(e)
+            Err(SubmitError::Uncertain(error)) => {
+                s.last_failure = Some(error);
+                Err(error)
             }
-            Err(_) => Err(PreviewFailure::at(PreviewStage::Admission)),
+            Err(SubmitError::Rejected { error, frame }) => {
+                drop(frame);
+                ctx.renderer
+                    .cleanup_texture_cache()
+                    .map_err(|_| PreviewFailure::at(PreviewStage::Cleanup))?;
+                s.last_failure = Some(error);
+                Err(error)
+            }
+            Err(error) => {
+                drop(error);
+                ctx.renderer
+                    .cleanup_texture_cache()
+                    .map_err(|_| PreviewFailure::at(PreviewStage::Cleanup))?;
+                Err(PreviewFailure::at(PreviewStage::Admission))
+            }
         }
     }
     pub fn restore(&mut self) -> Result<(), PreviewFailure> {
@@ -354,6 +435,47 @@ fn restore_consumers<R, S>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn composed_content_stays_private_until_exact_completion_and_stops_on_invalidation() {
+        let ticket = Ticket {
+            device: 1,
+            generation: 1,
+            session_epoch: 1,
+        };
+        let key = OutputKey::new(ticket, 7, 1).unwrap();
+        let pool = FramePool::default();
+        let mut queue = pool.output(key).unwrap();
+        let expected = Rc::new(String::from("composed scene"));
+        let frame = pool
+            .prepare(4, || Ok::<_, ()>(((), Scene::Content(expected.clone()))))
+            .unwrap();
+        let cookie = queue
+            .submit(frame, |_, _| SubmitOutcome::<()>::Accepted)
+            .ok()
+            .unwrap();
+        assert!(queue.visible_scene().is_none());
+        let mut flip = crate::drm_events::Flip {
+            cookie: cookie.get(),
+            crtc: 8,
+            sequence: 0,
+            seconds: 0,
+            microseconds: 0,
+        };
+        assert_eq!(queue.complete(ticket, flip), frames::Completion::Ignored);
+        assert!(queue.visible_scene().is_none());
+        flip.crtc = 7;
+        assert_eq!(queue.complete(ticket, flip), frames::Completion::Presented);
+        let actual = queue.visible_scene().unwrap().content::<String>().unwrap();
+        assert!(Rc::ptr_eq(&actual, &expected));
+        assert!(queue.visible_scene().unwrap().content::<u64>().is_none());
+        queue.invalidate();
+        assert!(queue.visible_scene().is_none());
+        // SAFETY: this fixture has no hardware consumers.
+        queue
+            .release_after_disable(unsafe { IdleProof::after_backend_quiescence(key) })
+            .unwrap();
+        assert_eq!(pool.snapshot().slots, 0);
+    }
     #[test]
     fn failed_restore_retains_front_and_pending_until_synchronous_success() {
         let ticket = Ticket {

@@ -1,0 +1,70 @@
+[
+  {
+    "name": "native-tests",
+    "command": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-features",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 6.081
+  },
+  {
+    "name": "clippy",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-features",
+      "--all-targets",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.916
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.314
+  },
+  {
+    "name": "build-compositor-native",
+    "command": [
+      "cargo",
+      "build",
+      "-p",
+      "fluxwm",
+      "--features",
+      "native",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.119
+  },
+  {
+    "name": "build-native",
+    "command": [
+      "cargo",
+      "build",
+      "-p",
+      "flux-native",
+      "--features",
+      "system",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.317
+  }
+]

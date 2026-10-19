@@ -200,11 +200,11 @@ impl Fluxwm {
                 }
                 pos.x = pos.x.clamp(
                     f64::from(geometry.loc.x),
-                    f64::from(geometry.loc.x) + f64::from(geometry.size.w) - 0.001,
+                    f64::from(geometry.loc.x) + f64::from(geometry.size.w) - 1.0,
                 );
                 pos.y = pos.y.clamp(
                     f64::from(geometry.loc.y),
-                    f64::from(geometry.loc.y) + f64::from(geometry.size.h) - 0.001,
+                    f64::from(geometry.loc.y) + f64::from(geometry.size.h) - 1.0,
                 );
                 let under = self.surface_under(pos);
                 self.pointer_scene_target = under.clone();
@@ -218,6 +218,9 @@ impl Fluxwm {
                     },
                 );
                 pointer.frame(self);
+                if self.backend == "native" {
+                    self.request_redraw();
+                }
             }
             InputEvent::PointerMotionAbsolute { event, .. } => {
                 let Some(output) = self.space.outputs().next() else {
@@ -262,6 +265,9 @@ impl Fluxwm {
                     },
                 );
                 pointer.frame(self);
+                if self.backend == "native" {
+                    self.request_redraw();
+                }
             }
             InputEvent::PointerButton { event, .. } => {
                 let pointer = self.seat.get_pointer().unwrap();

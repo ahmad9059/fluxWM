@@ -4,11 +4,15 @@ mod actions;
 mod autostart;
 mod config;
 mod configure;
+#[cfg(feature = "native")]
+mod cursor;
 mod grabs;
 mod handlers;
 mod health;
 mod input;
 mod ipc;
+#[cfg(feature = "native")]
+mod native;
 mod scene;
 mod state;
 mod winit;
@@ -31,6 +35,8 @@ use std::{
 #[derive(Default)]
 struct Options {
     socket: Option<String>,
+    backend: Option<String>,
+    native_output: Option<(u64, u32)>,
     config: Option<PathBuf>,
     no_config: bool,
     config_helper: Option<PathBuf>,
@@ -49,14 +55,34 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
         match arg.to_str() {
             Some("--help" | "-h") => {
                 println!(
-                    "fluxwm --backend nested [--config PATH | --no-config] [--config-helper PATH] [--socket NAME] [--exit-after-ms N] [--ready-file PATH] [--stats-file PATH] [--screenshot NEW.ppm] [--screenshot-after-ms N] [-- COMMAND ARG...]\nOnly the nested backend is currently implemented. Output files must not already exist."
+                    "fluxwm --backend nested [--config PATH | --no-config] [--config-helper PATH] [--socket NAME] [--exit-after-ms N] [--ready-file PATH] [--stats-file PATH] [--screenshot NEW.ppm] [--screenshot-after-ms N] [-- COMMAND ARG...]\nNative builds also accept --backend native --native-output DEVICE:CONNECTOR. Native screenshots are unsupported. Output files must not already exist."
                 );
                 return Ok(None);
             }
             Some("--backend") => {
-                if args.next().as_deref() != Some(std::ffi::OsStr::new("nested")) {
-                    return Err("only --backend nested is implemented".into());
+                if result.backend.is_some() {
+                    return Err("--backend must appear once".into());
                 }
+                let backend = args
+                    .next()
+                    .ok_or("missing backend")?
+                    .into_string()
+                    .map_err(|_| "backend must be UTF-8")?;
+                if backend != "nested" && backend != "native" {
+                    return Err("backend must be nested or native".into());
+                }
+                result.backend = Some(backend);
+            }
+            Some("--native-output") => {
+                if result.native_output.is_some() {
+                    return Err("--native-output must appear once".into());
+                }
+                let value = args
+                    .next()
+                    .ok_or("missing native output DEVICE:CONNECTOR")?
+                    .into_string()
+                    .map_err(|_| "native output must be UTF-8")?;
+                result.native_output = Some(parse_native_output(&value)?);
             }
             Some("--config") => {
                 if result.config.is_some() || result.no_config {
@@ -134,6 +160,7 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
     if result.screenshot_after.is_some() && result.screenshot.is_none() {
         return Err("--screenshot-after-ms requires --screenshot".into());
     }
+    validate_backend_options(&result)?;
     let socket = result
         .socket
         .get_or_insert_with(|| format!("fluxwm-{}", std::process::id()));
@@ -146,6 +173,43 @@ fn options() -> Result<Option<Options>, Box<dyn std::error::Error>> {
         return Err("socket name must be 1..64 ASCII letters, digits, '-' or '_'".into());
     }
     Ok(Some(result))
+}
+
+fn parse_native_output(value: &str) -> Result<(u64, u32), Box<dyn std::error::Error>> {
+    let (device, connector) = value
+        .split_once(':')
+        .ok_or("native output must be DEVICE:CONNECTOR decimal IDs")?;
+    if device.is_empty()
+        || connector.is_empty()
+        || !device
+            .bytes()
+            .chain(connector.bytes())
+            .all(|c| c.is_ascii_digit())
+    {
+        return Err("native output must contain decimal device and connector IDs".into());
+    }
+    let device = device.parse()?;
+    let connector = connector.parse()?;
+    if connector == 0 {
+        return Err("connector ID must be nonzero".into());
+    }
+    Ok((device, connector))
+}
+fn validate_backend_options(options: &Options) -> Result<(), Box<dyn std::error::Error>> {
+    if options.backend.as_deref() == Some("native") {
+        if !cfg!(feature = "native") {
+            return Err("native backend requires a build with --features native".into());
+        }
+        if options.native_output.is_none() {
+            return Err("native backend requires --native-output DEVICE:CONNECTOR".into());
+        }
+        if options.screenshot.is_some() || options.screenshot_after.is_some() {
+            return Err("screenshots are not supported by the native backend".into());
+        }
+    } else if options.native_output.is_some() {
+        return Err("--native-output requires --backend native".into());
+    }
+    Ok(())
 }
 
 fn absolute_config_path(path: PathBuf) -> std::io::Result<PathBuf> {
@@ -333,6 +397,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         state.screenshot = options.screenshot;
     }
+    #[cfg(feature = "native")]
+    let mut native_handle = if options.backend.as_deref() == Some("native") {
+        let (device, connector) = options.native_output.ok_or("missing native output")?;
+        Some(native::init(
+            &mut event_loop,
+            &mut state,
+            device,
+            connector,
+        )?)
+    } else {
+        winit::init_winit(&mut event_loop, &mut state)?;
+        None
+    };
+    #[cfg(not(feature = "native"))]
     winit::init_winit(&mut event_loop, &mut state)?;
     if let Some(duration) = options.exit_after {
         event_loop
@@ -381,11 +459,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 state.fail(format!("startup child reaping: {error}"));
             }
         if let Some(path) = ready.take()
-            && let Err(error) = write_json_new(&path, &serde_json::json!({"backend":"nested", "wayland_display":state.socket_name.to_string_lossy(), "pid":std::process::id(), "status":"dispatch-ready", "ipc_socket":state.ipc_socket})) {
+            && let Err(error) = write_json_new(&path, &serde_json::json!({"backend":state.backend, "wayland_display":state.socket_name.to_string_lossy(), "pid":std::process::id(), "status":"dispatch-ready", "ipc_socket":state.ipc_socket})) {
                 state.fail(format!("readiness publication: {error}"));
             }
     })?;
     state.finish_dispatch();
+    #[cfg(feature = "native")]
+    if let Some(handle) = native_handle.as_mut() {
+        handle.shutdown(&mut state);
+    }
     // Join and release process ownership outside event dispatch. Dropping the
     // event loop drains any delivered outcomes still held by its channel.
     state.shutdown_autostart()?;
@@ -419,6 +501,45 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 #[cfg(test)]
 mod option_tests {
     use super::*;
+    #[test]
+    fn native_output_ids_are_explicit_and_bounded() {
+        assert_eq!(parse_native_output("0:1").unwrap(), (0, 1));
+        assert_eq!(
+            parse_native_output("18446744073709551615:4294967295").unwrap(),
+            (u64::MAX, u32::MAX)
+        );
+        for value in [
+            "",
+            "1",
+            "1:0",
+            "1:2:3",
+            "-1:2",
+            "+1:2",
+            "1: 2",
+            "1:4294967296",
+            "18446744073709551616:1",
+        ] {
+            assert!(parse_native_output(value).is_err(), "{value}");
+        }
+    }
+    #[test]
+    fn native_options_reject_ambiguous_or_unsupported_modes() {
+        let mut options = Options {
+            native_output: Some((0, 1)),
+            ..Options::default()
+        };
+        assert!(validate_backend_options(&options).is_err());
+        options.backend = Some("native".into());
+        assert_eq!(
+            validate_backend_options(&options).is_ok(),
+            cfg!(feature = "native")
+        );
+        options.screenshot = Some("frame.ppm".into());
+        assert!(validate_backend_options(&options).is_err());
+        options.screenshot = None;
+        options.native_output = None;
+        assert!(validate_backend_options(&options).is_err());
+    }
     #[test]
     fn source_discovery_is_explicit_and_ignores_relative_xdg_roots() {
         let root = Some(OsString::from("/config-root"));

@@ -463,6 +463,7 @@ dependencies = [
  "flux-input",
  "flux-ipc",
  "flux-layout",
+ "flux-native",
  "flux-process",
  "flux-scene",
  "libc",

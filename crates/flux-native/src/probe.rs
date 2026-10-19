@@ -15,6 +15,7 @@ struct State {
     input_events: u64,
     gpu_preparations: u64,
     gpu_removals: u64,
+    gpu_changes: u64,
     session_transitions: u64,
     page_flips: u64,
     zero_cookie_flips: u64,
@@ -154,6 +155,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 state.gpu_preparations = state.gpu_preparations.saturating_add(1)
             }
             NativeEvent::GpuRemoved(_) => state.gpu_removals = state.gpu_removals.saturating_add(1),
+            NativeEvent::GpuChanged(_) => state.gpu_changes = state.gpu_changes.saturating_add(1),
             NativeEvent::SessionActive(_) => {
                 state.session_transitions = state.session_transitions.saturating_add(1)
             }
@@ -267,7 +269,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!(
         "{}",
         serde_json::to_string_pretty(
-            &json!({"scope":"manual native initialization and optional RGB primary-plane preview; no desktop or hardware qualification","native_compositor":false,"initialization_healthy":initialization_healthy,"event_loop_budget_ms":15000,"universal_shutdown_deadline":false,"before_stop":before,"after_stop":after,"prepared_gpus":gpus,"output_tests_requested":test_outputs,"output_tests":output_tests,"output_tests_healthy":output_tests_healthy,"output_tests_scope":"initial ready-GPU snapshot only; final GPU tickets must still match; no automatic retest, frame or display qualification","input_events":state.input_events,"gpu_preparations":state.gpu_preparations,"gpu_removals":state.gpu_removals,"session_transitions":state.session_transitions,"page_flips":state.page_flips,"zero_cookie_flips":state.zero_cookie_flips,"failures":state.failures,"failure_events":state.failure_events,"failures_truncated":state.failure_events>32,"close_failures":close_failures,"output_cleanup_failures":output_cleanup_failures,"preview_requested":preview.is_some(),"preview_initial":preview_initial,"preview_presentations":state.preview_presented,"preview_completion_policy":"one blocking initial modeset plus two matching page flips","preview_failures":state.preview_failures,"preview_before_restore":preview_before_restore,"preview_restore":preview_restore,"preview_healthy":preview_healthy})
+            &json!({"scope":"manual native initialization and optional RGB primary-plane preview; no desktop or hardware qualification","native_compositor":false,"initialization_healthy":initialization_healthy,"event_loop_budget_ms":15000,"universal_shutdown_deadline":false,"before_stop":before,"after_stop":after,"prepared_gpus":gpus,"output_tests_requested":test_outputs,"output_tests":output_tests,"output_tests_healthy":output_tests_healthy,"output_tests_scope":"initial ready-GPU snapshot only; final GPU tickets must still match; no automatic retest, frame or display qualification","input_events":state.input_events,"gpu_preparations":state.gpu_preparations,"gpu_removals":state.gpu_removals,"gpu_changes":state.gpu_changes,"session_transitions":state.session_transitions,"page_flips":state.page_flips,"zero_cookie_flips":state.zero_cookie_flips,"failures":state.failures,"failure_events":state.failure_events,"failures_truncated":state.failure_events>32,"close_failures":close_failures,"output_cleanup_failures":output_cleanup_failures,"preview_requested":preview.is_some(),"preview_initial":preview_initial,"preview_presentations":state.preview_presented,"preview_completion_policy":"one blocking initial modeset plus two matching page flips","preview_failures":state.preview_failures,"preview_before_restore":preview_before_restore,"preview_restore":preview_restore,"preview_healthy":preview_healthy})
         )?
     );
     // Keep the dispatcher (and blocked termination signals) through cleanup.

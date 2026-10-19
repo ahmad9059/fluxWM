@@ -109,6 +109,7 @@ pub enum NativeEvent {
     SessionActive(bool),
     GpuReady(GpuInfo),
     GpuRemoved(u64),
+    GpuChanged(u64),
     PageFlip {
         device: u64,
         generation: u64,
@@ -289,6 +290,7 @@ struct OwnedGpu<S: Session + Clone, R, G, D> {
     _source: Registration,
     output: Option<scanout::Output>,
     output_epoch: u64,
+    event_generation: Rc<Cell<u64>>,
     _renderer: R,
     _gbm: G,
     drm: D,
@@ -462,7 +464,7 @@ impl<D: 'static> Driver<D> {
             &plan,
         )
     }
-    /// Explicit physical modeset for one connector. No CLI invokes this yet.
+    /// Explicit physical modeset for one connector, also used by the manual probe.
     /// Exactly one preview per GPU is admitted; combined output transactions
     /// need coordinated rollback. Inspect last_failure even on an Ok result:
     /// uncertain submission stays owned until explicit restoration.
@@ -517,8 +519,30 @@ impl<D: 'static> Driver<D> {
                 gpu.output_epoch,
                 color,
             ) {
-                Ok(output) => {
+                Ok(mut output) => {
                     let info = output.info();
+                    if info.last_failure.is_none() {
+                        // Initial blocking modeset quiesced earlier consumers on
+                        // the selected CRTC. Invalidate any decoded older batch,
+                        // then discard queued prior-process events before minting
+                        // nonblocking cookies that might repeat across restart.
+                        let generation = gpu.event_generation.get().checked_add(1);
+                        let drained = if let Some(generation) = generation {
+                            gpu.event_generation.set(generation);
+                            events::drain(std::os::fd::AsFd::as_fd(&gpu.drm))
+                        } else {
+                            Err(std::io::Error::other("DRM stream generation exhausted"))
+                        };
+                        if let Err(error) = drained {
+                            output.invalidate();
+                            gpu.info.event_transport_healthy = false;
+                            gpu.output = Some(output);
+                            return Err(PreviewFailure {
+                                stage: PreviewStage::EventStream,
+                                errno: error.raw_os_error(),
+                            });
+                        }
+                    }
                     gpu.output = Some(output);
                     return Ok(info);
                 }
@@ -561,6 +585,52 @@ impl<D: 'static> Driver<D> {
             ticket: gpu.ticket,
         };
         output.submit(&mut context, color)
+    }
+    /// Compose into an owned GBM target, wait for the returned render fence,
+    /// then submit. Content remains private until an exact flip completion.
+    pub fn render_output_frame<T: 'static>(
+        &mut self,
+        device: u64,
+        compose: impl FnOnce(
+            &mut GlesRenderer,
+            &mut smithay::backend::renderer::gles::GlesTarget<'_>,
+            smithay::utils::Size<i32, smithay::utils::Physical>,
+        )
+            -> Result<(Rc<T>, smithay::backend::renderer::sync::SyncPoint), String>,
+    ) -> Result<(), PreviewFailure> {
+        let mut kernel = self.kernel.borrow_mut();
+        let pool = kernel.frame_pool.clone();
+        let ready = kernel
+            .gpus
+            .get(&device)
+            .is_some_and(|g| kernel.model.is_ready(g.ticket) && g.info.event_transport_healthy);
+        if !ready {
+            return Err(PreviewFailure::at(PreviewStage::Inactive));
+        }
+        let gpu = kernel.gpus.get_mut(&device).expect("ready GPU owned");
+        let output = gpu
+            .output
+            .as_mut()
+            .ok_or_else(|| PreviewFailure::at(PreviewStage::Inactive))?;
+        let mut context = scanout::Context {
+            drm: &gpu.drm,
+            gbm: &gpu._gbm,
+            renderer: &mut gpu._renderer,
+            modes: &gpu._output_modes,
+            seat: gpu._seat_device.clone(),
+            pool: &pool,
+            ticket: gpu.ticket,
+        };
+        output.render(&mut context, compose)
+    }
+    /// Clone only the authoritative completed scene, never pending content.
+    pub fn output_content<T: 'static>(&self, device: u64) -> Option<Rc<T>> {
+        let kernel = self.kernel.borrow();
+        let gpu = kernel.gpus.get(&device)?;
+        if !kernel.model.is_ready(gpu.ticket) || !gpu.info.event_transport_healthy {
+            return None;
+        }
+        gpu.output.as_ref()?.content()
     }
     pub fn output_preview_info(&self, device: u64) -> Option<PreviewInfo> {
         self.kernel
@@ -790,7 +860,7 @@ impl<D: 'static> Kernel<D> {
         for id in ids {
             if self.gpus.contains_key(&id) {
                 self.retire(id);
-                events.push(NativeEvent::GpuRemoved(id));
+                events.push(NativeEvent::GpuChanged(id));
             }
             events.extend(self.prepare(id, weak));
         }
@@ -841,6 +911,9 @@ impl<D: 'static> Kernel<D> {
             | UdevEvent::Changed { device_id }
             | UdevEvent::Removed { device_id } => *device_id,
         };
+        let changed = matches!(&event, UdevEvent::Changed { .. });
+        let retiring_live_output =
+            changed && self.gpus.get(&id).is_some_and(|gpu| gpu.output.is_some());
         let result = match event {
             UdevEvent::Added { path, .. } => match self.model.discover(id) {
                 Ok(false) => return vec![],
@@ -879,9 +952,11 @@ impl<D: 'static> Kernel<D> {
         let mut events = vec![];
         if self.gpus.contains_key(&id) {
             self.retire(id);
-            events.push(NativeEvent::GpuRemoved(id));
+            events.push(NativeEvent::GpuChanged(id));
         }
-        if self.model.active() {
+        // Reopening before notifying a live consumer cannot recover its old
+        // seat lease or rollback a changed topology. Let it stop immediately.
+        if self.model.active() && !retiring_live_output {
             events.extend(self.prepare(id, weak));
         }
         events
@@ -949,10 +1024,12 @@ impl<D: 'static> Kernel<D> {
             .get_driver_capability(DriverCapability::MonotonicTimestamp)
             .ok()
             == Some(1);
-        let notifier = events::Source::new(seat_device.duplicate()?).map_err(|e| Failure {
-            stage: Stage::DrmEvent,
-            errno: e.raw_os_error(),
-        })?;
+        let event_generation = Rc::new(Cell::new(1));
+        let notifier = events::Source::new(seat_device.duplicate()?, event_generation.clone())
+            .map_err(|e| Failure {
+                stage: Stage::DrmEvent,
+                errno: e.raw_os_error(),
+            })?;
         let gbm = GbmDevice::new(fd).map_err(|_| Failure::at(Stage::GbmInitialize))?;
         let display = unsafe { EGLDisplay::new(gbm.clone()) }
             .map_err(|_| Failure::at(Stage::EglInitialize))?;
@@ -996,16 +1073,20 @@ impl<D: 'static> Kernel<D> {
         let token = handle
             .insert_source(
                 notifier,
-                pin_lease(seat_device.clone(), move |event, _, data| {
+                pin_lease(seat_device.clone(), move |event: events::Event, _, data| {
                     let Some(kernel) = weak.upgrade() else { return };
                     let notify = {
                         let k = kernel.borrow();
-                        if !k.model.is_ready(ticket) {
+                        if !k.model.is_ready(ticket)
+                            || k.gpus
+                                .get(&ticket.device)
+                                .is_none_or(|gpu| gpu.event_generation.get() != event.generation)
+                        {
                             return;
                         };
                         k.notify.clone()
                     };
-                    let event = match event {
+                    let event = match event.event {
                         Ok(event) => {
                             if let Some(output) = kernel
                                 .borrow_mut()
@@ -1050,6 +1131,7 @@ impl<D: 'static> Kernel<D> {
             _source: Registration::new(self.handle.clone(), token),
             output: None,
             output_epoch: 0,
+            event_generation,
             _renderer: renderer,
             _gbm: gbm,
             drm: drm.disarm(),
@@ -1474,6 +1556,7 @@ mod tests {
                 _source: registration,
                 output: None,
                 output_epoch: 0,
+                event_generation: Rc::new(Cell::new(1)),
                 _renderer: trace("renderer"),
                 _gbm: trace("gbm"),
                 drm: trace("drm"),

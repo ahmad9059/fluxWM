@@ -9,7 +9,7 @@ cargo build --workspace --locked
 ./target/debug/fluxwm --backend nested --exit-after-ms 30000 -- ./target/debug/fluxwm-fixture lifecycle
 ```
 
-Run from an existing Wayland or X11 graphical session with a real same-UID private `XDG_RUNTIME_DIR` (0700). The host backend is selected by winit; this does not create a DRM/seat session. `--backend` currently accepts only `nested`; no argument also chooses nested. `--help` describes actual options. No client is launched implicitly.
+Run from an existing Wayland or X11 graphical session with a real same-UID private `XDG_RUNTIME_DIR` (0700). The host backend is selected by winit; this does not create a DRM/seat session. Default builds accept `--backend nested`; no argument also chooses nested. Feature `native` adds the separately documented [experimental native frontend](native-compositor.md). `--help` describes actual options. No client is launched implicitly.
 
 For a longer interactive nested session:
 
@@ -47,7 +47,7 @@ Read the exact IPC path from readiness JSON; there is no ambiguous auto-discover
 ./target/debug/fluxctl --socket /exact/instance.sock action '{"name":"workspace-mode","mode":"canvas"}'
 ```
 
-Supported methods: version, capabilities, windows/workspaces/outputs queries, diagnostics and the supported action subset. [Runtime configuration](runtime-config.md) supports startup/manual reload of gap/mode/default-width/bindings and asynchronous autostart and concise effective queries; runtime `config.check` remains `not_ready`, so use `fluxwm-config --check FILE` separately. Secure lock, fullscreen, minimize/maximize, floating and overview are not reported as implemented. Unknown methods or invalid action fields are rejected. Capabilities explicitly report subscriptions, native session, capture, X11 and drag-and-drop unavailable. Client DnD requests are cancelled until source-client/current-input authorization and complete lifecycle policy are integrated.
+Supported methods: version, capabilities, windows/workspaces/outputs queries, diagnostics and the supported action subset. [Runtime configuration](runtime-config.md) supports startup/manual reload of gap/mode/default-width/bindings and asynchronous autostart and concise effective queries; runtime `config.check` remains `not_ready`, so use `fluxwm-config --check FILE` separately. Secure lock, fullscreen, minimize/maximize, floating and overview are not reported as implemented. Unknown methods or invalid action fields are rejected. Nested capabilities report subscriptions, native session, capture, X11 and drag-and-drop unavailable. Client DnD requests are cancelled until source-client/current-input authorization and complete lifecycle policy are integrated.
 
 The optional calloop IPC driver registers owned CLOEXEC descriptor duplicates, buffered-work pings and exact timers. It retains weak event-loop ownership; no recurring idle polling is required. The handler snapshots or mutates the authoritative model, then returns its exact sequence. Window IDs remain stable across null-buffer unmap/remap and become stale on role destruction/slot reuse. One workspace and one virtual output are permanent for this instance. Current queries bound metadata strings; pagination and multi-workspace/output ownership are future requirements.
 

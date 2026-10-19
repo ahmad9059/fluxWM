@@ -3,13 +3,13 @@
 FluxWM currently targets Linux development with Rust **1.99.0**, edition 2024. The
 committed rust-toolchain.toml requests rustfmt/clippy; Cargo.lock fixes dependency
 resolution, including Smithay revision `023b78b1c5a05ca512767cacc07efca55fae8be4` and
-mlua revision `a186d461c7772aed4cb0a9fa1d1899121c6450e7`. The executable implements
-the **nested backend only**. There is no native DRM/session backend, production
-session package or physical-GPU qualification claim.
+mlua revision `a186d461c7772aed4cb0a9fa1d1899121c6450e7`. Default builds implement the nested backend. Feature `native` adds an
+[experimental single-output native frontend](native-compositor.md); no production
+session package or physical-GPU qualification is claimed.
 
 ## Host dependencies from selected source
 
-The compositor selects Smithay `backend_winit`, `wayland_frontend` and `desktop`
+The default compositor selects Smithay `backend_winit`, `wayland_frontend` and `desktop`
 with default features disabled. The selected feature expansion includes EGL/GLES
 rendering and both winit host backends. It does not select Smithay backend_drm,
 backend_gbm, backend_libinput, backend_udev or backend_session_libseat.

@@ -16,6 +16,13 @@ A conclusive backend quiescence proof permits final retirement. Constructing tha
 
 ## Remaining implementation
 
-The [live submission adapter](native-live-submit.md) now joins the ledger and real reader to synchronized RGB targets and atomic commits; its hardware path remains unexecuted. The main compositor still accepts only the nested backend. Native work still needs compositor scene rendering/publication, multi-output transactions, complete output/session recovery and physical qualification. Cookies are unique only within one process; restart must establish a fresh or conclusively quiesced DRM event stream before live submissions. No hardware, cross-process restart or physical presentation claim follows from these tests.
+The [live submission adapter](native-live-submit.md) now joins the ledger and real reader to synchronized RGB targets and atomic commits; its hardware path remains unexecuted. The [optional native frontend](native-compositor.md) now consumes this path; its physical execution remains unqualified. The frontend implements compositor scene rendering/publication. Multi-output transactions, complete output/session recovery and physical qualification remain open. Cookies are unique only within one process; generic ledger callers must establish a fresh or conclusively quiesced DRM event stream before live submissions. The driver now follows its successful blocking bootstrap with a generation advance and bounded stream drain; already-read batches retain their old generation. Drain failure invalidates startup. Owned-stream tests cover this boundary, without qualifying physical restart. No hardware, cross-process restart or physical presentation claim follows from these tests.
 
 Focused checks cover malformed batches, full-width cookies, sequence wrap, owned socket dispatch, admission/rejection, stale epochs, uncertainty, panic retention and nominal quota behavior. Physical DRM/GBM/GLES submission, driver failures and session transitions remain unexecuted. See [production gaps](production-status-2026-10-18.md) for the wider release requirements.
+
+The restart barrier assumes the selected driver's blocking commit actually waits for earlier work. Linux
+v6.19's [`drm_atomic_helper_wait_for_dependencies`](https://github.com/torvalds/linux/blob/v6.19/drivers/gpu/drm/drm_atomic_helper.c#L2636)
+logs dependency-wait errors and continues. Therefore a successful ioctl plus drain does not establish fresh
+events for every inherited DRM file description under kernel/driver failure. Fresh independent opens avoid
+old events on that description; inherited-stream restart remains unqualified. Generation stamping alone
+cannot reject an old event that arrives only after the drain.

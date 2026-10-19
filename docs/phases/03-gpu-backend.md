@@ -48,10 +48,10 @@ Implement the B17 minimal font/shaping/fallback spike and record candidate depen
 
 ## Implementation foothold
 
-The [native session/device foundation](../development/native-foundation.md) now adds an optional libseat/udev/libinput/DRM/GBM/GLES layer, explicit broker descriptor ownership, epoch/generation gates and a separate initialization probe. Device-free tests and read-only inventory do not implement or qualify native output rendering, transactions, physical input or the exit gate. Main FluxWM remains nested-only.
+The [native session/device foundation](../development/native-foundation.md) now adds an optional libseat/udev/libinput/DRM/GBM/GLES layer, explicit broker descriptor ownership, epoch/generation gates and a separate initialization probe. Device-free tests and read-only inventory do not implement or qualify native output rendering, transactions, physical input or the exit gate. An [optional native frontend](../development/native-compositor.md) now integrates the main compositor; the physical phase gate remains unqualified.
 
 [Output discovery and candidate routing](../development/native-outputs.md) now implements the discovery/planning portion of task 2. Device-free exhaustive small-graph and query-failure tests do not qualify allocation, KMS transactions, rendering or physical outputs; the remainder of task 2 and the exit gate stay open.
 
 [RGB target/atomic testing](../development/native-target-test.md) adds a manual allocation, GLES render/synchronization and atomic TEST_ONLY component. Its platform path remains unexecuted; live commits, presentation, mode-preview rollback and the phase gate remain open.
 
-[Frame transport and ownership](../development/native-frame-transport.md) adds full-cookie DRM event delivery and a bounded consumer ledger. The [live adapter and reverting preview](../development/native-live-submit.md) now join them to primary-plane RGB submissions and owned rollback. Compositor redraw integration, session recovery and physical qualification remain open.
+[Frame transport and ownership](../development/native-frame-transport.md) adds full-cookie DRM event delivery and a bounded consumer ledger. The [live adapter and reverting preview](../development/native-live-submit.md) now join them to primary-plane RGB submissions and owned rollback. Compositor redraw/input/output integration is now compiled through the optional native frontend. Session recovery and physical qualification remain open.

@@ -267,7 +267,7 @@ impl RenderContext {
             }
             // Input observes exactly this successfully composed virtual scene,
             // including copied input regions, until the next composition.
-            state.scene = Some(scene);
+            state.scene = Some(Rc::new(scene));
             state.pointer_focus_dirty = true;
             if damage.is_some() {
                 self.present_dirty = true;

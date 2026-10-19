@@ -67,3 +67,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 - [Native frame transport and ownership](native-frame-transport.md): full-cookie event delivery, bounded owned frame ledger and remaining live submission integration.
 
 - [Native live submission and reverting preview](native-live-submit.md): owned primary-plane commits, copied rollback resources and explicit hardware qualification gaps.
+
+- [Experimental native compositor](native-compositor.md): optional main executable backend, completion-gated scenes, input/output integration and software cursor.

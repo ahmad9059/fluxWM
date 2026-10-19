@@ -82,7 +82,9 @@ pub struct Fluxwm {
     pub host_focus: Option<bool>,
     pub health: crate::health::Monitor<Fluxwm>,
     pub health_requested: bool,
-    pub scene: Option<crate::scene::RuntimeScene>,
+    pub scene: Option<std::rc::Rc<crate::scene::RuntimeScene>>,
+    pub cursor_image: smithay::input::pointer::CursorImageStatus,
+    pub backend: &'static str,
     pub windows: Arena<ManagedWindow>,
     pub sequence: u64,
     flush_retry_ping: smithay::reexports::calloop::ping::Ping,
@@ -178,7 +180,7 @@ impl Fluxwm {
         // A seat is a group of keyboards, pointer and touch devices.
         // A seat typically has a pointer and maintains a keyboard focus and a pointer focus.
         let mut seat_state = SeatState::new();
-        let mut seat: Seat<Self> = seat_state.new_wl_seat(&dh, "winit");
+        let mut seat: Seat<Self> = seat_state.new_wl_seat(&dh, "seat0");
 
         // Notify clients that we have a keyboard, for the sake of the example we assume that keyboard is always present.
         // You may want to track keyboard hot-plug in real compositor.
@@ -216,6 +218,8 @@ impl Fluxwm {
             }),
             health_requested: false,
             scene: None,
+            backend: "nested",
+            cursor_image: smithay::input::pointer::CursorImageStatus::default_named(),
             windows: Arena::new(),
             sequence: 0,
             flush_retry_ping,

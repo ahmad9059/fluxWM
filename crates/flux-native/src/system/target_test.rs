@@ -13,10 +13,14 @@ use smithay::{
             gbm::{GbmAllocator, GbmBuffer, GbmBufferFlags, GbmDevice},
         },
         drm::{DrmDevice, DrmDeviceFd},
-        renderer::{Bind, Frame, Renderer, gles::GlesRenderer},
+        renderer::{
+            Bind, Frame, Renderer,
+            gles::{GlesRenderer, GlesTarget},
+            sync::SyncPoint,
+        },
     },
     reexports::drm::control::{self, Device as _, FbCmd2Flags, ResourceHandle},
-    utils::{Rectangle, Transform},
+    utils::{Physical, Rectangle, Size, Transform},
 };
 use std::{cell::Cell, collections::BTreeMap, rc::Rc};
 fn fail(stage: TestStage) -> TestFailure {
@@ -413,6 +417,33 @@ pub(super) fn test(
 }
 
 impl Target {
+    pub(super) fn compose<T: 'static>(
+        &mut self,
+        renderer: &mut GlesRenderer,
+        compose: impl FnOnce(
+            &mut GlesRenderer,
+            &mut GlesTarget<'_>,
+            Size<i32, Physical>,
+        ) -> Result<(Rc<T>, SyncPoint), String>,
+    ) -> Result<Rc<T>, TestFailure> {
+        let size = (
+            i32::from(self.assignment.mode.width),
+            i32::from(self.assignment.mode.height),
+        )
+            .into();
+        let (scene, sync) = {
+            let mut framebuffer = renderer
+                .bind(&mut self._dmabuf)
+                .map_err(|_| fail(TestStage::Bind))?;
+            compose(renderer, &mut framebuffer, size).map_err(|_| fail(TestStage::Render))?
+        };
+        for _ in 0..8 {
+            if sync.wait().is_ok() {
+                return Ok(scene);
+            }
+        }
+        Err(fail(TestStage::Sync))
+    }
     pub(super) fn flip_request(&self) -> Result<Request, TestFailure> {
         let Object::Framebuffer(fb) = self.framebuffer.object else {
             unreachable!()

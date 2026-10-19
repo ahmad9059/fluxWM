@@ -1,6 +1,6 @@
 # Native session and device foundation
 
-`flux-native` begins phase 3 with an opt-in Linux platform layer. The main `fluxwm` executable still accepts only `--backend nested`, and `capabilities.native_session` remains false. No native compositor, output frame, mode transaction or physical-input qualification is claimed.
+`flux-native` begins phase 3 with an opt-in Linux platform layer. The later [native frontend](native-compositor.md) integrates this layer into an optional main-executable backend. Default nested capabilities still report native session false. No physical-input or driver qualification is claimed.
 
 The default crate builds a device-independent lifecycle model. Feature `system` adds pinned Smithay libseat, udev, libinput, DRM, GBM and GLES integration plus the separate `fluxwm-native-probe` executable. It does not change the nested runtime or advertise additional Wayland globals. Existing locked package versions are retained; native support adds dependencies and feature edges.
 

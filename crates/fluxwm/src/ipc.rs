@@ -67,14 +67,14 @@ impl Fluxwm {
         }
         let result: Result<Value, ErrorBody> = match request.method {
             Method::Version => Ok(
-                json!({"name":"FluxWM", "version":env!("CARGO_PKG_VERSION"), "ipc_version":1, "backend":"nested"}),
+                json!({"name":"FluxWM", "version":env!("CARGO_PKG_VERSION"), "ipc_version":1, "backend":self.backend}),
             ),
             Method::Capabilities => Ok(json!({
-                "backend":"nested", "subscriptions":false, "config_reload":self.config.is_some(),
+                "backend":self.backend, "subscriptions":false, "config_reload":self.config.is_some(),
                 "actions":["focus","move","pan","resize","workspace-mode","close-window","spawn","reload-config","quit"],
-                "secure_lock":false,"capture":false,"drag_and_drop":false,"native_session":false,"x11_clients":false,
+                "secure_lock":false,"capture":false,"drag_and_drop":false,"native_session":self.backend == "native","x11_clients":false,
                 "client_responsiveness":"xdg-shell-ping", "unresponsive_clients_killed":false,
-                "frame_clock":"virtual-60hz", "host_presentation_observed":false,
+                "frame_clock":if self.backend == "native" {"drm-page-flip"} else {"virtual-60hz"}, "host_presentation_observed":false,
             })),
             Method::Windows => {
                 let placements = self.layout.placements();
@@ -117,7 +117,7 @@ impl Fluxwm {
                 "shell_health":self.health.diagnostics(), "runtime":self.stats,
                 "live_roles":self.windows.len(), "mapped_windows":self.layout.len(),
                 "owned_applications":self.spawned.len(), "pending_launches":self.pending_spawns,
-                "launch_outcomes":self.launch_outcomes, "backend":"nested", "production_ready":false,
+                "launch_outcomes":self.launch_outcomes, "backend":self.backend, "production_ready":false,
             })),
             Method::Action => request.action().and_then(|action| {
                 let spawning = matches!(action, flux_core::Action::Spawn { .. });

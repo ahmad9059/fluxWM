@@ -5,7 +5,12 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 
+[features]
+default = []
+native = ["dep:flux-native", "flux-native/system"]
+
 [dependencies]
+flux-native = { path = "../flux-native", optional = true }
 smithay = { git = "https://github.com/Smithay/smithay", rev = "023b78b1c5a05ca512767cacc07efca55fae8be4", default-features = false, features = ["backend_winit", "wayland_frontend", "desktop"] }
 tracing.workspace = true
 tracing-subscriber.workspace = true

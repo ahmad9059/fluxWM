@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independent focused review of frozen OPTIONAL NATIVE COMPOSITOR integration. Read/Grep only within snapshot; no writes/commands/tests/network/agents. About 16-22 calls. Main now supports --features native --backend native --native-output DEVICE:CONNECTOR. Explicit one-output path renders real RuntimeScene and software cursor, routes generic Libinput events, publishes wl_output and truthfulbackend IPC. Inspect fluxwm/src/native.rs, cursor.rs, main.rs cleanup/init, state/input/handlers diffs as needed, and flux-native new render_output_frame/output_content, scanout Scene::Content, Target.compose. Native bootstrap checks a synchronous successful front BEFORE output publication. All content Rc stays owned/private through final render fence wait and pending commit; only exact DRM completion publishes front+input Rc. Cursor overlay runs after scene pass and returns final GLES fence; Hidden honored, namediconsfallbackarrow, client surfaces validated/cropped. Cursor validation must break globally at node/depth/dimension/pixel/offset budgets, hotspot arithmetic checked. Native Context owns Driver with weak notify slot and strong redraw source; watchdog single/canceled, callbacks after Kernel RefCell borrowdrops can reenter. state.stopping blocks new input/draw. Pause/selected removal/topology/transport error clears inputscene, cancels held input/unpublishesoutput thenstops; recovery intentionally absent. Handle.shutdown runs before eventloopdrop and Drop covers earlyerror exits; cleanup failures fail state. Look for reachable HIGH/MEDIUM ownership/earlydrop/stale publication, GLcontext/sync-order issues, RefCell reentrancy cycles, watchdog growth/cancellation, current scene/pending mismatches, cursorgeometry/importbounds, options validating beforeseat, main cleanup errorpaths, CI gaps or falselygreen tests. Native initial/rollback established previously-reviewed code provided; avoid broad re-audit beyond integration. No physical native path has run. Default and native-feature binaries will run only --backend nested on owned authenticated Xvfb for regressions; not hardware proof. No qualified native recovery, multi-output, cursor themes, actual nativeorientation/input or driver correctness. Flag concrete path+trigger defects, separate explicit scope gaps. Give concise findings/verdict, no certification. Primary pinned files/headers provided; source manifest identifies worktree bytes, base commit alone is not reviewidentity.",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "30",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/native-compositor-review-snapshot"
+}

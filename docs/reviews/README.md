@@ -81,3 +81,11 @@ The [target-diagnostic follow-up](native-target-test-followup-2026-10-18/disposi
 ## Native live submission review
 
 [Initial Claude review](native-live-submit-2026-10-19/disposition.md) found initial-event and process-exit framebuffer hazards. The [focused follow-up](native-live-submit-followup-2026-10-19/disposition.md) accepts blocking initial modesets, CLOSEFB preflight and GETFB2 error cleanup, finding no new high/medium defect within scope. Late cleanup/crash recovery, physical hardware and main compositor integration remain unqualified.
+
+## Optional native compositor review
+
+[Initial review](native-compositor-2026-10-19/disposition.md) found a medium topology-retirement issue and low
+startup/logging/cursor issues. The [focused follow-up](native-compositor-followup-2026-10-19/disposition.md)
+accepts the corrections and restart boundary, finding no high/medium defect within scope. The author then
+preserved failure diagnostics with a one-line correction and documented the kernel dependency-wait caveat.
+Neither source review nor nested GUI regression qualifies native hardware or session recovery.
