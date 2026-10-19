@@ -89,3 +89,9 @@ startup/logging/cursor issues. The [focused follow-up](native-compositor-followu
 accepts the corrections and restart boundary, finding no high/medium defect within scope. The author then
 preserved failure diagnostics with a one-line correction and documented the kernel dependency-wait caveat.
 Neither source review nor nested GUI regression qualifies native hardware or session recovery.
+
+## Minimize and restore review
+
+[Claude's focused source review](window-minimize-2026-10-19/disposition.md) found no high/medium defect.
+The author strengthened protocol hints, focus recovery and reused-slot ID checks afterward and repeated
+private-display runs. Pointer preconditions, older protocol versions and native hardware remain unqualified.

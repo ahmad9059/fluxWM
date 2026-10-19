@@ -52,6 +52,11 @@ impl Fluxwm {
                 self.layout.set_mode(mode);
                 self.relayout();
             }
+            Action::Minimize => {
+                let id = self.layout.focused().ok_or("no focused toplevel")?;
+                self.set_window_minimized(id, true)?;
+            }
+            Action::RestoreWindow { window } => self.set_window_minimized(window, false)?,
             Action::CloseWindow => {
                 let top = self
                     .layout

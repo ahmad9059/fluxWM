@@ -17,6 +17,8 @@ pub enum LayoutError {
     DuplicateWindow,
     #[error("window is not a member")]
     UnknownWindow,
+    #[error("window is minimized")]
+    MinimizedWindow,
     #[error("window size constraints conflict")]
     InvalidConstraints,
     #[error("layout identity capacity exhausted")]
@@ -215,6 +217,7 @@ pub struct Layout {
     mode: LayoutMode,
     columns: Vec<Column>,
     members: BTreeMap<WindowId, SizeConstraints>,
+    minimized: BTreeSet<WindowId>,
     canvas: BTreeMap<GroupId, CanvasGroup>,
     next_group: u64,
     canvas_initialized: bool,
@@ -236,6 +239,7 @@ impl Layout {
             mode: LayoutMode::Strip,
             columns: Vec::new(),
             members: BTreeMap::new(),
+            minimized: BTreeSet::new(),
             canvas: BTreeMap::new(),
             next_group: 0,
             canvas_initialized: false,
@@ -454,17 +458,19 @@ impl Layout {
             self.canvas.remove(&c.group);
             self.columns.remove(index);
         } else if c.active == window {
-            c.active = c.windows[0];
+            c.active = c
+                .windows
+                .iter()
+                .copied()
+                .find(|w| !self.minimized.contains(w))
+                .unwrap_or(c.windows[0]);
         }
         self.members.remove(&window);
+        self.minimized.remove(&window);
         self.history.retain(|w| *w != window);
         if self.focus == Some(window) {
             self.focus = None;
-            if let Some(next) = self.history.last().copied().or_else(|| {
-                self.columns
-                    .get(index.min(self.columns.len().saturating_sub(1)))
-                    .map(|c| c.active)
-            }) {
+            if let Some(next) = self.replacement_focus(index) {
                 self.focus_window(next)?;
             }
         }
@@ -486,10 +492,63 @@ impl Layout {
         }
         Ok(())
     }
+    /// Minimized members reserve their geometry and group slot. A real restore
+    /// activates and reveals the member; repeated requests leave focus unchanged.
+    pub fn set_minimized(&mut self, window: WindowId, minimized: bool) -> Result<(), LayoutError> {
+        let index = self
+            .column_index(window)
+            .ok_or(LayoutError::UnknownWindow)?;
+        if self.is_minimized(window) == minimized {
+            return Ok(());
+        }
+        if !minimized {
+            self.minimized.remove(&window);
+            return self.focus_window(window);
+        }
+        self.minimized.insert(window);
+        self.history.retain(|w| *w != window);
+        if self.columns[index].active == window {
+            let c = &mut self.columns[index];
+            c.active = c
+                .windows
+                .iter()
+                .copied()
+                .find(|w| !self.minimized.contains(w))
+                .unwrap_or(window);
+        }
+        if self.focus == Some(window) {
+            self.focus = None;
+            if let Some(next) = self.replacement_focus(index) {
+                self.focus_window(next)?;
+            }
+        }
+        Ok(())
+    }
+    /// Unknown and removed identities are never minimized.
+    pub fn is_minimized(&self, window: WindowId) -> bool {
+        self.minimized.contains(&window)
+    }
+    fn replacement_focus(&self, column: usize) -> Option<WindowId> {
+        self.history
+            .iter()
+            .rev()
+            .copied()
+            .find(|w| !self.is_minimized(*w))
+            .or_else(|| {
+                self.columns
+                    .iter()
+                    .skip(column)
+                    .chain(self.columns.iter().take(column))
+                    .find_map(|c| (!self.is_minimized(c.active)).then_some(c.active))
+            })
+    }
     pub fn focus_window(&mut self, window: WindowId) -> Result<(), LayoutError> {
         let index = self
             .column_index(window)
             .ok_or(LayoutError::UnknownWindow)?;
+        if self.is_minimized(window) {
+            return Err(LayoutError::MinimizedWindow);
+        }
         self.columns[index].active = window;
         self.focus = Some(window);
         self.history.retain(|w| *w != window);
@@ -584,9 +643,12 @@ impl Layout {
     pub fn group_for(&self, window: WindowId) -> Option<GroupId> {
         self.column_index(window).map(|i| self.columns[i].group)
     }
+    /// Groups with a selectable member. Fully minimized groups retain their
+    /// stored geometry but have no active member to expose to interaction code.
     pub fn canvas_groups(&self) -> Vec<GroupGeometry> {
         self.columns
             .iter()
+            .filter(|c| !self.is_minimized(c.active))
             .map(|c| GroupGeometry {
                 id: c.group,
                 rect: self.canvas[&c.group].rect,
@@ -628,11 +690,17 @@ impl Layout {
             return Ok(None);
         };
         let c = &self.columns[self.column_index(window).unwrap()];
-        let index = c.windows.iter().position(|w| *w == window).unwrap();
-        let next = c.windows[if forward {
-            (index + 1) % c.windows.len()
+        let windows: Vec<_> = c
+            .windows
+            .iter()
+            .copied()
+            .filter(|w| !self.is_minimized(*w))
+            .collect();
+        let index = windows.iter().position(|w| *w == window).unwrap();
+        let next = windows[if forward {
+            (index + 1) % windows.len()
         } else {
-            (index + c.windows.len() - 1) % c.windows.len()
+            (index + windows.len() - 1) % windows.len()
         }];
         self.focus_window(next)?;
         Ok(Some(next))
@@ -687,6 +755,9 @@ impl Layout {
         let dest = self
             .column_index(target)
             .ok_or(LayoutError::UnknownWindow)?;
+        if self.is_minimized(window) || self.is_minimized(target) {
+            return Err(LayoutError::MinimizedWindow);
+        }
         if source == dest {
             return Ok(());
         }
@@ -694,8 +765,10 @@ impl Layout {
         if self.columns[source].active == window {
             self.columns[source].active = self.columns[source]
                 .windows
-                .first()
+                .iter()
                 .copied()
+                .find(|w| !self.minimized.contains(w))
+                .or_else(|| self.columns[source].windows.first().copied())
                 .unwrap_or(window);
         }
         self.columns[dest].windows.push(window);
@@ -758,18 +831,35 @@ impl Layout {
                 .x;
             let i = self.column_index(window).unwrap();
             match direction {
-                Direction::Left if i > 0 => self.columns.swap(i, i - 1),
-                Direction::Right if i + 1 < self.columns.len() => self.columns.swap(i, i + 1),
+                Direction::Left => {
+                    if let Some(next) = (0..i)
+                        .rev()
+                        .find(|j| !self.is_minimized(self.columns[*j].active))
+                    {
+                        self.columns.swap(i, next);
+                    }
+                }
+                Direction::Right => {
+                    if let Some(next) = (i + 1..self.columns.len())
+                        .find(|j| !self.is_minimized(self.columns[*j].active))
+                    {
+                        self.columns.swap(i, next);
+                    }
+                }
                 Direction::Up | Direction::Down => {
                     let c = &mut self.columns[i];
                     let j = c.windows.iter().position(|w| *w == window).unwrap();
-                    if direction == Direction::Up && j > 0 {
-                        c.windows.swap(j, j - 1);
-                    } else if direction == Direction::Down && j + 1 < c.windows.len() {
-                        c.windows.swap(j, j + 1);
+                    let next = if direction == Direction::Up {
+                        (0..j)
+                            .rev()
+                            .find(|k| !self.minimized.contains(&c.windows[*k]))
+                    } else {
+                        (j + 1..c.windows.len()).find(|k| !self.minimized.contains(&c.windows[*k]))
+                    };
+                    if let Some(next) = next {
+                        c.windows.swap(j, next);
                     }
                 }
-                _ => {}
             }
             let new_x = self
                 .strip_placements()
@@ -796,10 +886,24 @@ impl Layout {
             let c = &self.columns[i];
             let j = c.windows.iter().position(|w| *w == window).unwrap();
             match direction {
-                Direction::Left => i.checked_sub(1).map(|i| self.columns[i].active),
-                Direction::Right => self.columns.get(i + 1).map(|c| c.active),
-                Direction::Up => j.checked_sub(1).map(|j| c.windows[j]),
-                Direction::Down => c.windows.get(j + 1).copied(),
+                Direction::Left => self.columns[..i]
+                    .iter()
+                    .rev()
+                    .map(|c| c.active)
+                    .find(|w| !self.is_minimized(*w)),
+                Direction::Right => self.columns[i + 1..]
+                    .iter()
+                    .map(|c| c.active)
+                    .find(|w| !self.is_minimized(*w)),
+                Direction::Up => c.windows[..j]
+                    .iter()
+                    .rev()
+                    .copied()
+                    .find(|w| !self.is_minimized(*w)),
+                Direction::Down => c.windows[j + 1..]
+                    .iter()
+                    .copied()
+                    .find(|w| !self.is_minimized(*w)),
             }
         } else {
             let placements = self.placements();
@@ -890,7 +994,8 @@ impl Layout {
                             width: size.width,
                             height: size.height,
                         },
-                        visible: c.mode == ColumnMode::Stack || *window == c.active,
+                        visible: !self.is_minimized(*window)
+                            && (c.mode == ColumnMode::Stack || *window == c.active),
                         focused: self.focus == Some(*window),
                     });
                     y += size.height + self.gap;
@@ -1007,19 +1112,28 @@ impl Layout {
         {
             return Err("membership mismatch");
         }
-        if self
-            .columns
-            .iter()
-            .any(|c| c.windows.is_empty() || !c.windows.contains(&c.active))
-        {
+        if self.columns.iter().any(|c| {
+            c.windows.is_empty()
+                || !c.windows.contains(&c.active)
+                || (self.is_minimized(c.active) && c.windows.iter().any(|w| !self.is_minimized(*w)))
+        }) {
             return Err("invalid column");
         }
-        if self.focus.is_some_and(|w| !unique.contains(&w))
-            || (!unique.is_empty() && self.focus.is_none())
+        if self.minimized.iter().any(|w| !unique.contains(w)) {
+            return Err("stale minimized member");
+        }
+        if self
+            .focus
+            .is_some_and(|w| !unique.contains(&w) || self.is_minimized(w))
+            || (unique.len() != self.minimized.len() && self.focus.is_none())
         {
             return Err("invalid focus");
         }
-        if self.history.iter().any(|w| !unique.contains(w)) {
+        if self
+            .history
+            .iter()
+            .any(|w| !unique.contains(w) || self.is_minimized(*w))
+        {
             return Err("stale focus history");
         }
         if self.placements().iter().any(|p| {
@@ -1118,7 +1232,8 @@ impl Layout {
                         width: size.width,
                         height: size.height,
                     },
-                    visible: c.mode == ColumnMode::Stack || *window == c.active,
+                    visible: !self.is_minimized(*window)
+                        && (c.mode == ColumnMode::Stack || *window == c.active),
                     focused: self.focus == Some(*window),
                 });
                 y += size.height + self.gap;
@@ -2075,6 +2190,154 @@ mod tests {
         assert_eq!(l.validate(), Ok(()));
     }
     #[test]
+    fn minimized_stack_members_reserve_geometry_and_navigation_skips_them() {
+        let mut l = layout();
+        for n in 0..4 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.join_column(id(1), id(0)).unwrap();
+        l.join_column(id(2), id(0)).unwrap();
+        l.focus_window(id(0)).unwrap();
+        let geometry = l
+            .placements()
+            .iter()
+            .map(|p| (p.window, p.rect))
+            .collect::<BTreeMap<_, _>>();
+        let camera = l.camera();
+        l.set_minimized(id(1), true).unwrap();
+        assert_eq!(l.camera(), camera);
+        assert_eq!(l.len(), 4);
+        for p in l.placements() {
+            assert_eq!(p.rect, geometry[&p.window]);
+        }
+        assert!(
+            !l.placements()
+                .iter()
+                .find(|p| p.window == id(1))
+                .unwrap()
+                .visible
+        );
+        assert_eq!(l.focus_direction(Direction::Down).unwrap(), Some(id(2)));
+        assert_eq!(l.cycle_tab(true).unwrap(), Some(id(0)));
+        assert_eq!(l.cycle_tab(false).unwrap(), Some(id(2)));
+        let before = l.clone();
+        assert_eq!(l.focus_window(id(1)), Err(LayoutError::MinimizedWindow));
+        assert_eq!(
+            l.join_column(id(1), id(3)),
+            Err(LayoutError::MinimizedWindow)
+        );
+        assert_same_observations(&l, &before);
+        l.focus_window(id(3)).unwrap();
+        l.set_minimized(id(0), true).unwrap();
+        l.set_minimized(id(2), true).unwrap();
+        assert_eq!(l.focus_direction(Direction::Left).unwrap(), None);
+        l.set_minimized(id(3), true).unwrap();
+        assert_eq!(l.focused(), None);
+        assert!(l.canvas_groups().is_empty());
+        assert!(l.visible_placements().is_empty());
+        assert!(l.placements().iter().all(|p| !p.visible && !p.focused));
+        assert_eq!(l.cycle_tab(true).unwrap(), None);
+        l.move_focused(Direction::Right).unwrap();
+        assert_eq!(l.validate(), Ok(()));
+        l.set_minimized(id(1), false).unwrap();
+        assert_eq!(l.focused(), Some(id(1)));
+        assert!(!l.visible_placements().is_empty());
+        l.insert(id(4), SizeConstraints::default()).unwrap();
+        l.set_minimized(id(1), false).unwrap();
+        assert_eq!(
+            l.focused(),
+            Some(id(4)),
+            "idempotent restore must not steal focus"
+        );
+    }
+
+    #[test]
+    fn minimize_tab_updates_active_and_remove_never_focuses_hidden_history() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.join_column(id(1), id(0)).unwrap();
+        l.set_column_mode(id(0), ColumnMode::Tabs).unwrap();
+        l.focus_window(id(0)).unwrap();
+        l.focus_window(id(1)).unwrap();
+        l.set_minimized(id(1), true).unwrap();
+        assert_eq!(l.focused(), Some(id(0)));
+        assert_eq!(
+            l.canvas_groups()
+                .iter()
+                .find(|g| g.id == l.group_for(id(0)).unwrap())
+                .unwrap()
+                .active,
+            id(0)
+        );
+        l.remove(id(0)).unwrap();
+        assert_eq!(l.focused(), Some(id(2)));
+        l.remove(id(2)).unwrap();
+        assert_eq!(l.focused(), None);
+        l.remove(id(1)).unwrap();
+        assert!(!l.is_minimized(id(1)));
+        l.insert(id(1), SizeConstraints::default()).unwrap();
+        assert_eq!(l.focused(), Some(id(1)));
+        assert_eq!(l.validate(), Ok(()));
+        let before = l.clone();
+        assert_eq!(
+            l.set_minimized(id(99), true),
+            Err(LayoutError::UnknownWindow)
+        );
+        assert_same_observations(&l, &before);
+    }
+
+    #[test]
+    fn minimized_members_keep_constraints_and_saved_modes() {
+        let mut l = layout();
+        let constraints = SizeConstraints::from_xdg((310, 210), (450, 350)).unwrap();
+        l.insert(id(0), constraints).unwrap();
+        l.insert(id(1), SizeConstraints::default()).unwrap();
+        l.set_column_width(id(0), WidthPolicy::Fixed(400.0))
+            .unwrap();
+        l.set_mode(LayoutMode::Canvas);
+        l.set_canvas_rect(
+            id(0),
+            Rect {
+                x: -800.0,
+                y: 120.0,
+                width: 420.0,
+                height: 320.0,
+            },
+        )
+        .unwrap();
+        let group = l.group_for(id(0)).unwrap();
+        let saved = l.canvas[&group];
+        let columns = l
+            .columns
+            .iter()
+            .map(|c| (c.group, c.width))
+            .collect::<Vec<_>>();
+        l.set_minimized(id(0), true).unwrap();
+        l.set_mode(LayoutMode::Strip);
+        l.set_mode(LayoutMode::Canvas);
+        assert_eq!(l.canvas[&group].rect, saved.rect);
+        assert_eq!(l.canvas[&group].scroll_y, saved.scroll_y);
+        assert_eq!(l.members[&id(0)], constraints);
+        for (group, width) in columns {
+            assert_eq!(
+                l.columns.iter().find(|c| c.group == group).unwrap().width,
+                width
+            );
+        }
+        l.set_minimized(id(0), false).unwrap();
+        assert_eq!(l.focused(), Some(id(0)));
+        let p = l
+            .visible_placements()
+            .into_iter()
+            .find(|p| p.window == id(0))
+            .unwrap();
+        assert_eq!(p.rect, saved.rect);
+        assert_eq!(l.validate(), Ok(()));
+    }
+
+    #[test]
     fn randomized_10000_commands_preserve_membership_focus_and_geometry() {
         let mut l = layout();
         let mut seed = 0x09e3_7715_8463_a910_u64;
@@ -2088,7 +2351,7 @@ mod tests {
                 .iter()
                 .nth((seed as usize / 13) % live.len().max(1))
                 .copied();
-            match seed % 12 {
+            match seed % 14 {
                 0 if live.len() < 100 => {
                     let w = id(next);
                     next += 1;
@@ -2103,7 +2366,11 @@ mod tests {
                 }
                 2 => {
                     if let Some(w) = target {
-                        l.focus_window(w).unwrap();
+                        if l.is_minimized(w) {
+                            assert_eq!(l.focus_window(w), Err(LayoutError::MinimizedWindow));
+                        } else {
+                            l.focus_window(w).unwrap();
+                        }
                     }
                 }
                 3 => {
@@ -2135,7 +2402,11 @@ mod tests {
                 }
                 7 => {
                     if let (Some(w), Some(f)) = (target, l.focused()) {
-                        l.join_column(w, f).unwrap();
+                        if l.is_minimized(w) {
+                            assert_eq!(l.join_column(w, f), Err(LayoutError::MinimizedWindow));
+                        } else {
+                            l.join_column(w, f).unwrap();
+                        }
                     }
                 }
                 8 => {
@@ -2162,6 +2433,14 @@ mod tests {
                         Direction::Down,
                     ][(seed / 23 % 4) as usize];
                     l.move_focused(d).unwrap();
+                }
+                11 | 12 => {
+                    if let Some(w) = target {
+                        l.set_minimized(w, seed % 14 == 11).unwrap();
+                    }
+                }
+                13 => {
+                    l.cycle_tab(seed & 128 == 0).unwrap();
                 }
                 _ => {}
             }

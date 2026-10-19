@@ -1,0 +1,22 @@
+{
+  "crates/flux-core/src/action.rs": "902ce107fe0cd32f17d0b6c38448abc4aca3cb2dae7e363b8cae913757c33e19",
+  "crates/flux-core/src/lib.rs": "95dec0e835cab11a12913170af724cb427599580e89450518648d42ae7599b47",
+  "crates/flux-layout/src/lib.rs": "ddacfd89fd6677a848734e2af765376b3bf8f7937dda4f6cf99a0aad3e147515",
+  "crates/fluxwm-fixture/src/main.rs": "97f3fe5bb9b2e8cde43bdca4a6c06956993a20a34acb27988e0002526fa2b6b6",
+  "crates/fluxwm/src/actions.rs": "4861ad0f64bc73be4cb9bdef383f16565bd91c1c00d285412ffbab1197759add",
+  "crates/fluxwm/src/configure.rs": "6235aee639a7f0b60a95a107270286c4e719ee259341c528777c98b8c8bd1b59",
+  "crates/fluxwm/src/handlers/xdg_shell.rs": "34b7ce123317f65f30a4f745242f9f691dfe7a5a3be899bf3a117716eb94a41a",
+  "crates/fluxwm/src/ipc.rs": "9356cbf5e96303bc433401895c6f2a6656109e5272a370f00f91cd447dc28843",
+  "crates/fluxwm/src/native.rs": "630292669b2bd5b149cd8875727ac658e0baa0d84642b79a6176aa8985b5c672",
+  "crates/fluxwm/src/scene.rs": "234f97bd77409febd6ee6a222b0b022d5a26e89937e5377f32a7bcf45a1d1be2",
+  "crates/fluxwm/src/state.rs": "3cb25162bf6baeddcce866aa3814e0872adda9710a5a1ad5cd5c45c36b9928b5",
+  "crates/fluxwm/src/winit.rs": "aa30f41c7d300392043c2e5b97d24e6bb6d984fa749c322762c096923dbf2514",
+  "docs/development/minimize.md": "e7148a09b105413b4011f894ae82c323f06273166fdfb3b22865450712e8323c",
+  "tools/smoke_health.py": "04147654f0b9dc22a7b8f31e20cc5ac07de2642003e434c3bba7ca8b74a824b2",
+  "tools/smoke_minimize.py": "1aed89dd03ff118c41b6a215152719036376d37d2ebc2102f7db704deec759a1",
+  "tools/smoke_private.py": "379147bd95118f1d2b42704643263d8ca423fb4d3a5c7cb992659218dd17baac",
+  "upstream/smithay/src/wayland/shell/xdg/mod.rs": "214879d84c6c8b64237b8a8badce6b0c60b7c47ccde0e0b7a7bc30f45c61fe0b",
+  "upstream/smithay/src/wayland/shell/xdg/handlers/surface/toplevel.rs": "e9e3830d06327b3517ef45322c3574993ffdc2bab340827b6263b88f685636ad",
+  "upstream/smithay/src/desktop/wayland/popup/manager.rs": "6e24ad570e38e1fa6f851bc897a00e4af0217529647a253c0f60e548d81e1355",
+  "upstream/smithay/src/desktop/wayland/popup/grab.rs": "1e2986348452b7de8de8698a8ef7e9b38031b2ceef0843a8b363e18bfe18dab3"
+}

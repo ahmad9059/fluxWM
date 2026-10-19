@@ -1,0 +1,63 @@
+{
+  "authority_removed": true,
+  "harness_sha256": "379147bd95118f1d2b42704643263d8ca423fb4d3a5c7cb992659218dd17baac",
+  "ok": true,
+  "package": {
+    "bundle": "target/configure-verified-xvfb",
+    "executable_sha256": "6584e6cf04ca1357cb50fd2feb1ad449b5f45dfe6cc61d2bbf006f752df592de",
+    "filename": "xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "keyring": "/usr/share/pacman/keyrings/archlinux.gpg",
+    "keyring_sha256": "6e5e9373e4684d646f2274e2df54d7fea5f79bc0df981ad8cd7851d1d2454ba3",
+    "metadata_url": "https://archlinux.org/packages/extra/x86_64/xorg-server-xvfb/json/",
+    "package_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/xorg-server-xvfb-21.1.25-2-x86_64.pkg.tar.zst",
+    "repository_sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "repository_url": "https://geo.mirror.pkgbuild.com/extra/os/x86_64/extra.db",
+    "sha256": "52c6d0394109b0bdfd0e4d00dd8d89d7e38bfe7576d96145179f216480eb7564",
+    "signature_status": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED ADC8A1FCC15E01D45310419E94657AB20F2A092B 0\n[GNUPG:] SIG_ID as1t5Z2z4h6quSUYmgbAvDk0SUE 2026-10-14 1792006169\n[GNUPG:] GOODSIG 94657AB20F2A092B Andreas Radke <andyrtr@archlinux.org>\n[GNUPG:] VALIDSIG ADC8A1FCC15E01D45310419E94657AB20F2A092B 2026-10-14 1792006169 0 4 0 1 10 00 ADC8A1FCC15E01D45310419E94657AB20F2A092B\n",
+    "signature_verified": true,
+    "signer": "ADC8A1FCC15E01D45310419E94657AB20F2A092B"
+  },
+  "parent_environment_unchanged": true,
+  "private_display": ":7869",
+  "private_server_pid": 121018,
+  "runtime_cleanup": {
+    "directory_removed": true,
+    "endpoints_removed_before_cleanup": true,
+    "path": "/tmp/fluxrt-b5mk05jp"
+  },
+  "scope": "owned authenticated X11 software-rendered nested suites; no host input injection",
+  "server_reaped": true,
+  "suites": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/ahmad/Documents/Projects/fluxwm/tools/smoke_minimize.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-minimize-checks/bin/fluxwm-native",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-minimize-reviewed-feature-gui/minimize",
+        "--fixture",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-minimize-checks/bin/fluxwm-fixture"
+      ],
+      "elapsed_seconds": 1.474,
+      "exit_code": 0,
+      "suite": "minimize"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/ahmad/Documents/Projects/fluxwm/tools/smoke_scene.py",
+        "--binary",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-minimize-checks/bin/fluxwm-native",
+        "--artifacts",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-minimize-reviewed-feature-gui/scene",
+        "--fixture",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-minimize-checks/bin/fluxwm-fixture"
+      ],
+      "elapsed_seconds": 25.843,
+      "exit_code": 0,
+      "suite": "scene"
+    }
+  ],
+  "x_socket_removed": true
+}

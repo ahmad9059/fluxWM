@@ -248,6 +248,14 @@ impl XdgShellHandler for Fluxwm {
         }
     }
 
+    fn minimize_request(&mut self, surface: ToplevelSurface) {
+        if let Some(id) = self.window_id(surface.wl_surface())
+            && let Err(error) = self.set_window_minimized(id, true)
+        {
+            tracing::debug!(%id, %error, "minimize request declined");
+        }
+    }
+
     fn app_id_changed(&mut self, _surface: ToplevelSurface) {
         self.bump_sequence();
     }

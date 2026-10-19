@@ -1,0 +1,151 @@
+[
+  {
+    "name": "default-tests",
+    "command": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 14.205
+  },
+  {
+    "name": "native-tests",
+    "command": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-features",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 8.537
+  },
+  {
+    "name": "native-test-list",
+    "command": [
+      "cargo",
+      "test",
+      "--workspace",
+      "--all-features",
+      "--locked",
+      "--",
+      "--list"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.72
+  },
+  {
+    "name": "check",
+    "command": [
+      "cargo",
+      "check",
+      "--workspace",
+      "--all-features",
+      "--all-targets",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.32
+  },
+  {
+    "name": "clippy",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-features",
+      "--all-targets",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.271
+  },
+  {
+    "name": "rustdoc",
+    "command": [
+      "cargo",
+      "doc",
+      "--workspace",
+      "--all-features",
+      "--no-deps",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.82
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.316
+  },
+  {
+    "name": "docs",
+    "command": [
+      "python3",
+      "tools/check_docs.py"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.165
+  },
+  {
+    "name": "diff",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.016
+  },
+  {
+    "name": "build-default",
+    "command": [
+      "cargo",
+      "build",
+      "--workspace",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.721
+  },
+  {
+    "name": "build-compositor-native",
+    "command": [
+      "cargo",
+      "build",
+      "-p",
+      "fluxwm",
+      "--features",
+      "native",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 6.278
+  },
+  {
+    "name": "build-native",
+    "command": [
+      "cargo",
+      "build",
+      "-p",
+      "flux-native",
+      "--features",
+      "system",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.068
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "name": "fixture-clippy",
+    "command": [
+      "cargo",
+      "clippy",
+      "-p",
+      "fluxwm-fixture",
+      "--all-targets",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.352
+  },
+  {
+    "name": "fixture-build",
+    "command": [
+      "cargo",
+      "build",
+      "-p",
+      "fluxwm-fixture",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.275
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.944
+  },
+  {
+    "name": "docs",
+    "command": [
+      "python3",
+      "tools/check_docs.py"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.396
+  }
+]

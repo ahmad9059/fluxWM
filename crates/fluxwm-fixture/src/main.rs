@@ -44,6 +44,9 @@ struct Window {
     pending_size: [i32; 2],
     frames: u32,
     capabilities: u32,
+    capability_values: Vec<u32>,
+    activated: bool,
+    suspended: bool,
     destroyed: bool,
 }
 #[derive(Clone, Copy, Debug)]
@@ -215,6 +218,9 @@ impl State {
             pending_size: [0, 0],
             frames: 0,
             capabilities: 0,
+            capability_values: Vec::new(),
+            activated: false,
+            suspended: false,
             destroyed: false,
         });
         self.record(json!({"create":n,"name":name}));
@@ -701,15 +707,34 @@ impl Dispatch<xdg_toplevel::XdgToplevel, usize> for State {
         _: &QueueHandle<Self>,
     ) {
         match event {
-            xdg_toplevel::Event::Configure { width, height, .. } => {
+            xdg_toplevel::Event::Configure {
+                width,
+                height,
+                states,
+            } => {
                 state.windows[*index].pending_size = [width, height];
+                state.windows[*index].activated = states.as_chunks::<4>().0.iter().any(|bytes| {
+                    u32::from_ne_bytes(*bytes) == xdg_toplevel::State::Activated as u32
+                });
+                state.windows[*index].suspended = states.as_chunks::<4>().0.iter().any(|bytes| {
+                    u32::from_ne_bytes(*bytes) == xdg_toplevel::State::Suspended as u32
+                });
             }
             xdg_toplevel::Event::WmCapabilities { capabilities } => {
                 state.windows[*index].capabilities += 1;
                 state.record(json!({"wm_capabilities":index,"bytes":capabilities}));
-                if !capabilities.is_empty() {
+                let values: Vec<_> = capabilities
+                    .as_chunks::<4>()
+                    .0
+                    .iter()
+                    .map(|bytes| u32::from_ne_bytes(*bytes))
+                    .collect();
+                state.windows[*index].capability_values = values.clone();
+                if capabilities.len() % 4 != 0
+                    || values != [xdg_toplevel::WmCapabilities::Minimize as u32]
+                {
                     state.error = Some(format!(
-                        "window {index}: expected no optional toplevel capabilities in this nested baseline"
+                        "window {index}: expected exactly Minimize capability, got {values:?}"
                     ));
                 }
             }
@@ -2934,6 +2959,305 @@ fn configure_stream(timeout: Duration) -> Json {
     evidence
 }
 
+/// Exercise real XDG minimize requests and the compositor's explicit restore API.
+fn minimize(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    state.popup_mode = true; // Bind a real keyboard and observe focus events.
+    state.pointer_feedback_enabled = true;
+    let mut evidence = json!({"ok":false,"mode":"minimize"});
+    let result = (|| -> Result<()> {
+        let connection = connect(&display_path()?, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit IPC socket required")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        for name in ["minimize-A", "minimize-B"] {
+            let index = state.create(&qh, name);
+            state.windows[index].surface.commit();
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "initial configure",
+                |s| s.windows[index].configures > 0,
+            )?;
+            state.map(index, &qh)?;
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "initial visible frame",
+                |s| s.windows[index].frames > 0,
+            )?;
+        }
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        if state.windows.iter().any(|w| {
+            w.toplevel.version() < 5
+                || w.capabilities == 0
+                || w.capability_values != [xdg_toplevel::WmCapabilities::Minimize as u32]
+        }) {
+            return Err("missing actual protocol v5+ Minimize capability".into());
+        }
+        let a = configure_window(&mut diagnostics, "FluxWM fixture minimize-A", deadline)?;
+        let b = configure_window(&mut diagnostics, "FluxWM fixture minimize-B", deadline)?;
+        if a["focused"] != false || b["focused"] != true || b["minimized"] != false {
+            return Err("initial focus/minimize precondition failed".into());
+        }
+        if state.keyboard.is_none()
+            || state.keyboard_focus.as_ref() != Some(&state.windows[1].surface)
+        {
+            return Err("initial real keyboard focus missing".into());
+        }
+        evidence["before"] = json!([a.clone(), b.clone()]);
+        // A client request targets its own toplevel, even while B owns focus.
+        state.windows[0].toplevel.set_minimized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let hidden_a = configure_window(&mut diagnostics, a["id"].as_str().unwrap(), deadline)?;
+        let still_b = configure_window(&mut diagnostics, b["id"].as_str().unwrap(), deadline)?;
+        if hidden_a["minimized"] != true
+            || hidden_a["mapped"] != true
+            || hidden_a["focused"] != false
+            || still_b["focused"] != true
+            || hidden_a["geometry"] != a["geometry"]
+        {
+            return Err("background minimize changed focus, mapping or reserved geometry".into());
+        }
+        evidence["background_minimize"] = hidden_a;
+        diagnostics.call(
+            "action",
+            json!({"name":"restore-window", "window":a["id"]}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let restored_a = configure_window(&mut diagnostics, a["id"].as_str().unwrap(), deadline)?;
+        if restored_a["minimized"] != false
+            || restored_a["focused"] != true
+            || restored_a["geometry"] != a["geometry"]
+            || restored_a["id"] != a["id"]
+        {
+            return Err("restore lost identity, focus or geometry".into());
+        }
+        evidence["restored"] = restored_a;
+        let popup = state.create_popup(0, false, &qh);
+        state.popups[popup].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup configure",
+            |s| s.popups[popup].configures > 0,
+        )?;
+        state.map_popup(popup, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "popup visible frame",
+            |s| s.popups[popup].frames > 0,
+        )?;
+        // Focused IPC minimize must choose the remaining visible window.
+        diagnostics.call("action", json!({"name":"minimize"}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let fallback = diagnostics.call("windows.list", json!({}), deadline)?;
+        if configure_window(&mut diagnostics, a["id"].as_str().unwrap(), deadline)?["minimized"]
+            != true
+            || configure_window(&mut diagnostics, b["id"].as_str().unwrap(), deadline)?["focused"]
+                != true
+            || state.windows[0].activated
+        {
+            return Err("focused minimize failed focus fallback/deactivation".into());
+        }
+        evidence["focus_fallback"] = fallback;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "minimized popup dismissal",
+            |s| s.popups[popup].done > 0,
+        )?;
+        if state.popups[popup].done != 1 {
+            return Err("minimize popup dismissal count differed from one".into());
+        }
+        evidence["mapped_popup_dismissed"] =
+            json!({"frames":state.popups[popup].frames,"done":state.popups[popup].done});
+        state.destroy_popup(popup);
+        // A new buffer and title cannot silently unminimize a hidden owner.
+        let frames = state.windows[0].frames;
+        state.map(0, &qh)?;
+        state.windows[0]
+            .toplevel
+            .set_title("FluxWM fixture minimize-A-committed".into());
+        state.windows[0].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(120),
+            deadline,
+        )?;
+        let hidden_commit =
+            configure_window(&mut diagnostics, a["id"].as_str().unwrap(), deadline)?;
+        if hidden_commit["minimized"] != true
+            || hidden_commit["mapped"] != true
+            || state.windows[0].frames != frames
+        {
+            return Err("hidden commit unminimized or received a presentation frame".into());
+        }
+        evidence["hidden_commit"] = hidden_commit;
+        evidence["hidden_frame_callbacks_before_after"] = json!([frames, state.windows[0].frames]);
+        state.windows[1].toplevel.set_minimized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let all_hidden = diagnostics.call("windows.list", json!({}), deadline)?;
+        if !all_hidden["windows"]
+            .as_array()
+            .ok_or("missing windows")?
+            .iter()
+            .all(|w| w["minimized"] == true && w["focused"] == false && w["mapped"] == true)
+            || state.windows.iter().any(|w| w.activated || !w.suspended)
+            || state.keyboard_focus.is_some()
+            || state.pointer_focus_surface.is_some()
+        {
+            return Err("minimize-all retained focus or activation".into());
+        }
+        evidence["all_hidden"] = all_hidden;
+        diagnostics.call(
+            "action",
+            json!({"name":"restore-window", "window":a["id"]}),
+            deadline,
+        )?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "restored frame",
+            |s| s.windows[0].frames > frames,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        if state.keyboard_focus.as_ref() != Some(&state.windows[0].surface)
+            || !state.windows[0].activated
+            || state.windows[0].suspended
+        {
+            return Err("restore did not recover keyboard focus and active wire state".into());
+        }
+        evidence["restore_focus_and_wire_state"] = json!({"activated":state.windows[0].activated,
+            "suspended":state.windows[0].suspended,"keyboard_focus":true});
+        // Unmap/remap resets minimized state on the same XDG role/identity.
+        state.windows[0].toplevel.set_minimized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.windows[0].surface.attach(None, 0, 0);
+        state.windows[0].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let unmapped = configure_window(&mut diagnostics, a["id"].as_str().unwrap(), deadline)?;
+        if unmapped["mapped"] != false || unmapped["minimized"] != false {
+            return Err("unmap retained minimized state".into());
+        }
+        evidence["unmapped"] = unmapped;
+        let count = state.windows[0].configures;
+        state.windows[0].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "remap configure",
+            |s| s.windows[0].configures > count,
+        )?;
+        let frames = state.windows[0].frames;
+        state.map(0, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "remap visible frame",
+            |s| s.windows[0].frames > frames,
+        )?;
+        let remapped = configure_window(&mut diagnostics, a["id"].as_str().unwrap(), deadline)?;
+        if remapped["id"] != a["id"] || remapped["mapped"] != true || remapped["minimized"] != false
+        {
+            return Err("remap did not reset visibility on same identity".into());
+        }
+        evidence["remapped"] = remapped;
+        state.windows[0].toplevel.destroy();
+        state.windows[0].xdg.destroy();
+        state.windows[0].surface.destroy();
+        state.windows[0].destroyed = true;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let replacement = state.create(&qh, "minimize-replacement");
+        state.windows[replacement].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "replacement configure",
+            |s| s.windows[replacement].configures > 0,
+        )?;
+        state.map(replacement, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "replacement frame",
+            |s| s.windows[replacement].frames > 0,
+        )?;
+        let new = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture minimize-replacement",
+            deadline,
+        )?;
+        let old_id = a["id"].as_str().ok_or("missing old ID")?;
+        let new_id = new["id"].as_str().ok_or("missing replacement ID")?;
+        if old_id == new_id
+            || old_id.split_once(':').map(|p| p.0) != new_id.split_once(':').map(|p| p.0)
+        {
+            return Err("stale-ID test did not exercise actual slot reuse".into());
+        }
+        evidence["replacement"] = new;
+        let stale = diagnostics
+            .call(
+                "action",
+                json!({"name":"restore-window", "window":a["id"]}),
+                deadline,
+            )
+            .err()
+            .ok_or("destroyed ID unexpectedly accepted restore")?;
+        if !stale.contains("unknown or unmapped window") {
+            return Err(format!("unexpected stale restore error: {stale}"));
+        }
+        evidence["stale_restore_error"] = json!(stale);
+        evidence["protocol_capability_values"] = json!(
+            state
+                .windows
+                .iter()
+                .map(|w| w.capability_values.clone())
+                .collect::<Vec<_>>()
+        );
+        evidence["visible_frames"] =
+            json!(state.windows.iter().map(|w| w.frames).collect::<Vec<_>>());
+        if let Some(error) = state.error.take() {
+            return Err(error);
+        }
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["events"] = json!(state.events);
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence
+}
+
 /// Admit six windows as the parent reloads fixed, fraction and preset defaults.
 /// Existing windows stay live to expose accidental retroactive width changes.
 fn config_width(timeout: Duration) -> Json {
@@ -3677,7 +4001,8 @@ fn main() {
                 || mode == "container-clip"
                 || mode == "popup-clip"
                 || mode == "configure-stream"
-                || mode == "configure-admission" =>
+                || mode == "configure-admission"
+                || mode == "minimize" =>
         {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
@@ -3689,7 +4014,8 @@ fn main() {
                 || mode == "container-clip"
                 || mode == "popup-clip"
                 || mode == "configure-stream"
-                || mode == "configure-admission")
+                || mode == "configure-admission"
+                || mode == "minimize")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -3700,10 +4026,11 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|minimize|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
+        Ok(("minimize", timeout)) => minimize(timeout),
         Ok(("configure-stream", timeout)) => configure_stream(timeout),
         Ok(("config-width", timeout)) => config_width(timeout),
         Ok(("config-geometry", timeout)) => config_geometry(timeout),

@@ -203,7 +203,8 @@ impl RuntimeScene {
             return None;
         }
         self.input.iter().find_map(|node| {
-            if !node.surface.alive()
+            if state.layout.is_minimized(node.window)
+                || !node.surface.alive()
                 || !state
                     .windows
                     .get(node.window)

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independent focused review of window minimize/restore implementation, frozen snapshot based on f98d44a. Read/Grep only within snapshot, 10-14 calls maximum, no commands/network/writes/agents. Inspect pure flux-layout set_minimized/is_minimized plus focus/tab/nav/remove/mode/group/validate logic. Policy: minimized members retain reserved slot/nonzero geometry/constraints/group; no compaction; actualrestore focuses/reveals, idempotentrestore nofocussteal. Frontend: minimized staysmapped, layoutplacementsvisiblefalse, relayout unmapsspace/dismissespopups/unsetsActivated/setsSuspended, pinnedSmithay filtersversion. Actions focusedminimize and restore-window generationalID. XDG advisoryrequesttargetsownsurface; unknown/unmapped/stopping rejected, unrelatedactivegrabsdeclined, ownpopupgrab cleaned. RuntimeScene.hit dynamically excludes minimized IDs evenoldpresentedscene; bothbackends skiphiddenframecallbacks. Unmap removesminimized, remap resets. Inspect production functional correctness ownership/focus/input hiding defects or claims, strictwire and tests. Fixture realprotocol tests exactMinimize capabilities, focusfallback, hiddenbuffercommits/framecallbacks, popupdone, allhidden keyboardpointerfocus, restore pendingframe, nullunmap/remap andstaleID. PrivateauthenticatedXvfb only, no native hardware claimed. Changes must not regress unrelated protocol fixture modes. Flag concrete reachable HIGH/MEDIUM and useful LOW; separate explicitremainingdesktop/taskUI/nativehardwaregaps. Keep concise verdict; do notcertifyfullphase. No broadre-auditnativefoundation. Manifest identifies exactsourcebytes. Use actualsource, notjustdocclaims.",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "22",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/window-minimize-review-snapshot"
+}

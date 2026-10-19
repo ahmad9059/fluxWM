@@ -316,7 +316,9 @@ pub fn init(
                     }
                     if let Some(scene) = &state.scene {
                         for id in scene.windows() {
-                            if let Some(item) = state.windows.get(id) {
+                            if !state.layout.is_minimized(id)
+                                && let Some(item) = state.windows.get(id)
+                            {
                                 item.window.send_frame(
                                     &context.output,
                                     state.start_time.elapsed(),

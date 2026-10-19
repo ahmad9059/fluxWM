@@ -1,0 +1,10 @@
+{
+  "crates/fluxwm-fixture/src/main.rs": {
+    "reviewed": "97f3fe5bb9b2e8cde43bdca4a6c06956993a20a34acb27988e0002526fa2b6b6",
+    "final": "e2d16632b6e07bb86f52d8d8f6f6f0069809367843aa4fdf316587e3546f318d"
+  },
+  "docs/development/minimize.md": {
+    "reviewed": "e7148a09b105413b4011f894ae82c323f06273166fdfb3b22865450712e8323c",
+    "final": "33414af7c8fced06a68b45b4364de4f7a9665286d7f119cb0704e0fc4ea865d2"
+  }
+}

@@ -168,7 +168,10 @@ impl Fluxwm {
 
         // Initialize protocols needed for displaying windows
         let compositor_state = CompositorState::new::<Self>(&dh);
-        let xdg_shell_state = XdgShellState::new_with_capabilities::<Self>(&dh, Vec::new());
+        let xdg_shell_state = XdgShellState::new_with_capabilities::<Self>(
+            &dh,
+            vec![smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Minimize],
+        );
         let shm_state = ShmState::new::<Self>(&dh, vec![]);
         let popups = PopupManager::default();
 
@@ -593,6 +596,11 @@ impl Fluxwm {
             if let Some(toplevel) = item.window.toplevel() {
                 toplevel.with_pending_state(|s| {
                     s.size = Some((placement.rect.width.round() as i32, placement.rect.height.round() as i32).into());
+                    if self.layout.is_minimized(placement.window) {
+                        s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Suspended);
+                    } else {
+                        s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Suspended);
+                    }
                     if placement.focused { s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Activated); }
                     else { s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Activated); }
                 });
@@ -619,6 +627,44 @@ impl Fluxwm {
             self.restore_keyboard_focus();
         }
         self.request_redraw();
+    }
+
+    /// Hide a mapped member without releasing its layout slot or buffer ownership.
+    /// Requests during unrelated input grabs are rejected rather than redirecting
+    /// an existing grab to a newly selected window. XDG minimize is advisory.
+    pub fn set_window_minimized(&mut self, id: WindowId, minimized: bool) -> Result<(), String> {
+        if self.stopping || self.shutdown_deadline.is_some() {
+            return Err("instance is shutting down".into());
+        }
+        let item = self
+            .windows
+            .get(id)
+            .filter(|item| item.mapped && item.window.alive())
+            .ok_or("unknown or unmapped window")?;
+        if self.layout.is_minimized(id) == minimized {
+            return Ok(());
+        }
+        let owns_popup = self
+            .popup_grab
+            .as_ref()
+            .is_some_and(|(root, _)| *root == id);
+        if !owns_popup
+            && (self.seat.get_keyboard().is_some_and(|k| k.is_grabbed())
+                || self.seat.get_pointer().is_some_and(|p| p.is_grabbed()))
+        {
+            return Err("an input grab is active".into());
+        }
+        let surface = item.window.toplevel().map(|top| top.wl_surface().clone());
+        self.layout
+            .set_minimized(id, minimized)
+            .map_err(|error| error.to_string())?;
+        if minimized && let Some(surface) = surface {
+            Self::dismiss_root_popups(&surface);
+        }
+        self.relayout();
+        self.restore_keyboard_focus();
+        self.bump_sequence();
+        Ok(())
     }
 
     pub fn focus_window_id(&mut self, id: WindowId) {

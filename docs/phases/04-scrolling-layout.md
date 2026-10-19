@@ -45,3 +45,10 @@ Retain [ordering contracts](../14-state-machines.md), [resources/trust](../17-re
 ## Required follow-up review tasks
 
 Implement minimize/restore, graceful close versus explicit client disconnect, maximize state and restoration in phase 4. Send wm_capabilities only for available actions; minimize capability begins with this implementation, not phase 2. Validate the XDG matrix's applicable native state rows, with full native/X11 variant qualification in phase 7.
+
+## Incremental implementation
+
+[Minimize/restore](../development/minimize.md) now retains mapped member identity and nonzero restoration
+geometry, removes render/input/focus eligibility and exposes explicit IPC restore. Reserved slots do not
+compact. Pure model and private-display protocol checks cover named cases; full phase verification,
+maximize/fullscreen restore combinations, task UI and native qualification remain open.

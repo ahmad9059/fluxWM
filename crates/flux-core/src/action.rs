@@ -1,4 +1,4 @@
-use crate::{Direction, LayoutMode};
+use crate::{Direction, LayoutMode, WindowId};
 use serde::{Deserialize, Serialize};
 
 pub const MAX_PAN_DELTA: f64 = 1_000_000.;
@@ -24,6 +24,8 @@ pub enum Action {
     Fullscreen { toggle: bool },
     Floating { toggle: bool },
     Overview { toggle: bool },
+    Minimize,
+    RestoreWindow { window: WindowId },
     CloseWindow,
     ReloadConfig,
     Lock,
@@ -45,6 +47,8 @@ enum WireAction {
     Fullscreen { toggle: bool },
     Floating { toggle: bool },
     Overview { toggle: bool },
+    Minimize {},
+    RestoreWindow { window: WindowId },
     CloseWindow {},
     ReloadConfig {},
     Lock {},
@@ -62,6 +66,8 @@ impl<'de> Deserialize<'de> for Action {
             WireAction::Fullscreen { toggle } => Self::Fullscreen { toggle },
             WireAction::Floating { toggle } => Self::Floating { toggle },
             WireAction::Overview { toggle } => Self::Overview { toggle },
+            WireAction::Minimize {} => Self::Minimize,
+            WireAction::RestoreWindow { window } => Self::RestoreWindow { window },
             WireAction::CloseWindow {} => Self::CloseWindow,
             WireAction::ReloadConfig {} => Self::ReloadConfig,
             WireAction::Lock {} => Self::Lock,
@@ -134,6 +140,10 @@ mod tests {
             Action::Fullscreen { toggle: true },
             Action::Floating { toggle: false },
             Action::Overview { toggle: true },
+            Action::Minimize,
+            Action::RestoreWindow {
+                window: WindowId::new(2, 3),
+            },
             Action::CloseWindow,
             Action::ReloadConfig,
             Action::Lock,
@@ -176,6 +186,10 @@ mod tests {
             r#"{"name":"lock","argv":[]}"#,
             r#"{"name":"execute","argv":["sh"]}"#,
             r#"{"name":"fullscreen","toggle":null}"#,
+            r#"{"name":"minimize","window":"0:0"}"#,
+            r#"{"name":"restore-window"}"#,
+            r#"{"name":"restore-window","window":"-1:0"}"#,
+            r#"{"name":"restore-window","window":4}"#,
             r#"{"name":"focus","direction":"north"}"#,
         ] {
             assert!(

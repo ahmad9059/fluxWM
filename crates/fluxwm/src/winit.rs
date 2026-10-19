@@ -306,6 +306,9 @@ impl RenderContext {
                 let Some(item) = state.windows.get(id) else {
                     continue;
                 };
+                if state.layout.is_minimized(id) {
+                    continue;
+                }
                 item.window.send_frame(
                     &self.output,
                     state.start_time.elapsed(),
