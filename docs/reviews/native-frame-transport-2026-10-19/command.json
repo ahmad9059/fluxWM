@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independently review this frozen current-worktree snapshot of native frame transport. Read/Grep only within snapshot; no writes, commands, tests, network or agents. Keep review focused, about 12-18 tool calls. Review drm_events.rs, frames.rs, system/events.rs, system/atomic.rs and integration in system.rs and target_test.rs, plus docs. Check actual reachable HIGH/MEDIUM defects in memory/resource lifetime, callback registration/drop, complete-cookie matching, untrusted byte bounds and raw ioctl arrays/ABI. Inspect tests as needed. Exact cookie match rather than CRTC/sequence identity is deliberate. PreparedFrame owns resources and scene; accepted/uncertain resources are retained until matching completion or unsafe exact-key IdleProof; unexpected Drop intentionally leaks payload AND quota permit. Platform caller must establish quiescence, keep one persistent pool, finish render/acquire before prepare, and establish fresh/quiesced event stream across process restarts. No live submitter is implemented: actual raw ioctl entry is TEST_ONLY|ALLOW_MODESET with cookie zero, while full-cookie serializer is fixture tested. Actual event reader exists but ledger is not wired to real scanout resources. Native physical session and hardware paths are unexecuted. These explicit future integration gaps are not implemented behaviors. Require concrete paths/triggers for findings. Return concise findings, tests/limits and verdict; do not certify production readiness. Snapshot manifest identifies exact source bytes, base commit is not the reviewed worktree identity.",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "26",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/native-frame-review-snapshot"
+}

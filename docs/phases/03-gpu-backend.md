@@ -53,3 +53,5 @@ The [native session/device foundation](../development/native-foundation.md) now 
 [Output discovery and candidate routing](../development/native-outputs.md) now implements the discovery/planning portion of task 2. Device-free exhaustive small-graph and query-failure tests do not qualify allocation, KMS transactions, rendering or physical outputs; the remainder of task 2 and the exit gate stay open.
 
 [RGB target/atomic testing](../development/native-target-test.md) adds a manual allocation, GLES render/synchronization and atomic TEST_ONLY component. Its platform path remains unexecuted; live commits, presentation, mode-preview rollback and the phase gate remain open.
+
+[Frame transport and ownership](../development/native-frame-transport.md) adds full-cookie DRM event delivery and a bounded consumer ledger. Joining them to live KMS submission and compositor redraw is the next implementation step; no physical presentation gate is closed.

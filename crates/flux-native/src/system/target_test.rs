@@ -1,5 +1,6 @@
 //! Manual atomic TEST_ONLY adapter. No DrmSurface or output manager is created:
 //! their active teardown/legacy test paths can change real display state.
+use super::atomic::Request;
 use crate::{
     output::{Assignment, Format, Plan},
     target::{self, Backend, TestFailure, TestReport, TestStage},
@@ -14,9 +15,7 @@ use smithay::{
         drm::{DrmDevice, DrmDeviceFd},
         renderer::{Bind, Frame, Renderer, gles::GlesRenderer},
     },
-    reexports::drm::control::{
-        self, AtomicCommitFlags, Device as _, FbCmd2Flags, ResourceHandle, atomic::AtomicModeReq,
-    },
+    reexports::drm::control::{self, Device as _, FbCmd2Flags, ResourceHandle},
     utils::{Rectangle, Transform},
 };
 use std::{cell::Cell, collections::BTreeMap, rc::Rc};
@@ -81,18 +80,22 @@ impl Properties {
             values: map,
         })
     }
-    fn set(&self, request: &mut AtomicModeReq, name: &str, value: u64) -> Result<(), TestFailure> {
+    fn set(&self, request: &mut Request, name: &str, value: u64) -> Result<(), TestFailure> {
         let (property, _) = self
             .values
             .get(name)
             .ok_or_else(|| fail(TestStage::Properties))?;
-        request.add_raw_property(self.object, *property, value);
-        Ok(())
+        request
+            .add(self.object.into(), (*property).into(), value)
+            .map_err(|_| fail(TestStage::Budget))
     }
-    fn optional(&self, request: &mut AtomicModeReq, name: &str, value: u64) {
+    fn optional(&self, request: &mut Request, name: &str, value: u64) -> Result<(), TestFailure> {
         if let Some((property, _)) = self.values.get(name) {
-            request.add_raw_property(self.object, *property, value);
+            request
+                .add(self.object.into(), (*property).into(), value)
+                .map_err(|_| fail(TestStage::Budget))?;
         }
+        Ok(())
     }
 }
 struct Target {
@@ -114,10 +117,6 @@ struct Adapter<'a> {
 }
 fn handle<H: ResourceHandle>(id: u32) -> Result<H, TestFailure> {
     control::from_u32(id).ok_or_else(|| fail(TestStage::StaleTopology))
-}
-/// Kept private, with no caller-supplied flags or live-commit entry point.
-fn flags() -> AtomicCommitFlags {
-    AtomicCommitFlags::TEST_ONLY | AtomicCommitFlags::ALLOW_MODESET
 }
 impl Backend for Adapter<'_> {
     type Target = Target;
@@ -329,7 +328,7 @@ impl Backend for Adapter<'_> {
             .collect();
         let crtcs: Vec<_> = resources.crtcs().iter().map(|id| u32::from(*id)).collect();
         let reconciled = reconcile(&assignments, &connector_routes, &plane_routes, &crtcs)?;
-        let mut request = AtomicModeReq::new();
+        let mut request = Request::new();
         for (connector, crtc) in &reconciled.connectors {
             connector_properties[connector].set(
                 &mut request,
@@ -373,16 +372,16 @@ impl Backend for Adapter<'_> {
             ] {
                 target.plane.set(&mut request, name, value)?;
             }
-            target.plane.optional(&mut request, "rotation", 1);
-            target.plane.optional(&mut request, "alpha", 65535);
+            target.plane.optional(&mut request, "rotation", 1)?;
+            target.plane.optional(&mut request, "alpha", 65535)?;
         }
         for plane in &reconciled.cleared_planes {
             let properties = Properties::read(self.drm, handle::<control::plane::Handle>(*plane)?)?;
             properties.set(&mut request, "FB_ID", 0)?;
             properties.set(&mut request, "CRTC_ID", 0)?;
         }
-        self.drm
-            .atomic_commit(flags(), request)
+        request
+            .test_only(std::os::fd::AsFd::as_fd(self.drm))
             .map_err(|e| io(TestStage::AtomicTest, e))
     }
 }
@@ -404,20 +403,4 @@ pub(super) fn test(
         failures: Rc::new(Cell::new(0)),
     };
     target::run(plan, &mut adapter)
-}
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn kernel_request_flags_always_test_only_without_events_or_nonblock() {
-        assert_eq!(
-            flags(),
-            AtomicCommitFlags::TEST_ONLY | AtomicCommitFlags::ALLOW_MODESET
-        );
-        assert!(!flags().intersects(
-            AtomicCommitFlags::NONBLOCK
-                | AtomicCommitFlags::PAGE_FLIP_EVENT
-                | AtomicCommitFlags::PAGE_FLIP_ASYNC
-        ));
-    }
 }

@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "c": {
+    "atomic_size": 56,
+    "atomic_cookie_offset": 48,
+    "event_size": 32,
+    "event_cookie_offset": 8,
+    "event_crtc_offset": 28,
+    "atomic_ioctl": 3224921276,
+    "test_flags": 1280
+  },
+  "rust": {
+    "atomic_cookie_offset": 48,
+    "atomic_ioctl": 3224921276,
+    "atomic_size": 56,
+    "event_cookie_offset": 8,
+    "event_crtc_offset": 28,
+    "event_size": 32,
+    "test_flags": 1280
+  },
+  "source_sha256": "a569714446ce90e7c99052abfdff472679472646103513c9e97014aa187eb34f",
+  "harness_sha256": "a121628def0287fee5a8f5591f4b49a0a11b9ec346a6c2b01b675c596b71bca4",
+  "scope": "Local host C/Rust ABI comparison only; no DRM device opened or ioctl issued"
+}

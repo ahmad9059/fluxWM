@@ -2,14 +2,16 @@
 //! Explicit Linux seat/device initialization. This module does not create DRM
 //! surfaces or advertise a native desktop capability. Smithay may restore prior
 //! DRM state during teardown; the explicit session probe requires a separate VT.
+mod atomic;
 mod discovery;
+mod events;
 mod target_test;
 use crate::{Lifecycle, Snapshot, Ticket};
 use serde::Serialize;
 use smithay::{
     backend::{
         allocator::gbm::GbmDevice,
-        drm::{DrmDevice, DrmDeviceFd, DrmEvent, DrmEventMetadata, DrmNode, NodeType},
+        drm::{DrmDevice, DrmDeviceFd, DrmNode, NodeType},
         egl::{EGLContext, EGLDisplay},
         input::InputEvent,
         libinput::{LibinputInputBackend, LibinputSessionInterface},
@@ -22,7 +24,7 @@ use smithay::{
     },
     reexports::{
         calloop::{Dispatcher, LoopHandle, RegistrationToken},
-        drm::control::Device as _,
+        drm::{Device as _, DriverCapability, control::Device as _},
         input::Libinput,
         rustix::fs::OFlags,
     },
@@ -95,6 +97,7 @@ pub struct GpuInfo {
     pub crtcs: usize,
     pub import_formats: usize,
     pub render_formats: usize,
+    pub event_transport_healthy: bool,
     pub output_plan: Option<crate::output::Plan>,
     pub output_failure: Option<Failure>,
 }
@@ -103,11 +106,12 @@ pub enum NativeEvent {
     SessionActive(bool),
     GpuReady(GpuInfo),
     GpuRemoved(u64),
-    VBlank {
+    PageFlip {
         device: u64,
         generation: u64,
-        crtc: u32,
-        metadata: Option<DrmEventMetadata>,
+        session_epoch: u64,
+        event: crate::drm_events::Flip,
+        monotonic: bool,
     },
     Input(InputEvent<LibinputInputBackend>),
     Failure {
@@ -413,10 +417,9 @@ impl<D: 'static> Driver<D> {
     /// not create a surface or submit a frame. No resources escape this call.
     pub fn test_output_targets(&mut self, device: u64) -> crate::target::TestReport {
         let mut kernel = self.kernel.borrow_mut();
-        let current = kernel
-            .gpus
-            .get(&device)
-            .is_some_and(|gpu| kernel.model.is_ready(gpu.ticket));
+        let current = kernel.gpus.get(&device).is_some_and(|gpu| {
+            kernel.model.is_ready(gpu.ticket) && gpu.info.event_transport_healthy
+        });
         let plan = if current {
             kernel
                 .gpus
@@ -766,9 +769,27 @@ impl<D: 'static> Kernel<D> {
         }
         let fd = DrmDeviceFd::new(DeviceFd::from(seat_device.duplicate()?));
         // false preserves current connector state; this foundation creates no surfaces.
-        let (drm, notifier) =
+        let (drm, smithay_notifier) =
             DrmDevice::new(fd.clone(), false).map_err(|_| Failure::at(Stage::DrmInitialize))?;
         let drm = PauseOnDrop::new(drm, DrmDevice::pause);
+        // drm-rs/Smithay discard page-flip user_data. This private reader is the
+        // only consumer of this open-file-description's event stream.
+        drop(smithay_notifier);
+        if drm
+            .get_driver_capability(DriverCapability::CRTCInVBlankEvent)
+            .ok()
+            != Some(1)
+        {
+            return Err(Failure::at(Stage::DrmEvent));
+        }
+        let monotonic = drm
+            .get_driver_capability(DriverCapability::MonotonicTimestamp)
+            .ok()
+            == Some(1);
+        let notifier = events::Source::new(seat_device.duplicate()?).map_err(|e| Failure {
+            stage: Stage::DrmEvent,
+            errno: e.raw_os_error(),
+        })?;
         let gbm = GbmDevice::new(fd).map_err(|_| Failure::at(Stage::GbmInitialize))?;
         let display = unsafe { EGLDisplay::new(gbm.clone()) }
             .map_err(|_| Failure::at(Stage::EglInitialize))?;
@@ -798,6 +819,7 @@ impl<D: 'static> Kernel<D> {
             connectors: resources.connectors().len(),
             crtcs: resources.crtcs().len(),
             import_formats: renderer.dmabuf_formats().iter().count(),
+            event_transport_healthy: true,
             output_plan: outputs.plan,
             output_failure: outputs.failure,
             render_formats: renderer
@@ -811,7 +833,7 @@ impl<D: 'static> Kernel<D> {
         let token = handle
             .insert_source(
                 notifier,
-                pin_lease(seat_device.clone(), move |event, metadata, data| {
+                pin_lease(seat_device.clone(), move |event, _, data| {
                     let Some(kernel) = weak.upgrade() else { return };
                     let notify = {
                         let k = kernel.borrow();
@@ -821,13 +843,28 @@ impl<D: 'static> Kernel<D> {
                         k.notify.clone()
                     };
                     let event = match event {
-                        DrmEvent::VBlank(crtc) => NativeEvent::VBlank {
+                        Ok(event) => NativeEvent::PageFlip {
                             device: ticket.device,
                             generation: ticket.generation,
-                            crtc: crtc.into(),
-                            metadata: *metadata,
+                            session_epoch: ticket.session_epoch,
+                            event,
+                            monotonic,
                         },
-                        DrmEvent::Error(_) => Self::failure(Some(ticket.device), Stage::DrmEvent),
+                        Err(error) => {
+                            if let Some(gpu) = kernel.borrow_mut().gpus.get_mut(&ticket.device) {
+                                gpu.info.event_transport_healthy = false;
+                            }
+                            NativeEvent::Failure {
+                                device: Some(ticket.device),
+                                error: Failure {
+                                    stage: Stage::DrmEvent,
+                                    errno: match error {
+                                        events::Failure::Read(errno) => errno,
+                                        _ => None,
+                                    },
+                                },
+                            }
+                        }
                     };
                     notify(event, data);
                 }),
@@ -1110,6 +1147,7 @@ mod tests {
             crtcs: 1,
             import_formats: 1,
             render_formats: 257,
+            event_transport_healthy: true,
             output_plan: None,
             output_failure: Some(failure),
         };
@@ -1270,6 +1308,7 @@ mod tests {
                     crtcs: 0,
                     import_formats: 0,
                     render_formats: 0,
+                    event_transport_healthy: true,
                     output_plan: Some(crate::output::Plan::default()),
                     output_failure: None,
                 },

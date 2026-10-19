@@ -16,7 +16,8 @@ struct State {
     gpu_preparations: u64,
     gpu_removals: u64,
     session_transitions: u64,
-    vblanks: u64,
+    page_flips: u64,
+    zero_cookie_flips: u64,
     failures: Vec<Failure>,
     failure_events: u64,
 }
@@ -109,7 +110,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             NativeEvent::SessionActive(_) => {
                 state.session_transitions = state.session_transitions.saturating_add(1)
             }
-            NativeEvent::VBlank { .. } => state.vblanks = state.vblanks.saturating_add(1),
+            NativeEvent::PageFlip { event, .. } => {
+                state.page_flips = state.page_flips.saturating_add(1);
+                if event.cookie == 0 {
+                    state.zero_cookie_flips = state.zero_cookie_flips.saturating_add(1);
+                }
+            }
             NativeEvent::Failure { error, .. } => {
                 state.failure_events = state.failure_events.saturating_add(1);
                 if state.failures.len() < 32 {
@@ -162,7 +168,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!(
         "{}",
         serde_json::to_string_pretty(
-            &json!({"scope":"manual native initialization only; no frame or desktop qualification","native_compositor":false,"initialization_healthy":initialization_healthy,"event_loop_budget_ms":15000,"universal_shutdown_deadline":false,"before_stop":before,"after_stop":after,"prepared_gpus":gpus,"output_tests_requested":test_outputs,"output_tests":output_tests,"output_tests_healthy":output_tests_healthy,"output_tests_scope":"initial ready-GPU snapshot only; final GPU tickets must still match; no automatic retest, frame or display qualification","input_events":state.input_events,"gpu_preparations":state.gpu_preparations,"gpu_removals":state.gpu_removals,"session_transitions":state.session_transitions,"vblanks":state.vblanks,"failures":state.failures,"failure_events":state.failure_events,"failures_truncated":state.failure_events>32,"close_failures":close_failures})
+            &json!({"scope":"manual native initialization only; no frame or desktop qualification","native_compositor":false,"initialization_healthy":initialization_healthy,"event_loop_budget_ms":15000,"universal_shutdown_deadline":false,"before_stop":before,"after_stop":after,"prepared_gpus":gpus,"output_tests_requested":test_outputs,"output_tests":output_tests,"output_tests_healthy":output_tests_healthy,"output_tests_scope":"initial ready-GPU snapshot only; final GPU tickets must still match; no automatic retest, frame or display qualification","input_events":state.input_events,"gpu_preparations":state.gpu_preparations,"gpu_removals":state.gpu_removals,"session_transitions":state.session_transitions,"page_flips":state.page_flips,"zero_cookie_flips":state.zero_cookie_flips,"failures":state.failures,"failure_events":state.failure_events,"failures_truncated":state.failure_events>32,"close_failures":close_failures})
         )?
     );
     // Keep the dispatcher (and blocked termination signals) through cleanup.
@@ -233,6 +239,7 @@ mod tests {
             crtcs: 1,
             import_formats: 1,
             render_formats: 1,
+            event_transport_healthy: true,
             output_plan: None,
             output_failure: None,
         };

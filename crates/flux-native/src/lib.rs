@@ -1,5 +1,7 @@
 //! Native seat/device lifecycle foundation. Readiness here means a prepared GPU
 //! context, not an output, successful modeset, frame or desktop qualification.
+pub mod drm_events;
+pub mod frames;
 mod lifecycle;
 pub mod output;
 pub mod target;

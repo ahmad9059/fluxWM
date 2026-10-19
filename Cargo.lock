@@ -420,6 +420,7 @@ name = "flux-native"
 version = "0.1.0-dev"
 dependencies = [
  "calloop",
+ "drm-sys",
  "libc",
  "serde",
  "serde_json",

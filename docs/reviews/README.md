@@ -73,3 +73,7 @@ The [native output follow-up](native-outputs-followup-2026-10-18/disposition.md)
 [Claude’s target-diagnostic report](native-target-test-2026-10-18/claude-report.md) reads `abadd20` with 23 Read/Grep calls. The [disposition](native-target-test-2026-10-18/disposition.md) records two medium cache-lifetime/topology-oracle defects and subsequent source corrections. Actual GBM/GLES/DRM testing remains unexecuted.
 
 The [target-diagnostic follow-up](native-target-test-followup-2026-10-18/disposition.md) independently reads `c2e86ed`, accepts the two medium corrections and finds no reachable high/medium issue in that scope. Inherited properties, incomplete side-effect reporting, conservative route failures, actual request-builder/renderer behavior and hardware remain open.
+
+## Native frame transport review
+
+[Claude’s frame-transport report](native-frame-transport-2026-10-19/claude-report.md) inspects 24 frozen input files in 17 Read/Grep calls and finds no high/medium issue within scope. The [disposition](native-frame-transport-2026-10-19/disposition.md) retains partial ABI coverage, stale-ticket diagnostics and combined multi-output submission limits. No live native presentation or hardware qualification is claimed.

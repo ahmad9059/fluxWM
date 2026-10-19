@@ -7,9 +7,10 @@ license.workspace = true
 
 [features]
 default = []
-system = ["dep:smithay", "dep:calloop"]
+system = ["dep:smithay", "dep:calloop", "dep:drm-sys"]
 
 [dependencies]
+drm-sys = { version = "=0.8.1", optional = true }
 serde.workspace = true
 serde_json.workspace = true
 libc.workspace = true
