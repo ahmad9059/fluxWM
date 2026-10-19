@@ -77,3 +77,7 @@ The [target-diagnostic follow-up](native-target-test-followup-2026-10-18/disposi
 ## Native frame transport review
 
 [Claude’s frame-transport report](native-frame-transport-2026-10-19/claude-report.md) inspects 24 frozen input files in 17 Read/Grep calls and finds no high/medium issue within scope. The [disposition](native-frame-transport-2026-10-19/disposition.md) retains partial ABI coverage, stale-ticket diagnostics and combined multi-output submission limits. No live native presentation or hardware qualification is claimed.
+
+## Native live submission review
+
+[Initial Claude review](native-live-submit-2026-10-19/disposition.md) found initial-event and process-exit framebuffer hazards. The [focused follow-up](native-live-submit-followup-2026-10-19/disposition.md) accepts blocking initial modesets, CLOSEFB preflight and GETFB2 error cleanup, finding no new high/medium defect within scope. Late cleanup/crash recovery, physical hardware and main compositor integration remain unqualified.

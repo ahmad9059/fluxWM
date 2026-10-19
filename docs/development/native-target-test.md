@@ -11,7 +11,7 @@ target/debug/fluxwm-native-probe --session --test-outputs
 
 ## Platform and ownership contract
 
-The adapter rejects legacy devices before allocating. Pinned `DrmSurface::test_state(..., true)` on a legacy device can modeset, and dropping an active atomic surface can clear its CRTC. This implementation creates no DrmSurface, DrmCompositor or DrmOutputManager. It uses the pinned `drm-rs` atomic request API with private, fixed `TEST_ONLY | ALLOW_MODESET` flags. No caller selects flags, event mode, nonblocking mode or live commit. A future presentation implementation must add explicit commit/rollback ownership and must not remove TEST_ONLY from this diagnostic.
+The adapter rejects legacy devices before allocating. Pinned `DrmSurface::test_state(..., true)` on a legacy device can modeset, and dropping an active atomic surface can clear its CRTC. This implementation creates no DrmSurface, DrmCompositor or DrmOutputManager. It uses a bounded raw atomic request serializer with private, fixed `TEST_ONLY | ALLOW_MODESET` flags. Diagnostic callers cannot select event/nonblocking/live flags. The separate [live submission adapter](native-live-submit.md) adds commit/rollback ownership while retaining TEST_ONLY in this diagnostic.
 
 For each assignment, the adapter rechecks connection state, the exact retained kernel mode, encoder compatibility against fresh resource ordering, primary-plane compatibility and the exact format pair. It reads connector/CRTC/plane properties and rejects non-desktop connectors. Matching handles do not make this an atomic metadata snapshot. Hardware changes can still invalidate the request; the kernel's test result is authoritative only for that request at that moment.
 

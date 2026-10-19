@@ -98,7 +98,7 @@ impl Properties {
         Ok(())
     }
 }
-struct Target {
+pub(super) struct Target {
     // Framebuffer and blob retire before DMA-BUF/GBM storage on every path.
     framebuffer: Lease,
     mode_blob: Lease,
@@ -114,6 +114,7 @@ struct Adapter<'a> {
     allocator: GbmAllocator<DrmDeviceFd>,
     modes: &'a BTreeMap<u32, Vec<control::Mode>>,
     failures: Rc<Cell<u64>>,
+    color: [f32; 4],
 }
 fn handle<H: ResourceHandle>(id: u32) -> Result<H, TestFailure> {
     control::from_u32(id).ok_or_else(|| fail(TestStage::StaleTopology))
@@ -239,7 +240,7 @@ impl Backend for Adapter<'_> {
                 .render(&mut target, size, Transform::Normal)
                 .map_err(|_| fail(TestStage::Render))?;
             frame
-                .clear([0., 0., 0., 1.].into(), &[Rectangle::from_size(size)])
+                .clear(self.color.into(), &[Rectangle::from_size(size)])
                 .map_err(|_| fail(TestStage::Render))?;
             frame.finish().map_err(|_| fail(TestStage::Render))?
         };
@@ -275,6 +276,13 @@ impl Backend for Adapter<'_> {
         })
     }
     fn test_only(&mut self, targets: &[Target]) -> Result<(), TestFailure> {
+        self.request(targets)?
+            .test_only(std::os::fd::AsFd::as_fd(self.drm))
+            .map_err(|e| io(TestStage::AtomicTest, e))
+    }
+}
+impl Adapter<'_> {
+    fn request(&self, targets: &[Target]) -> Result<Request, TestFailure> {
         if !self.drm.is_active() || !self.drm.is_atomic() {
             return Err(fail(TestStage::Inactive));
         }
@@ -380,9 +388,7 @@ impl Backend for Adapter<'_> {
             properties.set(&mut request, "FB_ID", 0)?;
             properties.set(&mut request, "CRTC_ID", 0)?;
         }
-        request
-            .test_only(std::os::fd::AsFd::as_fd(self.drm))
-            .map_err(|e| io(TestStage::AtomicTest, e))
+        Ok(request)
     }
 }
 pub(super) fn test(
@@ -401,6 +407,51 @@ pub(super) fn test(
         ),
         modes,
         failures: Rc::new(Cell::new(0)),
+        color: [0., 0., 0., 1.],
     };
     target::run(plan, &mut adapter)
+}
+
+impl Target {
+    pub(super) fn flip_request(&self) -> Result<Request, TestFailure> {
+        let Object::Framebuffer(fb) = self.framebuffer.object else {
+            unreachable!()
+        };
+        let mut request = Request::new();
+        self.plane
+            .set(&mut request, "FB_ID", u64::from(u32::from(fb)))?;
+        Ok(request)
+    }
+}
+/// Same allocator, topology validation and synchronized render path as the
+/// diagnostic, but returned resources remain owned by the live frame queue.
+pub(super) fn prepare_live(
+    drm: &DrmDevice,
+    gbm: &GbmDevice<DrmDeviceFd>,
+    renderer: &mut GlesRenderer,
+    modes: &BTreeMap<u32, Vec<control::Mode>>,
+    assignment: &Assignment,
+    format: Format,
+    color: [f32; 4],
+) -> Result<(Target, Request), TestFailure> {
+    let mut adapter = Adapter {
+        drm,
+        renderer,
+        allocator: GbmAllocator::new(
+            gbm.clone(),
+            GbmBufferFlags::RENDERING | GbmBufferFlags::SCANOUT,
+        ),
+        modes,
+        failures: Rc::new(Cell::new(0)),
+        color,
+    };
+    let result = (|| {
+        let target = adapter.prepare(assignment, format)?;
+        let request = adapter.request(std::slice::from_ref(&target))?;
+        Ok((target, request))
+    })();
+    if result.is_err() {
+        adapter.finish_cleanup()?;
+    }
+    result
 }

@@ -377,6 +377,20 @@ impl<R, S> FrameQueue<R, S> {
         {
             return Completion::Ignored;
         }
+        self.promote_pending()
+    }
+    /// Complete an accepted submission after a blocking platform commit.
+    /// # Safety
+    /// The exact pending submission must have completed synchronously in the
+    /// platform backend. Every previous consumer of the old front must be idle.
+    /// An ioctl error, timeout or an accepted nonblocking commit is insufficient.
+    pub unsafe fn complete_blocking(&mut self, cookie: Cookie) -> Completion {
+        if self.pending.as_ref().is_none_or(|p| p.cookie != cookie) {
+            return Completion::Ignored;
+        }
+        self.promote_pending()
+    }
+    fn promote_pending(&mut self) -> Completion {
         let pending = self.pending.take().expect("matching pending owned");
         if let Some(mut old) = self.front.take() {
             old.frame.consuming = false;
@@ -488,6 +502,34 @@ mod tests {
         // SAFETY: these tests have only fake consumers; they are now idle.
         let proof = unsafe { IdleProof::after_backend_quiescence(queue.key) };
         queue.release_after_disable(proof).unwrap();
+    }
+    #[test]
+    fn blocking_completion_publishes_once_and_checks_exact_pending_cookie() {
+        let pool = FramePool::default();
+        let dropped = Rc::default();
+        let mut queue = pool.output(key()).unwrap();
+        let first = submit(&mut queue, prepared(&pool, 1, &dropped));
+        assert!(queue.visible_scene().is_none());
+        // SAFETY: fake consumers in this fixture have completed synchronously.
+        assert_eq!(
+            unsafe { queue.complete_blocking(first) },
+            Completion::Presented
+        );
+        assert_eq!(queue.visible_scene().unwrap(), "scene-1");
+        let second = submit(&mut queue, prepared(&pool, 2, &dropped));
+        // SAFETY: same fake consumers; an old identity must still be ignored.
+        assert_eq!(
+            unsafe { queue.complete_blocking(first) },
+            Completion::Ignored
+        );
+        assert!(dropped.borrow().is_empty());
+        // SAFETY: the second fake submission completed synchronously.
+        assert_eq!(
+            unsafe { queue.complete_blocking(second) },
+            Completion::Presented
+        );
+        assert_eq!(*dropped.borrow(), [1]);
+        disable(&mut queue);
     }
     #[test]
     fn front_and_scene_advance_only_on_exact_cookie_then_retire_on_replacement() {

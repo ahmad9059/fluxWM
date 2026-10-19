@@ -27,6 +27,9 @@ fn help_and_invalid_options_do_not_start_session_mode() {
         vec!["--session=bad"],
         vec!["--test-outputs"],
         vec!["--check", "--test-outputs"],
+        vec!["--preview-output", "1:2"],
+        vec!["--check", "--preview-output", "1:2"],
+        vec!["--session", "--preview-output", "1:0"],
     ] {
         let bad = Command::new(binary)
             .args(args)

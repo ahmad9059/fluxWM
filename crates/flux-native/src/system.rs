@@ -5,8 +5,11 @@
 mod atomic;
 mod discovery;
 mod events;
+mod restore;
+mod scanout;
 mod target_test;
 use crate::{Lifecycle, Snapshot, Ticket};
+pub use scanout::{PreviewFailure, PreviewInfo, PreviewStage};
 use serde::Serialize;
 use smithay::{
     backend::{
@@ -15,7 +18,7 @@ use smithay::{
         egl::{EGLContext, EGLDisplay},
         input::InputEvent,
         libinput::{LibinputInputBackend, LibinputSessionInterface},
-        renderer::{ImportDma, gles::GlesRenderer},
+        renderer::{ImportDma, Renderer, gles::GlesRenderer},
         session::{
             AsErrno, Event as SessionEvent, Session,
             libseat::{LibSeatSession, LibSeatSessionNotifier},
@@ -284,6 +287,8 @@ impl Drop for Registration {
 struct OwnedGpu<S: Session + Clone, R, G, D> {
     // This guard unregisters the notifier BEFORE graphics resources or broker FD.
     _source: Registration,
+    output: Option<scanout::Output>,
+    output_epoch: u64,
     _renderer: R,
     _gbm: G,
     drm: D,
@@ -305,6 +310,8 @@ struct Kernel<D: 'static> {
     notify: Notify<D>,
     close_failures: Rc<Cell<u64>>,
     seat_owner: Option<Rc<dyn Any>>,
+    frame_pool: crate::frames::FramePool,
+    output_cleanup_failures: u64,
 }
 /// Sources capture weak ownership. The independent session dispatcher outlives
 /// input/GPU cleanup, including errors during partial initialization.
@@ -337,6 +344,8 @@ impl<D: 'static> Driver<D> {
             notify: notify.clone(),
             close_failures: Rc::new(Cell::new(0)),
             seat_owner: None,
+            frame_pool: crate::frames::FramePool::default(),
+            output_cleanup_failures: 0,
         }));
         let weak = Rc::downgrade(&kernel);
         let owner = Rc::new(Dispatcher::new(notifier, move |event, _, data: &mut D| {
@@ -453,6 +462,140 @@ impl<D: 'static> Driver<D> {
             &plan,
         )
     }
+    /// Explicit physical modeset for one connector. No CLI invokes this yet.
+    /// Exactly one preview per GPU is admitted; combined output transactions
+    /// need coordinated rollback. Inspect last_failure even on an Ok result:
+    /// uncertain submission stays owned until explicit restoration.
+    pub fn begin_output_preview(
+        &mut self,
+        device: u64,
+        connector: u32,
+        color: [u8; 4],
+    ) -> Result<PreviewInfo, PreviewFailure> {
+        let mut kernel = self.kernel.borrow_mut();
+        let pool = kernel.frame_pool.clone();
+        let ready = kernel
+            .gpus
+            .get(&device)
+            .is_some_and(|g| kernel.model.is_ready(g.ticket) && g.info.event_transport_healthy);
+        if !ready {
+            return Err(PreviewFailure::at(PreviewStage::Inactive));
+        }
+        let gpu = kernel.gpus.get_mut(&device).expect("ready GPU owned");
+        if gpu.output.is_some() {
+            return Err(PreviewFailure::at(PreviewStage::Busy));
+        }
+        let assignment = gpu
+            .info
+            .output_plan
+            .as_ref()
+            .and_then(|p| p.assignments.iter().find(|a| a.connector == connector))
+            .cloned()
+            .ok_or_else(|| PreviewFailure::at(PreviewStage::Prepare))?;
+        gpu.output_epoch = gpu
+            .output_epoch
+            .checked_add(1)
+            .ok_or_else(|| PreviewFailure::at(PreviewStage::Admission))?;
+        let mut context = scanout::Context {
+            drm: &gpu.drm,
+            gbm: &gpu._gbm,
+            renderer: &mut gpu._renderer,
+            modes: &gpu._output_modes,
+            seat: gpu._seat_device.clone(),
+            pool: &pool,
+            ticket: gpu.ticket,
+        };
+        let mut failure = PreviewFailure::at(PreviewStage::Prepare);
+        for format in crate::target::formats(&assignment)
+            .into_iter()
+            .take(crate::target::MAX_TEST_ATTEMPTS)
+        {
+            match scanout::Output::begin(
+                &mut context,
+                assignment.clone(),
+                format,
+                gpu.output_epoch,
+                color,
+            ) {
+                Ok(output) => {
+                    let info = output.info();
+                    gpu.output = Some(output);
+                    return Ok(info);
+                }
+                Err(error) => {
+                    if !matches!(error.stage, PreviewStage::Prepare | PreviewStage::Test) {
+                        return Err(error);
+                    }
+                    failure = error;
+                }
+            }
+        }
+        Err(failure)
+    }
+    pub fn submit_preview_frame(
+        &mut self,
+        device: u64,
+        color: [u8; 4],
+    ) -> Result<(), PreviewFailure> {
+        let mut kernel = self.kernel.borrow_mut();
+        let pool = kernel.frame_pool.clone();
+        let ready = kernel
+            .gpus
+            .get(&device)
+            .is_some_and(|g| kernel.model.is_ready(g.ticket) && g.info.event_transport_healthy);
+        if !ready {
+            return Err(PreviewFailure::at(PreviewStage::Inactive));
+        }
+        let gpu = kernel.gpus.get_mut(&device).expect("ready GPU owned");
+        let output = gpu
+            .output
+            .as_mut()
+            .ok_or_else(|| PreviewFailure::at(PreviewStage::Inactive))?;
+        let mut context = scanout::Context {
+            drm: &gpu.drm,
+            gbm: &gpu._gbm,
+            renderer: &mut gpu._renderer,
+            modes: &gpu._output_modes,
+            seat: gpu._seat_device.clone(),
+            pool: &pool,
+            ticket: gpu.ticket,
+        };
+        output.submit(&mut context, color)
+    }
+    pub fn output_preview_info(&self, device: u64) -> Option<PreviewInfo> {
+        self.kernel
+            .borrow()
+            .gpus
+            .get(&device)?
+            .output
+            .as_ref()
+            .map(scanout::Output::info)
+    }
+    pub fn finish_output_preview(&mut self, device: u64) -> Result<PreviewInfo, PreviewFailure> {
+        let mut kernel = self.kernel.borrow_mut();
+        let ready = kernel
+            .gpus
+            .get(&device)
+            .is_some_and(|g| kernel.model.is_ready(g.ticket));
+        if !ready {
+            return Err(PreviewFailure::at(PreviewStage::Inactive));
+        }
+        let gpu = kernel.gpus.get_mut(&device).expect("ready GPU owned");
+        let output = gpu
+            .output
+            .as_mut()
+            .ok_or_else(|| PreviewFailure::at(PreviewStage::Inactive))?;
+        output.restore()?;
+        gpu._renderer
+            .cleanup_texture_cache()
+            .map_err(|_| PreviewFailure::at(PreviewStage::Cleanup))?;
+        let info = output.info();
+        gpu.output.take();
+        Ok(info)
+    }
+    pub fn output_cleanup_failures(&self) -> u64 {
+        self.kernel.borrow().output_cleanup_failures
+    }
     pub fn snapshot(&self) -> Snapshot {
         self.kernel.borrow().model.snapshot()
     }
@@ -555,11 +698,24 @@ impl<D: 'static> Kernel<D> {
     }
     fn retire(&mut self, id: u64) {
         // Hotplug must not restore a connector snapshot captured before change.
+        let stopping = self.model.closed() && self.session.is_active();
+        let mut cleanup_errors = 0u64;
         retire_paused(self.gpus.remove(&id), |gpu| {
+            if let Some(output) = &mut gpu.output {
+                output.invalidate();
+                if !stopping || output.restore().is_err() {
+                    cleanup_errors += 1;
+                }
+            }
+            gpu.output.take();
+            if gpu._renderer.cleanup_texture_cache().is_err() {
+                cleanup_errors += 1;
+            }
             if gpu.drm.is_active() {
                 gpu.drm.pause();
             }
         });
+        self.output_cleanup_failures = self.output_cleanup_failures.saturating_add(cleanup_errors);
     }
     fn stop(&mut self) {
         self.model.stop();
@@ -582,6 +738,13 @@ impl<D: 'static> Kernel<D> {
                     input.suspend();
                 }
                 for gpu in self.gpus.values_mut() {
+                    if let Some(mut output) = gpu.output.take() {
+                        output.invalidate();
+                        // Seat revocation is not a quiescence proof. Do not
+                        // restore an old topology after its session epoch ends.
+                        self.output_cleanup_failures =
+                            self.output_cleanup_failures.saturating_add(1);
+                    }
                     gpu.drm.pause();
                 }
                 vec![NativeEvent::SessionActive(false)]
@@ -843,16 +1006,29 @@ impl<D: 'static> Kernel<D> {
                         k.notify.clone()
                     };
                     let event = match event {
-                        Ok(event) => NativeEvent::PageFlip {
-                            device: ticket.device,
-                            generation: ticket.generation,
-                            session_epoch: ticket.session_epoch,
-                            event,
-                            monotonic,
-                        },
+                        Ok(event) => {
+                            if let Some(output) = kernel
+                                .borrow_mut()
+                                .gpus
+                                .get_mut(&ticket.device)
+                                .and_then(|gpu| gpu.output.as_mut())
+                            {
+                                output.complete(ticket, event);
+                            }
+                            NativeEvent::PageFlip {
+                                device: ticket.device,
+                                generation: ticket.generation,
+                                session_epoch: ticket.session_epoch,
+                                event,
+                                monotonic,
+                            }
+                        }
                         Err(error) => {
                             if let Some(gpu) = kernel.borrow_mut().gpus.get_mut(&ticket.device) {
                                 gpu.info.event_transport_healthy = false;
+                                if let Some(output) = &mut gpu.output {
+                                    output.invalidate();
+                                }
                             }
                             NativeEvent::Failure {
                                 device: Some(ticket.device),
@@ -872,6 +1048,8 @@ impl<D: 'static> Kernel<D> {
             .map_err(|_| Failure::at(Stage::SourceRegistration))?;
         Ok(OwnedGpu {
             _source: Registration::new(self.handle.clone(), token),
+            output: None,
+            output_epoch: 0,
             _renderer: renderer,
             _gbm: gbm,
             drm: drm.disarm(),
@@ -1294,6 +1472,8 @@ mod tests {
         let mut state = TestState {
             gpu: Some(OwnedGpu {
                 _source: registration,
+                output: None,
+                output_epoch: 0,
                 _renderer: trace("renderer"),
                 _gbm: trace("gbm"),
                 drm: trace("drm"),

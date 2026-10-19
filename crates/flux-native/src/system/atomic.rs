@@ -1,6 +1,6 @@
 //! Bounded cookie-preserving serialization of the pinned Linux atomic UAPI.
-//! The only kernel entry point here remains TEST_ONLY with cookie zero. Live
-//! submission requires separate preview/rollback and frame-ownership integration.
+//! Live submission requires an owned frame cookie; rollback is synchronous.
+//! Public driver integration owns buffers through completion and restoration.
 use smithay::reexports::{drm::control::AtomicCommitFlags, rustix::ioctl::opcode};
 use std::{
     collections::BTreeMap,
@@ -51,6 +51,13 @@ impl Request {
         self.properties += 1;
         Ok(())
     }
+    pub fn entries(&self) -> impl Iterator<Item = (u32, u32, u64)> + '_ {
+        self.objects.iter().flat_map(|(object, props)| {
+            props
+                .iter()
+                .map(move |(property, value)| (*object, *property, *value))
+        })
+    }
     fn with_raw<T>(
         &self,
         flags: u32,
@@ -81,18 +88,33 @@ impl Request {
             reserved: 0,
             user_data: cookie,
         };
-        // All pointees stay owned and unchanged through the synchronous call;
-        // NONBLOCK is not exposed by the current kernel entry point.
+        // Kernel request-array copying is synchronous even for NONBLOCK;
+        // all pointees stay owned and unchanged through this call.
         call(&mut raw, &arrays)
     }
     pub fn test_only(&self, fd: BorrowedFd<'_>) -> io::Result<()> {
         if self.objects.is_empty() {
             return Err(io::Error::from_raw_os_error(libc::EINVAL));
         }
-        self.with_raw(test_flags(), 0, |raw, _| {
-            // SAFETY: this request uses the pinned repr(C) UAPI structure and
-            // locally owned, bounded live arrays. DRM copies the request before
-            // returning. No pointer is retained or exposed to another caller.
+        self.issue(fd, test_flags(), 0)
+    }
+    /// A single-output commit. The queue retains resources before this call.
+    pub fn submit(&self, fd: BorrowedFd<'_>, cookie: crate::frames::Cookie) -> io::Result<()> {
+        self.issue(fd, flip_flags(), cookie.get())
+    }
+    /// Blocking replacement of every property changed by the owned output.
+    /// Successful return is the platform quiescence boundary for those planes.
+    pub fn apply_blocking(&self, fd: BorrowedFd<'_>) -> io::Result<()> {
+        self.issue(fd, blocking_flags(), 0)
+    }
+    fn issue(&self, fd: BorrowedFd<'_>, flags: u32, cookie: u64) -> io::Result<()> {
+        if self.objects.is_empty() {
+            return Err(io::Error::from_raw_os_error(libc::EINVAL));
+        }
+        self.with_raw(flags, cookie, |raw, _| {
+            // SAFETY: pinned repr(C) UAPI and locally owned, bounded live arrays.
+            // DRM copies request arrays synchronously even with NONBLOCK; only
+            // the scalar cookie survives into completion, never these pointers.
             let result = unsafe {
                 libc::ioctl(
                     fd.as_raw_fd(),
@@ -111,12 +133,36 @@ impl Request {
 pub(super) fn atomic_opcode() -> smithay::reexports::rustix::ioctl::Opcode {
     opcode::read_write::<drm_sys::drm_mode_atomic>(b'd', 0xbc)
 }
+fn flip_flags() -> u32 {
+    (AtomicCommitFlags::NONBLOCK | AtomicCommitFlags::PAGE_FLIP_EVENT).bits()
+}
+fn blocking_flags() -> u32 {
+    AtomicCommitFlags::ALLOW_MODESET.bits()
+}
 fn test_flags() -> u32 {
     (AtomicCommitFlags::TEST_ONLY | AtomicCommitFlags::ALLOW_MODESET).bits()
 }
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn live_commits_require_events_but_initial_modeset_and_rollback_do_not() {
+        let flip = AtomicCommitFlags::from_bits(flip_flags()).unwrap();
+        assert!(flip.contains(AtomicCommitFlags::NONBLOCK | AtomicCommitFlags::PAGE_FLIP_EVENT));
+        assert!(!flip.intersects(
+            AtomicCommitFlags::ALLOW_MODESET
+                | AtomicCommitFlags::TEST_ONLY
+                | AtomicCommitFlags::PAGE_FLIP_ASYNC
+        ));
+        let blocking = AtomicCommitFlags::from_bits(blocking_flags()).unwrap();
+        assert!(blocking.contains(AtomicCommitFlags::ALLOW_MODESET));
+        // Off-to-off CRTCs reject requested events even after TEST_ONLY passes.
+        assert!(!blocking.intersects(
+            AtomicCommitFlags::NONBLOCK
+                | AtomicCommitFlags::PAGE_FLIP_EVENT
+                | AtomicCommitFlags::TEST_ONLY
+        ));
+    }
     #[test]
     fn full_cookie_pointer_arrays_order_and_replacement_are_exact() {
         let mut request = Request::new();

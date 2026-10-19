@@ -74,7 +74,7 @@ pub trait Backend {
         Ok(())
     }
 }
-fn formats(assignment: &Assignment) -> Vec<Format> {
+pub(crate) fn formats(assignment: &Assignment) -> Vec<Format> {
     // Known four-byte RGB render targets. Policy does not alias ARGB/XRGB or
     // implicit/Linear modifiers. Other formats need a separate render contract.
     const XRGB: u32 = u32::from_le_bytes(*b"XR24");

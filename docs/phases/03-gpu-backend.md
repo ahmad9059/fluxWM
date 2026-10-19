@@ -54,4 +54,4 @@ The [native session/device foundation](../development/native-foundation.md) now 
 
 [RGB target/atomic testing](../development/native-target-test.md) adds a manual allocation, GLES render/synchronization and atomic TEST_ONLY component. Its platform path remains unexecuted; live commits, presentation, mode-preview rollback and the phase gate remain open.
 
-[Frame transport and ownership](../development/native-frame-transport.md) adds full-cookie DRM event delivery and a bounded consumer ledger. Joining them to live KMS submission and compositor redraw is the next implementation step; no physical presentation gate is closed.
+[Frame transport and ownership](../development/native-frame-transport.md) adds full-cookie DRM event delivery and a bounded consumer ledger. The [live adapter and reverting preview](../development/native-live-submit.md) now join them to primary-plane RGB submissions and owned rollback. Compositor redraw integration, session recovery and physical qualification remain open.

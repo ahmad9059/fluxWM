@@ -65,3 +65,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 - [Native RGB target allocation and atomic test](native-target-test.md): manual opt-in, fixed TEST_ONLY flags, owned resource retirement and unqualified hardware paths.
 
 - [Native frame transport and ownership](native-frame-transport.md): full-cookie event delivery, bounded owned frame ledger and remaining live submission integration.
+
+- [Native live submission and reverting preview](native-live-submit.md): owned primary-plane commits, copied rollback resources and explicit hardware qualification gaps.
