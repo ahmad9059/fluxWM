@@ -5,22 +5,30 @@
 //! enters a MoveSurfaceGrab state.
 
 use crate::Fluxwm;
+use flux_core::{Rect, WindowId};
 use smithay::{
-    desktop::Window,
     input::pointer::{
         AxisFrame, ButtonEvent, GestureHoldBeginEvent, GestureHoldEndEvent, GesturePinchBeginEvent,
         GesturePinchEndEvent, GesturePinchUpdateEvent, GestureSwipeBeginEvent,
         GestureSwipeEndEvent, GestureSwipeUpdateEvent, GrabStartData as PointerGrabStartData,
         MotionEvent, PointerGrab, PointerInnerHandle, RelativeMotionEvent,
     },
-    reexports::wayland_server::protocol::wl_surface::WlSurface,
+    reexports::wayland_server::{Resource, protocol::wl_surface::WlSurface},
     utils::{Logical, Point},
 };
 
 pub struct MoveSurfaceGrab {
     pub start_data: PointerGrabStartData<Fluxwm>,
-    pub window: Window,
-    pub initial_window_location: Point<i32, Logical>,
+    pub window_id: WindowId,
+    pub surface: WlSurface,
+    pub initial_rect: Rect,
+    pub initial_zoom: f64,
+}
+
+impl MoveSurfaceGrab {
+    pub fn window_id(&self) -> WindowId {
+        self.window_id
+    }
 }
 
 impl PointerGrab<Fluxwm> for MoveSurfaceGrab {
@@ -34,10 +42,16 @@ impl PointerGrab<Fluxwm> for MoveSurfaceGrab {
         // While the grab is active, no client has pointer focus
         handle.motion(data, None, event);
 
+        if !floating_role_live(data, self.window_id, &self.surface) {
+            handle.unset_grab(self, data, event.serial, event.time, true);
+            return;
+        }
+        let zoom = self.initial_zoom;
         let delta = event.location - self.start_data.location;
-        let new_location = self.initial_window_location.to_f64() + delta;
-        data.space
-            .map_element(self.window.clone(), new_location.to_i32_round(), true);
+        let mut rect = self.initial_rect;
+        rect.x += delta.x / zoom;
+        rect.y += delta.y / zoom;
+        let _ = data.set_window_floating_rect(self.window_id, rect);
     }
 
     fn relative_motion(
@@ -58,11 +72,7 @@ impl PointerGrab<Fluxwm> for MoveSurfaceGrab {
     ) {
         handle.button(data, event);
 
-        // The button is a button code as defined in the
-        // Linux kernel's linux/input-event-codes.h header file, e.g. BTN_LEFT.
-        const BTN_LEFT: u32 = 0x110;
-
-        if !handle.current_pressed().contains(&BTN_LEFT) {
+        if !handle.current_pressed().contains(&self.start_data.button) {
             // No more buttons are pressed, release the grab.
             handle.unset_grab(self, data, event.serial, event.time, true);
         }
@@ -158,4 +168,20 @@ impl PointerGrab<Fluxwm> for MoveSurfaceGrab {
     }
 
     fn unset(&mut self, _data: &mut Fluxwm) {}
+}
+
+/// Both arena identity and protocol role must still designate the grabbed mapping.
+pub(crate) fn floating_role_live(data: &Fluxwm, id: WindowId, surface: &WlSurface) -> bool {
+    surface.is_alive()
+        && data.windows.get(id).is_some_and(|item| {
+            item.mapped
+                && item
+                    .window
+                    .toplevel()
+                    .is_some_and(|top| top.wl_surface() == surface)
+        })
+        && data.layout.is_floating(id)
+        && !data.layout.is_fullscreen(id)
+        && !data.layout.is_maximized(id)
+        && !data.layout.is_minimized(id)
 }

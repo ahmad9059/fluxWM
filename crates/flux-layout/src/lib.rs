@@ -19,6 +19,8 @@ pub enum LayoutError {
     UnknownWindow,
     #[error("window is minimized")]
     MinimizedWindow,
+    #[error("operation requires a tiled window")]
+    FloatingWindow,
     #[error("window size constraints conflict")]
     InvalidConstraints,
     #[error("layout identity capacity exhausted")]
@@ -220,6 +222,8 @@ pub struct Layout {
     minimized: BTreeSet<WindowId>,
     maximized: BTreeSet<WindowId>,
     fullscreen: BTreeSet<WindowId>,
+    floating: BTreeMap<WindowId, Rect>,
+    born_floating: BTreeSet<WindowId>,
     canvas: BTreeMap<GroupId, CanvasGroup>,
     next_group: u64,
     canvas_initialized: bool,
@@ -244,6 +248,8 @@ impl Layout {
             minimized: BTreeSet::new(),
             maximized: BTreeSet::new(),
             fullscreen: BTreeSet::new(),
+            floating: BTreeMap::new(),
+            born_floating: BTreeSet::new(),
             canvas: BTreeMap::new(),
             next_group: 0,
             canvas_initialized: false,
@@ -405,6 +411,77 @@ impl Layout {
             candidate.insert_with_focus_inner(window, constraints, activate)
         })
     }
+    /// Admit a window directly into the floating layer. Its private restoration
+    /// column consumes no strip space or fullscreen page-bank extent until the
+    /// first explicit unfloat. No intermediate tiled focus or geometry is exposed.
+    pub fn insert_floating_with_focus(
+        &mut self,
+        window: WindowId,
+        constraints: SizeConstraints,
+        initial: Option<Rect>,
+        activate: bool,
+    ) -> Result<(), LayoutError> {
+        if self.members.contains_key(&window) {
+            return Err(LayoutError::DuplicateWindow);
+        }
+        if !constraints.valid() {
+            return Err(LayoutError::InvalidConstraints);
+        }
+        let mut candidate = self.clone();
+        let group = GroupId(candidate.next_group);
+        candidate.next_group = candidate
+            .next_group
+            .checked_add(1)
+            .ok_or(LayoutError::CapacityExceeded)?;
+        let index = candidate
+            .focus
+            .and_then(|w| candidate.column_index(w))
+            .map_or(candidate.columns.len(), |i| i + 1);
+        candidate.members.insert(window, constraints);
+        let camera = candidate.camera();
+        let size = constraints.size(Size {
+            width: candidate.viewport.width / camera.zoom * 0.6,
+            height: candidate.viewport.height / camera.zoom * 0.6,
+        });
+        let rect = initial.unwrap_or(Rect {
+            x: camera.position.x + (candidate.viewport.width / camera.zoom - size.width) / 2.0,
+            y: camera.position.y + (candidate.viewport.height / camera.zoom - size.height) / 2.0,
+            width: size.width,
+            height: size.height,
+        });
+        candidate.store_floating_rect(window, rect)?;
+        candidate.born_floating.insert(window);
+        candidate.columns.insert(
+            index,
+            Column {
+                group,
+                windows: vec![window],
+                width: candidate.default_width,
+                mode: ColumnMode::Stack,
+                active: window,
+                scroll_y: 0.0,
+            },
+        );
+        candidate.canvas.insert(
+            group,
+            CanvasGroup {
+                rect: candidate.floating[&window],
+                scroll_y: 0.0,
+            },
+        );
+        candidate.check_fullscreen_geometry()?;
+        if activate || candidate.focus.is_none() {
+            candidate.focus_window_inner(window)?;
+        }
+        *self = candidate;
+        Ok(())
+    }
+    fn dormant_column(&self, column: &Column) -> bool {
+        column
+            .windows
+            .iter()
+            .all(|w| self.born_floating.contains(w))
+    }
     fn insert_with_focus_inner(
         &mut self,
         window: WindowId,
@@ -508,13 +585,25 @@ impl Layout {
                 .windows
                 .iter()
                 .copied()
-                .find(|w| !self.minimized.contains(w))
+                .find(|w| {
+                    !self.minimized.contains(w)
+                        && !self.floating.contains_key(w)
+                        && !self.fullscreen.contains(w)
+                })
+                .or_else(|| {
+                    c.windows
+                        .iter()
+                        .copied()
+                        .find(|w| !self.minimized.contains(w))
+                })
                 .unwrap_or(c.windows[0]);
         }
         self.members.remove(&window);
         self.minimized.remove(&window);
         self.maximized.remove(&window);
         self.fullscreen.remove(&window);
+        self.floating.remove(&window);
+        self.born_floating.remove(&window);
         self.history.retain(|w| *w != window);
         if self.focus == Some(window) {
             self.focus = None;
@@ -569,7 +658,17 @@ impl Layout {
                 .windows
                 .iter()
                 .copied()
-                .find(|w| !self.minimized.contains(w))
+                .find(|w| {
+                    !self.minimized.contains(w)
+                        && !self.floating.contains_key(w)
+                        && !self.fullscreen.contains(w)
+                })
+                .or_else(|| {
+                    c.windows
+                        .iter()
+                        .copied()
+                        .find(|w| !self.minimized.contains(w))
+                })
                 .unwrap_or(window);
         }
         if self.focus == Some(window) {
@@ -698,6 +797,10 @@ impl Layout {
             candidate.fullscreen.insert(window);
         } else {
             candidate.fullscreen.remove(&window);
+            if candidate.focus == Some(window) && !candidate.is_floating(window) {
+                let index = candidate.column_index(window).unwrap();
+                candidate.columns[index].active = window;
+            }
         }
         candidate.check_fullscreen_geometry()?;
         candidate.reveal_focus();
@@ -707,11 +810,151 @@ impl Layout {
     pub fn is_fullscreen(&self, window: WindowId) -> bool {
         self.fullscreen.contains(&window)
     }
+    /// Enter the floating layer without changing saved tiling membership. An
+    /// explicit initial rectangle is used only on entry; repeated entry preserves
+    /// the stored rectangle. All coordinates and sizes are world logical units.
+    pub fn set_floating(
+        &mut self,
+        window: WindowId,
+        floating: bool,
+        initial: Option<Rect>,
+    ) -> Result<(), LayoutError> {
+        if !self.members.contains_key(&window) {
+            return Err(LayoutError::UnknownWindow);
+        }
+        if self.is_floating(window) == floating {
+            return Ok(());
+        }
+        let mut candidate = self.clone();
+        if floating {
+            let camera = self.camera();
+            let size = self.members[&window].size(Size {
+                width: self.viewport.width / camera.zoom * 0.6,
+                height: self.viewport.height / camera.zoom * 0.6,
+            });
+            let rect = initial.unwrap_or(Rect {
+                x: camera.position.x + (self.viewport.width / camera.zoom - size.width) / 2.0,
+                y: camera.position.y + (self.viewport.height / camera.zoom - size.height) / 2.0,
+                width: size.width,
+                height: size.height,
+            });
+            candidate.store_floating_rect(window, rect)?;
+        } else {
+            candidate.floating.remove(&window);
+            let materializing = candidate.born_floating.remove(&window);
+            if materializing {
+                candidate.seed_materialized_canvas_group(window)?;
+            }
+            candidate.check_strip_extent(
+                candidate.viewport.width,
+                candidate.gap,
+                None,
+                None,
+                0.0,
+            )?;
+            if candidate.focus == Some(window) && !candidate.is_fullscreen(window) {
+                let index = candidate.column_index(window).unwrap();
+                candidate.columns[index].active = window;
+            }
+            if materializing {
+                for mode in [LayoutMode::Strip, LayoutMode::Canvas] {
+                    candidate.fullscreen_projection(mode)?;
+                }
+            }
+        }
+        candidate.check_fullscreen_geometry()?;
+        candidate.reveal_focus();
+        *self = candidate;
+        Ok(())
+    }
+    fn seed_materialized_canvas_group(&mut self, window: WindowId) -> Result<(), LayoutError> {
+        let index = self
+            .column_index(window)
+            .ok_or(LayoutError::UnknownWindow)?;
+        let width = self
+            .default_width
+            .resolve(self.viewport.width)?
+            .max(self.members[&window].min.width);
+        // A born-floating window has never had a tiled canvas slot. Seed one
+        // beside the nearest saved ordinary column, preferring the preceding
+        // column on equal distance. Its birth and current floating rects are
+        // unrelated to this new tiled geometry.
+        let anchor = self
+            .columns
+            .iter()
+            .enumerate()
+            .filter(|(i, column)| *i != index && !self.dormant_column(column))
+            .min_by_key(|(i, _)| i.abs_diff(index))
+            .map(|(_, column)| self.canvas[&column.group].rect);
+        let rect = Rect {
+            x: anchor.map_or(0.0, |r| (r.x + r.width + self.gap).min(MAX_COORD - width)),
+            y: anchor.map_or(0.0, |r| r.y),
+            width,
+            height: self.viewport.height,
+        };
+        if !bounded_rect(rect) {
+            return Err(LayoutError::InvalidGeometry);
+        }
+        let group = self.columns[index].group;
+        self.columns[index].width = self.default_width;
+        self.columns[index].scroll_y = 0.0;
+        self.canvas.insert(
+            group,
+            CanvasGroup {
+                rect,
+                scroll_y: 0.0,
+            },
+        );
+        Ok(())
+    }
+    pub fn member_constraints(&self, window: WindowId) -> Option<SizeConstraints> {
+        self.members.get(&window).copied()
+    }
+    pub fn is_floating(&self, window: WindowId) -> bool {
+        self.floating.contains_key(&window)
+    }
+    pub fn floating_rect(&self, window: WindowId) -> Option<Rect> {
+        self.floating.get(&window).copied()
+    }
+    /// Resize or move the saved floating rectangle, including while an overlay
+    /// or minimization hides it. Constraints clamp size; invalid edges reject
+    /// the entire edit without modifying the previous state.
+    pub fn set_floating_rect(&mut self, window: WindowId, rect: Rect) -> Result<(), LayoutError> {
+        if !self.members.contains_key(&window) {
+            return Err(LayoutError::UnknownWindow);
+        }
+        if !self.is_floating(window) {
+            return Err(LayoutError::FloatingWindow);
+        }
+        self.edit_fullscreen(|candidate| {
+            candidate.store_floating_rect(window, rect)?;
+            if candidate.focus.is_some_and(|w| candidate.is_fullscreen(w)) {
+                candidate.reveal_focus();
+            }
+            Ok(())
+        })
+    }
+    fn store_floating_rect(&mut self, window: WindowId, mut rect: Rect) -> Result<(), LayoutError> {
+        if !valid_rect(rect) {
+            return Err(LayoutError::InvalidGeometry);
+        }
+        let size = self.members[&window].size(Size {
+            width: rect.width,
+            height: rect.height,
+        });
+        rect.width = size.width;
+        rect.height = size.height;
+        if !bounded_rect(rect) {
+            return Err(LayoutError::InvalidGeometry);
+        }
+        self.floating.insert(window, rect);
+        Ok(())
+    }
     fn edit_fullscreen<R>(
         &mut self,
         edit: impl FnOnce(&mut Self) -> Result<R, LayoutError>,
     ) -> Result<R, LayoutError> {
-        if self.fullscreen.is_empty() {
+        if self.fullscreen.is_empty() && self.floating.is_empty() {
             return edit(self);
         }
         let mut candidate = self.clone();
@@ -736,10 +979,14 @@ impl Layout {
             .collect();
         for window in incompatible {
             self.fullscreen.remove(&window);
+            if self.focus == Some(window) && !self.is_floating(window) {
+                let index = self.column_index(window).unwrap();
+                self.columns[index].active = window;
+            }
         }
     }
     fn check_fullscreen_geometry(&self) -> Result<(), LayoutError> {
-        if self.fullscreen.is_empty() {
+        if self.fullscreen.is_empty() && self.floating.is_empty() {
             return Ok(());
         }
         for mode in [LayoutMode::Strip, LayoutMode::Canvas] {
@@ -748,11 +995,11 @@ impl Layout {
         Ok(())
     }
     fn projected_placements(&self) -> Vec<Placement> {
-        if self.fullscreen.is_empty() {
+        if self.fullscreen.is_empty() && self.floating.is_empty() {
             self.base_placements()
         } else {
             self.fullscreen_projection(self.mode)
-                .expect("validated fullscreen page projection")
+                .expect("validated floating/fullscreen projection")
         }
     }
     fn fullscreen_projection(&self, mode: LayoutMode) -> Result<Vec<Placement>, LayoutError> {
@@ -762,9 +1009,11 @@ impl Layout {
         // the complete saved geometry also reserves minimized/hidden groups and
         // prevents a newly admitted ordinary group from occupying a live page.
         let mut canvas_page_x = self
-            .canvas
-            .values()
-            .map(|group| group.rect.x + group.rect.width)
+            .columns
+            .iter()
+            .filter(|c| !self.dormant_column(c))
+            .map(|c| self.canvas[&c.group].rect)
+            .map(|rect| rect.x + rect.width)
             .reduce(f64::max)
             .unwrap_or(0.0)
             + self.gap;
@@ -789,7 +1038,7 @@ impl Layout {
                 .windows
                 .iter()
                 .copied()
-                .filter(|w| !self.is_fullscreen(*w))
+                .filter(|w| !self.is_fullscreen(*w) && !self.is_floating(*w))
                 .collect();
             let active = ordinary
                 .iter()
@@ -836,7 +1085,11 @@ impl Layout {
                 y += size.height + self.gap;
             }
             let mut page_x = if mode == LayoutMode::Strip {
-                container.x + container.width + self.gap
+                if self.dormant_column(c) {
+                    container.x
+                } else {
+                    container.x + container.width + self.gap
+                }
             } else {
                 canvas_page_x
             };
@@ -857,9 +1110,26 @@ impl Layout {
                 });
                 page_x += size.width + self.gap;
             }
-            strip_x = page_x;
+            strip_x = if c.windows.iter().any(|w| self.is_fullscreen(*w)) {
+                page_x
+            } else if self.dormant_column(c) {
+                container.x
+            } else {
+                container.x + container.width + self.gap
+            };
             if mode == LayoutMode::Canvas {
                 canvas_page_x = page_x;
+            }
+        }
+        for (&window, &rect) in &self.floating {
+            if !self.is_fullscreen(window) {
+                result.push(Placement {
+                    window,
+                    rect,
+                    clip: rect,
+                    visible: !self.is_minimized(window),
+                    focused: self.focus == Some(window),
+                });
             }
         }
         if result.iter().any(|p| {
@@ -873,6 +1143,17 @@ impl Layout {
             return Err(LayoutError::InvalidGeometry);
         }
         Ok(result)
+    }
+    fn ordinary_active(&self, column: &Column) -> Option<WindowId> {
+        let selectable = |window: WindowId| {
+            !self.is_minimized(window) && !self.is_floating(window) && !self.is_fullscreen(window)
+        };
+        column
+            .windows
+            .iter()
+            .copied()
+            .find(|w| *w == column.active && selectable(*w))
+            .or_else(|| column.windows.iter().copied().find(|w| selectable(*w)))
     }
     fn replacement_focus(&self, column: usize) -> Option<WindowId> {
         self.history
@@ -898,7 +1179,15 @@ impl Layout {
         if self.is_minimized(window) {
             return Err(LayoutError::MinimizedWindow);
         }
-        self.columns[index].active = window;
+        if (!self.is_floating(window) && !self.is_fullscreen(window))
+            || self.is_minimized(self.columns[index].active)
+        {
+            self.columns[index].active =
+                self.ordinary_active(&self.columns[index]).unwrap_or(window);
+            if !self.is_floating(window) && !self.is_fullscreen(window) {
+                self.columns[index].active = window;
+            }
+        }
         self.focus = Some(window);
         self.history.retain(|w| *w != window);
         self.history.push(window);
@@ -932,6 +1221,9 @@ impl Layout {
         )?;
         let value = self.members.get_mut(&window).unwrap();
         *value = constraints;
+        if let Some(rect) = self.floating_rect(window) {
+            self.store_floating_rect(window, rect)?;
+        }
         self.clear_incompatible_maximized();
         self.clear_incompatible_fullscreen();
         let group = self.columns[self.column_index(window).unwrap()].group;
@@ -967,6 +1259,9 @@ impl Layout {
         if mode == LayoutMode::Canvas && !self.canvas_initialized {
             let mut x = 0.0;
             for c in &self.columns {
+                if self.dormant_column(c) {
+                    continue;
+                }
                 let width = c
                     .windows
                     .iter()
@@ -1016,18 +1311,22 @@ impl Layout {
     pub fn canvas_groups(&self) -> Vec<GroupGeometry> {
         self.columns
             .iter()
-            .filter(|c| !self.is_minimized(c.active))
-            .map(|c| GroupGeometry {
-                id: c.group,
-                rect: self.canvas[&c.group].rect,
-                active: c.active,
-                mode: c.mode,
+            .filter_map(|c| {
+                self.ordinary_active(c).map(|active| GroupGeometry {
+                    id: c.group,
+                    rect: self.canvas[&c.group].rect,
+                    active,
+                    mode: c.mode,
+                })
             })
             .collect()
     }
     /// Resize/move the containing canvas group. Client minima are retained by its
     /// local layout; a member maximum constrains the member rather than its group.
     pub fn set_canvas_rect(&mut self, window: WindowId, rect: Rect) -> Result<(), LayoutError> {
+        if self.is_floating(window) {
+            return Err(LayoutError::FloatingWindow);
+        }
         let group = self.group_for(window).ok_or(LayoutError::UnknownWindow)?;
         self.set_canvas_group_rect(group, rect)
     }
@@ -1061,12 +1360,15 @@ impl Layout {
         let Some(window) = self.focus else {
             return Ok(None);
         };
+        if self.is_floating(window) || self.is_fullscreen(window) {
+            return Ok(Some(window));
+        }
         let c = &self.columns[self.column_index(window).unwrap()];
         let windows: Vec<_> = c
             .windows
             .iter()
             .copied()
-            .filter(|w| !self.is_minimized(*w))
+            .filter(|w| !self.is_minimized(*w) && !self.is_floating(*w) && !self.is_fullscreen(*w))
             .collect();
         let index = windows.iter().position(|w| *w == window).unwrap();
         let next = windows[if forward {
@@ -1099,6 +1401,9 @@ impl Layout {
         window: WindowId,
         policy: WidthPolicy,
     ) -> Result<(), LayoutError> {
+        if self.is_floating(window) {
+            return Err(LayoutError::FloatingWindow);
+        }
         policy.resolve(self.viewport.width)?;
         let index = self
             .column_index(window)
@@ -1126,6 +1431,9 @@ impl Layout {
         window: WindowId,
         mode: ColumnMode,
     ) -> Result<(), LayoutError> {
+        if self.is_floating(window) {
+            return Err(LayoutError::FloatingWindow);
+        }
         let index = self
             .column_index(window)
             .ok_or(LayoutError::UnknownWindow)?;
@@ -1138,15 +1446,18 @@ impl Layout {
         self.edit_fullscreen(|candidate| candidate.join_column_inner(window, target))
     }
     fn join_column_inner(&mut self, window: WindowId, target: WindowId) -> Result<(), LayoutError> {
+        if self.is_minimized(window) || self.is_minimized(target) {
+            return Err(LayoutError::MinimizedWindow);
+        }
+        if self.is_floating(window) || self.is_floating(target) {
+            return Err(LayoutError::FloatingWindow);
+        }
         let source = self
             .column_index(window)
             .ok_or(LayoutError::UnknownWindow)?;
         let dest = self
             .column_index(target)
             .ok_or(LayoutError::UnknownWindow)?;
-        if self.is_minimized(window) || self.is_minimized(target) {
-            return Err(LayoutError::MinimizedWindow);
-        }
         if source == dest {
             return Ok(());
         }
@@ -1180,6 +1491,17 @@ impl Layout {
         let Some(window) = self.focus else {
             return Ok(());
         };
+        if let Some(rect) = self.floating_rect(window) {
+            self.set_floating_rect(
+                window,
+                Rect {
+                    width: rect.width + delta,
+                    ..rect
+                },
+            )?;
+            self.reveal_focus();
+            return Ok(());
+        }
         if self.mode == LayoutMode::Canvas {
             let r = self.canvas[&self.group_for(window).unwrap()].rect;
             self.set_canvas_rect(
@@ -1204,6 +1526,17 @@ impl Layout {
         let Some(window) = self.focus else {
             return Ok(());
         };
+        if let Some(mut rect) = self.floating_rect(window) {
+            match direction {
+                Direction::Left => rect.x -= 32.0,
+                Direction::Right => rect.x += 32.0,
+                Direction::Up => rect.y -= 32.0,
+                Direction::Down => rect.y += 32.0,
+            }
+            self.store_floating_rect(window, rect)?;
+            self.reveal_focus();
+            return Ok(());
+        }
         if self.mode == LayoutMode::Canvas {
             let mut r = self.canvas[&self.group_for(window).unwrap()].rect;
             match direction {
@@ -1273,7 +1606,7 @@ impl Layout {
                 .windows
                 .iter()
                 .copied()
-                .filter(|w| !self.is_fullscreen(*w))
+                .filter(|w| !self.is_fullscreen(*w) && !self.is_floating(*w))
                 .collect();
             let active = ordinary
                 .iter()
@@ -1299,7 +1632,9 @@ impl Layout {
         let Some(window) = self.focus else {
             return Ok(None);
         };
-        let next = if self.mode == LayoutMode::Strip {
+        let next = if self.mode == LayoutMode::Strip
+            && (!self.is_floating(window) || self.is_fullscreen(window))
+        {
             // Each saved column retains one ordinary virtual column, followed
             // by one single-member virtual column for each fullscreen page.
             // Left/right use column order, never geometric angle scoring.
@@ -1324,56 +1659,77 @@ impl Layout {
                     .find(|w| !self.is_minimized(*w)),
             }
         } else {
-            let placements = self.projected_placements();
-            let source = placements.iter().find(|p| p.window == window).unwrap().rect;
-            let origin = center(source);
-            placements
-                .iter()
-                .filter(|p| p.window != window && p.visible)
-                .filter_map(|candidate| {
-                    let r = candidate.rect;
-                    let p = center(r);
-                    let (forward, perpendicular, edge) = match direction {
-                        Direction::Left => (
-                            origin.x - p.x,
-                            (origin.y - p.y).abs(),
-                            source.x - (r.x + r.width),
-                        ),
-                        Direction::Right => (
-                            p.x - origin.x,
-                            (origin.y - p.y).abs(),
-                            r.x - (source.x + source.width),
-                        ),
-                        Direction::Up => (
-                            origin.y - p.y,
-                            (origin.x - p.x).abs(),
-                            source.y - (r.y + r.height),
-                        ),
-                        Direction::Down => (
-                            p.y - origin.y,
-                            (origin.x - p.x).abs(),
-                            r.y - (source.y + source.height),
-                        ),
-                    };
-                    (forward > 0.0).then_some((
-                        candidate.window,
-                        perpendicular / forward,
-                        edge.max(0.0),
-                        perpendicular,
-                    ))
-                })
-                .min_by(|a, b| {
-                    a.1.total_cmp(&b.1)
-                        .then(a.2.total_cmp(&b.2))
-                        .then(a.3.total_cmp(&b.3))
-                        .then(a.0.cmp(&b.0))
-                })
-                .map(|v| v.0)
+            self.spatial_neighbor(window, direction, false)
         };
+        let next =
+            next.or_else(|| self.spatial_neighbor(window, direction, !self.is_floating(window)));
         if let Some(next) = next {
             self.focus_window(next)?;
         }
         Ok(next)
+    }
+    fn spatial_neighbor(
+        &self,
+        window: WindowId,
+        direction: Direction,
+        floats_only: bool,
+    ) -> Option<WindowId> {
+        let placements = self.projected_placements();
+        let source = placements.iter().find(|p| p.window == window).unwrap().rect;
+        let origin = center(source);
+        placements
+            .iter()
+            .filter(|p| {
+                p.window != window && p.visible && (!floats_only || self.is_floating(p.window))
+            })
+            .filter_map(|candidate| {
+                let r = candidate.rect;
+                let p = center(r);
+                let (forward, perpendicular, edge) = match direction {
+                    Direction::Left => (
+                        origin.x - p.x,
+                        (origin.y - p.y).abs(),
+                        source.x - (r.x + r.width),
+                    ),
+                    Direction::Right => (
+                        p.x - origin.x,
+                        (origin.y - p.y).abs(),
+                        r.x - (source.x + source.width),
+                    ),
+                    Direction::Up => (
+                        origin.y - p.y,
+                        (origin.x - p.x).abs(),
+                        source.y - (r.y + r.height),
+                    ),
+                    Direction::Down => (
+                        p.y - origin.y,
+                        (origin.x - p.x).abs(),
+                        r.y - (source.y + source.height),
+                    ),
+                };
+                let forward = if forward == 0.0
+                    && perpendicular == 0.0
+                    && self.is_floating(candidate.window)
+                    && direction == Direction::Up
+                {
+                    1.0
+                } else {
+                    forward
+                };
+                (forward > 0.0).then_some((
+                    candidate.window,
+                    perpendicular / forward,
+                    edge.max(0.0),
+                    perpendicular,
+                ))
+            })
+            .min_by(|a, b| {
+                a.1.total_cmp(&b.1)
+                    .then(a.2.total_cmp(&b.2))
+                    .then(a.3.total_cmp(&b.3))
+                    .then(a.0.cmp(&b.0))
+            })
+            .map(|v| v.0)
     }
     /// All members, including hidden tabs and offscreen content, in deterministic scene order.
     pub fn placements(&self) -> Vec<Placement> {
@@ -1472,9 +1828,19 @@ impl Layout {
         }
         let world = self.camera().view_to_world(point);
         let placements = self.placements();
+        let hits = |p: &&Placement| p.visible && p.rect.contains(world) && p.clip.contains(world);
         placements
             .iter()
-            .find(|p| p.focused && p.visible && p.rect.contains(world) && p.clip.contains(world))
+            .filter(hits)
+            .find(|p| self.is_floating(p.window) && p.focused)
+            .or_else(|| {
+                placements
+                    .iter()
+                    .rev()
+                    .filter(hits)
+                    .find(|p| self.is_floating(p.window))
+            })
+            .or_else(|| placements.iter().filter(hits).find(|p| p.focused))
             .or_else(|| {
                 placements
                     .iter()
@@ -1485,7 +1851,8 @@ impl Layout {
     }
     /// Shift every canvas location and its camera atomically. Returned delta must also be
     /// applied by the caller to any active gesture, animation, or external spatial index.
-    /// Strip coordinates are prefix sums and are intentionally unaffected.
+    /// Tiled strip coordinates are prefix sums and are intentionally unaffected.
+    /// Floating coordinates are shared by both modes and shift with the canvas.
     pub fn rebase_canvas(&mut self, delta: Point) -> Result<(), LayoutError> {
         self.edit_fullscreen(|candidate| candidate.rebase_canvas_inner(delta))
     }
@@ -1508,6 +1875,13 @@ impl Layout {
                     },
                 )
                 .is_none())
+            || self.floating.values().any(|r| {
+                !bounded_rect(Rect {
+                    x: r.x - delta.x,
+                    y: r.y - delta.y,
+                    ..*r
+                })
+            })
             || self.canvas.values().any(|g| {
                 !valid_point(shift(Point {
                     x: g.rect.x,
@@ -1520,6 +1894,10 @@ impl Layout {
         for group in self.canvas.values_mut() {
             group.rect.x -= delta.x;
             group.rect.y -= delta.y;
+        }
+        for rect in self.floating.values_mut() {
+            rect.x -= delta.x;
+            rect.y -= delta.y;
         }
         self.canvas_camera.position = camera;
         Ok(())
@@ -1562,6 +1940,16 @@ impl Layout {
                 || (self.is_minimized(c.active) && c.windows.iter().any(|w| !self.is_minimized(*w)))
         }) {
             return Err("invalid column");
+        }
+        if self.born_floating.iter().any(|w| !self.is_floating(*w)) {
+            return Err("stale born-floating member");
+        }
+        if self
+            .floating
+            .iter()
+            .any(|(w, r)| !unique.contains(w) || !bounded_rect(*r))
+        {
+            return Err("invalid floating member");
         }
         if self.fullscreen.iter().any(|w| !unique.contains(w)) {
             return Err("stale fullscreen member");
@@ -1628,6 +2016,9 @@ impl Layout {
     ) -> Result<(), LayoutError> {
         let mut extent = extra;
         for (i, c) in self.columns.iter().enumerate() {
+            if self.dormant_column(c) {
+                continue;
+            }
             let width = policy
                 .filter(|(index, _)| *index == i)
                 .map_or(c.width, |(_, p)| p)
@@ -1705,7 +2096,9 @@ impl Layout {
                 });
                 y += size.height + self.gap;
             }
-            x += width + self.gap;
+            if !self.dormant_column(c) {
+                x += width + self.gap;
+            }
         }
         result
     }
@@ -1717,7 +2110,9 @@ impl Layout {
     fn reveal_focus(&mut self) {
         // Mutators operate on a private candidate. Do not reveal a candidate
         // whose new page extent will fail its enclosing atomic preflight.
-        if !self.fullscreen.is_empty() && self.fullscreen_projection(self.mode).is_err() {
+        if (!self.fullscreen.is_empty() || !self.floating.is_empty())
+            && self.fullscreen_projection(self.mode).is_err()
+        {
             return;
         }
         let Some(window) = self.focus else {
@@ -1725,7 +2120,10 @@ impl Layout {
         };
         if self.mode == LayoutMode::Strip {
             let i = self.column_index(window).unwrap();
-            if self.columns[i].mode == ColumnMode::Stack && !self.is_fullscreen(window) {
+            if self.columns[i].mode == ColumnMode::Stack
+                && !self.is_fullscreen(window)
+                && !self.is_floating(window)
+            {
                 let rect = self
                     .projected_placements()
                     .into_iter()
@@ -1739,7 +2137,10 @@ impl Layout {
         if self.mode == LayoutMode::Canvas {
             let i = self.column_index(window).unwrap();
             let group = self.columns[i].group;
-            if self.columns[i].mode == ColumnMode::Stack && !self.is_fullscreen(window) {
+            if self.columns[i].mode == ColumnMode::Stack
+                && !self.is_fullscreen(window)
+                && !self.is_floating(window)
+            {
                 let rect = self
                     .projected_placements()
                     .into_iter()
@@ -1766,7 +2167,7 @@ impl Layout {
             rect.x,
             rect.width,
         );
-        let y = if self.mode == LayoutMode::Strip {
+        let y = if self.mode == LayoutMode::Strip && !self.is_floating(window) {
             0.0
         } else {
             reveal_axis(
@@ -1792,6 +2193,9 @@ impl Layout {
 }
 // Overlay dimensions are world units: a valid output can become smaller than
 // MIN_SIZE under zoom. Base client geometry retains its existing minimum size.
+fn bounded_rect(rect: Rect) -> bool {
+    valid_rect(rect) && rect.x + rect.width <= MAX_COORD && rect.y + rect.height <= MAX_COORD
+}
 fn maximized_rect(viewport: Size, camera: Camera) -> Option<Rect> {
     let width = viewport.width / camera.zoom;
     let height = viewport.height / camera.zoom;
@@ -2857,11 +3261,16 @@ mod tests {
                 .iter()
                 .nth((seed as usize / 13) % live.len().max(1))
                 .copied();
-            match seed % 18 {
+            match seed % 22 {
                 0 if live.len() < 100 => {
                     let w = id(next);
                     next += 1;
-                    l.insert(w, SizeConstraints::default()).unwrap();
+                    if seed & 256 == 0 {
+                        l.insert(w, SizeConstraints::default()).unwrap();
+                    } else {
+                        l.insert_floating_with_focus(w, SizeConstraints::default(), None, true)
+                            .unwrap();
+                    }
                     live.insert(w);
                 }
                 1 => {
@@ -2903,7 +3312,7 @@ mod tests {
                                 ColumnMode::Tabs
                             },
                         )
-                        .unwrap();
+                        .unwrap_or_else(|e| assert_eq!(e, LayoutError::FloatingWindow));
                     }
                 }
                 7 => {
@@ -2911,7 +3320,8 @@ mod tests {
                         if l.is_minimized(w) {
                             assert_eq!(l.join_column(w, f), Err(LayoutError::MinimizedWindow));
                         } else {
-                            l.join_column(w, f).unwrap();
+                            l.join_column(w, f)
+                                .unwrap_or_else(|e| assert_eq!(e, LayoutError::FloatingWindow));
                         }
                     }
                 }
@@ -2942,7 +3352,7 @@ mod tests {
                 }
                 11 | 12 => {
                     if let Some(w) = target {
-                        l.set_minimized(w, seed % 18 == 11).unwrap();
+                        l.set_minimized(w, seed % 22 == 11).unwrap();
                     }
                 }
                 13 => {
@@ -2950,7 +3360,7 @@ mod tests {
                 }
                 14 | 15 => {
                     if let Some(w) = target {
-                        let result = l.set_maximized(w, seed % 18 == 14);
+                        let result = l.set_maximized(w, seed % 22 == 14);
                         assert!(matches!(
                             result,
                             Ok(()) | Err(LayoutError::InvalidConstraints)
@@ -2960,9 +3370,43 @@ mod tests {
                 16 | 17 => {
                     if let Some(w) = target {
                         assert!(matches!(
-                            l.set_fullscreen(w, seed % 18 == 16),
+                            l.set_fullscreen(w, seed % 22 == 16),
                             Ok(()) | Err(LayoutError::InvalidConstraints)
                         ));
+                    }
+                }
+                18 | 19 => {
+                    if let Some(w) = target {
+                        l.set_floating(w, seed % 22 == 18, None).unwrap();
+                    }
+                }
+                20 => {
+                    if let Some(w) = target {
+                        l.set_constraints(
+                            w,
+                            SizeConstraints {
+                                min: Size {
+                                    width: 20.0 + (seed % 120) as f64,
+                                    height: 20.0,
+                                },
+                                max: None,
+                            },
+                        )
+                        .unwrap();
+                    }
+                }
+                21 => {
+                    if let Some(w) = target
+                        && let Some(r) = l.floating_rect(w)
+                    {
+                        l.set_floating_rect(
+                            w,
+                            Rect {
+                                x: (seed % 3000) as f64 - 1500.0,
+                                ..r
+                            },
+                        )
+                        .unwrap();
                     }
                 }
                 _ => {}
@@ -2996,8 +3440,8 @@ mod tests {
                     .filter(|p| l.is_fullscreen(p.window))
                     .collect();
                 for (i, page) in pages.iter().enumerate() {
-                    for group in l.canvas.values() {
-                        assert!(disjoint(page.clip, group.rect));
+                    for column in l.columns.iter().filter(|c| !l.dormant_column(c)) {
+                        assert!(disjoint(page.clip, l.canvas[&column.group].rect));
                     }
                     for other in &pages[i + 1..] {
                         assert!(disjoint(page.clip, other.clip));
@@ -3660,5 +4104,401 @@ mod tests {
         l.pan(73.0, 0.0).unwrap();
         assert_eq!(l.camera().rect_to_view(focused_page(&l)).x, -73.0);
         assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn floating_stack_tabs_restore_and_keep_one_live_placement() {
+        for mode in [ColumnMode::Stack, ColumnMode::Tabs] {
+            let mut l = layout();
+            l.insert(id(0), SizeConstraints::default()).unwrap();
+            l.insert(id(1), SizeConstraints::default()).unwrap();
+            l.join_column(id(1), id(0)).unwrap();
+            l.set_column_mode(id(0), mode).unwrap();
+            let saved = l.placements();
+            l.set_floating(
+                id(1),
+                true,
+                Some(Rect {
+                    x: -120.0,
+                    y: 50.0,
+                    width: 210.0,
+                    height: 180.0,
+                }),
+            )
+            .unwrap();
+            let p = l.placements();
+            assert_eq!(p.len(), 2);
+            assert_eq!(p.iter().filter(|p| p.window == id(1)).count(), 1);
+            let ordinary = p.iter().find(|p| p.window == id(0)).unwrap();
+            assert!(ordinary.visible);
+            assert_eq!(ordinary.rect.height, l.viewport.height);
+            assert_eq!(
+                l.set_column_width(id(1), WidthPolicy::Fixed(300.0)),
+                Err(LayoutError::FloatingWindow)
+            );
+            // A focused tile cannot cover the separate floating layer.
+            l.focus_window(id(0)).unwrap();
+            l.set_floating_rect(
+                id(1),
+                Rect {
+                    x: 20.0,
+                    y: 20.0,
+                    width: 100.0,
+                    height: 100.0,
+                },
+            )
+            .unwrap();
+            let point = l.camera().world_to_view(Point { x: 30.0, y: 30.0 });
+            assert_eq!(l.hit_test(point), Some(id(1)));
+            l.focus_window(id(1)).unwrap();
+            l.set_floating(id(1), false, None).unwrap();
+            assert_eq!(l.placements(), saved);
+            assert_eq!(l.validate(), Ok(()));
+        }
+    }
+    #[test]
+    fn floating_geometry_survives_overlays_minimize_modes_and_rebases() {
+        let mut l = layout();
+        l.insert(id(0), SizeConstraints::default()).unwrap();
+        let rect = Rect {
+            x: 120.0,
+            y: 80.0,
+            width: 300.0,
+            height: 220.0,
+        };
+        l.set_floating(id(0), true, Some(rect)).unwrap();
+        l.set_maximized(id(0), true).unwrap();
+        assert_ne!(l.placements()[0].rect, rect);
+        l.set_fullscreen(id(0), true).unwrap();
+        l.set_minimized(id(0), true).unwrap();
+        assert!(!l.placements()[0].visible);
+        assert_eq!(l.floating_rect(id(0)), Some(rect));
+        l.set_minimized(id(0), false).unwrap();
+        l.set_fullscreen(id(0), false).unwrap();
+        assert!(l.is_maximized(id(0)));
+        l.set_maximized(id(0), false).unwrap();
+        assert_eq!(l.placements()[0].rect, rect);
+        l.set_mode(LayoutMode::Canvas);
+        assert_eq!(l.floating_rect(id(0)), Some(rect));
+        let before = l.camera().rect_to_view(l.placements()[0].rect);
+        l.rebase_canvas(Point { x: 75.0, y: 30.0 }).unwrap();
+        assert_eq!(l.camera().rect_to_view(l.placements()[0].rect), before);
+        let rebased = l.floating_rect(id(0)).unwrap();
+        l.set_mode(LayoutMode::Strip);
+        assert_eq!(l.floating_rect(id(0)), Some(rebased));
+        l.remove(id(0)).unwrap();
+        assert_eq!(l.floating_rect(id(0)), None);
+    }
+    #[test]
+    fn floating_constraints_edges_and_motion_are_atomic_and_independent() {
+        let mut l = layout();
+        l.insert(id(0), SizeConstraints::default()).unwrap();
+        l.insert(id(1), SizeConstraints::default()).unwrap();
+        let sibling = l.placements()[0].rect;
+        l.set_floating(
+            id(1),
+            true,
+            Some(Rect {
+                x: 40.0,
+                y: 60.0,
+                width: 300.0,
+                height: 200.0,
+            }),
+        )
+        .unwrap();
+        l.move_focused(Direction::Down).unwrap();
+        l.resize_focused(50.0).unwrap();
+        assert_eq!(
+            l.floating_rect(id(1)).unwrap(),
+            Rect {
+                x: 40.0,
+                y: 92.0,
+                width: 350.0,
+                height: 200.0
+            }
+        );
+        assert_eq!(
+            l.placements()
+                .iter()
+                .find(|p| p.window == id(0))
+                .unwrap()
+                .rect,
+            sibling
+        );
+        l.set_constraints(
+            id(1),
+            SizeConstraints::from_xdg((100, 110), (200, 150)).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(l.floating_rect(id(1)).unwrap().width, 200.0);
+        assert_eq!(l.floating_rect(id(1)).unwrap().height, 150.0);
+        let saved = l.floating_rect(id(1)).unwrap();
+        assert_eq!(
+            l.set_floating_rect(
+                id(1),
+                Rect {
+                    x: MAX_COORD - 1.0,
+                    ..saved
+                }
+            ),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_eq!(l.floating_rect(id(1)), Some(saved));
+        assert_eq!(
+            l.set_constraints(
+                id(1),
+                SizeConstraints {
+                    min: Size {
+                        width: MAX_COORD,
+                        height: 110.0
+                    },
+                    max: None
+                }
+            ),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_eq!(l.floating_rect(id(1)), Some(saved));
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn floating_focus_is_reachable_and_movement_keeps_fullscreen_and_tiles_stable() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        let rect = Rect {
+            x: 0.0,
+            y: -300.0,
+            width: 200.0,
+            height: 100.0,
+        };
+        l.set_floating(id(1), true, Some(rect)).unwrap();
+        l.focus_window(id(0)).unwrap();
+        assert_eq!(l.focus_direction(Direction::Right).unwrap(), Some(id(2)));
+        l.focus_window(id(0)).unwrap();
+        assert_eq!(l.focus_direction(Direction::Up).unwrap(), Some(id(1)));
+        assert_eq!(l.focus_direction(Direction::Down).unwrap(), Some(id(0)));
+        l.set_fullscreen(id(0), true).unwrap();
+        for mode in [LayoutMode::Strip, LayoutMode::Canvas] {
+            l.set_mode(mode);
+            l.focus_window(id(1)).unwrap();
+            let saved: Vec<_> = l
+                .placements()
+                .into_iter()
+                .filter(|p| p.window != id(1))
+                .map(|p| (p.window, p.rect, p.clip))
+                .collect();
+            l.set_floating_rect(id(1), Rect { x: 5000.0, ..rect })
+                .unwrap();
+            l.move_focused(Direction::Right).unwrap();
+            l.resize_focused(75.0).unwrap();
+            let after: Vec<_> = l
+                .placements()
+                .into_iter()
+                .filter(|p| p.window != id(1))
+                .map(|p| (p.window, p.rect, p.clip))
+                .collect();
+            assert_eq!(after, saved);
+            assert!(l.is_fullscreen(id(0)));
+        }
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn floating_focus_preserves_ordinary_tab_active_and_replacement_metadata() {
+        let mut l = layout();
+        for n in 0..4 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        for n in 1..4 {
+            l.join_column(id(n), id(0)).unwrap();
+        }
+        l.set_column_mode(id(0), ColumnMode::Tabs).unwrap();
+        l.set_floating(id(2), true, None).unwrap();
+        l.set_fullscreen(id(3), true).unwrap();
+        l.focus_window(id(1)).unwrap();
+        l.focus_window(id(2)).unwrap();
+        assert_eq!(l.columns[0].active, id(1));
+        assert!(
+            l.placements()
+                .iter()
+                .any(|p| p.window == id(1) && p.visible)
+        );
+        assert!(
+            !l.placements()
+                .iter()
+                .find(|p| p.window == id(0))
+                .unwrap()
+                .visible
+        );
+        assert_eq!(l.canvas_groups()[0].active, id(1));
+        l.focus_window(id(3)).unwrap();
+        assert_eq!(l.columns[0].active, id(1));
+        l.set_fullscreen(id(3), false).unwrap();
+        assert_eq!(l.columns[0].active, id(3));
+        assert!(
+            l.placements()
+                .iter()
+                .any(|p| p.window == id(3) && p.visible)
+        );
+        l.set_fullscreen(id(3), true).unwrap();
+        l.focus_window(id(1)).unwrap();
+        l.set_minimized(id(1), true).unwrap();
+        assert_eq!(l.columns[0].active, id(0));
+        assert_eq!(l.canvas_groups()[0].active, id(0));
+        l.set_minimized(id(1), false).unwrap();
+        l.remove(id(1)).unwrap();
+        assert_eq!(l.columns[0].active, id(0));
+        assert_eq!(l.canvas_groups()[0].active, id(0));
+        l.remove(id(0)).unwrap();
+        assert!(l.canvas_groups().is_empty());
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn born_floating_admission_reserves_no_tile_slot_or_fullscreen_frontier() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.focus_window(id(0)).unwrap();
+        l.set_fullscreen(id(0), true).unwrap();
+        for mode in [LayoutMode::Strip, LayoutMode::Canvas] {
+            l.set_mode(mode);
+            let saved: Vec<_> = l
+                .placements()
+                .iter()
+                .map(|p| (p.window, p.rect, p.clip))
+                .collect();
+            let camera = l.camera();
+            let window = id(if mode == LayoutMode::Strip { 10 } else { 11 });
+            l.insert_floating_with_focus(
+                window,
+                SizeConstraints::default(),
+                Some(Rect {
+                    x: 9000.0,
+                    y: 100.0,
+                    width: 250.0,
+                    height: 180.0,
+                }),
+                false,
+            )
+            .unwrap();
+            assert_eq!(l.camera(), camera);
+            let after: Vec<_> = l
+                .placements()
+                .iter()
+                .filter(|p| p.window != window)
+                .map(|p| (p.window, p.rect, p.clip))
+                .collect();
+            assert_eq!(after, saved);
+            assert_eq!(
+                l.placements().iter().filter(|p| p.window == window).count(),
+                1
+            );
+            assert_eq!(
+                l.join_column(window, id(1)),
+                Err(LayoutError::FloatingWindow)
+            );
+            l.set_floating(window, false, None).unwrap();
+            assert!(!l.born_floating.contains(&window));
+            assert!(!l.is_floating(window));
+            l.remove(window).unwrap();
+        }
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn born_floating_materialization_overflow_is_atomic() {
+        let mut l = layout();
+        l.insert(id(0), SizeConstraints::default()).unwrap();
+        l.set_column_width(id(0), WidthPolicy::Fixed(MAX_COORD - l.gap))
+            .unwrap();
+        l.insert_floating_with_focus(
+            id(1),
+            SizeConstraints::default(),
+            Some(Rect {
+                x: 0.0,
+                y: 0.0,
+                width: 100.0,
+                height: 100.0,
+            }),
+            false,
+        )
+        .unwrap();
+        let before = l.placements();
+        assert_eq!(
+            l.set_floating(id(1), false, None),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert!(l.is_floating(id(1)));
+        assert_eq!(l.placements(), before);
+        l.remove(id(1)).unwrap();
+        assert!(!l.born_floating.contains(&id(1)));
+        assert_eq!(l.validate(), Ok(()));
+    }
+    #[test]
+    fn born_floating_first_unfloat_seeds_normal_canvas_slot_in_either_mode() {
+        for materialize_mode in [LayoutMode::Canvas, LayoutMode::Strip] {
+            let mut l = layout();
+            l.insert(id(0), SizeConstraints::default()).unwrap();
+            l.insert(id(1), SizeConstraints::default()).unwrap();
+            l.set_mode(LayoutMode::Canvas);
+            l.set_canvas_rect(
+                id(0),
+                Rect {
+                    x: 300.0,
+                    y: 70.0,
+                    width: 500.0,
+                    height: 400.0,
+                },
+            )
+            .unwrap();
+            l.focus_window(id(0)).unwrap();
+            l.insert_floating_with_focus(
+                id(2),
+                SizeConstraints::default(),
+                Some(Rect {
+                    x: -1000.0,
+                    y: -500.0,
+                    width: 180.0,
+                    height: 120.0,
+                }),
+                true,
+            )
+            .unwrap();
+            let neighbors: Vec<_> = [id(0), id(1)]
+                .into_iter()
+                .map(|w| (w, l.canvas[&l.group_for(w).unwrap()].rect))
+                .collect();
+            l.set_floating_rect(
+                id(2),
+                Rect {
+                    x: 7000.0,
+                    y: 3000.0,
+                    width: 270.0,
+                    height: 210.0,
+                },
+            )
+            .unwrap();
+            l.set_mode(materialize_mode);
+            l.set_floating(id(2), false, None).unwrap();
+            let expected = Rect {
+                x: 808.0,
+                y: 70.0,
+                width: l.default_width.resolve(l.viewport.width).unwrap(),
+                height: l.viewport.height,
+            };
+            assert_eq!(l.canvas[&l.group_for(id(2)).unwrap()].rect, expected);
+            for (window, rect) in neighbors {
+                assert_eq!(l.canvas[&l.group_for(window).unwrap()].rect, rect);
+            }
+            l.set_mode(LayoutMode::Canvas);
+            assert_eq!(
+                l.placements()
+                    .iter()
+                    .find(|p| p.window == id(2))
+                    .unwrap()
+                    .rect,
+                expected
+            );
+            assert_eq!(l.validate(), Ok(()));
+        }
     }
 }

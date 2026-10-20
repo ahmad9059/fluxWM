@@ -1,0 +1,166 @@
+{
+  "binary_sha256": "b717fbc5be16d912ba94f51a7aade813c289abdb7854d2cf2a5ab77acb87f7e7",
+  "cases": [
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-f6a541389722409aaf1a0c6c",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/floating-first-gui/floating/floating/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/floating-first-gui/floating/floating/stats.json",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+        "floating",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6104,
+      "environment": {
+        "DISPLAY": ":14111",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-6olcob1e"
+      },
+      "error": "floating: compositor exit 1; inspect stderr.log",
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "floating",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-6olcob1e/fluxwm/fluxscene-f6a541389722409aaf1a0c6c.sock",
+        "pid": 84972,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-f6a541389722409aaf1a0c6c"
+      },
+      "returncode": 1,
+      "socket": "fluxscene-f6a541389722409aaf1a0c6c"
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-4465024d00ae459d8fddc62f",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/floating-first-gui/floating/floating-pixels/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/floating-first-gui/floating/floating-pixels/stats.json",
+        "--screenshot",
+        "/home/ahmad/Documents/Projects/fluxwm/target/floating-first-gui/floating/floating-pixels/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+        "floating-pixels",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6085,
+      "environment": {
+        "DISPLAY": ":14111",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-6olcob1e"
+      },
+      "error": "floating-pixels: compositor exit 1; inspect stderr.log",
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "floating-pixels",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-6olcob1e/fluxwm/fluxscene-4465024d00ae459d8fddc62f.sock",
+        "pid": 85122,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-4465024d00ae459d8fddc62f"
+      },
+      "returncode": 1,
+      "socket": "fluxscene-4465024d00ae459d8fddc62f"
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-bf0f98d4de4d47c4a5f68086",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/floating-first-gui/floating/floating-pixels-fullscreen/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/floating-first-gui/floating/floating-pixels-fullscreen/stats.json",
+        "--screenshot",
+        "/home/ahmad/Documents/Projects/fluxwm/target/floating-first-gui/floating/floating-pixels-fullscreen/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/debug/fluxwm-fixture",
+        "floating-pixels-fullscreen",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6085,
+      "environment": {
+        "DISPLAY": ":14111",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-6olcob1e"
+      },
+      "error": "floating-pixels-fullscreen: compositor exit 1; inspect stderr.log",
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "floating-pixels-fullscreen",
+      "ok": false,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-6olcob1e/fluxwm/fluxscene-bf0f98d4de4d47c4a5f68086.sock",
+        "pid": 85249,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-bf0f98d4de4d47c4a5f68086"
+      },
+      "returncode": 1,
+      "socket": "fluxscene-bf0f98d4de4d47c4a5f68086"
+    }
+  ],
+  "errors": [
+    "floating: floating: compositor exit 1; inspect stderr.log",
+    "floating-pixels: floating-pixels: compositor exit 1; inspect stderr.log",
+    "floating-pixels-fullscreen: floating-pixels-fullscreen: compositor exit 1; inspect stderr.log"
+  ],
+  "executables_unchanged": true,
+  "fixture_sha256": "32b66d4bde457191922dd8067ca4083aec1aadae3fb532a92c25732a79db8619",
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "scope": "nested real floating lifecycle, parent dialog admission, saved world geometry and exact SHM stacking/fullscreen suppression pixels; excludes physical/native execution and multi-output qualification",
+  "source_sha256": {
+    "smoke_floating.py": "d0719f722edfc0bc023f489894c7da3844b8c49959d3b8cf118059d2b042ae33",
+    "smoke_nested.py": "ca776e500a8cb74328526a5020c2b1ea1f237ec1a31dc64d956e0b487fd98b4c",
+    "smoke_scene.py": "32163ebb762d15dbaa3df4887a527d29279fa43ed4b16f092fe1cd60eaf8c8b2"
+  }
+}

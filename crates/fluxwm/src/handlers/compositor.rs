@@ -1,5 +1,5 @@
 // Adapted from Smithay Smallvil, MIT; see LICENSES/Smithay-MIT.txt.
-use crate::{Fluxwm, grabs::resize_grab, state::ClientState};
+use crate::{Fluxwm, state::ClientState};
 use smithay::{
     backend::renderer::utils::on_commit_buffer_handler,
     reexports::wayland_server::{
@@ -48,7 +48,6 @@ impl CompositorHandler for Fluxwm {
 
         xdg_shell::handle_commit(self, surface, just_unmapped);
         self.request_redraw();
-        resize_grab::handle_commit(&mut self.space, surface);
     }
 }
 

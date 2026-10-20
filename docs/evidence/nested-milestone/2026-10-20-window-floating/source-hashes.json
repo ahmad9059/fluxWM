@@ -1,0 +1,23 @@
+{
+  "crates/flux-core/src/action.rs": "22d4686d06131e534798d0170c2f632892c708663b2d222ba31bc77f293ed97e",
+  "crates/flux-layout/src/lib.rs": "d4e84dcc75ef81038a2b4a6b4cd94085b5ceb018783012899a09d08d0912a2bc",
+  "crates/fluxwm/src/actions.rs": "c76cb2c8f191c8c3481de50c0c6a10b0de5b057a5a824d5ed19c73b02b90d638",
+  "crates/fluxwm/src/config.rs": "2e817dd32e1bc5ea83249b7c3c78f03d367918cc7be7cb9a82bad24021fc6494",
+  "crates/fluxwm/src/grabs/move_grab.rs": "acd60b32021472a9ed9201fc52d93a22755c5a2da38b63be76a37123489b99c8",
+  "crates/fluxwm/src/grabs/resize_grab.rs": "632c78340b635db194adf954da9507e4f3c498561ebeceff0aeb1fb91ea84390",
+  "crates/fluxwm/src/handlers/compositor.rs": "5a38dd6bd0ed54b8d776e69cd5450ccb4956f4c5b2815cbda9be15f96fe2ce39",
+  "crates/fluxwm/src/handlers/xdg_shell.rs": "996de3917925dd29f4cf5c8c6e8596bcd5cd3fd90adb64eecbe51e35993e6ac1",
+  "crates/fluxwm/src/ipc.rs": "4f3b6a7a91cd6e003710e6acb74d11da588807412db2f4d93b7c869b43ee5cd1",
+  "crates/fluxwm/src/state.rs": "d2211d644b0b9c149faae69c1c138c1454ecea9f42b59eb578c2a87b56269159",
+  "crates/fluxwm-fixture/src/main.rs": "71562f6f143aac587e1940dcaedabc0acd20534713668065580b685c7b31d551",
+  "docs/development/README.md": "450bf700ed445912a2285a69534e3d36f2308a0df05da9867ab352b7cfaeeb89",
+  "docs/development/floating.md": "80367f5b2481d9076a4e48bbb7d24b0803e84310cc1a9cd3b22b5728bf9ac327",
+  "docs/development/production-status-2026-10-18.md": "be7b48d64ae19d9bca836490a66a934b00ced694dda668a42766f845f38b8b6f",
+  "docs/development/runtime.md": "1033995d575391788ff6a85094dbfb32983453dcfd1009fee474dffaa8caaae2",
+  "docs/phases/04-scrolling-layout.md": "fa2e6773117f56812e3c919e5b33eddb33932c6478bb07becc4b8a74ba75f68c",
+  "docs/reviews/README.md": "9ea3f473e026d39926c3130e4ff7fa6b1738ed8d9ebaea5a6e61245c634b0e12",
+  "tools/smoke_floating.py": "b37122c8a34a1b391a652b20d9421bfde751d824c85a75306fa9233aa36246a8",
+  "tools/smoke_health.py": "04147654f0b9dc22a7b8f31e20cc5ac07de2642003e434c3bba7ca8b74a824b2",
+  "tools/smoke_nested.py": "ca776e500a8cb74328526a5020c2b1ea1f237ec1a31dc64d956e0b487fd98b4c",
+  "tools/smoke_private.py": "5cbc54513100347e45feaf9dd327315d3c3c5a9c366f3d0ba7d63c6e88a9a4df"
+}

@@ -117,3 +117,10 @@ window-state qualification remain open.
 connection targeting and silent-peer cleanup. A negative control distinguishes the missing-cleanup bug;
 post-review fixture assertions strengthen close isolation and stale error checks. Pipelined retiring-role
 behavior, teardown ordering and complete desktop/native qualification remain open.
+
+## Floating windows review
+
+[Initial Claude review](window-floating-2026-10-20/disposition.md) found tab selection, moving fullscreen
+frontiers, born-floating gaps and overlay-seed issues. The [focused correction review](window-floating-followup-2026-10-20/disposition.md)
+records the final verdict. Model and real-client regressions cover the corrections; authorized pointer
+grabs, cross-mode rebasing, native hardware and complete state qualification remain open.

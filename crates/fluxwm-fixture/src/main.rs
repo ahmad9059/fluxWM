@@ -3051,6 +3051,544 @@ fn configure_stream(timeout: Duration) -> Json {
     evidence
 }
 
+/// Screenshot scene with an unfocused floating client above a focused tile.
+fn floating_pixels(timeout: Duration, fullscreen: bool) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mode = if fullscreen {
+        "floating-pixels-fullscreen"
+    } else {
+        "floating-pixels"
+    };
+    let mut state = State::new(start);
+    let mut evidence = json!({"ok":false,"mode":mode});
+    let result = (|| -> Result<()> {
+        let connection = connect(&display_path()?, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit IPC socket required")?;
+        let mut control = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let tile = state.create(&qh, "floating-pixel-tile");
+        state.windows[tile].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pixel tile configure",
+            |s| s.windows[tile].configures > 0,
+        )?;
+        state.map_sized(tile, [WIDTH, HEIGHT], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pixel tile frame",
+            |s| s.windows[tile].frames > 0,
+        )?;
+        let floating = state.create(&qh, "floating-pixel-float");
+        state.windows[floating].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pixel float configure",
+            |s| s.windows[floating].configures > 0,
+        )?;
+        state.map(floating, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "pixel float frame",
+            |s| s.windows[floating].frames > 0,
+        )?;
+        control.call("action", json!({"name":"floating","toggle":true}), deadline)?;
+        control.call(
+            "action",
+            json!({"name":"focus","direction":"left"}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let focused =
+            configure_window(&mut control, "FluxWM fixture floating-pixel-tile", deadline)?;
+        let raised = configure_window(
+            &mut control,
+            "FluxWM fixture floating-pixel-float",
+            deadline,
+        )?;
+        if focused["focused"] != true
+            || focused["floating"] != false
+            || raised["focused"] != false
+            || raised["floating"] != true
+        {
+            return Err(format!(
+                "pixel stacking focus precondition failed: {focused} / {raised}"
+            ));
+        }
+        if fullscreen {
+            state.windows[tile].toplevel.set_fullscreen(None);
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            if !state.windows[tile].fullscreen {
+                return Err("focused tile failed fullscreen".into());
+            }
+        } else {
+            // Ensure the visible tile actually crosses the float. A tile-sized
+            // client buffer makes the stacking oracle independent of old small
+            // client geometry and exercises occlusion by the focused tile.
+            let g = &focused["geometry"];
+            let size = [
+                g["width"].as_f64().ok_or("tile width missing")? as i32,
+                g["height"].as_f64().ok_or("tile height missing")? as i32,
+            ];
+            state.map_sized(tile, size, &qh)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let a = &raised["geometry"];
+            if g["x"].as_f64().unwrap() >= a["x"].as_f64().unwrap() + f64::from(WIDTH)
+                || g["x"].as_f64().unwrap() + g["width"].as_f64().unwrap()
+                    <= a["x"].as_f64().unwrap()
+                || g["y"].as_f64().unwrap() >= a["y"].as_f64().unwrap() + f64::from(HEIGHT)
+                || g["y"].as_f64().unwrap() + g["height"].as_f64().unwrap()
+                    <= a["y"].as_f64().unwrap()
+            {
+                return Err("focused tile does not overlap float in screenshot oracle".into());
+            }
+        }
+        evidence["focused_tile"] =
+            configure_window(&mut control, "FluxWM fixture floating-pixel-tile", deadline)?;
+        evidence["unfocused_float"] = raised.clone();
+        evidence["ready_at_ms"] = json!(start.elapsed().as_millis());
+        observe_for(
+            &connection,
+            &mut queue,
+            &mut state,
+            Duration::from_millis(1000),
+            deadline,
+        )?;
+        let settled = configure_window(
+            &mut control,
+            "FluxWM fixture floating-pixel-float",
+            deadline,
+        )?;
+        if settled["geometry"] != raised["geometry"]
+            || settled["floating"] != true
+            || settled["focused"] != false
+        {
+            return Err("floating screenshot scene moved while captured".into());
+        }
+        evidence["after_settle"] = settled;
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence
+}
+
+/// Real floating transitions with client commits and same-client transient admission.
+fn floating(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    let mut evidence = json!({"ok":false,"mode":"floating"});
+    let result = (|| -> Result<()> {
+        let connection = connect(&display_path()?, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit IPC socket required")?;
+        let mut control = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let root = state.create(&qh, "floating-root");
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "floating initial configure",
+            |s| s.windows[root].configures > 0,
+        )?;
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "floating initial frame",
+            |s| s.windows[root].frames > 0,
+        )?;
+        let tiled = configure_window(&mut control, "FluxWM fixture floating-root", deadline)?;
+        if tiled["floating"] != false {
+            return Err("ordinary initial role unexpectedly floated".into());
+        }
+        evidence["tiled"] = tiled.clone();
+        control.call("action", json!({"name":"floating","toggle":true}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let floated = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if floated["floating"] != true
+            || floated["geometry"]["width"] != json!(WIDTH as f64)
+            || floated["geometry"]["height"] != json!(HEIGHT as f64)
+            || state.windows[root].fullscreen
+            || state.windows[root].maximized
+        {
+            return Err(format!(
+                "float failed actual-size/no-overlay invariant: {floated}"
+            ));
+        }
+        evidence["initial_float"] = floated.clone();
+        control.call(
+            "action",
+            json!({"name":"move","direction":"right"}),
+            deadline,
+        )?;
+        control.call("action", json!({"name":"resize","delta":64.0}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let moved = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if moved["geometry"]["x"].as_f64() != floated["geometry"]["x"].as_f64().map(|x| x + 32.0)
+            || moved["geometry"]["width"].as_f64() != Some(f64::from(WIDTH) + 64.0)
+        {
+            return Err(format!("float keyboard move/resize failed: {moved}"));
+        }
+        // The target remains owned by the model even when an ordinary client
+        // commits an older-sized buffer after acknowledging the resize.
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let committed = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if committed["geometry"] != moved["geometry"] {
+            return Err("client commit overwrote floating target".into());
+        }
+        evidence["moved_resized"] = moved.clone();
+        control.call(
+            "action",
+            json!({"name":"pan","dx":32.0,"dy":16.0}),
+            deadline,
+        )?;
+        let panned = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if panned["geometry"] != moved["geometry"] {
+            return Err("camera pan changed floating world rect".into());
+        }
+        evidence["pan_preserves_world_rect"] = json!(true);
+        for mode in ["canvas", "strip"] {
+            control.call(
+                "action",
+                json!({"name":"workspace-mode","mode":mode}),
+                deadline,
+            )?;
+            let window = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+            if window["floating"] != true || window["geometry"] != moved["geometry"] {
+                return Err(format!("{mode} mode lost floating geometry"));
+            }
+        }
+        evidence["mode_restore"] = json!(true);
+        for overlay in ["maximize", "fullscreen"] {
+            control.call("action", json!({"name":overlay,"toggle":true}), deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let over = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+            if over["floating"] != true
+                || over[if overlay == "maximize" {
+                    "maximized"
+                } else {
+                    overlay
+                }] != true
+            {
+                return Err(format!("{overlay} lost floating intent"));
+            }
+            control.call("action", json!({"name":overlay,"toggle":false}), deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let restored = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+            if restored["geometry"] != moved["geometry"] || restored["floating"] != true {
+                return Err(format!("{overlay} restore lost floating rect"));
+            }
+            evidence[format!("{overlay}_restore")] = restored;
+        }
+        control.call("action", json!({"name":"minimize"}), deadline)?;
+        let minimized = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if minimized["minimized"] != true || minimized["floating"] != true {
+            return Err("minimize lost float".into());
+        }
+        control.call(
+            "action",
+            json!({"name":"restore-window","window":tiled["id"]}),
+            deadline,
+        )?;
+        let restored = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if restored["geometry"] != moved["geometry"] || restored["floating"] != true {
+            return Err("minimize restore lost float rect".into());
+        }
+        evidence["minimize_restore"] = restored;
+        control.call(
+            "action",
+            json!({"name":"floating","toggle":false}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let retiled = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if retiled["floating"] != false || retiled["geometry"] != tiled["geometry"] {
+            return Err(format!("retile did not restore saved tile: {retiled}"));
+        }
+        evidence["retiled"] = retiled;
+        // A committed overlay-sized buffer is not ordinary client size. Enabling
+        // floating in either overlay must seed the bounded default float size.
+        for overlay in ["maximize", "fullscreen"] {
+            control.call("action", json!({"name":overlay,"toggle":true}), deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let full = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+            let extent = [
+                full["geometry"]["width"]
+                    .as_f64()
+                    .ok_or("overlay width absent")?,
+                full["geometry"]["height"]
+                    .as_f64()
+                    .ok_or("overlay height absent")?,
+            ];
+            state.map_sized(root, [extent[0] as i32, extent[1] as i32], &qh)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            control.call("action", json!({"name":"floating","toggle":true}), deadline)?;
+            control.call("action", json!({"name":overlay,"toggle":false}), deadline)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            let seeded = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+            if seeded["floating"] != true
+                || seeded["geometry"]["width"].as_f64() != Some(extent[0] * 0.6)
+                || seeded["geometry"]["height"].as_f64() != Some(extent[1] * 0.6)
+            {
+                return Err(format!(
+                    "{overlay} committed buffer poisoned floating seed: {seeded}"
+                ));
+            }
+            evidence[format!("floating_seed_from_{overlay}")] = seeded;
+            control.call(
+                "action",
+                json!({"name":"floating","toggle":false}),
+                deadline,
+            )?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+            state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        }
+        control.call("action", json!({"name":"floating","toggle":true}), deadline)?;
+        state.windows[root].surface.attach(None, 0, 0);
+        state.windows[root].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let unmapped = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if unmapped["mapped"] != false || unmapped["floating"] != false {
+            return Err("unmap retained float intent".into());
+        }
+        evidence["unmapped"] = unmapped;
+        let count = state.windows[root].configures;
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "normal remap configure",
+            |s| s.windows[root].configures > count,
+        )?;
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let remapped = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        if remapped["floating"] != false || remapped["mapped"] != true {
+            return Err("remap restored stale float".into());
+        }
+        evidence["remapped"] = remapped;
+        // A transient born floating must not reserve a new ordinary tile slot.
+        // Keep a later tiled neighbor so an accidental reservation is visible.
+        let neighbor = state.create(&qh, "floating-dialog-neighbor");
+        state.windows[neighbor].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "dialog neighbor configure",
+            |s| s.windows[neighbor].configures > 0,
+        )?;
+        state.map_sized(neighbor, [WIDTH, HEIGHT], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "dialog neighbor frame",
+            |s| s.windows[neighbor].frames > 0,
+        )?;
+        control.call(
+            "action",
+            json!({"name":"focus-window","window":tiled["id"]}),
+            deadline,
+        )?;
+        let parent_before_dialog =
+            configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        let neighbor_before_dialog = configure_window(
+            &mut control,
+            "FluxWM fixture floating-dialog-neighbor",
+            deadline,
+        )?;
+        let child = state.create(&qh, "floating-dialog");
+        state.windows[child]
+            .toplevel
+            .set_parent(Some(&state.windows[root].toplevel));
+        state.windows[child].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "dialog configure",
+            |s| s.windows[child].configures > 0,
+        )?;
+        state.map_sized(child, [160, 120], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "dialog frame",
+            |s| s.windows[child].frames > 0,
+        )?;
+        let parent = configure_window(&mut control, tiled["id"].as_str().unwrap(), deadline)?;
+        let dialog = configure_window(&mut control, "FluxWM fixture floating-dialog", deadline)?;
+        let neighbor_after_dialog = configure_window(
+            &mut control,
+            neighbor_before_dialog["id"].as_str().unwrap(),
+            deadline,
+        )?;
+        if parent["geometry"] != parent_before_dialog["geometry"]
+            || neighbor_after_dialog["geometry"] != neighbor_before_dialog["geometry"]
+        {
+            return Err(format!(
+                "born-floating dialog changed ordinary tile geometry: parent {parent_before_dialog} -> {parent}; neighbor {neighbor_before_dialog} -> {neighbor_after_dialog}"
+            ));
+        }
+        evidence["born_floating_preserves_tiles"] = json!({"parent_before":parent_before_dialog["geometry"],"parent_after":parent["geometry"],"neighbor_before":neighbor_before_dialog["geometry"],"neighbor_after":neighbor_after_dialog["geometry"]});
+        if dialog["floating"] != true
+            || dialog["geometry"]["width"].as_f64() != Some(160.0)
+            || dialog["geometry"]["height"].as_f64() != Some(120.0)
+        {
+            return Err(format!(
+                "same-client parent dialog did not float at actual size: {dialog}"
+            ));
+        }
+        let pg = &parent["geometry"];
+        let dg = &dialog["geometry"];
+        for (pos, size) in [("x", "width"), ("y", "height")] {
+            let expected = pg[pos].as_f64().ok_or("parent position absent")?
+                + (pg[size].as_f64().ok_or("parent extent absent")?
+                    - dg[size].as_f64().ok_or("dialog extent absent")?)
+                    / 2.0;
+            if (dg[pos].as_f64().ok_or("dialog position absent")? - expected).abs() > 1.0 {
+                return Err(format!("dialog not parent centered: {dialog}"));
+            }
+        }
+        control.call(
+            "action",
+            json!({"name":"focus-window","window":parent["id"]}),
+            deadline,
+        )?;
+        let exact_parent =
+            configure_window(&mut control, parent["id"].as_str().unwrap(), deadline)?;
+        if exact_parent["focused"] != true {
+            return Err("explicit parent focus failed".into());
+        }
+        control.call(
+            "action",
+            json!({"name":"focus-window","window":dialog["id"]}),
+            deadline,
+        )?;
+        let exact_child = configure_window(&mut control, dialog["id"].as_str().unwrap(), deadline)?;
+        if exact_child["focused"] != true {
+            return Err("explicit floating dialog focus failed".into());
+        }
+        let malformed = control
+            .call(
+                "action",
+                json!({"name":"focus-window","window":"malformed"}),
+                deadline,
+            )
+            .err()
+            .ok_or("malformed focus target accepted")?;
+        evidence["explicit_focus"] = json!({"parent":exact_parent["id"],"child":exact_child["id"],"malformed_error":malformed});
+        evidence["parent_dialog"] = dialog.clone();
+        state.windows[root].toplevel.destroy();
+        state.windows[root].xdg.destroy();
+        state.windows[root].surface.destroy();
+        state.windows[root].destroyed = true;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let survivor = configure_window(&mut control, dialog["id"].as_str().unwrap(), deadline)?;
+        if survivor["mapped"] != true
+            || survivor["floating"] != true
+            || survivor["geometry"] != dialog["geometry"]
+        {
+            return Err("parent destruction lost/moved surviving floating child".into());
+        }
+        let stale = control
+            .call(
+                "action",
+                json!({"name":"focus-window","window":parent["id"]}),
+                deadline,
+            )
+            .err()
+            .ok_or("destroyed focus target accepted")?;
+        let still_focused =
+            configure_window(&mut control, dialog["id"].as_str().unwrap(), deadline)?;
+        if still_focused["focused"] != true {
+            return Err("rejected focus target changed surviving focus".into());
+        }
+        evidence["stale_focus_error"] = json!(stale);
+        evidence["child_survives_parent"] = survivor;
+        // A dialog's first retile uses an ordinary workspace slot, including
+        // when the workspace has switched to Canvas since its floating birth.
+        control.call(
+            "action",
+            json!({"name":"workspace-mode","mode":"canvas"}),
+            deadline,
+        )?;
+        let ordinary_neighbor = configure_window(
+            &mut control,
+            neighbor_before_dialog["id"].as_str().unwrap(),
+            deadline,
+        )?;
+        control.call(
+            "action",
+            json!({"name":"floating","toggle":false}),
+            deadline,
+        )?;
+        let dialog_retiled =
+            configure_window(&mut control, dialog["id"].as_str().unwrap(), deadline)?;
+        let neighbor_after_retile = configure_window(
+            &mut control,
+            neighbor_before_dialog["id"].as_str().unwrap(),
+            deadline,
+        )?;
+        let ng = &ordinary_neighbor["geometry"];
+        let dg = &dialog_retiled["geometry"];
+        if dialog_retiled["floating"] != false
+            || dg["width"] != ng["width"]
+            || dg["height"] != ng["height"]
+            || neighbor_after_retile["geometry"] != ordinary_neighbor["geometry"]
+            || dg["x"].as_f64().ok_or("retile position absent")?
+                < ng["x"].as_f64().ok_or("neighbor position absent")?
+                    + ng["width"].as_f64().ok_or("neighbor width absent")?
+        {
+            return Err(format!(
+                "born-floating Canvas retile reused birth rect or moved ordinary neighbor: {dialog_retiled}; neighbor {ordinary_neighbor} -> {neighbor_after_retile}"
+            ));
+        }
+        evidence["born_floating_canvas_retile"] = json!({"dialog":dialog_retiled,"neighbor_before":ordinary_neighbor["geometry"],"neighbor_after":neighbor_after_retile["geometry"]});
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence
+}
+
 /// Real fullscreen wire state, restoration and a stable alpha/letterbox pixel scene.
 fn fullscreen(timeout: Duration, pixel_scene: bool, partial: bool) -> Json {
     let start = Instant::now();
@@ -5280,6 +5818,9 @@ fn main() {
                 || mode == "close"
                 || mode == "minimize"
                 || mode == "maximize"
+                || mode == "floating-pixels"
+                || mode == "floating-pixels-fullscreen"
+                || mode == "floating"
                 || mode == "fullscreen"
                 || mode == "fullscreen-pixels"
                 || mode == "fullscreen-pixels-partial" =>
@@ -5298,6 +5839,9 @@ fn main() {
                 || mode == "close"
                 || mode == "minimize"
                 || mode == "maximize"
+                || mode == "floating-pixels"
+                || mode == "floating-pixels-fullscreen"
+                || mode == "floating"
                 || mode == "fullscreen"
                 || mode == "fullscreen-pixels"
                 || mode == "fullscreen-pixels-partial")
@@ -5311,13 +5855,16 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|close|minimize|maximize|fullscreen|fullscreen-pixels|fullscreen-pixels-partial|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|close|minimize|maximize|floating|fullscreen|fullscreen-pixels|fullscreen-pixels-partial|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
         Ok(("close", timeout)) => close_client(timeout),
         Ok(("minimize", timeout)) => minimize(timeout),
         Ok(("maximize", timeout)) => maximize(timeout),
+        Ok(("floating-pixels", timeout)) => floating_pixels(timeout, false),
+        Ok(("floating-pixels-fullscreen", timeout)) => floating_pixels(timeout, true),
+        Ok(("floating", timeout)) => floating(timeout),
         Ok(("fullscreen", timeout)) => fullscreen(timeout, false, false),
         Ok(("fullscreen-pixels", timeout)) => fullscreen(timeout, true, false),
         Ok(("fullscreen-pixels-partial", timeout)) => fullscreen(timeout, true, true),

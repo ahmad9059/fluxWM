@@ -20,7 +20,7 @@ def main():
     parser.add_argument('--artifacts', type=Path)
     parser.add_argument('--binary', type=Path, default=root / 'target/debug/fluxwm')
     parser.add_argument('--fixture', type=Path, default=root / 'target/debug/fluxwm-fixture')
-    parser.add_argument('--suites', nargs='+', choices=['scene', 'nested', 'shutdown', 'ipc', 'health', 'configure', 'minimize', 'maximize', 'fullscreen', 'close'], default=['scene', 'nested', 'shutdown', 'ipc', 'health', 'configure', 'minimize', 'maximize', 'fullscreen', 'close'])
+    parser.add_argument('--suites', nargs='+', choices=['scene', 'nested', 'shutdown', 'ipc', 'health', 'configure', 'minimize', 'maximize', 'fullscreen', 'floating', 'close'], default=['scene', 'nested', 'shutdown', 'ipc', 'health', 'configure', 'minimize', 'maximize', 'fullscreen', 'floating', 'close'])
     args = parser.parse_args()
     directory = (args.artifacts or root / 'target/smoke-private' / uuid.uuid4().hex).resolve()
     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
@@ -45,9 +45,9 @@ def main():
         result['private_server_pid'] = session.server.pid
         result['private_display'] = session.display
         for suite in args.suites:
-            script = {'scene': 'smoke_scene.py', 'nested': 'smoke_nested.py', 'shutdown': 'smoke_shutdown.py', 'ipc': 'smoke_ipc_runtime.py', 'health': 'smoke_health.py', 'configure': 'smoke_configure.py', 'minimize': 'smoke_minimize.py', 'maximize': 'smoke_maximize.py', 'fullscreen': 'smoke_fullscreen.py', 'close': 'smoke_close.py'}[suite]
+            script = {'scene': 'smoke_scene.py', 'nested': 'smoke_nested.py', 'shutdown': 'smoke_shutdown.py', 'ipc': 'smoke_ipc_runtime.py', 'health': 'smoke_health.py', 'configure': 'smoke_configure.py', 'minimize': 'smoke_minimize.py', 'maximize': 'smoke_maximize.py', 'fullscreen': 'smoke_fullscreen.py', 'floating': 'smoke_floating.py', 'close': 'smoke_close.py'}[suite]
             command = [sys.executable, str(root / 'tools' / script), '--binary', str(args.binary.resolve()), '--artifacts', str(directory / suite)]
-            if suite in ('scene', 'nested', 'health', 'configure', 'minimize', 'maximize', 'fullscreen', 'close'): command += ['--fixture', str(args.fixture.resolve())]
+            if suite in ('scene', 'nested', 'health', 'configure', 'minimize', 'maximize', 'fullscreen', 'floating', 'close'): command += ['--fixture', str(args.fixture.resolve())]
             stdout, stderr = directory / (suite + '.stdout'), directory / (suite + '.stderr')
             start = time.monotonic()
             with stdout.open('wb') as out, stderr.open('wb') as err:

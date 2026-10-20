@@ -77,3 +77,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 [Fullscreen pages](fullscreen.md) describes saved layout state, opaque backdrops and scene/input clipping.
 
 [Graceful close and explicit client disconnect](client-close.md) distinguish per-window requests from connection-wide recovery.
+
+[Floating windows](floating.md) retain tiled restoration, parent-dialog placement and model-owned geometry.

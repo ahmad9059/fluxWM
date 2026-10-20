@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "claude",
+    "-p",
+    "Independent focused floating-window implementation review. Frozen worktree based9cb497f; input hashes identify actual source. Only Read/Grep within snapshot about16-20calls, no commands/network/writes/agents. APIs Layout set_floating(id,bool,Option<Rect>), saved world rect, set_floating_rect, is_floating. Original columns retained as dormant restore metadata/reserved slots; floating excluded active stack/tab allocation, one placement/live ID. FS pages also avoid floating rightfrontier; ordinary floating above focused tiles, focused FS raised last. Floating min/max/FS retain rectangle; remove clears; constraints clamp; edits preflight both modes/coordinate right+bottom; rebase shifts floats+camera. Keyboard floating move32, width resize own member; focus-window explicitID handles coincident discovery, directions preserveStrip columns withfloatfallback. State initial float uses actual committed geometry centeredviewport or live same-client mappedparent onlyonadmission, parentdestroy childindependent; unmap clears and mayparentautofloatagainonremap. Helper writes modelrect, bumpsseq/relayout. Relayoutfloating_z bounded live members keepsfloatMRU above ordinary tile regardlesskeyboardfocus. Root unmap/remove/dead cleanup cancels owned typed pointergrab via generationalID; missingrole must not configure reusedrole. Legacy resize commit Spaceoverwrite removed. Move/resize require actualthisseat+currentheldbackendserial+ownedClickGrab+nokeyboardgrab and mappedfloat notfull/max/min. Grabs pininitialzoom, usemodelhelper, clampconstraints and anchortop/left; initiatorbuttonreleases, finishsetsResizingfalse throughboundedconfigure; no independent Space write. GeometryIPC + configpublication defer/reject duringgrabs. Check pointer-lock reentrancy, lifetime/remap, model atomicity, allocation/nav/FSfrontier, stacking/input/clips. Scene unchanged consumes Space+placements; primarySmithaypointer/GLES/xdg included. Realfixture toggles/move/resize commit/mode/overlays/min/restore/remap, parentdialogs and exactpixel overlapfloatabovefocusedtile, FSframezeroMagenta but camerarelocationmeansnotproof ofoverlap suppression. Source-only review: assessactualcode notauthorclaims. Actualauthorizeddrag/resize, fullresizeepochs/toolkits/nativehardware/multioutput/scale remainunqualified. Return concreteHIGH/MEDIUM plususefulLOW findings withtriggers/paths, conciseverdict; no broadoldbackend/securityaudit.",
+    "--output-format",
+    "json",
+    "--verbose",
+    "--tools",
+    "Read,Grep",
+    "--allowedTools",
+    "Read,Grep",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "26",
+    "--permission-mode",
+    "plan"
+  ],
+  "cwd": "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-review-snapshot"
+}

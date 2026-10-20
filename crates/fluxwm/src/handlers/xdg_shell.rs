@@ -15,7 +15,7 @@ use smithay::{
             protocol::{wl_seat, wl_surface::WlSurface},
         },
     },
-    utils::{Rectangle, Serial},
+    utils::Serial,
     wayland::{
         compositor::with_states,
         shell::xdg::{
@@ -98,37 +98,49 @@ impl XdgShellHandler for Fluxwm {
         let Some(seat) = Seat::from_resource(&seat) else {
             return;
         };
-
-        let wl_surface = surface.wl_surface();
-
-        if let Some(start_data) = check_grab(&seat, wl_surface, serial) {
-            let Some(pointer) = seat.get_pointer() else {
-                return;
-            };
-
-            let Some(id) = self.window_id(wl_surface) else {
-                return;
-            };
-            let Some(item) = self
-                .windows
-                .get(id)
-                .filter(|item| item.mapped && item.floating)
-            else {
-                return;
-            };
-            let window = item.window.clone();
-            let Some(initial_window_location) = self.space.element_location(&window) else {
-                return;
-            };
-
-            let grab = MoveSurfaceGrab {
-                start_data,
-                window,
-                initial_window_location,
-            };
-
-            pointer.set_grab(self, grab, serial, Focus::Clear);
+        if seat != self.seat
+            || self
+                .seat
+                .get_keyboard()
+                .is_some_and(|keyboard| keyboard.is_grabbed())
+            || !seat
+                .get_pointer()
+                .and_then(|pointer| {
+                    pointer
+                        .with_grab(|_, grab| grab.is::<smithay::input::pointer::ClickGrab<Self>>())
+                })
+                .unwrap_or(false)
+            || !self
+                .pointer_presses
+                .values()
+                .any(|pressed| *pressed == serial)
+        {
+            return;
         }
+        let wl_surface = surface.wl_surface();
+        let Some(start_data) = check_grab(&seat, wl_surface, serial) else {
+            return;
+        };
+        let Some(pointer) = seat.get_pointer() else {
+            return;
+        };
+        let Some(id) = self.window_id(wl_surface) else {
+            return;
+        };
+        if !crate::grabs::move_grab::floating_role_live(self, id, wl_surface) {
+            return;
+        }
+        let Some(initial_rect) = self.layout.floating_rect(id) else {
+            return;
+        };
+        let grab = MoveSurfaceGrab {
+            start_data,
+            window_id: id,
+            surface: wl_surface.clone(),
+            initial_rect,
+            initial_zoom: self.layout.camera().zoom,
+        };
+        pointer.set_grab(self, grab, serial, Focus::Clear);
     }
 
     fn resize_request(
@@ -138,48 +150,60 @@ impl XdgShellHandler for Fluxwm {
         serial: Serial,
         edges: xdg_toplevel::ResizeEdge,
     ) {
+        let Some(edges) = crate::grabs::resize_grab::ResizeEdge::from_protocol(edges) else {
+            return;
+        };
         let Some(seat) = Seat::from_resource(&seat) else {
             return;
         };
-
-        let wl_surface = surface.wl_surface();
-
-        if let Some(start_data) = check_grab(&seat, wl_surface, serial) {
-            let Some(pointer) = seat.get_pointer() else {
-                return;
-            };
-
-            let Some(id) = self.window_id(wl_surface) else {
-                return;
-            };
-            let Some(item) = self
-                .windows
-                .get(id)
-                .filter(|item| item.mapped && item.floating)
-            else {
-                return;
-            };
-            let window = item.window.clone();
-            let Some(initial_window_location) = self.space.element_location(&window) else {
-                return;
-            };
-            let initial_window_size = window.geometry().size;
-
-            surface.with_pending_state(|state| {
-                state.states.set(xdg_toplevel::State::Resizing);
-            });
-
-            crate::configure::send_pending(&surface);
-
-            let grab = ResizeSurfaceGrab::start(
-                start_data,
-                window,
-                edges.into(),
-                Rectangle::new(initial_window_location, initial_window_size),
-            );
-
-            pointer.set_grab(self, grab, serial, Focus::Clear);
+        if seat != self.seat
+            || self
+                .seat
+                .get_keyboard()
+                .is_some_and(|keyboard| keyboard.is_grabbed())
+            || !seat
+                .get_pointer()
+                .and_then(|pointer| {
+                    pointer
+                        .with_grab(|_, grab| grab.is::<smithay::input::pointer::ClickGrab<Self>>())
+                })
+                .unwrap_or(false)
+            || !self
+                .pointer_presses
+                .values()
+                .any(|pressed| *pressed == serial)
+        {
+            return;
         }
+        let wl_surface = surface.wl_surface();
+        let Some(start_data) = check_grab(&seat, wl_surface, serial) else {
+            return;
+        };
+        let Some(pointer) = seat.get_pointer() else {
+            return;
+        };
+        let Some(id) = self.window_id(wl_surface) else {
+            return;
+        };
+        if !crate::grabs::move_grab::floating_role_live(self, id, wl_surface) {
+            return;
+        }
+        let Some(initial_rect) = self.layout.floating_rect(id) else {
+            return;
+        };
+        surface.with_pending_state(|state| {
+            state.states.set(xdg_toplevel::State::Resizing);
+        });
+        crate::configure::send_pending(&surface);
+        let grab = ResizeSurfaceGrab::start(
+            start_data,
+            id,
+            wl_surface.clone(),
+            edges,
+            initial_rect,
+            self.layout.camera().zoom,
+        );
+        pointer.set_grab(self, grab, serial, Focus::Clear);
     }
 
     fn grab(&mut self, surface: PopupSurface, seat: wl_seat::WlSeat, serial: Serial) {

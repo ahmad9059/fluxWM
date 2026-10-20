@@ -6,7 +6,7 @@ use smithay::{
 };
 
 impl Fluxwm {
-    fn live_window_client(&self, window: WindowId) -> Result<Client, String> {
+    pub(crate) fn live_window_client(&self, window: WindowId) -> Result<Client, String> {
         let top = self
             .windows
             .get(window)
@@ -56,15 +56,27 @@ impl Fluxwm {
         let geometry_action = matches!(
             action,
             Action::Focus { .. }
+                | Action::FocusWindow { .. }
                 | Action::Move { .. }
                 | Action::Pan { .. }
                 | Action::Resize { .. }
                 | Action::WorkspaceMode { .. }
         );
-        if geometry_action && self.seat.get_keyboard().is_some_and(|k| k.is_grabbed()) {
-            return Err("a popup owns keyboard focus".into());
+        if geometry_action
+            && (self.seat.get_keyboard().is_some_and(|k| k.is_grabbed())
+                || self.seat.get_pointer().is_some_and(|p| p.is_grabbed()))
+        {
+            return Err("an input grab is active".into());
         }
         match action {
+            Action::FocusWindow { window } => {
+                self.live_window_client(window)?;
+                self.layout
+                    .focus_window(window)
+                    .map_err(|e| e.to_string())?;
+                self.relayout();
+                self.restore_keyboard_focus();
+            }
             Action::Focus { direction } => {
                 self.layout
                     .focus_direction(direction)
@@ -94,6 +106,10 @@ impl Fluxwm {
                     return Err("layout mode exceeds supported geometry".into());
                 }
                 self.relayout();
+            }
+            Action::Floating { toggle } => {
+                let id = self.layout.focused().ok_or("no focused toplevel")?;
+                self.set_window_floating(id, toggle && !self.layout.is_floating(id))?;
             }
             Action::Fullscreen { toggle } => {
                 let id = self.layout.focused().ok_or("no focused toplevel")?;
@@ -162,7 +178,7 @@ impl Fluxwm {
             Action::ReloadConfig => {
                 self.request_config_reload().map_err(str::to_owned)?;
             }
-            Action::Floating { .. } | Action::Overview { .. } | Action::Lock => {
+            Action::Overview { .. } | Action::Lock => {
                 return Err("action is not implemented in the nested backend".into());
             }
         }

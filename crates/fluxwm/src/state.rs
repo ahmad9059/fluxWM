@@ -108,6 +108,7 @@ pub struct Fluxwm {
     pub launch_outcomes: std::collections::VecDeque<LaunchOutcome>,
     pub ipc_socket: Option<PathBuf>,
     pub layout: Layout,
+    floating_z: Vec<WindowId>,
     pub redraw_ping: Option<smithay::reexports::calloop::ping::Ping>,
     pub dirty: bool,
     pub render_suspended: bool,
@@ -252,6 +253,7 @@ impl Fluxwm {
                 width: 1280.0,
                 height: 800.0,
             })?,
+            floating_z: Vec::new(),
             redraw_ping: None,
             dirty: true,
             render_suspended: false,
@@ -488,6 +490,7 @@ impl Fluxwm {
         };
         Self::dismiss_root_popups(surface);
         if let Some(item) = self.windows.remove(id) {
+            self.cancel_window_grab(id);
             self.space.unmap_elem(&item.window);
             if item.mapped {
                 let _ = self.layout.remove(id);
@@ -577,9 +580,8 @@ impl Fluxwm {
         let was_mapped = item.mapped;
         let window = item.window.clone();
         if has_buffer && !was_mapped {
-            let constraints = self.constraints_for(root);
             let activate = !self.seat.get_keyboard().is_some_and(|k| k.is_grabbed());
-            if let Err(error) = self.layout.insert_with_focus(id, constraints, activate) {
+            if let Err(error) = self.admit_layout(id, activate) {
                 self.windows
                     .get_mut(id)
                     .expect("live dispatch ID")
@@ -612,10 +614,17 @@ impl Fluxwm {
             item.mapped = false;
             item.initial_maximized = false;
             item.initial_fullscreen = false;
+            item.floating = false;
             item.minimize_pending = false;
             if let Some(top) = item.window.toplevel() {
+                // Smithay resets role state on null-buffer unmap as well. Keep
+                // the invariant explicit without starting a new mapping cycle.
+                top.with_pending_state(|state| state.states.unset(
+                    smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Resizing
+                ));
                 crate::configure::clear_reply(top);
             }
+            self.cancel_window_grab(id);
             Self::dismiss_root_popups(root);
             self.space.unmap_elem(&window);
             let _ = self.layout.remove(id);
@@ -652,6 +661,10 @@ impl Fluxwm {
     }
 
     pub fn relayout(&mut self) {
+        self.relayout_inner(true);
+    }
+
+    fn relayout_inner(&mut self, cleanup_grabs: bool) {
         // Capacity depends on the other members and viewport, not just the
         // rejected client's hints. Retry retained buffers on model changes so
         // a static client does not need to commit again after capacity returns.
@@ -670,18 +683,7 @@ impl Fluxwm {
             .collect();
         let mut admitted = false;
         for id in pending {
-            let surface = self
-                .windows
-                .get(id)
-                .and_then(|item| item.window.toplevel())
-                .expect("live rejected role in one dispatch")
-                .wl_surface()
-                .clone();
-            if self
-                .layout
-                .insert_with_focus(id, self.constraints_for(&surface), false)
-                .is_ok()
-            {
+            if self.admit_layout(id, false).is_ok() {
                 if self.apply_initial_states(id).is_err() {
                     let _ = self.layout.remove(id);
                     continue;
@@ -693,6 +695,11 @@ impl Fluxwm {
                 self.bump_sequence();
                 admitted = true;
                 tracing::info!(%id, "window_admission_recovered");
+            }
+        }
+        for (id, item) in self.windows.iter_mut() {
+            if item.mapped {
+                item.floating = self.layout.is_floating(id);
             }
         }
         for placement in self.layout.placements() {
@@ -751,9 +758,46 @@ impl Fluxwm {
         {
             self.space.raise_element(&item.window, false);
         }
+        // Floating is a distinct layer, including when an ordinary tile has
+        // keyboard focus. Preserve floating focus history across later commits.
+        self.floating_z.retain(|id| self.layout.is_floating(*id));
+        for placement in self.layout.placements() {
+            if self.layout.is_floating(placement.window)
+                && !self.floating_z.contains(&placement.window)
+            {
+                self.floating_z.push(placement.window);
+            }
+        }
+        if let Some(id) = self
+            .layout
+            .focused()
+            .filter(|id| self.layout.is_floating(*id))
+        {
+            self.floating_z.retain(|other| *other != id);
+            self.floating_z.push(id);
+        }
+        for id in &self.floating_z {
+            if !self.layout.is_fullscreen(*id)
+                && let Some(item) = self.windows.get(*id)
+                && self.space.element_location(&item.window).is_some()
+            {
+                self.space.raise_element(&item.window, false);
+            }
+        }
+        if let Some(id) = self
+            .layout
+            .focused()
+            .filter(|id| self.layout.is_fullscreen(*id))
+            && let Some(item) = self.windows.get(id)
+            && self.space.element_location(&item.window).is_some()
+        {
+            self.space.raise_element(&item.window, false);
+        }
         // Release seat wrappers only after all scene removals are authoritative;
         // cleanup repairs keyboard/pointer focus using the completed layout.
-        self.cleanup_popup_grab();
+        if cleanup_grabs {
+            self.cleanup_popup_grab();
+        }
         if admitted {
             self.restore_keyboard_focus();
         }
@@ -792,6 +836,41 @@ impl Fluxwm {
             self.display_handle
                 .backend_handle()
                 .kill_client(client.id(), DisconnectReason::ConnectionClosed);
+        }
+    }
+
+    fn admit_layout(
+        &mut self,
+        id: WindowId,
+        activate: bool,
+    ) -> Result<(), flux_layout::LayoutError> {
+        // Parent placement is selected before insertion. Born-floating members
+        // must never create or reveal a temporary ordinary column.
+        let top = self
+            .windows
+            .get(id)
+            .and_then(|item| item.window.toplevel())
+            .expect("admitted xdg role");
+        let constraints = self.constraints_for(top.wl_surface());
+        let parent = {
+            use smithay::reexports::wayland_server::Resource;
+            top.parent()
+                .filter(|parent| parent.id().same_client_as(&top.wl_surface().id()))
+        }
+        .and_then(|parent| self.window_id(&parent))
+        .filter(|parent| {
+            self.windows
+                .get(*parent)
+                .is_some_and(|item| item.mapped && item.window.alive())
+        });
+        if parent.is_some() || self.windows.get(id).is_some_and(|item| item.floating) {
+            let rect = self.initial_floating_rect(id, parent);
+            self.layout
+                .insert_floating_with_focus(id, constraints, Some(rect), activate)?;
+            self.windows.get_mut(id).expect("admitted role").floating = true;
+            Ok(())
+        } else {
+            self.layout.insert_with_focus(id, constraints, activate)
         }
     }
 
@@ -840,6 +919,28 @@ impl Fluxwm {
         }
     }
 
+    fn cancel_window_grab(&mut self, id: WindowId) {
+        let Some(pointer) = self.seat.get_pointer() else {
+            return;
+        };
+        let owned = pointer
+            .with_grab(|_, grab| {
+                grab.downcast_ref::<crate::grabs::MoveSurfaceGrab>()
+                    .is_some_and(|grab| grab.window_id() == id)
+                    || grab
+                        .downcast_ref::<crate::grabs::ResizeSurfaceGrab>()
+                        .is_some_and(|grab| grab.window_id() == id)
+            })
+            .unwrap_or(false);
+        if owned {
+            pointer.unset_grab(
+                self,
+                SERIAL_COUNTER.next_serial(),
+                smithay::backend::input::InputTime::now(),
+            );
+        }
+    }
+
     fn owns_click_grab(&self, id: WindowId) -> bool {
         use smithay::reexports::wayland_server::Resource;
         let Some(top) = self.windows.get(id).and_then(|item| item.window.toplevel()) else {
@@ -855,6 +956,130 @@ impl Fluxwm {
                 .grab_start_data()
                 .and_then(|data| data.focus)
                 .is_some_and(|(focus, _)| focus.id().same_client_as(&top.wl_surface().id()))
+    }
+
+    fn initial_floating_rect(&self, id: WindowId, parent: Option<WindowId>) -> flux_core::Rect {
+        let item = self.windows.get(id).expect("live floating role");
+        let geometry = item.window.geometry();
+        let constraints =
+            self.constraints_for(item.window.toplevel().expect("xdg role").wl_surface());
+        let width = f64::from(geometry.size.w).max(constraints.min.width).min(
+            constraints
+                .max
+                .map_or(flux_layout::MAX_COORD, |max| max.width),
+        );
+        let height = f64::from(geometry.size.h).max(constraints.min.height).min(
+            constraints
+                .max
+                .map_or(flux_layout::MAX_COORD, |max| max.height),
+        );
+        let camera = self.layout.camera();
+        let center = parent
+            .and_then(|parent| {
+                self.layout.placements().into_iter().find(|p| {
+                    let view = camera.rect_to_view(p.rect);
+                    p.window == parent
+                        && p.visible
+                        && view.x < self.layout.viewport().width
+                        && view.x + view.width > 0.0
+                        && view.y < self.layout.viewport().height
+                        && view.y + view.height > 0.0
+                })
+            })
+            .map(|p| flux_core::Point {
+                x: p.rect.x + p.rect.width / 2.0,
+                y: p.rect.y + p.rect.height / 2.0,
+            })
+            .unwrap_or_else(|| {
+                camera.view_to_world(flux_core::Point {
+                    x: self.layout.viewport().width / 2.0,
+                    y: self.layout.viewport().height / 2.0,
+                })
+            });
+        let view_width = self.layout.viewport().width / camera.zoom;
+        let view_height = self.layout.viewport().height / camera.zoom;
+        let x = if width <= view_width {
+            (center.x - width / 2.0)
+                .clamp(camera.position.x, camera.position.x + view_width - width)
+        } else {
+            camera.position.x
+        };
+        let y = if height <= view_height {
+            (center.y - height / 2.0)
+                .clamp(camera.position.y, camera.position.y + view_height - height)
+        } else {
+            camera.position.y
+        };
+        flux_core::Rect {
+            x: x.clamp(-flux_layout::MAX_COORD, flux_layout::MAX_COORD - width),
+            y: y.clamp(-flux_layout::MAX_COORD, flux_layout::MAX_COORD - height),
+            width,
+            height,
+        }
+    }
+
+    pub fn set_window_floating(&mut self, id: WindowId, floating: bool) -> Result<(), String> {
+        if self.stopping || self.shutdown_deadline.is_some() {
+            return Err("instance is shutting down".into());
+        }
+        self.live_window_client(id)?;
+        self.windows
+            .get(id)
+            .filter(|item| item.mapped)
+            .ok_or("window is not mapped")?;
+        if self.layout.is_floating(id) == floating {
+            return Ok(());
+        }
+        if self.seat.get_keyboard().is_some_and(|k| k.is_grabbed())
+            || (self.seat.get_pointer().is_some_and(|p| p.is_grabbed())
+                && !self.owns_click_grab(id))
+        {
+            return Err("an input grab is active".into());
+        }
+        // Overlay buffers describe the viewport, not a useful floating restore
+        // size. Let the model choose its constrained default in that case.
+        let rect = (floating && !self.layout.is_maximized(id) && !self.layout.is_fullscreen(id))
+            .then(|| self.initial_floating_rect(id, None));
+        self.layout
+            .set_floating(id, floating, rect)
+            .map_err(|e| e.to_string())?;
+        self.windows
+            .get_mut(id)
+            .expect("live floating role")
+            .floating = floating;
+        self.bump_sequence();
+        self.relayout();
+        Ok(())
+    }
+
+    pub fn set_window_floating_rect(
+        &mut self,
+        id: WindowId,
+        rect: flux_core::Rect,
+    ) -> Result<(), String> {
+        if self.stopping || self.shutdown_deadline.is_some() {
+            return Err("instance is shutting down".into());
+        }
+        self.live_window_client(id)?;
+        if !self.windows.get(id).is_some_and(|item| item.mapped)
+            || !self.layout.is_floating(id)
+            || self.layout.is_minimized(id)
+            || self.layout.is_maximized(id)
+            || self.layout.is_fullscreen(id)
+        {
+            return Err("window is not an editable floating member".into());
+        }
+        let old = self.layout.floating_rect(id);
+        self.layout
+            .set_floating_rect(id, rect)
+            .map_err(|e| e.to_string())?;
+        if self.layout.floating_rect(id) != old {
+            self.bump_sequence();
+            // Motion can hold the pointer mutex. finish_dispatch repairs grabs
+            // after this callback releases it; never re-enter pointer cleanup.
+            self.relayout_inner(false);
+        }
+        Ok(())
     }
 
     pub fn set_window_maximized(&mut self, id: WindowId, maximized: bool) -> Result<(), String> {
@@ -1224,6 +1449,7 @@ impl Fluxwm {
                 Self::dismiss_root_popups(&surface);
             }
             if let Some(item) = self.windows.remove(id) {
+                self.cancel_window_grab(id);
                 self.space.unmap_elem(&item.window);
                 if item.mapped {
                     let _ = self.layout.remove(id);

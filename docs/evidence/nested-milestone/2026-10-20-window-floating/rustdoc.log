@@ -1,0 +1,5 @@
+ Documenting fluxwm-fixture v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm-fixture)
+ Documenting flux-layout v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-layout)
+ Documenting fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.49s
+   Generated /home/ahmad/Documents/Projects/fluxwm/target/doc/flux_config/index.html and 12 other files

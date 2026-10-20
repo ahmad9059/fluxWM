@@ -4,9 +4,10 @@
 //! eg. Usually whenever a user clicks on the app's border and starts dragging, the compositors
 //! enters a ResizeSurfaceGrab state.
 
+use super::move_grab::floating_role_live;
 use crate::Fluxwm;
+use flux_core::{Rect, WindowId};
 use smithay::{
-    desktop::{Space, Window},
     input::pointer::{
         AxisFrame, ButtonEvent, GestureHoldBeginEvent, GestureHoldEndEvent, GesturePinchBeginEvent,
         GesturePinchEndEvent, GesturePinchUpdateEvent, GestureSwipeBeginEvent,
@@ -17,10 +18,8 @@ use smithay::{
         wayland_protocols::xdg::shell::server::xdg_toplevel,
         wayland_server::protocol::wl_surface::WlSurface,
     },
-    utils::{Logical, Point, Rectangle, Size},
-    wayland::{compositor, shell::xdg::SurfaceCachedState},
+    utils::{Logical, Point},
 };
-use std::cell::RefCell;
 
 bitflags::bitflags! {
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -38,46 +37,64 @@ bitflags::bitflags! {
     }
 }
 
-impl From<xdg_toplevel::ResizeEdge> for ResizeEdge {
-    #[inline]
-    fn from(x: xdg_toplevel::ResizeEdge) -> Self {
-        Self::from_bits(x as u32).unwrap()
+impl ResizeEdge {
+    pub fn from_protocol(edge: xdg_toplevel::ResizeEdge) -> Option<Self> {
+        let edges = Self::from_bits(edge as u32)?;
+        (!edges.is_empty()
+            && !edges.contains(Self::TOP | Self::BOTTOM)
+            && !edges.contains(Self::LEFT | Self::RIGHT))
+        .then_some(edges)
     }
 }
 
 pub struct ResizeSurfaceGrab {
     start_data: PointerGrabStartData<Fluxwm>,
-    window: Window,
-
+    window_id: WindowId,
+    surface: WlSurface,
     edges: ResizeEdge,
-
-    initial_rect: Rectangle<i32, Logical>,
-    last_window_size: Size<i32, Logical>,
+    initial_rect: Rect,
+    initial_zoom: f64,
 }
 
 impl ResizeSurfaceGrab {
     pub fn start(
         start_data: PointerGrabStartData<Fluxwm>,
-        window: Window,
+        window_id: WindowId,
+        surface: WlSurface,
         edges: ResizeEdge,
-        initial_window_rect: Rectangle<i32, Logical>,
+        initial_rect: Rect,
+        initial_zoom: f64,
     ) -> Self {
-        let initial_rect = initial_window_rect;
-
-        ResizeSurfaceState::with(window.toplevel().unwrap().wl_surface(), |state| {
-            *state = ResizeSurfaceState::Resizing {
-                edges,
-                initial_rect,
-            };
-        });
-
         Self {
             start_data,
-            window,
+            window_id,
+            surface,
             edges,
             initial_rect,
-            last_window_size: initial_rect.size,
+            initial_zoom,
         }
+    }
+
+    pub fn window_id(&self) -> WindowId {
+        self.window_id
+    }
+
+    fn finish(&self, data: &mut Fluxwm) {
+        if !floating_role_live(data, self.window_id, &self.surface) {
+            return;
+        }
+        let Some(toplevel) = data
+            .windows
+            .get(self.window_id)
+            .and_then(|item| item.window.toplevel())
+        else {
+            return;
+        };
+        toplevel.with_pending_state(|state| {
+            state.states.unset(xdg_toplevel::State::Resizing);
+        });
+        crate::configure::defer_reply(toplevel);
+        crate::configure::send_pending(toplevel);
     }
 }
 
@@ -92,60 +109,51 @@ impl PointerGrab<Fluxwm> for ResizeSurfaceGrab {
         // While the grab is active, no client has pointer focus
         handle.motion(data, None, event);
 
+        if !floating_role_live(data, self.window_id, &self.surface) {
+            handle.unset_grab(self, data, event.serial, event.time, true);
+            return;
+        }
+        let zoom = self.initial_zoom;
         let mut delta = event.location - self.start_data.location;
-
-        let mut new_window_width = self.initial_rect.size.w;
-        let mut new_window_height = self.initial_rect.size.h;
-
+        delta.x /= zoom;
+        delta.y /= zoom;
+        let Some(constraints) = data.layout.member_constraints(self.window_id) else {
+            return;
+        };
+        let mut rect = self.initial_rect;
         if self.edges.intersects(ResizeEdge::LEFT | ResizeEdge::RIGHT) {
-            if self.edges.intersects(ResizeEdge::LEFT) {
-                delta.x = -delta.x;
+            let requested = rect.width
+                + if self.edges.contains(ResizeEdge::LEFT) {
+                    -delta.x
+                } else {
+                    delta.x
+                };
+            rect.width = requested.max(constraints.min.width).min(
+                constraints
+                    .max
+                    .map_or(flux_layout::MAX_COORD, |max| max.width),
+            );
+            if self.edges.contains(ResizeEdge::LEFT) {
+                rect.x = self.initial_rect.x + self.initial_rect.width - rect.width;
             }
-
-            new_window_width = (self.initial_rect.size.w as f64 + delta.x) as i32;
         }
-
         if self.edges.intersects(ResizeEdge::TOP | ResizeEdge::BOTTOM) {
-            if self.edges.intersects(ResizeEdge::TOP) {
-                delta.y = -delta.y;
+            let requested = rect.height
+                + if self.edges.contains(ResizeEdge::TOP) {
+                    -delta.y
+                } else {
+                    delta.y
+                };
+            rect.height = requested.max(constraints.min.height).min(
+                constraints
+                    .max
+                    .map_or(flux_layout::MAX_COORD, |max| max.height),
+            );
+            if self.edges.contains(ResizeEdge::TOP) {
+                rect.y = self.initial_rect.y + self.initial_rect.height - rect.height;
             }
-
-            new_window_height = (self.initial_rect.size.h as f64 + delta.y) as i32;
         }
-
-        let (min_size, max_size) =
-            compositor::with_states(self.window.toplevel().unwrap().wl_surface(), |states| {
-                let mut guard = states.cached_state.get::<SurfaceCachedState>();
-                let data = guard.current();
-                (data.min_size, data.max_size)
-            });
-
-        let min_width = min_size.w.max(1);
-        let min_height = min_size.h.max(1);
-
-        let max_width = if max_size.w == 0 {
-            i32::MAX
-        } else {
-            max_size.w
-        };
-        let max_height = if max_size.h == 0 {
-            i32::MAX
-        } else {
-            max_size.h
-        };
-
-        self.last_window_size = Size::from((
-            new_window_width.max(min_width).min(max_width),
-            new_window_height.max(min_height).min(max_height),
-        ));
-
-        let xdg = self.window.toplevel().unwrap();
-        xdg.with_pending_state(|state| {
-            state.states.set(xdg_toplevel::State::Resizing);
-            state.size = Some(self.last_window_size);
-        });
-
-        crate::configure::send_pending(xdg);
+        let _ = data.set_window_floating_rect(self.window_id, rect);
     }
 
     fn relative_motion(
@@ -166,28 +174,8 @@ impl PointerGrab<Fluxwm> for ResizeSurfaceGrab {
     ) {
         handle.button(data, event);
 
-        // The button is a button code as defined in the
-        // Linux kernel's linux/input-event-codes.h header file, e.g. BTN_LEFT.
-        const BTN_LEFT: u32 = 0x110;
-
-        if !handle.current_pressed().contains(&BTN_LEFT) {
-            // No more buttons are pressed, release the grab.
+        if !handle.current_pressed().contains(&self.start_data.button) {
             handle.unset_grab(self, data, event.serial, event.time, true);
-
-            let xdg = self.window.toplevel().unwrap();
-            xdg.with_pending_state(|state| {
-                state.states.unset(xdg_toplevel::State::Resizing);
-                state.size = Some(self.last_window_size);
-            });
-
-            crate::configure::send_pending(xdg);
-
-            ResizeSurfaceState::with(xdg.wl_surface(), |state| {
-                *state = ResizeSurfaceState::WaitingForLastCommit {
-                    edges: self.edges,
-                    initial_rect: self.initial_rect,
-                };
-            });
         }
     }
 
@@ -280,105 +268,7 @@ impl PointerGrab<Fluxwm> for ResizeSurfaceGrab {
         &self.start_data
     }
 
-    fn unset(&mut self, _data: &mut Fluxwm) {}
-}
-
-/// State of the resize operation.
-///
-/// It is stored inside of WlSurface,
-/// and can be accessed using [`ResizeSurfaceState::with`]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
-enum ResizeSurfaceState {
-    #[default]
-    Idle,
-    Resizing {
-        edges: ResizeEdge,
-        /// The initial window size and location.
-        initial_rect: Rectangle<i32, Logical>,
-    },
-    /// Resize is done, we are now waiting for last commit, to do the final move
-    WaitingForLastCommit {
-        edges: ResizeEdge,
-        /// The initial window size and location.
-        initial_rect: Rectangle<i32, Logical>,
-    },
-}
-
-impl ResizeSurfaceState {
-    fn with<F, T>(surface: &WlSurface, cb: F) -> T
-    where
-        F: FnOnce(&mut Self) -> T,
-    {
-        compositor::with_states(surface, |states| {
-            states.data_map.insert_if_missing(RefCell::<Self>::default);
-            let state = states.data_map.get::<RefCell<Self>>().unwrap();
-
-            cb(&mut state.borrow_mut())
-        })
+    fn unset(&mut self, data: &mut Fluxwm) {
+        self.finish(data);
     }
-
-    fn commit(&mut self) -> Option<(ResizeEdge, Rectangle<i32, Logical>)> {
-        match *self {
-            Self::Resizing {
-                edges,
-                initial_rect,
-            } => Some((edges, initial_rect)),
-            Self::WaitingForLastCommit {
-                edges,
-                initial_rect,
-            } => {
-                // The resize is done, let's go back to idle
-                *self = Self::Idle;
-
-                Some((edges, initial_rect))
-            }
-            Self::Idle => None,
-        }
-    }
-}
-
-/// Should be called on `WlSurface::commit`
-pub fn handle_commit(space: &mut Space<Window>, surface: &WlSurface) -> Option<()> {
-    let window = space
-        .elements()
-        .find(|w| w.toplevel().unwrap().wl_surface() == surface)
-        .cloned()?;
-
-    let mut window_loc = space.element_location(&window)?;
-    let geometry = window.geometry();
-
-    let new_loc: Point<Option<i32>, Logical> = ResizeSurfaceState::with(surface, |state| {
-        state
-            .commit()
-            .and_then(|(edges, initial_rect)| {
-                // If the window is being resized by top or left, its location must be adjusted
-                // accordingly.
-                edges.intersects(ResizeEdge::TOP_LEFT).then(|| {
-                    let new_x = edges
-                        .intersects(ResizeEdge::LEFT)
-                        .then_some(initial_rect.loc.x + (initial_rect.size.w - geometry.size.w));
-
-                    let new_y = edges
-                        .intersects(ResizeEdge::TOP)
-                        .then_some(initial_rect.loc.y + (initial_rect.size.h - geometry.size.h));
-
-                    (new_x, new_y).into()
-                })
-            })
-            .unwrap_or_default()
-    });
-
-    if let Some(new_x) = new_loc.x {
-        window_loc.x = new_x;
-    }
-    if let Some(new_y) = new_loc.y {
-        window_loc.y = new_y;
-    }
-
-    if new_loc.x.is_some() || new_loc.y.is_some() {
-        // If TOP or LEFT side of the window got resized, we have to move it
-        space.map_element(window, window_loc, false);
-    }
-
-    Some(())
 }

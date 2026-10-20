@@ -64,3 +64,7 @@ Local pixel/lifecycle checks do not close native/toolkit, scale/output or comple
 [Graceful close and explicit client disconnect](../development/client-close.md) now distinguish a refused
 window-close request from connection-wide recovery through a live role ID. Local multi-connection checks
 do not close native/toolkit, grab or full desktop protocol cleanup qualification.
+
+[Floating windows](../development/floating.md) now leave active tiling allocation while retaining restoration
+metadata. Parent-dialog admission, exact-ID discovery and model-owned interactive geometry are integrated.
+Real authorized drag/resize, resize transactions, output/scale and full phase qualification remain open.

@@ -1,0 +1,237 @@
+{
+  "binary_sha256": "77bd9d2e966293c7b1db771921c978e57bcb5de40ad876e295f9cba40624490a",
+  "cases": [
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-53e76e6ad9144038859eb4b8",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-feature-gui/floating/floating/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-feature-gui/floating/floating/stats.json",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-checks/bin/fluxwm-fixture",
+        "floating",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6164,
+      "environment": {
+        "DISPLAY": ":8165",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-ineh6oxk"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "floating",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-ineh6oxk/fluxwm/fluxscene-53e76e6ad9144038859eb4b8.sock",
+        "pid": 130320,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-53e76e6ad9144038859eb4b8"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-53e76e6ad9144038859eb4b8",
+      "stats": {
+        "compositions": 6,
+        "destroyed": 3,
+        "final_windows": 0,
+        "flush_cycles": 129,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 7,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 4,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 8,
+        "submissions": 4,
+        "unmaps": 1,
+        "wayland_requests": 160
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-6d76c46343ea45138363e03f",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-feature-gui/floating/floating-pixels/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-feature-gui/floating/floating-pixels/stats.json",
+        "--screenshot",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-feature-gui/floating/floating-pixels/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-checks/bin/fluxwm-fixture",
+        "floating-pixels",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6314,
+      "environment": {
+        "DISPLAY": ":8165",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-ineh6oxk"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "floating-pixels",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "pixels": {
+        "focused_fullscreen_suppresses_float": false,
+        "height": 800,
+        "magenta_pixels": 76800,
+        "pixel_validation": "exact-client-rectangle",
+        "sha256": "5ec7a95b80139d3dd2020a53386ba963b86be6943eabe0541a75cf80132ae0d6",
+        "unfocused_float_above_focused_tile": true,
+        "width": 1280
+      },
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-ineh6oxk/fluxwm/fluxscene-6d76c46343ea45138363e03f.sock",
+        "pid": 130515,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-6d76c46343ea45138363e03f"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-6d76c46343ea45138363e03f",
+      "stats": {
+        "compositions": 5,
+        "destroyed": 2,
+        "final_windows": 0,
+        "flush_cycles": 41,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 9,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 2,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 9,
+        "submissions": 4,
+        "unmaps": 0,
+        "wayland_requests": 55
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-4e5d3624956748c7b85e769b",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-feature-gui/floating/floating-pixels-fullscreen/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-feature-gui/floating/floating-pixels-fullscreen/stats.json",
+        "--screenshot",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-feature-gui/floating/floating-pixels-fullscreen/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-floating-complete-checks/bin/fluxwm-fixture",
+        "floating-pixels-fullscreen",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6811,
+      "environment": {
+        "DISPLAY": ":8165",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-ineh6oxk"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "floating-pixels-fullscreen",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "pixels": {
+        "focused_fullscreen_suppresses_float": true,
+        "height": 800,
+        "magenta_pixels": 0,
+        "pixel_validation": "exact-client-rectangle",
+        "sha256": "1b7ddf626677f269b088bd15440c154e85fbfda4527cf317b057edae523ab677",
+        "unfocused_float_above_focused_tile": false,
+        "width": 1280
+      },
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-ineh6oxk/fluxwm/fluxscene-4e5d3624956748c7b85e769b.sock",
+        "pid": 130682,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-4e5d3624956748c7b85e769b"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-4e5d3624956748c7b85e769b",
+      "stats": {
+        "compositions": 8,
+        "destroyed": 2,
+        "final_windows": 0,
+        "flush_cycles": 47,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 11,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 2,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 10,
+        "submissions": 5,
+        "unmaps": 0,
+        "wayland_requests": 48
+      }
+    }
+  ],
+  "errors": [],
+  "executables_unchanged": true,
+  "fixture_sha256": "1aa2e2133bdec4aad5a32ee134aa68d36862129324b04507b60728699fb9c51f",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "scope": "nested real floating lifecycle, parent dialog admission, saved world geometry and exact SHM stacking/fullscreen suppression pixels; excludes physical/native execution and multi-output qualification",
+  "source_sha256": {
+    "smoke_floating.py": "b37122c8a34a1b391a652b20d9421bfde751d824c85a75306fa9233aa36246a8",
+    "smoke_nested.py": "ca776e500a8cb74328526a5020c2b1ea1f237ec1a31dc64d956e0b487fd98b4c",
+    "smoke_scene.py": "32163ebb762d15dbaa3df4887a527d29279fa43ed4b16f092fe1cd60eaf8c8b2"
+  }
+}

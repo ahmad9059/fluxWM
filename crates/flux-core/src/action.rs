@@ -27,6 +27,7 @@ pub enum Action {
     Overview { toggle: bool },
     Minimize,
     RestoreWindow { window: WindowId },
+    FocusWindow { window: WindowId },
     DisconnectClient { window: WindowId },
     CloseWindow,
     ReloadConfig,
@@ -52,6 +53,7 @@ enum WireAction {
     Overview { toggle: bool },
     Minimize {},
     RestoreWindow { window: WindowId },
+    FocusWindow { window: WindowId },
     DisconnectClient { window: WindowId },
     CloseWindow {},
     ReloadConfig {},
@@ -73,6 +75,7 @@ impl<'de> Deserialize<'de> for Action {
             WireAction::Overview { toggle } => Self::Overview { toggle },
             WireAction::Minimize {} => Self::Minimize,
             WireAction::RestoreWindow { window } => Self::RestoreWindow { window },
+            WireAction::FocusWindow { window } => Self::FocusWindow { window },
             WireAction::DisconnectClient { window } => Self::DisconnectClient { window },
             WireAction::CloseWindow {} => Self::CloseWindow,
             WireAction::ReloadConfig {} => Self::ReloadConfig,
@@ -151,6 +154,9 @@ mod tests {
             Action::RestoreWindow {
                 window: WindowId::new(2, 3),
             },
+            Action::FocusWindow {
+                window: WindowId::new(2, 3),
+            },
             Action::DisconnectClient {
                 window: WindowId::new(2, 3),
             },
@@ -200,6 +206,8 @@ mod tests {
             r#"{"name":"fullscreen","toggle":null}"#,
             r#"{"name":"minimize","window":"0:0"}"#,
             r#"{"name":"restore-window"}"#,
+            r#"{"name":"focus-window"}"#,
+            r#"{"name":"focus-window","window":2}"#,
             r#"{"name":"disconnect-client"}"#,
             r#"{"name":"disconnect-client","window":"-1:0"}"#,
             r#"{"name":"disconnect-client","window":4}"#,
