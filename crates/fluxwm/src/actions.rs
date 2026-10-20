@@ -1,7 +1,47 @@
 use crate::Fluxwm;
-use flux_core::Action;
+use flux_core::{Action, WindowId};
+use smithay::{
+    reexports::wayland_server::{Client, Resource, backend::DisconnectReason},
+    utils::IsAlive,
+};
 
 impl Fluxwm {
+    fn live_window_client(&self, window: WindowId) -> Result<Client, String> {
+        let top = self
+            .windows
+            .get(window)
+            .filter(|item| item.window.alive())
+            .and_then(|item| item.window.toplevel())
+            .ok_or("window is not a live toplevel")?;
+        let client = top
+            .wl_surface()
+            .client()
+            .ok_or("window client is disconnected")?;
+        let data = client
+            .get_data::<crate::state::ClientState>()
+            .ok_or("window client is not owned by this instance")?;
+        if data.disconnected.load(std::sync::atomic::Ordering::Acquire) {
+            return Err("window client is disconnected".into());
+        }
+        Ok(client)
+    }
+
+    pub fn disconnect_affected_windows(&self, window: WindowId) -> Result<Vec<WindowId>, String> {
+        let client = self.live_window_client(window)?;
+        Ok(self
+            .windows
+            .iter()
+            .filter_map(|(id, item)| {
+                item.window
+                    .toplevel()
+                    .filter(|top| top.alive())
+                    .and_then(|top| top.wl_surface().client())
+                    .filter(|owner| owner.id() == client.id())
+                    .map(|_| id)
+            })
+            .collect())
+    }
+
     /// Validate user intent at the live model boundary. Unsupported features fail
     /// explicitly; accepting an action does not promise hardware presentation.
     pub fn apply_action(&mut self, action: Action) -> Result<(), String> {
@@ -69,11 +109,22 @@ impl Fluxwm {
                 self.set_window_minimized(id, true)?;
             }
             Action::RestoreWindow { window } => self.set_window_minimized(window, false)?,
+            Action::DisconnectClient { window } => {
+                let client = self.live_window_client(window)?;
+                self.display_handle
+                    .backend_handle()
+                    .kill_client(client.id(), DisconnectReason::ConnectionClosed);
+                // The Rust backend retires killed clients/destructors during
+                // dispatch, even if the peer never sends another request.
+                self.pending_client_disconnects.push(client.id());
+                self.wayland_dispatch_ping.ping();
+            }
             Action::CloseWindow => {
+                let id = self.layout.focused().ok_or("no focused toplevel")?;
+                self.live_window_client(id)?;
                 let top = self
-                    .layout
-                    .focused()
-                    .and_then(|id| self.windows.get(id))
+                    .windows
+                    .get(id)
                     .and_then(|item| item.window.toplevel())
                     .ok_or("no focused toplevel")?;
                 top.send_close();

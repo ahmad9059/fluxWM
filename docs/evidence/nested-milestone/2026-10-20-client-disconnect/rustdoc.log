@@ -1,0 +1,13 @@
+ Documenting flux-input v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-input)
+ Documenting fluxctl v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxctl)
+ Documenting flux-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-config)
+ Documenting fluxwm-fixture v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm-fixture)
+ Documenting flux-process v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-process)
+ Documenting flux-ipc v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-ipc)
+ Documenting flux-layout v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-layout)
+ Documenting flux-scene v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-scene)
+ Documenting flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core)
+ Documenting fluxwm-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm-config)
+ Documenting fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.39s
+   Generated /home/ahmad/Documents/Projects/fluxwm/target/doc/flux_config/index.html and 12 other files

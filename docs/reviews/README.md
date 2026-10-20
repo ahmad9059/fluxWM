@@ -110,3 +110,10 @@ toolkits, the remaining bounded popup-cleanup delay and native hardware are not 
 defects. Their corrections and projected-edge bounds have regression tests; the focused follow-up records
 the final source verdict. Real nested checks cover lifecycle and exact backdrop pixels. Hardware and complete
 window-state qualification remain open.
+
+## Explicit client disconnect review
+
+[Focused Claude review](client-disconnect-2026-10-20/disposition.md) found no high/medium defect in exact
+connection targeting and silent-peer cleanup. A negative control distinguishes the missing-cleanup bug;
+post-review fixture assertions strengthen close isolation and stale error checks. Pipelined retiring-role
+behavior, teardown ordering and complete desktop/native qualification remain open.

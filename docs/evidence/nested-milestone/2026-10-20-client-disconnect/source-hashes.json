@@ -1,0 +1,17 @@
+{
+  "crates/flux-core/src/action.rs": "7ecc519416ba205a34ae723550b38da3c155655482255013953d6805591c2542",
+  "crates/fluxwm/src/actions.rs": "10036c3133f5f71c80209250efe23e91149178eeddb0f81e62cd13e4ca447d9c",
+  "crates/fluxwm/src/ipc.rs": "7187f6004e4d450bac988a65f2a9daaf72e816e91598b59c3a365a4b4c22ad7b",
+  "crates/fluxwm/src/state.rs": "66317ee997652a94a09474976af004379764ddf200d01d44515e7d9026cdb21c",
+  "crates/fluxwm-fixture/src/main.rs": "d1f1fc0721a6aed7fd4aea8f3a864f2e791d22aa11a0556639754b4d414ce33c",
+  "docs/development/README.md": "60a79185c48f15d089ecfaba1667d504aefde4e39a5983a61d83859ec1858d8d",
+  "docs/development/client-close.md": "3b8ca7f32e3621942259cb37efdfb09f434ccfd6a508057a2ad944fd9b5af249",
+  "docs/development/production-status-2026-10-18.md": "857c9c79bea2e8e2175021984443e545bb285e1065cdcfcaa21748d308b0b3fe",
+  "docs/development/runtime.md": "0584f54338de4c67780b9e67c0578dd1810e19bd41dfd5a1aa803b61c8f7915b",
+  "docs/phases/04-scrolling-layout.md": "0787d0f5e627d1154da4a5f27aaedc141366bc064f6818d17682c47392844f27",
+  "docs/reviews/README.md": "6ab986f30ae00b7566d5c00cd4920f6de5fa1fe43da133173427bac15e369a20",
+  "tools/smoke_close.py": "41473f33ed6eb304d35b9c8c953adca9c5e8c549fe81d3d321fb45b35f9c0a2c",
+  "tools/smoke_health.py": "04147654f0b9dc22a7b8f31e20cc5ac07de2642003e434c3bba7ca8b74a824b2",
+  "tools/smoke_nested.py": "ca776e500a8cb74328526a5020c2b1ea1f237ec1a31dc64d956e0b487fd98b4c",
+  "tools/smoke_private.py": "4818133149c3472fa8d73a5fd75257ab14ef4c533ee78a9aca1b3c65f7fde35d"
+}

@@ -71,7 +71,7 @@ impl Fluxwm {
             ),
             Method::Capabilities => Ok(json!({
                 "backend":self.backend, "subscriptions":false, "config_reload":self.config.is_some(),
-                "actions":["focus","move","pan","resize","workspace-mode","fullscreen","maximize","minimize","restore-window","close-window","spawn","reload-config","quit"],
+                "actions":["focus","move","pan","resize","workspace-mode","fullscreen","maximize","minimize","restore-window","close-window","disconnect-client","spawn","reload-config","quit"],
                 "secure_lock":false,"capture":false,"drag_and_drop":false,"native_session":self.backend == "native","x11_clients":false,
                 "client_responsiveness":"xdg-shell-ping", "unresponsive_clients_killed":false,
                 "frame_clock":if self.backend == "native" {"drm-page-flip"} else {"virtual-60hz"}, "host_presentation_observed":false,
@@ -121,9 +121,16 @@ impl Fluxwm {
             })),
             Method::Action => request.action().and_then(|action| {
                 let spawning = matches!(action, flux_core::Action::Spawn { .. });
+                let affected = if let flux_core::Action::DisconnectClient { window } = &action {
+                    Some(self.disconnect_affected_windows(*window)
+                        .map_err(|error| ErrorBody::new(ErrorCode::NotReady, error))?)
+                } else { None };
                 self.apply_action(action)
                     .map(|()| {
-                        if spawning {
+                        if let Some(affected) = affected {
+                            json!({"accepted":true,"scope":"wayland-client-connection",
+                                "affected_windows":affected,"other_windows_may_be_lost":true})
+                        } else if spawning {
                             json!({"accepted":true,"operation_id":self.sequence.to_string()})
                         } else {
                             json!({"accepted":true})

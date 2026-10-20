@@ -1,0 +1,54 @@
+    Checking flux-core v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-core)
+    Checking fluxwm-fixture v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm-fixture)
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/flux_core-2kn37tzxmm5pm/s-hne2ml8ytu-0ppi4c3-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+    Checking flux-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-config)
+    Checking flux-ipc v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-ipc)
+    Checking flux-process v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-process)
+    Checking flux-scene v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-scene)
+    Checking flux-layout v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-layout)
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/flux_config-13r9au2qf8m2z/s-hne2mlfyib-0qa42s6-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/flux_scene-27iop97r2rtyi/s-hne2mlg5l0-1ve3z4y-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/flux_process-30v9037tmak5x/s-hne2mlg8s2-0hlmfco-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/flux_ipc-0sracguarxg2y/s-hne2mlgna0-15x0fuz-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: `flux-core` (lib test) generated 1 warning
+warning: `flux-scene` (lib test) generated 1 warning
+    Checking fluxctl v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxctl)
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/fluxctl-0u1ys41i86bls/s-hne2mlqs4j-1v60a67-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/cli-2p0wxbq4c6j7i/s-hne2mlqs4i-05znap2-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/fluxctl-15ha1bdo47gdg/s-hne2mlqx88-0a9whv5-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: `flux-process` (lib test) generated 1 warning
+warning: `fluxctl` (bin "fluxctl") generated 1 warning
+warning: `fluxctl` (test "cli") generated 1 warning
+warning: `fluxctl` (bin "fluxctl" test) generated 1 warning
+warning: `flux-ipc` (lib test) generated 1 warning
+    Checking flux-input v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/flux-input)
+    Checking fluxwm-config v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm-config)
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/flux_input-31rbtvrbop8wo/s-hne2mlwyjn-07kx574-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/fluxwm_config-2zz1nd5dsby4k/s-hne2mlwyko-0lo4pue-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/containment-2hbmr7hys5slf/s-hne2mlwydz-03x919x-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/fluxwm_config-3ofg6o9biy4ws/s-hne2mlwyjq-1323q0r-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/coordinator-31b3pnxdkugz8/s-hne2mlwyoh-0yn7vbi-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: `fluxwm-config` (test "containment") generated 1 warning
+warning: `flux-input` (lib test) generated 1 warning
+warning: `fluxwm-config` (bin "fluxwm-config") generated 1 warning
+    Checking fluxwm v0.1.0-dev (/home/ahmad/Documents/Projects/fluxwm/crates/fluxwm)
+warning: `fluxwm-config` (test "coordinator") generated 1 warning
+warning: `fluxwm-config` (bin "fluxwm-config" test) generated 1 warning
+warning: corrupt incremental compilation artifact found at `/home/ahmad/Documents/Projects/fluxwm/target/debug/incremental/bindings-2b2pcm1velc43/s-hne2mlzfzd-17sacmh-working/dep-graph.bin`. This file will automatically be ignored and deleted. If you see this message repeatedly or can provoke it without manually manipulating the compiler's artifacts, please file an issue. The incremental compilation system relies on hardlinks and filesystem locks behaving correctly, and may not deal well with OS crashes, so whatever information you can provide about your filesystem or other state may be very relevant
+
+warning: `flux-input` (test "bindings") generated 1 warning
+warning: `flux-config` (lib test) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.35s

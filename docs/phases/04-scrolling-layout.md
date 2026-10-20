@@ -60,3 +60,7 @@ full native/toolkit qualification and the complete phase gate remain open.
 [Fullscreen pages](../development/fullscreen.md) now project saved layout members into output-sized pages,
 retain maximize/minimize intent and compose opaque backdrops independently of client opacity metadata.
 Local pixel/lifecycle checks do not close native/toolkit, scale/output or complete state-matrix qualification.
+
+[Graceful close and explicit client disconnect](../development/client-close.md) now distinguish a refused
+window-close request from connection-wide recovery through a live role ID. Local multi-connection checks
+do not close native/toolkit, grab or full desktop protocol cleanup qualification.

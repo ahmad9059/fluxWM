@@ -50,6 +50,8 @@ struct Window {
     fullscreen: bool,
     suspended: bool,
     destroyed: bool,
+    allow_close: bool,
+    closes: u32,
 }
 #[derive(Clone, Copy, Debug)]
 struct PopupTag(usize);
@@ -226,6 +228,8 @@ impl State {
             fullscreen: false,
             suspended: false,
             destroyed: false,
+            allow_close: false,
+            closes: 0,
         });
         self.record(json!({"create":n,"name":name}));
         n
@@ -823,7 +827,10 @@ impl Dispatch<xdg_toplevel::XdgToplevel, usize> for State {
                 }
             }
             xdg_toplevel::Event::Close => {
-                state.error = Some(format!("window {index}: unexpected close"))
+                state.windows[*index].closes += 1;
+                if !state.windows[*index].allow_close {
+                    state.error = Some(format!("window {index}: unexpected close"));
+                }
             }
             _ => (),
         }
@@ -3955,6 +3962,274 @@ fn maximize(timeout: Duration) -> Json {
 }
 
 /// Exercise real XDG minimize requests and the compositor's explicit restore API.
+/// Refusing close is legal; explicit disconnection targets the exact connection.
+fn close_client(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    let mut healthy = State::new(start);
+    let mut evidence = json!({"ok":false,"mode":"close"});
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit IPC socket required")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        for name in [
+            "close-target",
+            "close-hidden-sibling",
+            "close-unmapped-sibling",
+        ] {
+            let index = state.create(&qh, name);
+            state.windows[index].allow_close = true;
+            state.windows[index].surface.commit();
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "close initial configure",
+                |s| s.windows[index].configures > 0,
+            )?;
+            if index < 2 {
+                state.map(index, &qh)?;
+                until(
+                    &connection,
+                    &mut queue,
+                    &mut state,
+                    deadline,
+                    "close initial frame",
+                    |s| s.windows[index].frames > 0,
+                )?;
+            }
+        }
+        state.windows[1].toplevel.set_minimized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let victim = configure_window(&mut diagnostics, "FluxWM fixture close-target", deadline)?;
+        let hidden = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture close-hidden-sibling",
+            deadline,
+        )?;
+        let unmapped = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture close-unmapped-sibling",
+            deadline,
+        )?;
+        if victim["focused"] != true || hidden["minimized"] != true || unmapped["mapped"] != false {
+            return Err("close connection membership preconditions failed".into());
+        }
+        diagnostics.call("action", json!({"name":"close-window"}), deadline)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "real close event",
+            |s| s.windows[0].closes > 0,
+        )?;
+        let refused = configure_window(&mut diagnostics, victim["id"].as_str().unwrap(), deadline)?;
+        if refused["mapped"] != true
+            || state.windows[0].closes != 1
+            || state.windows[1].closes != 0
+            || state.windows[2].closes != 0
+        {
+            return Err("graceful close changed mapping or reached an unfocused sibling".into());
+        }
+        let frames = state.windows[0].frames;
+        state.map(0, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "refusing client frame",
+            |s| s.windows[0].frames > frames,
+        )?;
+        diagnostics.call(
+            "action",
+            json!({"name":"restore-window","window":hidden["id"]}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        diagnostics.call(
+            "action",
+            json!({"name":"focus","direction":"left"}),
+            deadline,
+        )?;
+        if configure_window(&mut diagnostics, victim["id"].as_str().unwrap(), deadline)?["focused"]
+            != true
+        {
+            return Err("refused close prevented navigation".into());
+        }
+        state.windows[1].toplevel.set_minimized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        evidence["close_refused"] = json!({"mapped":refused,"close_events":state.windows[0].closes,
+            "frames_before":frames,"frames_after":state.windows[0].frames,"navigation_continues":true});
+        let healthy_connection = connect(&path, deadline)?;
+        let mut healthy_queue = healthy_connection.new_event_queue::<State>();
+        let healthy_qh = healthy_queue.handle();
+        health_registry(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+        )?;
+        let survivor = healthy.create(&healthy_qh, "close-independent");
+        healthy.windows[survivor].surface.commit();
+        until(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+            "independent configure",
+            |s| s.windows[survivor].configures > 0,
+        )?;
+        healthy.map(survivor, &healthy_qh)?;
+        until(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+            "independent frame",
+            |s| s.windows[survivor].frames > 0,
+        )?;
+        let independent = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture close-independent",
+            deadline,
+        )?;
+        if victim["app_id"] != "org.fluxwm.Fixture" || independent["app_id"] != "org.fluxwm.Fixture"
+        {
+            return Err("same app-id isolation precondition failed".into());
+        }
+        // Deliberately target the live UNMAPPED role, never process metadata or focus.
+        let accepted = diagnostics.call(
+            "action",
+            json!({"name":"disconnect-client","window":unmapped["id"]}),
+            deadline,
+        )?;
+        let mut affected = accepted["affected_windows"]
+            .as_array()
+            .ok_or("missing affected_windows")?
+            .clone();
+        let mut expected = vec![
+            victim["id"].clone(),
+            hidden["id"].clone(),
+            unmapped["id"].clone(),
+        ];
+        affected.sort_by_key(Json::to_string);
+        expected.sort_by_key(Json::to_string);
+        if accepted["accepted"] != true
+            || accepted["scope"] != "wayland-client-connection"
+            || accepted["other_windows_may_be_lost"] != true
+            || affected != expected
+        {
+            return Err(format!(
+                "wrong disconnection acceptance/membership: {accepted}"
+            ));
+        }
+        evidence["accepted"] = accepted;
+        // No victim flush/request or healthy-peer traffic may drive cleanup.
+        // POLLHUP is reported even without requested events; queued configure
+        // bytes cannot turn this into a false readiness success.
+        let silence_start = Instant::now();
+        let quiet_peer_events = poll_fd(
+            connection.as_fd().as_raw_fd(),
+            0,
+            deadline.min(silence_start + Duration::from_millis(350)),
+        )
+        .map_err(|error| format!("silent victim did not disconnect: {error}"))?;
+        if quiet_peer_events & libc::POLLHUP == 0 {
+            return Err(format!(
+                "silent victim lacked peer hangup: {quiet_peer_events}"
+            ));
+        }
+        evidence["silent_peer_hangup"] = json!({"no_requests_or_flush_after_acceptance":true,
+            "poll_events":quiet_peer_events,"elapsed_ms":silence_start.elapsed().as_millis()});
+        let disconnected = protocol_roundtrip(&connection, &mut queue, &mut state, deadline)
+            .err()
+            .ok_or("victim connection still answers after disconnect")?;
+        let mut peer = libc::pollfd {
+            fd: connection.as_fd().as_raw_fd(),
+            events: libc::POLLIN,
+            revents: 0,
+        };
+        // Verify an actual transport failure, never accept a fixture timeout.
+        let polled = unsafe { libc::poll(&mut peer, 1, 0) };
+        let transport_failed = matches!(connection.backend().last_error(),
+            Some(wayland_client::backend::WaylandError::Io(ref error))
+                if matches!(error.kind(), std::io::ErrorKind::BrokenPipe
+                    | std::io::ErrorKind::ConnectionReset | std::io::ErrorKind::UnexpectedEof));
+        if connection.protocol_error().is_some()
+            || !(transport_failed || (polled == 1 && peer.revents & libc::POLLHUP != 0))
+        {
+            return Err(format!("disconnect lacked transport EOF: {disconnected}"));
+        }
+        evidence["victim_connection_eof"] = json!({"error":disconnected,"poll_hangup":peer.revents & libc::POLLHUP != 0,
+            "transport_error":transport_failed});
+        protocol_roundtrip(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+        )?;
+        let after = diagnostics.call("windows.list", json!({}), deadline)?;
+        let remaining = after["windows"]
+            .as_array()
+            .ok_or("missing windows after disconnection")?;
+        if remaining.len() != 1
+            || remaining[0]["id"] != independent["id"]
+            || remaining[0]["mapped"] != true
+        {
+            return Err(format!(
+                "wrong client removed or connection roles survived: {after}"
+            ));
+        }
+        evidence["after_disconnect"] = after;
+        let before_sequence = diagnostics.last_sequence;
+        let stale = diagnostics
+            .call(
+                "action",
+                json!({"name":"disconnect-client","window":victim["id"]}),
+                deadline,
+            )
+            .err()
+            .ok_or("stale disconnect target accepted")?;
+        if diagnostics.last_sequence != before_sequence
+            || !stale.contains("\"code\":\"not_ready\"")
+            || !stale.contains("window is not a live toplevel")
+        {
+            return Err(format!(
+                "stale disconnect lacked unchanged-sequence target rejection: {stale}"
+            ));
+        }
+        evidence["stale_rejection"] = json!({"error":stale,"sequence_unchanged":true});
+        let healthy_frames = healthy.windows[survivor].frames;
+        healthy.map(survivor, &healthy_qh)?;
+        until(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+            "survivor frame after disconnection",
+            |s| s.windows[survivor].frames > healthy_frames,
+        )?;
+        evidence["independent"] = json!({"before":independent,"after":configure_window(&mut diagnostics,
+            independent["id"].as_str().unwrap(),deadline)?,"frames_before":healthy_frames,
+            "frames_after":healthy.windows[survivor].frames,"same_process":true,"same_app_id":true});
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence["healthy_events"] = json!(healthy.events);
+    evidence
+}
+
 fn minimize(timeout: Duration) -> Json {
     let start = Instant::now();
     let deadline = start + timeout;
@@ -5002,6 +5277,7 @@ fn main() {
                 || mode == "popup-clip"
                 || mode == "configure-stream"
                 || mode == "configure-admission"
+                || mode == "close"
                 || mode == "minimize"
                 || mode == "maximize"
                 || mode == "fullscreen"
@@ -5019,6 +5295,7 @@ fn main() {
                 || mode == "popup-clip"
                 || mode == "configure-stream"
                 || mode == "configure-admission"
+                || mode == "close"
                 || mode == "minimize"
                 || mode == "maximize"
                 || mode == "fullscreen"
@@ -5034,10 +5311,11 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|minimize|maximize|fullscreen|fullscreen-pixels|fullscreen-pixels-partial|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|close|minimize|maximize|fullscreen|fullscreen-pixels|fullscreen-pixels-partial|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
+        Ok(("close", timeout)) => close_client(timeout),
         Ok(("minimize", timeout)) => minimize(timeout),
         Ok(("maximize", timeout)) => maximize(timeout),
         Ok(("fullscreen", timeout)) => fullscreen(timeout, false, false),

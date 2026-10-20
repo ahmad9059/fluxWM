@@ -118,6 +118,8 @@ pub struct Fluxwm {
     pub start_time: std::time::Instant,
     pub socket_name: OsString,
     pub display_handle: DisplayHandle,
+    pub wayland_dispatch_ping: smithay::reexports::calloop::ping::Ping,
+    pub pending_client_disconnects: Vec<ClientId>,
 
     pub space: Space<Window>,
     pub loop_signal: LoopSignal,
@@ -204,7 +206,8 @@ impl Fluxwm {
         let space = Space::default();
 
         // Setup a wayland socket that will be used to accept clients
-        let socket_name = Self::init_wayland_listener(display, event_loop, socket)?;
+        let (socket_name, wayland_dispatch_ping) =
+            Self::init_wayland_listener(display, event_loop, socket)?;
 
         // Get the loop signal, used to stop the event loop
         let loop_signal = event_loop.get_signal();
@@ -258,6 +261,8 @@ impl Fluxwm {
             fatal_error: None,
             start_time,
             display_handle: dh,
+            wayland_dispatch_ping,
+            pending_client_disconnects: Vec::new(),
 
             space,
             loop_signal,
@@ -297,7 +302,8 @@ impl Fluxwm {
         display: Display<Fluxwm>,
         event_loop: &mut EventLoop<'static, Self>,
         socket: &str,
-    ) -> Result<OsString, Box<dyn std::error::Error>> {
+    ) -> Result<(OsString, smithay::reexports::calloop::ping::Ping), Box<dyn std::error::Error>>
+    {
         // The upstream helper unlinks preexisting endpoints. Refuse collisions,
         // including dangling symlinks, before calling it. This is not protection
         // against a same-user process racing path replacement.
@@ -338,24 +344,46 @@ impl Fluxwm {
             })
             .map_err(|e| std::io::Error::other(e.to_string()))?;
 
-        // You also need to add the display itself to the event loop, so that client events will be processed by wayland-server.
+        // Share display ownership with a one-shot wake path. An explicit
+        // disconnect must drain backend destructors without peer traffic.
+        let dispatcher = calloop::Dispatcher::new(
+            Generic::new(display, Interest::READ, Mode::Level),
+            |_, display, state: &mut Self| {
+                // SAFETY: the registered display remains owned by the dispatcher.
+                state.dispatch_wayland(unsafe { display.get_mut() });
+                Ok(PostAction::Continue)
+            },
+        );
         loop_handle
-            .insert_source(
-                Generic::new(display, Interest::READ, Mode::Level),
-                |_, display, state| {
-                    // Safety: we don't drop the display
-                    unsafe {
-                        match display.get_mut().dispatch_clients(state) {
-                            Ok(requests) => state.stats.wayland_requests += requests as u64,
-                            Err(error) => state.fail(format!("Wayland dispatch failed: {error}")),
-                        }
+            .register_dispatcher(dispatcher.clone())
+            .map_err(|e| std::io::Error::other(e.to_string()))?;
+        let (ping, source) = smithay::reexports::calloop::ping::make_ping()?;
+        loop_handle
+            .insert_source(source, move |(), _, state| {
+                let mut display = dispatcher.as_source_mut();
+                // SAFETY: the ping callback only borrows the owned display; calloop
+                // does not run its readable callback concurrently.
+                let display = unsafe { display.get_mut() };
+                for client in std::mem::take(&mut state.pending_client_disconnects) {
+                    // dispatch_all_clients only cleans up after readable events
+                    // in the Rust backend. Single-client dispatch always drains
+                    // retired objects, including an entirely silent peer.
+                    match display.backend().dispatch_single_client(state, client) {
+                        Ok(requests) => state.stats.wayland_requests += requests as u64,
+                        Err(error) => tracing::debug!(%error, "retired client dispatch"),
                     }
-                    Ok(PostAction::Continue)
-                },
-            )
+                }
+            })
             .map_err(|e| std::io::Error::other(e.to_string()))?;
 
-        Ok(socket_name)
+        Ok((socket_name, ping))
+    }
+
+    fn dispatch_wayland(&mut self, display: &mut Display<Self>) {
+        match display.dispatch_clients(self) {
+            Ok(requests) => self.stats.wayland_requests += requests as u64,
+            Err(error) => self.fail(format!("Wayland dispatch failed: {error}")),
+        }
     }
 
     pub fn bump_sequence(&mut self) {
@@ -1291,9 +1319,13 @@ impl Fluxwm {
 #[derive(Default)]
 pub struct ClientState {
     pub compositor_state: CompositorClientState,
+    pub disconnected: std::sync::atomic::AtomicBool,
 }
 
 impl ClientData for ClientState {
     fn initialized(&self, _client_id: ClientId) {}
-    fn disconnected(&self, _client_id: ClientId, _reason: DisconnectReason) {}
+    fn disconnected(&self, _client_id: ClientId, _reason: DisconnectReason) {
+        self.disconnected
+            .store(true, std::sync::atomic::Ordering::Release);
+    }
 }
