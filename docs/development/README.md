@@ -73,3 +73,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 [Minimize/restore](minimize.md) documents retained layout slots, explicit IPC restore and input-grab policy.
 
 [Maximize/restore](maximize.md) covers viewport presentation, saved layout geometry and configure replies.
+
+[Fullscreen pages](fullscreen.md) describes saved layout state, opaque backdrops and scene/input clipping.

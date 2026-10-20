@@ -27,7 +27,7 @@ Unrelated active input grabs reject IPC transitions and decline advisory client 
 own tracked popup grab is dismissed through the existing popup cleanup path. An owned implicit click queues a bounded `minimize_pending` flag until input grabs end; restore or null-buffer
 unmap cancels it. Other declined grabs have no automatic retry. Actual title-bar click timing remains
 unqualified by the current fixture.
-[Maximize](maximize.md) and Minimize are advertised in XDG optional capabilities; fullscreen and window menu remain absent.
+[Maximize](maximize.md) and Minimize are advertised in XDG optional capabilities; [fullscreen](fullscreen.md) is also available and window menu remains absent.
 The pinned Smithay state serializer filters version-dependent hints.
 
 This implements the minimize/restore portion of [phase 4](../phases/04-scrolling-layout.md). It does not close

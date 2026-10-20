@@ -103,3 +103,10 @@ The [correction follow-up](window-maximize-followup-2026-10-20/disposition.md) a
 [caller check](window-maximize-caller-2026-10-20/disposition.md) accept the source corrections and event-loop
 ordering. Final nested regressions cover fixed-size declines, late hints and focus stacking. Real clicks,
 toolkits, the remaining bounded popup-cleanup delay and native hardware are not fully qualified.
+
+## Fullscreen pages review
+
+[Initial Claude review](window-fullscreen-2026-10-20/disposition.md) found canvas overlap and strip navigation
+defects. Their corrections and projected-edge bounds have regression tests; the focused follow-up records
+the final source verdict. Real nested checks cover lifecycle and exact backdrop pixels. Hardware and complete
+window-state qualification remain open.

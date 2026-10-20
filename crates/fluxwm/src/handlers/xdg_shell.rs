@@ -248,6 +248,30 @@ impl XdgShellHandler for Fluxwm {
         }
     }
 
+    fn fullscreen_request(
+        &mut self,
+        surface: ToplevelSurface,
+        _output: Option<smithay::reexports::wayland_server::protocol::wl_output::WlOutput>,
+    ) {
+        // One eligible output exists; stale/foreign preferences fall back to it.
+        crate::configure::defer_reply(&surface);
+        if let Some(id) = self.window_id(surface.wl_surface())
+            && let Err(error) = self.set_window_fullscreen(id, true)
+        {
+            tracing::debug!(%id,%error,"fullscreen request declined");
+        }
+        crate::configure::send_pending(&surface);
+    }
+    fn unfullscreen_request(&mut self, surface: ToplevelSurface) {
+        crate::configure::defer_reply(&surface);
+        if let Some(id) = self.window_id(surface.wl_surface())
+            && let Err(error) = self.set_window_fullscreen(id, false)
+        {
+            tracing::debug!(%id,%error,"unfullscreen request declined");
+        }
+        crate::configure::send_pending(&surface);
+    }
+
     fn maximize_request(&mut self, surface: ToplevelSurface) {
         crate::configure::defer_reply(&surface);
         if let Some(id) = self.window_id(surface.wl_surface())

@@ -50,7 +50,14 @@ impl Fluxwm {
             }
             Action::WorkspaceMode { mode } => {
                 self.layout.set_mode(mode);
+                if self.layout.mode() != mode {
+                    return Err("layout mode exceeds supported geometry".into());
+                }
                 self.relayout();
+            }
+            Action::Fullscreen { toggle } => {
+                let id = self.layout.focused().ok_or("no focused toplevel")?;
+                self.set_window_fullscreen(id, toggle && !self.layout.is_fullscreen(id))?;
             }
             Action::Maximize { toggle } => {
                 let id = self.layout.focused().ok_or("no focused toplevel")?;
@@ -104,10 +111,9 @@ impl Fluxwm {
             Action::ReloadConfig => {
                 self.request_config_reload().map_err(str::to_owned)?;
             }
-            Action::Fullscreen { .. }
-            | Action::Floating { .. }
-            | Action::Overview { .. }
-            | Action::Lock => return Err("action is not implemented in the nested backend".into()),
+            Action::Floating { .. } | Action::Overview { .. } | Action::Lock => {
+                return Err("action is not implemented in the nested backend".into());
+            }
         }
         // Layout admission recovery and window-state helpers can publish more
         // than one change during this action. Never rewind their sequence.

@@ -13,8 +13,8 @@ use std::{
 use wayland_client::{
     Connection, Dispatch, EventQueue, Proxy, QueueHandle, WEnum, delegate_noop,
     protocol::{
-        wl_buffer, wl_callback, wl_compositor, wl_keyboard, wl_pointer, wl_registry, wl_seat,
-        wl_shm, wl_shm_pool, wl_subcompositor, wl_subsurface, wl_surface,
+        wl_buffer, wl_callback, wl_compositor, wl_keyboard, wl_pointer, wl_region, wl_registry,
+        wl_seat, wl_shm, wl_shm_pool, wl_subcompositor, wl_subsurface, wl_surface,
     },
 };
 use wayland_protocols::xdg::shell::client::{
@@ -47,6 +47,7 @@ struct Window {
     capability_values: Vec<u32>,
     activated: bool,
     maximized: bool,
+    fullscreen: bool,
     suspended: bool,
     destroyed: bool,
 }
@@ -222,6 +223,7 @@ impl State {
             capability_values: Vec::new(),
             activated: false,
             maximized: false,
+            fullscreen: false,
             suspended: false,
             destroyed: false,
         });
@@ -374,6 +376,15 @@ impl State {
     }
     /// Allocate an exact-size client buffer; used for strict maximized geometry.
     fn map_sized(&mut self, index: usize, size: [i32; 2], qh: &QueueHandle<Self>) -> Result<()> {
+        self.map_sized_pixels(index, size, false, qh)
+    }
+    fn map_sized_pixels(
+        &mut self,
+        index: usize,
+        size: [i32; 2],
+        transparent: bool,
+        qh: &QueueHandle<Self>,
+    ) -> Result<()> {
         let [width, height] = size;
         let length = i64::from(width) * i64::from(height) * 4;
         if width <= 0 || height <= 0 || length > 32 * 1024 * 1024 {
@@ -381,7 +392,21 @@ impl State {
         }
         let mut file = memory_file()?;
         file.set_len(length as u64).map_err(|e| e.to_string())?;
-        let bytes = [0x40, 0x80, 0xc0, 0xff].repeat((length / 4) as usize);
+        let bytes = if transparent {
+            (0..height)
+                .flat_map(|_| {
+                    (0..width).flat_map(|x| {
+                        if x < width / 2 {
+                            [0, 0, 255, 255]
+                        } else {
+                            [0, 0, 0, 0]
+                        }
+                    })
+                })
+                .collect::<Vec<_>>()
+        } else {
+            [0x40, 0x80, 0xc0, 0xff].repeat((length / 4) as usize)
+        };
         file.write_all(&bytes).map_err(|e| e.to_string())?;
         let pool = self
             .shm
@@ -393,7 +418,11 @@ impl State {
             width,
             height,
             width * 4,
-            wl_shm::Format::Xrgb8888,
+            if transparent {
+                wl_shm::Format::Argb8888
+            } else {
+                wl_shm::Format::Xrgb8888
+            },
             qh,
             (),
         );
@@ -760,6 +789,9 @@ impl Dispatch<xdg_toplevel::XdgToplevel, usize> for State {
                 state.windows[*index].maximized = states.as_chunks::<4>().0.iter().any(|bytes| {
                     u32::from_ne_bytes(*bytes) == xdg_toplevel::State::Maximized as u32
                 });
+                state.windows[*index].fullscreen = states.as_chunks::<4>().0.iter().any(|bytes| {
+                    u32::from_ne_bytes(*bytes) == xdg_toplevel::State::Fullscreen as u32
+                });
                 state.windows[*index].suspended = states.as_chunks::<4>().0.iter().any(|bytes| {
                     u32::from_ne_bytes(*bytes) == xdg_toplevel::State::Suspended as u32
                 });
@@ -781,11 +813,12 @@ impl Dispatch<xdg_toplevel::XdgToplevel, usize> for State {
                     || values
                         != [
                             xdg_toplevel::WmCapabilities::Maximize as u32,
+                            xdg_toplevel::WmCapabilities::Fullscreen as u32,
                             xdg_toplevel::WmCapabilities::Minimize as u32,
                         ]
                 {
                     state.error = Some(format!(
-                        "window {index}: expected exactly Maximize, Minimize capabilities, got {values:?}"
+                        "window {index}: expected exactly Fullscreen, Maximize, Minimize capabilities, got {values:?}"
                     ));
                 }
             }
@@ -847,6 +880,7 @@ impl Dispatch<wl_callback::WlCallback, Callback> for State {
         }
     }
 }
+delegate_noop!(State: ignore wl_region::WlRegion);
 delegate_noop!(State:ignore wl_compositor::WlCompositor);
 delegate_noop!(State:ignore wl_surface::WlSurface);
 delegate_noop!(State:ignore wl_shm_pool::WlShmPool);
@@ -3010,6 +3044,428 @@ fn configure_stream(timeout: Duration) -> Json {
     evidence
 }
 
+/// Real fullscreen wire state, restoration and a stable alpha/letterbox pixel scene.
+fn fullscreen(timeout: Duration, pixel_scene: bool, partial: bool) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mode = if partial {
+        "fullscreen-pixels-partial"
+    } else if pixel_scene {
+        "fullscreen-pixels"
+    } else {
+        "fullscreen"
+    };
+    let mut evidence = json!({"ok":false,"mode":mode});
+    let mut state = State::new(start);
+    let mut healthy = State::new(start);
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit IPC socket required")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        if pixel_scene {
+            let under = state.create(&qh, "fullscreen-underlay");
+            state.windows[under].surface.commit();
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "underlay configure",
+                |s| s.windows[under].configures > 0,
+            )?;
+            state.map_sized(under, [WIDTH, HEIGHT], &qh)?;
+            until(
+                &connection,
+                &mut queue,
+                &mut state,
+                deadline,
+                "underlay frame",
+                |s| s.windows[under].frames > 0,
+            )?;
+        }
+        let root = state.create(&qh, mode);
+        state.windows[root].toplevel.set_fullscreen(None);
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "preinitial fullscreen configure",
+            |s| s.windows[root].configures > 0,
+        )?;
+        if !state.windows[root].fullscreen || state.windows[root].maximized {
+            return Err("fullscreen wire state missing or accompanied by maximized".into());
+        }
+        let viewport = state.windows[root].pending_size;
+        if viewport[0] <= WIDTH || viewport[1] <= HEIGHT {
+            return Err(format!(
+                "viewport too small for letterbox fixture: {viewport:?}"
+            ));
+        }
+        if pixel_scene {
+            // Deliberately stale client opacity metadata must not suppress the
+            // compositor-owned fullscreen backing behind transparent pixels.
+            let region = state.compositor.as_ref().unwrap().create_region(&qh, ());
+            region.add(0, 0, WIDTH, HEIGHT);
+            state.windows[root].surface.set_opaque_region(Some(&region));
+            region.destroy();
+        }
+        state.map_sized_pixels(root, [WIDTH, HEIGHT], pixel_scene, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "undersized fullscreen frame",
+            |s| s.windows[root].frames > 0,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        if partial {
+            diagnostics.call(
+                "action",
+                json!({"name":"pan","dx":i64::from(viewport[0]) * 3 / 4,"dy":0}),
+                deadline,
+            )?;
+            protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        }
+        let first = configure_window(
+            &mut diagnostics,
+            &format!("FluxWM fixture {mode}"),
+            deadline,
+        )?;
+        if first["fullscreen"] != true {
+            return Err("initial model not fullscreen".into());
+        }
+        evidence["preinitial"] = first.clone();
+        evidence["viewport"] = json!(viewport);
+        evidence["partial_page"] = json!(partial);
+        evidence["client_opaque_region_claim"] = json!(pixel_scene);
+        evidence["client_size"] = json!([WIDTH, HEIGHT]);
+        evidence["capabilities"] = json!(state.windows[root].capability_values);
+        if pixel_scene {
+            evidence["ready_at_ms"] = json!(start.elapsed().as_millis());
+            observe_for(
+                &connection,
+                &mut queue,
+                &mut state,
+                Duration::from_millis(1000),
+                deadline,
+            )?;
+            let settled =
+                configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+            if settled != first {
+                return Err("fullscreen pixel scene changed during screenshot interval".into());
+            }
+            evidence["after_settle"] = settled;
+            evidence["transparent_right_half"] = json!(true);
+            evidence["colored_underlay_present"] = json!(true);
+            return Ok(());
+        }
+        let count = state.windows[root].configures;
+        state.windows[root].toplevel.set_fullscreen(None);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "repeated fullscreen response",
+            |s| s.windows[root].configures > count,
+        )?;
+        evidence["repeated_fullscreen_replied"] = json!(true);
+        state.windows[root].toplevel.unset_fullscreen();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        if state.windows[root].fullscreen {
+            return Err("unset fullscreen wire state remained".into());
+        }
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let normal = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        evidence["normal"] = normal.clone();
+        diagnostics.call("action", json!({"name":"maximize","toggle":true}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let size = state.windows[root].pending_size;
+        state.map_sized(root, size, &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        diagnostics.call(
+            "action",
+            json!({"name":"fullscreen","toggle":true}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let overlay = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if overlay["fullscreen"] != true
+            || overlay["maximized"] != true
+            || !state.windows[root].fullscreen
+            || state.windows[root].maximized
+        {
+            return Err(
+                "fullscreen did not preserve model maximize intent while suppressing wire maximize"
+                    .into(),
+            );
+        }
+        evidence["maximized_fullscreen"] = overlay;
+        state.windows[root].ack_configures = false;
+        let before = state.windows[root].configures;
+        state.windows[root].toplevel.set_fullscreen(None);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "held fullscreen response",
+            |s| s.windows[root].configures > before,
+        )?;
+        for _ in 0..16 {
+            state.windows[root].toplevel.unset_fullscreen();
+            state.windows[root].toplevel.set_fullscreen(None);
+        }
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let bounded = state.windows[root].configures - before;
+        if bounded != 1 {
+            return Err(format!(
+                "fullscreen replies escaped single-flight bound: {bounded}"
+            ));
+        }
+        let held = *state.windows[root].configure_serials.last().unwrap();
+        state.windows[root].ack_configures = true;
+        state.windows[root].xdg.ack_configure(held);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "coalesced fullscreen reply",
+            |s| s.windows[root].configures > before + 1,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        evidence["held_reply_bound"] = json!(bounded);
+        state.windows[root].toplevel.set_minimized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let hidden = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if hidden["minimized"] != true || hidden["fullscreen"] != true {
+            return Err("minimize lost fullscreen".into());
+        }
+        diagnostics.call(
+            "action",
+            json!({"name":"restore-window","window":first["id"]}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let restored = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if restored["minimized"] != false
+            || restored["fullscreen"] != true
+            || restored["focused"] != true
+        {
+            return Err("restore lost fullscreen/focus".into());
+        }
+        evidence["minimize_restore"] = restored;
+        diagnostics.call(
+            "action",
+            json!({"name":"fullscreen","toggle":false}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        if state.windows[root].fullscreen || !state.windows[root].maximized {
+            return Err("unfullscreen did not restore maximized wire state".into());
+        }
+        let size = state.windows[root].pending_size;
+        state.map_sized(root, size, &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        diagnostics.call(
+            "action",
+            json!({"name":"maximize","toggle":false}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let normal_again =
+            configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if normal_again["geometry"] != normal["geometry"]
+            || normal_again["fullscreen"] != false
+            || normal_again["maximized"] != false
+        {
+            return Err("fullscreen/maximize did not restore normal base geometry".into());
+        }
+        evidence["normal_restored"] = normal_again;
+        diagnostics.call("action", json!({"name":"maximize","toggle":true}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.windows[root].toplevel.set_fullscreen(None);
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let before_unmap =
+            configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if !state.windows[root].fullscreen
+            || state.windows[root].maximized
+            || before_unmap["fullscreen"] != true
+            || before_unmap["maximized"] != true
+        {
+            return Err(
+                "unmap precondition lacks fullscreen wire state and maximize restore intent".into(),
+            );
+        }
+        evidence["fullscreen_maximize_before_unmap"] = before_unmap;
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.windows[root].surface.attach(None, 0, 0);
+        state.windows[root].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let unmapped = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if unmapped["mapped"] != false
+            || unmapped["fullscreen"] != false
+            || unmapped["maximized"] != false
+        {
+            return Err("unmap retained fullscreen".into());
+        }
+        evidence["unmapped"] = unmapped;
+        let configure_count = state.windows[root].configures;
+        state.windows[root]
+            .toplevel
+            .set_title("FluxWM fixture fullscreen-remapped".into());
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "normal configure after fullscreen unmap",
+            |s| s.windows[root].configures > configure_count,
+        )?;
+        if state.windows[root].fullscreen || state.windows[root].maximized {
+            return Err(
+                "remap initial configure retained fullscreen or maximized wire state".into(),
+            );
+        }
+        let frames = state.windows[root].frames;
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "normal remap frame",
+            |s| s.windows[root].frames > frames,
+        )?;
+        evidence["remap_wire_states_cleared"] = json!(true);
+        let second = state.create(&qh, "fullscreen-before-map");
+        state.windows[second].ack_configures = false;
+        state.windows[second].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "held initial configure",
+            |s| s.windows[second].configures > 0,
+        )?;
+        state.windows[second].toplevel.set_fullscreen(None);
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let serial = *state.windows[second].configure_serials.last().unwrap();
+        state.windows[second].ack_configures = true;
+        state.windows[second].xdg.ack_configure(serial);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "fullscreen before first buffer reply",
+            |s| s.windows[second].configures > 1 && s.windows[second].fullscreen,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.map_sized(second, [WIDTH, HEIGHT], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "deferred fullscreen frame",
+            |s| s.windows[second].frames > 0,
+        )?;
+        evidence["pre_map_deferred_reply"] = json!(true);
+        let healthy_connection = connect(&path, deadline)?;
+        let mut healthy_queue = healthy_connection.new_event_queue::<State>();
+        let healthy_qh = healthy_queue.handle();
+        health_registry(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+        )?;
+        let survivor = healthy.create(&healthy_qh, "fullscreen-survivor");
+        healthy.windows[survivor].surface.commit();
+        until(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+            "survivor configure",
+            |s| s.windows[survivor].configures > 0,
+        )?;
+        healthy.map(survivor, &healthy_qh)?;
+        until(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+            "survivor frame",
+            |s| s.windows[survivor].frames > 0,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let background = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture fullscreen-before-map",
+            deadline,
+        )?;
+        if background["fullscreen"] != true || background["focused"] != false {
+            return Err("focus change cleared fullscreen".into());
+        }
+        evidence["focus_away_preserves_fullscreen"] = background;
+        let size = state.windows[second].pending_size;
+        state.map_sized(second, [size[0] + 1, size[1]], &qh)?;
+        let rejected = protocol_roundtrip(&connection, &mut queue, &mut state, deadline)
+            .err()
+            .ok_or("oversized fullscreen commit accepted")?;
+        let error = connection
+            .protocol_error()
+            .ok_or_else(|| format!("missing oversize protocol error: {rejected}"))?;
+        if error.code != xdg_wm_base::Error::InvalidSurfaceState as u32
+            || error.object_interface != "xdg_wm_base"
+        {
+            return Err(format!("wrong fullscreen geometry error: {error:?}"));
+        }
+        evidence["malformed_geometry_error"] =
+            json!({"code":error.code,"interface":error.object_interface,"message":error.message});
+        protocol_roundtrip(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+        )?;
+        let alive = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture fullscreen-survivor",
+            deadline,
+        )?;
+        if alive["mapped"] != true {
+            return Err("oversize rejection lost healthy sibling".into());
+        }
+        evidence["healthy_survivor"] = alive;
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence["healthy_events"] = json!(healthy.events);
+    evidence
+}
+
 /// Real wire maximize requests, bounded configure replies and exact-size commits.
 fn maximize(timeout: Duration) -> Json {
     let start = Instant::now();
@@ -3541,6 +3997,7 @@ fn minimize(timeout: Duration) -> Json {
                 || w.capability_values
                     != [
                         xdg_toplevel::WmCapabilities::Maximize as u32,
+                        xdg_toplevel::WmCapabilities::Fullscreen as u32,
                         xdg_toplevel::WmCapabilities::Minimize as u32,
                     ]
         }) {
@@ -4546,7 +5003,10 @@ fn main() {
                 || mode == "configure-stream"
                 || mode == "configure-admission"
                 || mode == "minimize"
-                || mode == "maximize" =>
+                || mode == "maximize"
+                || mode == "fullscreen"
+                || mode == "fullscreen-pixels"
+                || mode == "fullscreen-pixels-partial" =>
         {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
@@ -4560,7 +5020,10 @@ fn main() {
                 || mode == "configure-stream"
                 || mode == "configure-admission"
                 || mode == "minimize"
-                || mode == "maximize")
+                || mode == "maximize"
+                || mode == "fullscreen"
+                || mode == "fullscreen-pixels"
+                || mode == "fullscreen-pixels-partial")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -4571,12 +5034,15 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|minimize|maximize|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|minimize|maximize|fullscreen|fullscreen-pixels|fullscreen-pixels-partial|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
         Ok(("minimize", timeout)) => minimize(timeout),
         Ok(("maximize", timeout)) => maximize(timeout),
+        Ok(("fullscreen", timeout)) => fullscreen(timeout, false, false),
+        Ok(("fullscreen-pixels", timeout)) => fullscreen(timeout, true, false),
+        Ok(("fullscreen-pixels-partial", timeout)) => fullscreen(timeout, true, true),
         Ok(("configure-stream", timeout)) => configure_stream(timeout),
         Ok(("config-width", timeout)) => config_width(timeout),
         Ok(("config-geometry", timeout)) => config_geometry(timeout),

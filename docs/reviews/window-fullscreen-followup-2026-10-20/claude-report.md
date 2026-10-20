@@ -1,0 +1,25 @@
+**Verdict:** both earlier MEDIUM defects are fixed in the projection and strip-navigation code. One MEDIUM is left: in canvas mode, the "reveal a moved focused page" fix covers insertion but not the other ways the page bank can move. There are also a few LOW issues. I checked only the source with Read/Grep. I did not read the new tests or run anything.
+
+### Fixes confirmed (`crates/flux-layout/src/lib.rs`)
+- **Pages stay separate in canvas mode (`:757-875`):** the page bank starts at the furthest right edge of any saved group, plus the gap. That includes minimized/hidden groups and groups whose members are all fullscreen. Each page then starts after the previous one, so pages can't overlap each other or any saved group. Strip pages come straight after their own column, and the strip position keeps advancing past them.
+- **Bounds are checked and changes are all-or-nothing:** every rectangle and clip is checked against `MAX_COORD` on its right and bottom edges (`:864-873`). `edit_fullscreen` makes the change on a clone and checks both strip and canvas layouts before committing (`:709-721`). `set_fullscreen` works the same way (`:695-703`). `reveal_focus` skips a projection that would fail (`:1713`).
+- **Strip navigation (`:1267-1323`):** each saved column becomes one ordinary column followed by one single-window column per fullscreen page. Left/Right follow column order and land on that column's active non-minimized window, skipping empty ones. Up/Down move only within the same ordinary column, skipping minimized windows. A fullscreen page has no vertical neighbours, which is correct. Canvas mode still uses geometric scoring, which fits the separate page bank.
+- **Inactive insertion (`:470-476`):** when fullscreen is active, an insert without activation still calls `reveal_focus`.
+
+### MEDIUM: other canvas changes move the focused page without revealing it
+The page bank's start depends on every group's right edge and on the earlier pages. Only insert and `set_fullscreen` re-reveal focus after it moves:
+- **`remove_inner` (`:482-542`):** it only re-anchors and reveals in strip mode (`:486`), and only reveals when the focus changes.
+  - *Trigger:* in canvas mode, window A is fullscreen and focused. An unfocused window B closes, and B's group had the furthest right edge (or B was a fullscreen page earlier in the bank). A's page shifts left by the gap, but the canvas camera stays put. The focused fullscreen window ends up partly or fully off-screen until something else calls reveal.
+- **`set_canvas_group_rect_inner` (`:1036-1056`):** it never calls `reveal_focus`. Moving or widening an unfocused group past the bank start pushes A's page right in the same way. I found no direct call to it from `crates/fluxwm/src`, so how reachable this is depends on the IPC/drag paths. The `remove` path is reachable just by a window closing.
+- **Fix:** in canvas mode, when the focused window is fullscreen, call `reveal_focus()` at the end of `remove_inner` and `set_canvas_group_rect_inner`. Simplest is to do it inside `edit_fullscreen` whenever `fullscreen` is non-empty. Add a regression test that removes the rightmost unfocused group while a fullscreen page has focus.
+
+### LOW
+1. **Canvas insert near the coordinate limit (`:460`):** a new group is clamped to `MAX_COORD - width`. If fullscreen is active, the bank would then start past `MAX_COORD`, so the whole insert is refused with `InvalidGeometry`. That is all-or-nothing as intended, but a new window gets rejected only because another window is fullscreen. Worth checking how the compositor reports that.
+2. **Double validation:** `insert_with_focus_inner`, `remove_inner` and `set_minimized_inner` call the public `focus_window`, which clones and validates again inside an edit that is already being validated. Only a cost issue.
+3. **Fixture assertion that can't fail (`crates/fluxwm-fixture/src/main.rs:3283-3327`):** maximize is turned off at `:3283`, before the fullscreen and unmap at `:3298-3303`. So the "Maximized cleared after remap" check at `:3323` passes no matter what. Also, after `set_fullscreen(None)` at `:3298` the fixture never checks that `state.windows[root].fullscreen` is true. If that request were ignored, the "cleared" check would still pass. To fix, assert the Fullscreen state is on the wire before unmapping. Ideally unmap while both Fullscreen and Maximized are set.
+
+### Smithay reset
+The reset the previous reviewer couldn't find is in `upstream/smithay/src/wayland/shell/xdg/mod.rs:1633-1655`. On unmap it resets the role, the pending toplevel state and the server-pending state to defaults, keeping only `pending_configures`. So the first configure after remap carries no Fullscreen or Maximized state unless FluxWM sets it again. The fixture also checks that the layout side clears fullscreen on unmap (`:3306`). The integration is sound apart from the weak precondition in LOW 3.
+
+### Not defects
+The policies you listed: reserved strip slots, maximize restoring only if compatible, fullscreen persisting on focus-away, and new SolidColorBuffer IDs per capture. Native hardware behaviour is untested, not a defect I found.

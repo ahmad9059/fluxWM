@@ -58,7 +58,7 @@ pub fn send_pending(surface: &ToplevelSurface) -> Option<Serial> {
 }
 
 /// Validate the state attached to this commit, not a newer unacknowledged target.
-pub fn valid_maximized_size(
+pub fn valid_configured_size(
     surface: &ToplevelSurface,
     size: smithay::utils::Size<i32, smithay::utils::Logical>,
 ) -> bool {
@@ -67,8 +67,15 @@ pub fn valid_maximized_size(
         let Some(committed) = cached.current().last_acked.as_ref() else {
             return true;
         };
-        !committed.state.states.contains(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized)
-            || committed.state.size.is_none_or(|expected| expected == size)
+        use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State;
+        if committed.state.states.contains(State::Fullscreen) {
+            committed.state.size.is_some_and(|expected| {
+                size.w > 0 && size.h > 0 && size.w <= expected.w && size.h <= expected.h
+            })
+        } else {
+            !committed.state.states.contains(State::Maximized)
+                || committed.state.size.is_none_or(|expected| expected == size)
+        }
     })
 }
 
@@ -77,6 +84,9 @@ pub struct Snapshot {
     pub unacknowledged: usize,
     pub deferred: bool,
     pub request_reply_deferred: bool,
+    pub desired_fullscreen: bool,
+    pub sent_fullscreen: bool,
+    pub committed_fullscreen: bool,
     pub desired_maximized: bool,
     pub sent_maximized: bool,
     pub committed_maximized: bool,
@@ -100,6 +110,9 @@ pub fn snapshot(surface: &ToplevelSurface) -> Snapshot {
             unacknowledged: data.pending_configures().len(),
             deferred: data.has_pending_changes(),
             request_reply_deferred: states.data_map.get::<StateReply>().is_some_and(|r| r.0.load(Ordering::Relaxed)),
+            desired_fullscreen: desired.states.contains(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen),
+            sent_fullscreen: sent.states.contains(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen),
+            committed_fullscreen: committed.is_some_and(|c| c.state.states.contains(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen)),
             desired_maximized: desired.states.contains(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized),
             sent_maximized: sent.states.contains(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized),
             committed_maximized: committed.is_some_and(|c| c.state.states.contains(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized)),

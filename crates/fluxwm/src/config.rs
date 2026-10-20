@@ -284,8 +284,7 @@ fn run_worker(
                     if config.bindings.iter().any(|b| {
                         matches!(
                             b.action,
-                            flux_core::Action::Fullscreen { .. }
-                                | flux_core::Action::Floating { .. }
+                            flux_core::Action::Floating { .. }
                                 | flux_core::Action::Overview { .. }
                                 | flux_core::Action::Lock
                         )

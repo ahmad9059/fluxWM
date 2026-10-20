@@ -40,6 +40,7 @@ pub struct ManagedWindow {
     pub admission_error: Option<String>,
     pub floating: bool,
     /// State intent before successful layout admission; cleared by null-buffer unmap.
+    pub initial_fullscreen: bool,
     pub initial_maximized: bool,
     pub minimize_pending: bool,
 }
@@ -173,7 +174,7 @@ impl Fluxwm {
         let compositor_state = CompositorState::new::<Self>(&dh);
         let xdg_shell_state = XdgShellState::new_with_capabilities::<Self>(
             &dh,
-            vec![smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Maximize, smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Minimize],
+            vec![smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Fullscreen, smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Maximize, smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Minimize],
         );
         let shm_state = ShmState::new::<Self>(&dh, vec![]);
         let popups = PopupManager::default();
@@ -415,6 +416,7 @@ impl Fluxwm {
             mapped: false,
             admission_error: None,
             floating: false,
+            initial_fullscreen: false,
             initial_maximized: false,
             minimize_pending: false,
         }) {
@@ -505,6 +507,27 @@ impl Fluxwm {
                 }
             }
         }
+        if !has_buffer
+            && let Some(top) = self
+                .windows
+                .get(id)
+                .filter(|item| item.initial_fullscreen && !item.mapped)
+                .and_then(|item| item.window.toplevel())
+                .cloned()
+        {
+            match self.layout.fullscreen_size(self.constraints_for(root)) {
+                Ok(size) => top.with_pending_state(|s| {
+                    s.size=Some((size.width.round() as i32,size.height.round() as i32).into());
+                    s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen);
+                    s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized);
+                }),
+                Err(_) => {
+                    self.windows.get_mut(id).expect("live role").initial_fullscreen=false;
+                    self.bump_sequence();
+                    top.with_pending_state(|s|s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen));
+                }
+            }
+        }
         let item = self
             .windows
             .get_mut(id)
@@ -517,10 +540,10 @@ impl Fluxwm {
         item.window.on_commit();
         if has_buffer
             && let Some(top) = item.window.toplevel()
-            && !crate::configure::valid_maximized_size(top, item.window.geometry().size)
+            && !crate::configure::valid_configured_size(top, item.window.geometry().size)
         {
             let top = top.clone();
-            self.reject_invalid_maximized_size(&top);
+            self.reject_invalid_configured_size(&top);
             return;
         }
         let was_mapped = item.mapped;
@@ -537,7 +560,7 @@ impl Fluxwm {
                 tracing::warn!(%id, %error, "layout admission rejected");
                 return;
             }
-            if let Err(error) = self.apply_initial_maximize(id) {
+            if let Err(error) = self.apply_initial_states(id) {
                 let _ = self.layout.remove(id);
                 self.windows
                     .get_mut(id)
@@ -560,6 +583,7 @@ impl Fluxwm {
             let item = self.windows.get_mut(id).expect("live dispatch ID");
             item.mapped = false;
             item.initial_maximized = false;
+            item.initial_fullscreen = false;
             item.minimize_pending = false;
             if let Some(top) = item.window.toplevel() {
                 crate::configure::clear_reply(top);
@@ -630,7 +654,7 @@ impl Fluxwm {
                 .insert_with_focus(id, self.constraints_for(&surface), false)
                 .is_ok()
             {
-                if self.apply_initial_maximize(id).is_err() {
+                if self.apply_initial_states(id).is_err() {
                     let _ = self.layout.remove(id);
                     continue;
                 }
@@ -653,7 +677,12 @@ impl Fluxwm {
             if let Some(toplevel) = item.window.toplevel() {
                 toplevel.with_pending_state(|s| {
                     s.size = Some((placement.rect.width.round() as i32, placement.rect.height.round() as i32).into());
-                    if self.layout.is_maximized(placement.window) {
+                    if self.layout.is_fullscreen(placement.window) {
+                        s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen);
+                    } else {
+                        s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen);
+                    }
+                    if self.layout.is_maximized(placement.window) && !self.layout.is_fullscreen(placement.window) {
                         s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized);
                     } else {
                         s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized);
@@ -669,7 +698,12 @@ impl Fluxwm {
                 crate::configure::send_pending(toplevel);
             }
             if placement.visible {
-                let rect = self.layout.camera().rect_to_view(placement.rect);
+                let mut rect = self.layout.camera().rect_to_view(placement.rect);
+                if self.layout.is_fullscreen(placement.window) {
+                    let size = item.window.geometry().size;
+                    rect.x += (rect.width - f64::from(size.w)).max(0.0) / 2.0;
+                    rect.y += (rect.height - f64::from(size.h)).max(0.0) / 2.0;
+                }
                 self.space.map_element(
                     item.window.clone(),
                     (rect.x.round() as i32, rect.y.round() as i32),
@@ -698,7 +732,7 @@ impl Fluxwm {
         self.request_redraw();
     }
 
-    fn reject_invalid_maximized_size(&self, top: &smithay::wayland::shell::xdg::ToplevelSurface) {
+    fn reject_invalid_configured_size(&self, top: &smithay::wayland::shell::xdg::ToplevelSurface) {
         use smithay::reexports::{
             wayland_protocols::xdg::shell::server::xdg_wm_base, wayland_server::Resource,
         };
@@ -724,7 +758,7 @@ impl Fluxwm {
         {
             resource.post_error(
                 xdg_wm_base::Error::InvalidSurfaceState,
-                "committed maximized window geometry differs from acknowledged configure",
+                "committed window geometry violates acknowledged fullscreen or maximized configure",
             );
         } else {
             self.display_handle
@@ -733,13 +767,13 @@ impl Fluxwm {
         }
     }
 
-    fn apply_initial_maximize(&mut self, id: WindowId) -> Result<(), flux_layout::LayoutError> {
+    fn apply_initial_states(&mut self, id: WindowId) -> Result<(), flux_layout::LayoutError> {
         let requested = self
             .windows
             .get(id)
             .expect("admitted role")
             .initial_maximized;
-        match self.layout.set_maximized(id, requested) {
+        let max_result = match self.layout.set_maximized(id, requested) {
             Err(
                 flux_layout::LayoutError::InvalidConstraints
                 | flux_layout::LayoutError::InvalidGeometry,
@@ -753,6 +787,26 @@ impl Fluxwm {
                     .initial_maximized = false;
                 self.bump_sequence();
                 self.layout.set_maximized(id, false)
+            }
+            result => result,
+        };
+        max_result?;
+        let requested = self
+            .windows
+            .get(id)
+            .expect("admitted role")
+            .initial_fullscreen;
+        match self.layout.set_fullscreen(id, requested) {
+            Err(
+                flux_layout::LayoutError::InvalidConstraints
+                | flux_layout::LayoutError::InvalidGeometry,
+            ) => {
+                self.windows
+                    .get_mut(id)
+                    .expect("admitted role")
+                    .initial_fullscreen = false;
+                self.bump_sequence();
+                self.layout.set_fullscreen(id, false)
             }
             result => result,
         }
@@ -817,12 +871,76 @@ impl Fluxwm {
             let item = self.windows.get_mut(id).expect("live role");
             item.initial_maximized = maximized;
             if let Some(top) = item.window.toplevel() {
-                top.with_pending_state(|s| {
+                if item.initial_fullscreen {
+                    top.with_pending_state(|s|s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized));
+                } else {
+                    top.with_pending_state(|s| {
                     s.size = maximized.then(|| (size.width.round() as i32, size.height.round() as i32).into());
                     if maximized { s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized); }
                     else { s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized); }
                 });
+                }
             }
+        }
+        self.bump_sequence();
+        Ok(())
+    }
+
+    pub fn set_window_fullscreen(&mut self, id: WindowId, fullscreen: bool) -> Result<(), String> {
+        if self.stopping || self.shutdown_deadline.is_some() {
+            return Err("instance is shutting down".into());
+        }
+        let item = self
+            .windows
+            .get(id)
+            .filter(|i| i.window.alive())
+            .ok_or("unknown window")?;
+        let current = if item.mapped {
+            self.layout.is_fullscreen(id)
+        } else {
+            item.initial_fullscreen
+        };
+        if current == fullscreen {
+            return Ok(());
+        }
+        if self.seat.get_keyboard().is_some_and(|k| k.is_grabbed())
+            || (self.seat.get_pointer().is_some_and(|p| p.is_grabbed())
+                && !self.owns_click_grab(id))
+        {
+            return Err("an input grab is active".into());
+        }
+        if item.mapped {
+            self.layout
+                .set_fullscreen(id, fullscreen)
+                .map_err(|e| e.to_string())?;
+            self.relayout();
+        } else {
+            let top = item.window.toplevel().expect("xdg role").clone();
+            let constraints = self.constraints_for(top.wl_surface());
+            let size = if fullscreen {
+                Some(
+                    self.layout
+                        .fullscreen_size(constraints)
+                        .map_err(|e| e.to_string())?,
+                )
+            } else if item.initial_maximized {
+                self.layout.maximize_size(constraints).ok()
+            } else {
+                None
+            };
+            let item = self.windows.get_mut(id).expect("live role");
+            item.initial_fullscreen = fullscreen;
+            if !fullscreen && size.is_none() {
+                item.initial_maximized = false;
+            }
+            let maximized = !fullscreen && item.initial_maximized;
+            top.with_pending_state(|s| {
+                s.size=size.map(|size|(size.width.round() as i32,size.height.round() as i32).into());
+                if fullscreen { s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen); }
+                else { s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Fullscreen); }
+                if maximized { s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized); }
+                else { s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized); }
+            });
         }
         self.bump_sequence();
         Ok(())

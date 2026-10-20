@@ -1,0 +1,253 @@
+{
+  "binary_sha256": "10b63c8abe7764df39f691c7bedb20002dd4f69afeeffdfeea08287ebae6ffc1",
+  "cases": [
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-5d288ea2d3724498b745bc81",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-feature-gui/fullscreen/fullscreen/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-feature-gui/fullscreen/fullscreen/stats.json",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-checks/bin/fluxwm-fixture",
+        "fullscreen",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6083,
+      "environment": {
+        "DISPLAY": ":13743",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-wxnx6oa9"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "fullscreen",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-wxnx6oa9/fluxwm/fluxscene-5d288ea2d3724498b745bc81.sock",
+        "pid": 58636,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-5d288ea2d3724498b745bc81"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-5d288ea2d3724498b745bc81",
+      "stats": {
+        "compositions": 7,
+        "destroyed": 3,
+        "final_windows": 0,
+        "flush_cycles": 98,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 6,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 4,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 8,
+        "submissions": 4,
+        "unmaps": 1,
+        "wayland_requests": 210
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-5396bb88f6934da6a1505c3e",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-feature-gui/fullscreen/fullscreen-pixels/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-feature-gui/fullscreen/fullscreen-pixels/stats.json",
+        "--screenshot",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-feature-gui/fullscreen/fullscreen-pixels/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-checks/bin/fluxwm-fixture",
+        "fullscreen-pixels",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6090,
+      "environment": {
+        "DISPLAY": ":13743",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-wxnx6oa9"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "fullscreen-pixels",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "pixels": {
+        "black_letterbox": true,
+        "client_fully_outside_viewport": false,
+        "client_opaque_region_ignored_for_backdrop": true,
+        "height": 800,
+        "opaque_red_patch": {
+          "height": 240,
+          "width": 160,
+          "x": 480,
+          "y": 280
+        },
+        "partial_page_clipped": false,
+        "pixel_validation": "exact-row-equality",
+        "sha256": "def8009d40947a4d52782c2fef05421fd83dd1236bdafcf1c947ad26164d70c2",
+        "transparent_client_shows_black_not_underlay": true,
+        "width": 1280
+      },
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-wxnx6oa9/fluxwm/fluxscene-5396bb88f6934da6a1505c3e.sock",
+        "pid": 58855,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-5396bb88f6934da6a1505c3e"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-5396bb88f6934da6a1505c3e",
+      "stats": {
+        "compositions": 7,
+        "destroyed": 2,
+        "final_windows": 0,
+        "flush_cycles": 36,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 6,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 2,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 10,
+        "submissions": 5,
+        "unmaps": 0,
+        "wayland_requests": 47
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-8e6b60c0cf01438ba27875fe",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-feature-gui/fullscreen/fullscreen-pixels-partial/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-feature-gui/fullscreen/fullscreen-pixels-partial/stats.json",
+        "--screenshot",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-feature-gui/fullscreen/fullscreen-pixels-partial/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-fullscreen-complete-checks/bin/fluxwm-fixture",
+        "fullscreen-pixels-partial",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6104,
+      "environment": {
+        "DISPLAY": ":13743",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-wxnx6oa9"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "fullscreen-pixels-partial",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "pixels": {
+        "black_letterbox": true,
+        "client_fully_outside_viewport": true,
+        "client_opaque_region_ignored_for_backdrop": true,
+        "height": 800,
+        "opaque_red_patch": {
+          "height": 240,
+          "width": 160,
+          "x": -480,
+          "y": 280
+        },
+        "partial_page_clipped": true,
+        "pixel_validation": "exact-row-equality",
+        "sha256": "f87c59849384ed6b6f59ab961c9e0d64a4881dd7ed4b8867bc55b4954fc9a6cc",
+        "transparent_client_shows_black_not_underlay": false,
+        "width": 1280
+      },
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-wxnx6oa9/fluxwm/fluxscene-8e6b60c0cf01438ba27875fe.sock",
+        "pid": 59067,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-8e6b60c0cf01438ba27875fe"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-8e6b60c0cf01438ba27875fe",
+      "stats": {
+        "compositions": 7,
+        "destroyed": 2,
+        "final_windows": 0,
+        "flush_cycles": 40,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 3,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 2,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 10,
+        "submissions": 5,
+        "unmaps": 0,
+        "wayland_requests": 48
+      }
+    }
+  ],
+  "errors": [],
+  "executables_unchanged": true,
+  "fixture_sha256": "a26976a130c1e8ea6e10284ad56c8c6d91bf58de0528b907923bd99ef2abbc6c",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "scope": "nested real XDG fullscreen lifecycle and exact SHM alpha/letterbox pixels; excludes physical/native execution and multi-output qualification",
+  "source_sha256": {
+    "smoke_fullscreen.py": "1d42adcb277aac11023594059e5d233dc34553e5cb3bb824ad01759dc7cdb0db",
+    "smoke_nested.py": "ca776e500a8cb74328526a5020c2b1ea1f237ec1a31dc64d956e0b487fd98b4c",
+    "smoke_scene.py": "32163ebb762d15dbaa3df4887a527d29279fa43ed4b16f092fe1cd60eaf8c8b2"
+  }
+}

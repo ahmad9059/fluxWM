@@ -1,0 +1,1476 @@
+{
+  "cases": [
+    {
+      "after_disconnect": {
+        "autostart": {
+          "active_complete": false,
+          "active_generation": null,
+          "closed": false,
+          "enabled": false,
+          "entries": [],
+          "error": null,
+          "observed_generation": null,
+          "requested_generation": null,
+          "retained_argv_bytes": 0,
+          "settled": true
+        },
+        "backend": "nested",
+        "composed_scene": {
+          "popup_surfaces": 0,
+          "surfaces": 4
+        },
+        "configuration": {
+          "applied_generation": null,
+          "last_error": null,
+          "prepared_generation": null,
+          "requested_generation": null,
+          "status": "disabled"
+        },
+        "input_state": {
+          "authorized_buttons": 0,
+          "host_focus": false,
+          "keyboard_grabbed": false,
+          "pointer_grabbed": false,
+          "pressed_keys": 0,
+          "suppressed_keys": 0
+        },
+        "keyboard_bindings": {
+          "entries": 28,
+          "inactive": 1,
+          "runtime_keymap_changes": false,
+          "source": "development-defaults"
+        },
+        "launch_outcomes": [],
+        "live_roles": 0,
+        "mapped_windows": 0,
+        "owned_applications": 0,
+        "pending_launches": 0,
+        "production_ready": false,
+        "runtime": {
+          "compositions": 11,
+          "destroyed": 5,
+          "final_windows": 0,
+          "flush_cycles": 120,
+          "flush_retry_timer_fired": 0,
+          "flush_would_block": 0,
+          "focus_cancelled_buttons": 0,
+          "focus_cancelled_keys": 0,
+          "frames_sent": 25,
+          "host_focus_losses": 1,
+          "ipc_dispatches_after_shutdown": 0,
+          "ipc_drain_timed_out": 0,
+          "maps": 6,
+          "popup_grabs_denied_missing_press": 0,
+          "redraws": 12,
+          "submissions": 6,
+          "unmaps": 1,
+          "wayland_requests": 255
+        },
+        "shell_health": {
+          "capacity": 1024,
+          "clients": [],
+          "interval_ms": 5000,
+          "stats": {
+            "capacity_rejections": 0,
+            "pongs": 2,
+            "recoveries": 0,
+            "send_failures": 0,
+            "sent": 2,
+            "timeouts": 0,
+            "timer_fired": 0
+          },
+          "timeout_ms": 2000,
+          "timer_armed": false
+        }
+      },
+      "binary_sha256": "8ae9dd78f280263e72b9950084ed352cd4bd01931ebc03f736dd0165a35fa51a",
+      "compositor_exit": 0,
+      "disconnect_cleanup_ms": 0.82,
+      "elapsed_seconds": 0.287,
+      "endpoints_removed": true,
+      "executables_unchanged": true,
+      "fixture_exit": 0,
+      "fixture_report": {
+        "elapsed_ms": 175,
+        "error": null,
+        "events": [
+          {
+            "at_ms": 0,
+            "event": {
+              "create": 0,
+              "name": "maximize"
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "bytes": [
+                4,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                3,
+                0,
+                0,
+                0
+              ],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 1,
+            "event": {
+              "configure_ack": 0,
+              "serial": 2,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "size": [
+                1280,
+                800
+              ],
+              "sized_map_commit": 0
+            }
+          },
+          {
+            "at_ms": 4,
+            "event": {
+              "configure_ack": 0,
+              "serial": 3,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 4,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 0
+            }
+          },
+          {
+            "at_ms": 23,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 104
+            }
+          },
+          {
+            "at_ms": 23,
+            "event": {
+              "pointer_enter_primary": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "at_ms": 23,
+            "event": {
+              "configure_ack": 0,
+              "serial": 6,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 24,
+            "event": {
+              "configure_ack": 0,
+              "serial": 7,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 24,
+            "event": {
+              "size": [
+                320,
+                240
+              ],
+              "sized_map_commit": 0
+            }
+          },
+          {
+            "at_ms": 25,
+            "event": {
+              "configure_ack": 0,
+              "serial": 8,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 25,
+            "event": {
+              "configure_held": 0,
+              "serial": 9,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 25,
+            "event": {
+              "size": [
+                320,
+                240
+              ],
+              "sized_map_commit": 0
+            }
+          },
+          {
+            "at_ms": 26,
+            "event": {
+              "configure_ack": 0,
+              "serial": 10,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 29,
+            "event": {
+              "size": [
+                1280,
+                800
+              ],
+              "sized_map_commit": 0
+            }
+          },
+          {
+            "at_ms": 30,
+            "event": {
+              "configure_ack": 0,
+              "serial": 11,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 30,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 30,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 0
+            }
+          },
+          {
+            "at_ms": 30,
+            "event": {
+              "pointer_enter_primary": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "at_ms": 30,
+            "event": {
+              "configure_ack": 0,
+              "serial": 16,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "configure_ack": 0,
+              "serial": 17,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 31,
+            "event": {
+              "size": [
+                320,
+                240
+              ],
+              "sized_map_commit": 0
+            }
+          },
+          {
+            "at_ms": 32,
+            "event": {
+              "configure_ack": 0,
+              "serial": 18,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 34,
+            "event": {
+              "size": [
+                1280,
+                800
+              ],
+              "sized_map_commit": 0
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 119
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 119
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 119
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 119
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 119
+            }
+          },
+          {
+            "at_ms": 37,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 38,
+            "event": {
+              "create": 1,
+              "name": "maximize-before-map"
+            }
+          },
+          {
+            "at_ms": 38,
+            "event": {
+              "bytes": [
+                2,
+                0,
+                0,
+                0,
+                3,
+                0,
+                0,
+                0,
+                4,
+                0,
+                0,
+                0
+              ],
+              "wm_capabilities": 1
+            }
+          },
+          {
+            "at_ms": 38,
+            "event": {
+              "configure_held": 1,
+              "serial": 21,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 38,
+            "event": {
+              "configure_ack": 1,
+              "serial": 22,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 40,
+            "event": {
+              "size": [
+                1280,
+                800
+              ],
+              "sized_map_commit": 1
+            }
+          },
+          {
+            "at_ms": 40,
+            "event": {
+              "configure_ack": 1,
+              "serial": 23,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 40,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 1
+            }
+          },
+          {
+            "at_ms": 54,
+            "event": {
+              "frame_done": 1,
+              "timestamp": 135
+            }
+          },
+          {
+            "at_ms": 54,
+            "event": {
+              "bytes": [
+                4,
+                0,
+                0,
+                0,
+                3,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0
+              ],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 54,
+            "event": {
+              "configure_ack": 0,
+              "serial": 26,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 56,
+            "event": {
+              "size": [
+                1280,
+                800
+              ],
+              "sized_map_commit": 0
+            }
+          },
+          {
+            "at_ms": 56,
+            "event": {
+              "configure_ack": 1,
+              "serial": 27,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 56,
+            "event": {
+              "configure_ack": 0,
+              "serial": 28,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 56,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 56,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 0
+            }
+          },
+          {
+            "at_ms": 71,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 153
+            }
+          },
+          {
+            "at_ms": 71,
+            "event": {
+              "pointer_enter_primary": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "at_ms": 72,
+            "event": {
+              "configure_ack": 1,
+              "serial": 31,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 72,
+            "event": {
+              "configure_ack": 0,
+              "serial": 32,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 72,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 72,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 1
+            }
+          },
+          {
+            "at_ms": 86,
+            "event": {
+              "create": 2,
+              "name": "maximize-fixed-size"
+            }
+          },
+          {
+            "at_ms": 86,
+            "event": {
+              "bytes": [
+                4,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                3,
+                0,
+                0,
+                0
+              ],
+              "wm_capabilities": 2
+            }
+          },
+          {
+            "at_ms": 87,
+            "event": {
+              "configure_ack": 2,
+              "serial": 35,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 87,
+            "event": {
+              "size": [
+                320,
+                240
+              ],
+              "sized_map_commit": 2
+            }
+          },
+          {
+            "at_ms": 88,
+            "event": {
+              "configure_ack": 1,
+              "serial": 36,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 88,
+            "event": {
+              "configure_ack": 2,
+              "serial": 37,
+              "size": [
+                320,
+                240
+              ]
+            }
+          },
+          {
+            "at_ms": 88,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 88,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 2
+            }
+          },
+          {
+            "at_ms": 105,
+            "event": {
+              "frame_done": 2,
+              "timestamp": 186
+            }
+          },
+          {
+            "at_ms": 105,
+            "event": {
+              "pointer_enter_primary": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "at_ms": 105,
+            "event": {
+              "configure_ack": 2,
+              "serial": 40,
+              "size": [
+                320,
+                240
+              ]
+            }
+          },
+          {
+            "at_ms": 105,
+            "event": {
+              "size": [
+                320,
+                240
+              ],
+              "sized_map_commit": 2
+            }
+          },
+          {
+            "at_ms": 119,
+            "event": {
+              "frame_done": 2,
+              "timestamp": 200
+            }
+          },
+          {
+            "at_ms": 121,
+            "event": {
+              "create": 3,
+              "name": "maximize-late-fixed-size"
+            }
+          },
+          {
+            "at_ms": 121,
+            "event": {
+              "bytes": [
+                3,
+                0,
+                0,
+                0,
+                4,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0
+              ],
+              "wm_capabilities": 3
+            }
+          },
+          {
+            "at_ms": 121,
+            "event": {
+              "configure_ack": 3,
+              "serial": 41,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 122,
+            "event": {
+              "size": [
+                1280,
+                800
+              ],
+              "sized_map_commit": 3
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_ack": 2,
+              "serial": 42,
+              "size": [
+                320,
+                240
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "configure_ack": 3,
+              "serial": 43,
+              "size": [
+                320,
+                240
+              ]
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "keyboard_leave": true
+            }
+          },
+          {
+            "at_ms": 123,
+            "event": {
+              "keyboard_enter_popup": null,
+              "keyboard_enter_window": 3
+            }
+          },
+          {
+            "at_ms": 138,
+            "event": {
+              "frame_done": 3,
+              "timestamp": 220
+            }
+          },
+          {
+            "at_ms": 140,
+            "event": {
+              "size": [
+                320,
+                240
+              ],
+              "sized_map_commit": 3
+            }
+          },
+          {
+            "at_ms": 152,
+            "event": {
+              "frame_done": 3,
+              "timestamp": 234
+            }
+          },
+          {
+            "at_ms": 173,
+            "event": {
+              "size": [
+                1279,
+                800
+              ],
+              "sized_map_commit": 1
+            }
+          },
+          {
+            "at_ms": 173,
+            "event": {
+              "configure_ack": 3,
+              "serial": 47,
+              "size": [
+                320,
+                240
+              ]
+            }
+          },
+          {
+            "at_ms": 173,
+            "event": {
+              "keyboard_leave": true
+            }
+          }
+        ],
+        "fixed_size_declined": {
+          "ipc_error": "IPC action failed: {\"error\":{\"code\":\"not_ready\",\"message\":\"window size constraints conflict\"},\"id\":\"fixture-13\",\"state_sequence\":\"83\",\"version\":1}",
+          "normal_commit_survived": true,
+          "preinitial_and_mapped_wire_replies": true,
+          "window": {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_fullscreen": false,
+              "committed_maximized": false,
+              "committed_serial": 40,
+              "committed_size": [
+                320,
+                240
+              ],
+              "deferred": false,
+              "desired_fullscreen": false,
+              "desired_maximized": false,
+              "desired_size": [
+                320,
+                240
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 40,
+              "request_reply_deferred": false,
+              "sent_fullscreen": false,
+              "sent_maximized": false,
+              "sent_size": [
+                320,
+                240
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "fullscreen": false,
+            "geometry": {
+              "height": 240.0,
+              "width": 320.0,
+              "x": 648.0,
+              "y": -0.0
+            },
+            "id": "2:0",
+            "mapped": true,
+            "maximized": false,
+            "minimize_pending": false,
+            "minimized": false,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "FluxWM fixture maximize-fixed-size",
+            "workspace": "0:0"
+          }
+        },
+        "focus_stacking": {
+          "earlier_pointer_and_keyboard": true,
+          "later_pointer_precondition": true
+        },
+        "healthy_events": [
+          {
+            "at_ms": 153,
+            "event": {
+              "create": 0,
+              "name": "maximize-survivor"
+            }
+          },
+          {
+            "at_ms": 153,
+            "event": {
+              "bytes": [
+                2,
+                0,
+                0,
+                0,
+                4,
+                0,
+                0,
+                0,
+                3,
+                0,
+                0,
+                0
+              ],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 153,
+            "event": {
+              "configure_ack": 0,
+              "serial": 46,
+              "size": [
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "at_ms": 156,
+            "event": {
+              "map_commit": 0
+            }
+          },
+          {
+            "at_ms": 157,
+            "event": {
+              "configure_ack": 0,
+              "serial": 48,
+              "size": [
+                640,
+                800
+              ]
+            }
+          },
+          {
+            "at_ms": 170,
+            "event": {
+              "frame_done": 0,
+              "timestamp": 252
+            }
+          }
+        ],
+        "healthy_survivor": {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_fullscreen": false,
+            "committed_maximized": false,
+            "committed_serial": 46,
+            "committed_size": null,
+            "deferred": false,
+            "desired_fullscreen": false,
+            "desired_maximized": false,
+            "desired_size": [
+              640,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 48,
+            "request_reply_deferred": false,
+            "sent_fullscreen": false,
+            "sent_maximized": false,
+            "sent_size": [
+              640,
+              800
+            ],
+            "unacknowledged": 0
+          },
+          "focused": true,
+          "fullscreen": false,
+          "geometry": {
+            "height": 800.0,
+            "width": 640.0,
+            "x": 0.0,
+            "y": -0.0
+          },
+          "id": "4:0",
+          "mapped": true,
+          "maximized": false,
+          "minimize_pending": false,
+          "minimized": false,
+          "responsiveness": {
+            "id": "2",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture maximize-survivor",
+          "workspace": "0:0"
+        },
+        "held_ack": {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_fullscreen": false,
+            "committed_maximized": false,
+            "committed_serial": 8,
+            "committed_size": [
+              640,
+              800
+            ],
+            "deferred": false,
+            "desired_fullscreen": false,
+            "desired_maximized": true,
+            "desired_size": [
+              1280,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 8,
+            "request_reply_deferred": true,
+            "sent_fullscreen": false,
+            "sent_maximized": true,
+            "sent_size": [
+              1280,
+              800
+            ],
+            "unacknowledged": 1
+          },
+          "focused": true,
+          "fullscreen": false,
+          "geometry": {
+            "height": 800.0,
+            "width": 1280.0,
+            "x": 0.0,
+            "y": 0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "maximized": true,
+          "minimize_pending": false,
+          "minimized": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture maximize",
+          "workspace": "0:0"
+        },
+        "late_fixed_size_admitted": {
+          "corrected_normal_frame": true,
+          "promised_size": [
+            1280,
+            800
+          ],
+          "window": {
+            "admission_error": null,
+            "app_id": "org.fluxwm.Fixture",
+            "buffered": true,
+            "configure": {
+              "committed_fullscreen": false,
+              "committed_maximized": true,
+              "committed_serial": 41,
+              "committed_size": [
+                1280,
+                800
+              ],
+              "deferred": false,
+              "desired_fullscreen": false,
+              "desired_maximized": false,
+              "desired_size": [
+                320,
+                240
+              ],
+              "initial_sent": true,
+              "last_acked_serial": 43,
+              "request_reply_deferred": false,
+              "sent_fullscreen": false,
+              "sent_maximized": false,
+              "sent_size": [
+                320,
+                240
+              ],
+              "unacknowledged": 0
+            },
+            "focused": true,
+            "fullscreen": false,
+            "geometry": {
+              "height": 240.0,
+              "width": 320.0,
+              "x": 1296.0,
+              "y": -0.0
+            },
+            "id": "3:0",
+            "mapped": true,
+            "maximized": false,
+            "minimize_pending": false,
+            "minimized": false,
+            "responsiveness": {
+              "id": "1",
+              "status": "responsive"
+            },
+            "title": "FluxWM fixture maximize-late-fixed-size",
+            "workspace": "0:0"
+          }
+        },
+        "malformed_geometry_error": {
+          "code": 4,
+          "interface": "xdg_wm_base",
+          "message": ""
+        },
+        "maximized": {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_fullscreen": false,
+            "committed_maximized": true,
+            "committed_serial": 10,
+            "committed_size": [
+              1280,
+              800
+            ],
+            "deferred": false,
+            "desired_fullscreen": false,
+            "desired_maximized": true,
+            "desired_size": [
+              1280,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 10,
+            "request_reply_deferred": false,
+            "sent_fullscreen": false,
+            "sent_maximized": true,
+            "sent_size": [
+              1280,
+              800
+            ],
+            "unacknowledged": 0
+          },
+          "focused": true,
+          "fullscreen": false,
+          "geometry": {
+            "height": 800.0,
+            "width": 1280.0,
+            "x": 0.0,
+            "y": 0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "maximized": true,
+          "minimize_pending": false,
+          "minimized": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture maximize",
+          "workspace": "0:0"
+        },
+        "minimize_restore": {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_fullscreen": false,
+            "committed_maximized": true,
+            "committed_serial": 10,
+            "committed_size": [
+              1280,
+              800
+            ],
+            "deferred": false,
+            "desired_fullscreen": false,
+            "desired_maximized": true,
+            "desired_size": [
+              1280,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 11,
+            "request_reply_deferred": false,
+            "sent_fullscreen": false,
+            "sent_maximized": true,
+            "sent_size": [
+              1280,
+              800
+            ],
+            "unacknowledged": 1
+          },
+          "focused": true,
+          "fullscreen": false,
+          "geometry": {
+            "height": 800.0,
+            "width": 1280.0,
+            "x": 0.0,
+            "y": 0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "maximized": true,
+          "minimize_pending": false,
+          "minimized": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture maximize",
+          "workspace": "0:0"
+        },
+        "mode": "maximize",
+        "normal": {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_fullscreen": false,
+            "committed_maximized": false,
+            "committed_serial": 7,
+            "committed_size": [
+              640,
+              800
+            ],
+            "deferred": false,
+            "desired_fullscreen": false,
+            "desired_maximized": false,
+            "desired_size": [
+              640,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 7,
+            "request_reply_deferred": false,
+            "sent_fullscreen": false,
+            "sent_maximized": false,
+            "sent_size": [
+              640,
+              800
+            ],
+            "unacknowledged": 0
+          },
+          "focused": true,
+          "fullscreen": false,
+          "geometry": {
+            "height": 800.0,
+            "width": 640.0,
+            "x": 0.0,
+            "y": -0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "maximized": false,
+          "minimize_pending": false,
+          "minimized": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture maximize",
+          "workspace": "0:0"
+        },
+        "normal_restored": {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_fullscreen": false,
+            "committed_maximized": false,
+            "committed_serial": 17,
+            "committed_size": [
+              640,
+              800
+            ],
+            "deferred": false,
+            "desired_fullscreen": false,
+            "desired_maximized": false,
+            "desired_size": [
+              640,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 17,
+            "request_reply_deferred": false,
+            "sent_fullscreen": false,
+            "sent_maximized": false,
+            "sent_size": [
+              640,
+              800
+            ],
+            "unacknowledged": 0
+          },
+          "focused": true,
+          "fullscreen": false,
+          "geometry": {
+            "height": 800.0,
+            "width": 640.0,
+            "x": 0.0,
+            "y": -0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "maximized": false,
+          "minimize_pending": false,
+          "minimized": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture maximize",
+          "workspace": "0:0"
+        },
+        "ok": true,
+        "pre_map_deferred_reply": true,
+        "preinitial": {
+          "admission_error": null,
+          "app_id": "org.fluxwm.Fixture",
+          "buffered": true,
+          "configure": {
+            "committed_fullscreen": false,
+            "committed_maximized": true,
+            "committed_serial": 2,
+            "committed_size": [
+              1280,
+              800
+            ],
+            "deferred": false,
+            "desired_fullscreen": false,
+            "desired_maximized": true,
+            "desired_size": [
+              1280,
+              800
+            ],
+            "initial_sent": true,
+            "last_acked_serial": 3,
+            "request_reply_deferred": false,
+            "sent_fullscreen": false,
+            "sent_maximized": true,
+            "sent_size": [
+              1280,
+              800
+            ],
+            "unacknowledged": 0
+          },
+          "focused": true,
+          "fullscreen": false,
+          "geometry": {
+            "height": 800.0,
+            "width": 1280.0,
+            "x": 0.0,
+            "y": 0.0
+          },
+          "id": "0:0",
+          "mapped": true,
+          "maximized": true,
+          "minimize_pending": false,
+          "minimized": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "FluxWM fixture maximize",
+          "workspace": "0:0"
+        },
+        "repeated_maximize_replied": true,
+        "stale_restore_error": "IPC action failed: {\"error\":{\"code\":\"not_ready\",\"message\":\"unknown or unmapped window\"},\"id\":\"fixture-17\",\"state_sequence\":\"106\",\"version\":1}",
+        "unmapped": {
+          "admission_error": null,
+          "app_id": "",
+          "buffered": false,
+          "configure": {
+            "committed_fullscreen": false,
+            "committed_maximized": false,
+            "committed_serial": null,
+            "committed_size": null,
+            "deferred": true,
+            "desired_fullscreen": false,
+            "desired_maximized": false,
+            "desired_size": null,
+            "initial_sent": false,
+            "last_acked_serial": null,
+            "request_reply_deferred": false,
+            "sent_fullscreen": false,
+            "sent_maximized": false,
+            "sent_size": null,
+            "unacknowledged": 0
+          },
+          "focused": false,
+          "fullscreen": false,
+          "geometry": null,
+          "id": "0:0",
+          "mapped": false,
+          "maximized": false,
+          "minimize_pending": false,
+          "minimized": false,
+          "responsiveness": {
+            "id": "1",
+            "status": "responsive"
+          },
+          "title": "",
+          "workspace": "0:0"
+        }
+      },
+      "fixture_sha256": "a26976a130c1e8ea6e10284ad56c8c6d91bf58de0528b907923bd99ef2abbc6c",
+      "mode": "maximize",
+      "ok": true,
+      "quit": {
+        "accepted": true
+      },
+      "stats": {
+        "compositions": 12,
+        "destroyed": 5,
+        "final_windows": 0,
+        "flush_cycles": 124,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 25,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_budget_ms": 250,
+        "ipc_drain_elapsed_ms": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 6,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 13,
+        "submissions": 6,
+        "unmaps": 1,
+        "wayland_requests": 255
+      }
+    }
+  ],
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "scope": "real XDG maximize capabilities/state, preinitial and pre-map requests, repeated replies, single-flight held acknowledgments, exact-size commits, saved geometry, minimize/restore, unmap, stale ID and malformed-client isolation; excludes physical/native execution and pixel qualification",
+  "source_sha256": {
+    "smoke_health.py": "04147654f0b9dc22a7b8f31e20cc5ac07de2642003e434c3bba7ca8b74a824b2",
+    "smoke_maximize.py": "9974a90a0baa74251876897672359e7f4e73b9a218d14d9b6a0eb3bb6891b56e",
+    "smoke_nested.py": "ca776e500a8cb74328526a5020c2b1ea1f237ec1a31dc64d956e0b487fd98b4c"
+  }
+}

@@ -56,3 +56,7 @@ maximize/fullscreen restore combinations, task UI and native qualification remai
 [Maximize/restore](../development/maximize.md) adds viewport presentation with retained base layout geometry,
 bounded required configure replies and committed-state geometry validation. Fullscreen pages, migration,
 full native/toolkit qualification and the complete phase gate remain open.
+
+[Fullscreen pages](../development/fullscreen.md) now project saved layout members into output-sized pages,
+retain maximize/minimize intent and compose opaque backdrops independently of client opacity metadata.
+Local pixel/lifecycle checks do not close native/toolkit, scale/output or complete state-matrix qualification.

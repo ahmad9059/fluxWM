@@ -1,7 +1,7 @@
 # Maximize and restore
 
 Mapped and initially unmapped XDG toplevels accept maximize/unmaximize requests. Optional capabilities now
-advertise Maximize and Minimize; fullscreen and window-menu capabilities remain absent. Typed bindings and
+advertise Maximize and Minimize; [Fullscreen](fullscreen.md) is also available; window-menu capability remains absent. Typed bindings and
 IPC accept the focused-window action:
 
 ```sh
@@ -18,7 +18,7 @@ width policy, stack/tab state, constraints and canvas geometry remain intact. It
 the usable viewport; ordinary focused windows can be raised above a background maximized window. Navigation
 uses saved layout geometry, including when several maximized windows share the presentation rectangle.
 Inactive tabs and minimized members remain hidden even when their Maximized state is retained.
-This policy does not implement fullscreen pages or an opaque privacy backdrop. Minimize preserves maximize
+This maximize overlay policy is distinct from [fullscreen pages and their opaque backdrop](fullscreen.md). Minimize preserves maximize
 intent; restore reveals that state. Null-buffer unmap clears both states. Viewport changes recompute the
 maximized target; extreme unsupported coordinate/zoom combinations fail instead of overflowing.
 
@@ -38,5 +38,5 @@ Hints introduced with the first promised-size buffer fall back to normal admissi
 rather than leaving the window stuck in an admission retry. Client size hints remain saved for restoration.
 
 The implementation has one usable output and no panel reservations. Native hardware, output migration,
-maximized/fullscreen combinations, full protocol-version/toolkit coverage and phase 4 remain unqualified.
+full maximize/fullscreen combination qualification and protocol-version/toolkit coverage and phase 4 remain unqualified.
 See [the window-state contract](../22-window-state-matrix.md) and [phase 4](../phases/04-scrolling-layout.md).

@@ -71,7 +71,7 @@ impl Fluxwm {
             ),
             Method::Capabilities => Ok(json!({
                 "backend":self.backend, "subscriptions":false, "config_reload":self.config.is_some(),
-                "actions":["focus","move","pan","resize","workspace-mode","maximize","minimize","restore-window","close-window","spawn","reload-config","quit"],
+                "actions":["focus","move","pan","resize","workspace-mode","fullscreen","maximize","minimize","restore-window","close-window","spawn","reload-config","quit"],
                 "secure_lock":false,"capture":false,"drag_and_drop":false,"native_session":self.backend == "native","x11_clients":false,
                 "client_responsiveness":"xdg-shell-ping", "unresponsive_clients_killed":false,
                 "frame_clock":if self.backend == "native" {"drm-page-flip"} else {"virtual-60hz"}, "host_presentation_observed":false,
@@ -86,7 +86,7 @@ impl Fluxwm {
                             (bounded(data.title.as_deref().unwrap_or("")), bounded(data.app_id.as_deref().unwrap_or("")))
                         })
                     }).unwrap_or_default();
-                    json!({"id":id,"workspace":WorkspaceId::new(0,0),"mapped":item.mapped,"minimized":self.layout.is_minimized(id),"minimize_pending":item.minimize_pending,"maximized":if item.mapped {self.layout.is_maximized(id)} else {item.initial_maximized},"buffered":item.buffered,"admission_error":item.admission_error,"focused":self.layout.focused()==Some(id),"title":title,"app_id":app_id,"responsiveness":item.window.toplevel().map(|t|self.health.for_client(&t.client())),"configure":item.window.toplevel().map(crate::configure::snapshot),"geometry":placements.iter().find(|p|p.window==id).map(|p|p.rect)})
+                    json!({"id":id,"workspace":WorkspaceId::new(0,0),"mapped":item.mapped,"minimized":self.layout.is_minimized(id),"minimize_pending":item.minimize_pending,"fullscreen":if item.mapped {self.layout.is_fullscreen(id)} else {item.initial_fullscreen},"maximized":if item.mapped {self.layout.is_maximized(id)} else {item.initial_maximized},"buffered":item.buffered,"admission_error":item.admission_error,"focused":self.layout.focused()==Some(id),"title":title,"app_id":app_id,"responsiveness":item.window.toplevel().map(|t|self.health.for_client(&t.client())),"configure":item.window.toplevel().map(crate::configure::snapshot),"geometry":placements.iter().find(|p|p.window==id).map(|p|p.rect)})
                 }).collect();
                 Ok(json!({"windows":windows}))
             }
