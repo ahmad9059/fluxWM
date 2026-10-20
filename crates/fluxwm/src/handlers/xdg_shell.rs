@@ -55,10 +55,10 @@ impl XdgShellHandler for Fluxwm {
 
     fn ack_configure(&mut self, surface: WlSurface, _configure: Configure) {
         // Smithay has already accepted this serial and retired its predecessors.
-        // Only mapped roles have layout intent to flush. In particular an old
-        // ack after unmap must not send the next cycle's initial configure.
+        // State requests can arrive before the first buffer. The helper's
+        // initial_configure_sent check prevents a stale post-unmap ack from
+        // starting the next mapping cycle prematurely.
         if let Some(item) = self.window_id(&surface).and_then(|id| self.windows.get(id))
-            && item.mapped
             && let Some(toplevel) = item.window.toplevel()
         {
             crate::configure::send_pending(toplevel);
@@ -248,6 +248,25 @@ impl XdgShellHandler for Fluxwm {
         }
     }
 
+    fn maximize_request(&mut self, surface: ToplevelSurface) {
+        crate::configure::defer_reply(&surface);
+        if let Some(id) = self.window_id(surface.wl_surface())
+            && let Err(error) = self.set_window_maximized(id, true)
+        {
+            tracing::debug!(%id, %error, "maximize request declined");
+        }
+        crate::configure::send_pending(&surface);
+    }
+    fn unmaximize_request(&mut self, surface: ToplevelSurface) {
+        crate::configure::defer_reply(&surface);
+        if let Some(id) = self.window_id(surface.wl_surface())
+            && let Err(error) = self.set_window_maximized(id, false)
+        {
+            tracing::debug!(%id, %error, "unmaximize request declined");
+        }
+        crate::configure::send_pending(&surface);
+    }
+
     fn minimize_request(&mut self, surface: ToplevelSurface) {
         if let Some(id) = self.window_id(surface.wl_surface())
             && let Err(error) = self.set_window_minimized(id, true)
@@ -316,6 +335,7 @@ pub fn handle_commit(state: &mut Fluxwm, surface: &WlSurface, just_unmapped: boo
                 .get(id)
                 .and_then(|item| item.window.toplevel())
         {
+            crate::configure::clear_reply(toplevel);
             toplevel.send_configure();
         }
     }

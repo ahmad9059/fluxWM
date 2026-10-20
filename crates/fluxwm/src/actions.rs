@@ -52,6 +52,11 @@ impl Fluxwm {
                 self.layout.set_mode(mode);
                 self.relayout();
             }
+            Action::Maximize { toggle } => {
+                let id = self.layout.focused().ok_or("no focused toplevel")?;
+                let maximized = toggle && !self.layout.is_maximized(id);
+                self.set_window_maximized(id, maximized)?;
+            }
             Action::Minimize => {
                 let id = self.layout.focused().ok_or("no focused toplevel")?;
                 self.set_window_minimized(id, true)?;
@@ -104,7 +109,9 @@ impl Fluxwm {
             | Action::Overview { .. }
             | Action::Lock => return Err("action is not implemented in the nested backend".into()),
         }
-        self.sequence = next_sequence;
+        // Layout admission recovery and window-state helpers can publish more
+        // than one change during this action. Never rewind their sequence.
+        self.sequence = self.sequence.max(next_sequence);
         Ok(())
     }
 }

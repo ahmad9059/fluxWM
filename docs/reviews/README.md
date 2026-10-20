@@ -95,3 +95,11 @@ Neither source review nor nested GUI regression qualifies native hardware or ses
 [Claude's focused source review](window-minimize-2026-10-19/disposition.md) found no high/medium defect.
 The author strengthened protocol hints, focus recovery and reused-slot ID checks afterward and repeated
 private-display runs. Pointer preconditions, older protocol versions and native hardware remain unqualified.
+
+## Maximize and restore review
+
+[Initial review](window-maximize-2026-10-20/disposition.md) found owned-click and incompatible-size issues.
+The [correction follow-up](window-maximize-followup-2026-10-20/disposition.md) and
+[caller check](window-maximize-caller-2026-10-20/disposition.md) accept the source corrections and event-loop
+ordering. Final nested regressions cover fixed-size declines, late hints and focus stacking. Real clicks,
+toolkits, the remaining bounded popup-cleanup delay and native hardware are not fully qualified.

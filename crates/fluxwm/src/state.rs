@@ -39,6 +39,9 @@ pub struct ManagedWindow {
     pub mapped: bool,
     pub admission_error: Option<String>,
     pub floating: bool,
+    /// State intent before successful layout admission; cleared by null-buffer unmap.
+    pub initial_maximized: bool,
+    pub minimize_pending: bool,
 }
 
 #[derive(Default, serde::Serialize)]
@@ -170,7 +173,7 @@ impl Fluxwm {
         let compositor_state = CompositorState::new::<Self>(&dh);
         let xdg_shell_state = XdgShellState::new_with_capabilities::<Self>(
             &dh,
-            vec![smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Minimize],
+            vec![smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Maximize, smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities::Minimize],
         );
         let shm_state = ShmState::new::<Self>(&dh, vec![]);
         let popups = PopupManager::default();
@@ -412,6 +415,8 @@ impl Fluxwm {
             mapped: false,
             admission_error: None,
             floating: false,
+            initial_maximized: false,
+            minimize_pending: false,
         }) {
             Ok(id) => {
                 self.bump_sequence();
@@ -475,6 +480,31 @@ impl Fluxwm {
                 s.buffer().is_some()
             })
             .unwrap_or(false);
+        if !has_buffer
+            && let Some(top) = self
+                .windows
+                .get(id)
+                .filter(|item| item.initial_maximized && !item.mapped)
+                .and_then(|item| item.window.toplevel())
+                .cloned()
+        {
+            match self.layout.maximize_size(self.constraints_for(root)) {
+                Ok(size) => top.with_pending_state(|s| {
+                    s.size = Some((size.width.round() as i32, size.height.round() as i32).into())
+                }),
+                Err(_) => {
+                    self.windows
+                        .get_mut(id)
+                        .expect("live role")
+                        .initial_maximized = false;
+                    self.bump_sequence();
+                    top.with_pending_state(|s| {
+                        s.size=None;
+                        s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized);
+                    });
+                }
+            }
+        }
         let item = self
             .windows
             .get_mut(id)
@@ -485,6 +515,14 @@ impl Fluxwm {
             item.admission_error = None;
         }
         item.window.on_commit();
+        if has_buffer
+            && let Some(top) = item.window.toplevel()
+            && !crate::configure::valid_maximized_size(top, item.window.geometry().size)
+        {
+            let top = top.clone();
+            self.reject_invalid_maximized_size(&top);
+            return;
+        }
         let was_mapped = item.mapped;
         let window = item.window.clone();
         if has_buffer && !was_mapped {
@@ -499,6 +537,15 @@ impl Fluxwm {
                 tracing::warn!(%id, %error, "layout admission rejected");
                 return;
             }
+            if let Err(error) = self.apply_initial_maximize(id) {
+                let _ = self.layout.remove(id);
+                self.windows
+                    .get_mut(id)
+                    .expect("live dispatch ID")
+                    .admission_error = Some(error.to_string());
+                self.bump_sequence();
+                return;
+            }
             let item = self.windows.get_mut(id).expect("live dispatch ID");
             item.mapped = true;
             item.admission_error = None;
@@ -510,7 +557,13 @@ impl Fluxwm {
                 self.restore_keyboard_focus();
             }
         } else if !has_buffer && was_mapped {
-            self.windows.get_mut(id).expect("live dispatch ID").mapped = false;
+            let item = self.windows.get_mut(id).expect("live dispatch ID");
+            item.mapped = false;
+            item.initial_maximized = false;
+            item.minimize_pending = false;
+            if let Some(top) = item.window.toplevel() {
+                crate::configure::clear_reply(top);
+            }
             Self::dismiss_root_popups(root);
             self.space.unmap_elem(&window);
             let _ = self.layout.remove(id);
@@ -577,6 +630,10 @@ impl Fluxwm {
                 .insert_with_focus(id, self.constraints_for(&surface), false)
                 .is_ok()
             {
+                if self.apply_initial_maximize(id).is_err() {
+                    let _ = self.layout.remove(id);
+                    continue;
+                }
                 let item = self.windows.get_mut(id).expect("live dispatch ID");
                 item.mapped = true;
                 item.admission_error = None;
@@ -596,6 +653,11 @@ impl Fluxwm {
             if let Some(toplevel) = item.window.toplevel() {
                 toplevel.with_pending_state(|s| {
                     s.size = Some((placement.rect.width.round() as i32, placement.rect.height.round() as i32).into());
+                    if self.layout.is_maximized(placement.window) {
+                        s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized);
+                    } else {
+                        s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized);
+                    }
                     if self.layout.is_minimized(placement.window) {
                         s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Suspended);
                     } else {
@@ -620,6 +682,13 @@ impl Fluxwm {
                 self.space.unmap_elem(&item.window);
             }
         }
+        // map_element raises even inactive elements. Restore focus stacking after
+        // mapping every placement, including background maximized overlays.
+        if let Some(item) = self.layout.focused().and_then(|id| self.windows.get(id))
+            && self.space.element_location(&item.window).is_some()
+        {
+            self.space.raise_element(&item.window, false);
+        }
         // Release seat wrappers only after all scene removals are authoritative;
         // cleanup repairs keyboard/pointer focus using the completed layout.
         self.cleanup_popup_grab();
@@ -629,6 +698,136 @@ impl Fluxwm {
         self.request_redraw();
     }
 
+    fn reject_invalid_maximized_size(&self, top: &smithay::wayland::shell::xdg::ToplevelSurface) {
+        use smithay::reexports::{
+            wayland_protocols::xdg::shell::server::xdg_wm_base, wayland_server::Resource,
+        };
+        let Some(client) = top.wl_surface().client() else {
+            return;
+        };
+        let mut resource = None;
+        // The public ShellClient hides its wm_base resource. Find a live typed
+        // wm_base owned by this same client. Never query the backend under its
+        // object-enumeration lock. A protocol error terminates this client only.
+        let _ = self
+            .display_handle
+            .backend_handle()
+            .with_all_objects_for(client.id(), |id| {
+                if resource.is_none()
+                    && id.interface().name == xdg_wm_base::XdgWmBase::interface().name
+                {
+                    resource = Some(id);
+                }
+            });
+        if let Some(resource) =
+            resource.and_then(|id| xdg_wm_base::XdgWmBase::from_id(&self.display_handle, id).ok())
+        {
+            resource.post_error(
+                xdg_wm_base::Error::InvalidSurfaceState,
+                "committed maximized window geometry differs from acknowledged configure",
+            );
+        } else {
+            self.display_handle
+                .backend_handle()
+                .kill_client(client.id(), DisconnectReason::ConnectionClosed);
+        }
+    }
+
+    fn apply_initial_maximize(&mut self, id: WindowId) -> Result<(), flux_layout::LayoutError> {
+        let requested = self
+            .windows
+            .get(id)
+            .expect("admitted role")
+            .initial_maximized;
+        match self.layout.set_maximized(id, requested) {
+            Err(
+                flux_layout::LayoutError::InvalidConstraints
+                | flux_layout::LayoutError::InvalidGeometry,
+            ) => {
+                // Hints or viewport may change between the initial configure and
+                // first buffer. Keep successful base admission and send normal
+                // state rather than trapping the live client in a retry loop.
+                self.windows
+                    .get_mut(id)
+                    .expect("admitted role")
+                    .initial_maximized = false;
+                self.bump_sequence();
+                self.layout.set_maximized(id, false)
+            }
+            result => result,
+        }
+    }
+
+    fn owns_click_grab(&self, id: WindowId) -> bool {
+        use smithay::reexports::wayland_server::Resource;
+        let Some(top) = self.windows.get(id).and_then(|item| item.window.toplevel()) else {
+            return false;
+        };
+        let Some(pointer) = self.seat.get_pointer() else {
+            return false;
+        };
+        pointer
+            .with_grab(|_, grab| grab.is::<smithay::input::pointer::ClickGrab<Self>>())
+            .unwrap_or(false)
+            && pointer
+                .grab_start_data()
+                .and_then(|data| data.focus)
+                .is_some_and(|(focus, _)| focus.id().same_client_as(&top.wl_surface().id()))
+    }
+
+    pub fn set_window_maximized(&mut self, id: WindowId, maximized: bool) -> Result<(), String> {
+        if self.stopping || self.shutdown_deadline.is_some() {
+            return Err("instance is shutting down".into());
+        }
+        let item = self
+            .windows
+            .get(id)
+            .filter(|item| item.window.alive())
+            .ok_or("unknown window")?;
+        let current = if item.mapped {
+            self.layout.is_maximized(id)
+        } else {
+            item.initial_maximized
+        };
+        if current == maximized {
+            return Ok(());
+        }
+        if self.seat.get_keyboard().is_some_and(|k| k.is_grabbed())
+            || (self.seat.get_pointer().is_some_and(|p| p.is_grabbed())
+                && !self.owns_click_grab(id))
+        {
+            return Err("an input grab is active".into());
+        }
+        if item.mapped {
+            self.layout
+                .set_maximized(id, maximized)
+                .map_err(|e| e.to_string())?;
+            self.relayout();
+        } else {
+            let size =
+                if maximized {
+                    self.layout
+                        .maximize_size(self.constraints_for(
+                            item.window.toplevel().expect("xdg role").wl_surface(),
+                        ))
+                        .map_err(|e| e.to_string())?
+                } else {
+                    self.layout.viewport()
+                };
+            let item = self.windows.get_mut(id).expect("live role");
+            item.initial_maximized = maximized;
+            if let Some(top) = item.window.toplevel() {
+                top.with_pending_state(|s| {
+                    s.size = maximized.then(|| (size.width.round() as i32, size.height.round() as i32).into());
+                    if maximized { s.states.set(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized); }
+                    else { s.states.unset(smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State::Maximized); }
+                });
+            }
+        }
+        self.bump_sequence();
+        Ok(())
+    }
+
     /// Hide a mapped member without releasing its layout slot or buffer ownership.
     /// Requests during unrelated input grabs are rejected rather than redirecting
     /// an existing grab to a newly selected window. XDG minimize is advisory.
@@ -636,12 +835,28 @@ impl Fluxwm {
         if self.stopping || self.shutdown_deadline.is_some() {
             return Err("instance is shutting down".into());
         }
-        let item = self
-            .windows
+        if !minimized
+            && let Some(item) = self.windows.get_mut(id)
+            && std::mem::take(&mut item.minimize_pending)
+        {
+            self.bump_sequence();
+        }
+        self.windows
             .get(id)
             .filter(|item| item.mapped && item.window.alive())
             .ok_or("unknown or unmapped window")?;
         if self.layout.is_minimized(id) == minimized {
+            return Ok(());
+        }
+        if minimized
+            && self.owns_click_grab(id)
+            && !self.seat.get_keyboard().is_some_and(|k| k.is_grabbed())
+        {
+            let item = self.windows.get_mut(id).expect("mapped role");
+            if !item.minimize_pending {
+                item.minimize_pending = true;
+                self.bump_sequence();
+            }
             return Ok(());
         }
         let owns_popup = self
@@ -654,7 +869,11 @@ impl Fluxwm {
         {
             return Err("an input grab is active".into());
         }
-        let surface = item.window.toplevel().map(|top| top.wl_surface().clone());
+        let surface = self
+            .windows
+            .get(id)
+            .and_then(|item| item.window.toplevel())
+            .map(|top| top.wl_surface().clone());
         self.layout
             .set_minimized(id, minimized)
             .map_err(|error| error.to_string())?;
@@ -867,6 +1086,27 @@ impl Fluxwm {
                 self.bump_sequence();
                 self.relayout();
                 self.restore_keyboard_focus();
+            }
+        }
+        if !self.stopping
+            && self.shutdown_deadline.is_none()
+            && !self.seat.get_keyboard().is_some_and(|k| k.is_grabbed())
+            && !self.seat.get_pointer().is_some_and(|p| p.is_grabbed())
+        {
+            let pending: Vec<_> = self
+                .windows
+                .iter()
+                .filter_map(|(id, item)| item.minimize_pending.then_some(id))
+                .collect();
+            for id in pending {
+                self.windows
+                    .get_mut(id)
+                    .expect("retained role")
+                    .minimize_pending = false;
+                self.bump_sequence();
+                if let Err(error) = self.set_window_minimized(id, true) {
+                    tracing::debug!(%id, %error, "deferred minimize declined");
+                }
             }
         }
         self.reap_children();

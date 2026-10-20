@@ -1,0 +1,17 @@
+{
+  "crates/flux-core/src/action.rs": "589091a8cc2b5639b4b85ac967c993f5dc10b7aeacc12533cbb492f5710475bc",
+  "crates/flux-layout/src/lib.rs": "320bd3ef72ff1e3a0c55dbc16eebd1d9048ee6f07c2a299d45492f628ade9a3c",
+  "crates/fluxwm-fixture/src/main.rs": "4aa32824985824c3a9eb1951232832be1567eb621bf51ff9d5b2478d70df36fa",
+  "crates/fluxwm/src/actions.rs": "05454edb8ee4ac3d28fbc6a4464571077fadb8cf8db212586b4d559878e0820c",
+  "crates/fluxwm/src/configure.rs": "d6dd8bb21c558604537299c76e90220e478bcdc0e66e3d4f95e5cbb63d9a321b",
+  "crates/fluxwm/src/handlers/xdg_shell.rs": "fb0f0a98f6bbf1fce6c8e96a0a4ff7b3dad54803c09ca98da23556a6a258a65a",
+  "crates/fluxwm/src/ipc.rs": "3b105d66f1201add7969dbe93c535614b2c0096e73be4017d877934f72780c03",
+  "crates/fluxwm/src/state.rs": "b66edc34372331d7b1ccd90218ad06da7ed14b6bb179fcb1a62ce5eb91349c17",
+  "tools/smoke_configure.py": "0047c8fa983c916d63a6e1f04768f97671dfdb6d3a5f33a93f9872db3165b9f9",
+  "tools/smoke_health.py": "04147654f0b9dc22a7b8f31e20cc5ac07de2642003e434c3bba7ca8b74a824b2",
+  "tools/smoke_maximize.py": "9974a90a0baa74251876897672359e7f4e73b9a218d14d9b6a0eb3bb6891b56e",
+  "tools/smoke_minimize.py": "1aed89dd03ff118c41b6a215152719036376d37d2ebc2102f7db704deec759a1",
+  "tools/smoke_nested.py": "ca776e500a8cb74328526a5020c2b1ea1f237ec1a31dc64d956e0b487fd98b4c",
+  "tools/smoke_private.py": "6f4447fd8d377a6ee6e8bf18cbdcb9e00de78b630c5fe6644ac95175ab062134",
+  "tools/smoke_scene.py": "32163ebb762d15dbaa3df4887a527d29279fa43ed4b16f092fe1cd60eaf8c8b2"
+}

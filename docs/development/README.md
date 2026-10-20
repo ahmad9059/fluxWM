@@ -71,3 +71,5 @@ The [IPC shutdown regression](shutdown-smoke.md) verifies the quit dispatch boun
 - [Experimental native compositor](native-compositor.md): optional main executable backend, completion-gated scenes, input/output integration and software cursor.
 
 [Minimize/restore](minimize.md) documents retained layout slots, explicit IPC restore and input-grab policy.
+
+[Maximize/restore](maximize.md) covers viewport presentation, saved layout geometry and configure replies.

@@ -52,3 +52,7 @@ Implement minimize/restore, graceful close versus explicit client disconnect, ma
 geometry, removes render/input/focus eligibility and exposes explicit IPC restore. Reserved slots do not
 compact. Pure model and private-display protocol checks cover named cases; full phase verification,
 maximize/fullscreen restore combinations, task UI and native qualification remain open.
+
+[Maximize/restore](../development/maximize.md) adds viewport presentation with retained base layout geometry,
+bounded required configure replies and committed-state geometry validation. Fullscreen pages, migration,
+full native/toolkit qualification and the complete phase gate remain open.

@@ -1,0 +1,67 @@
+{
+  "cases": [
+    {
+      "binary_sha256": "186c7b6d248c2856143f1c82abaf14a1cdeb2115db2502de365dee0f1967fcf2",
+      "compositor_exit": 0,
+      "elapsed_seconds": 0.194,
+      "endpoints_removed": true,
+      "error": "real fixture oracle failed: window 0: expected exactly Maximize, Minimize capabilities, got [4, 2]",
+      "executables_unchanged": true,
+      "fixture_exit": 1,
+      "fixture_report": {
+        "elapsed_ms": 3,
+        "error": "window 0: expected exactly Maximize, Minimize capabilities, got [4, 2]",
+        "events": [
+          {
+            "at_ms": 2,
+            "event": {
+              "create": 0,
+              "name": "maximize"
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "bytes": [
+                4,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0
+              ],
+              "wm_capabilities": 0
+            }
+          },
+          {
+            "at_ms": 3,
+            "event": {
+              "configure_ack": 0,
+              "serial": 2,
+              "size": [
+                1280,
+                800
+              ]
+            }
+          }
+        ],
+        "healthy_events": [],
+        "mode": "maximize",
+        "ok": false
+      },
+      "fixture_sha256": "c7a51799296e96fee3fcc7a15e08f906421ff70b0bdc2ff8fd9b9b2344769079",
+      "mode": "maximize",
+      "ok": false
+    }
+  ],
+  "ok": false,
+  "parent_environment_unchanged": true,
+  "scope": "real XDG maximize capabilities/state, preinitial and pre-map requests, repeated replies, single-flight held acknowledgments, exact-size commits, saved geometry, minimize/restore, unmap, stale ID and malformed-client isolation; excludes physical/native execution and pixel qualification",
+  "source_sha256": {
+    "smoke_health.py": "04147654f0b9dc22a7b8f31e20cc5ac07de2642003e434c3bba7ca8b74a824b2",
+    "smoke_maximize.py": "9974a90a0baa74251876897672359e7f4e73b9a218d14d9b6a0eb3bb6891b56e",
+    "smoke_nested.py": "ca776e500a8cb74328526a5020c2b1ea1f237ec1a31dc64d956e0b487fd98b4c"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "crates/flux-layout/src/lib.rs": {
+    "reviewed": "0acbc9da4dba4bda4ae9958b8c3642ecd0931bfeca5beee031c4603a9c68bf30",
+    "final": "320bd3ef72ff1e3a0c55dbc16eebd1d9048ee6f07c2a299d45492f628ade9a3c"
+  },
+  "crates/fluxwm-fixture/src/main.rs": {
+    "reviewed": "a0ee15eec37ea03fc362979cedd225e88ad382b32e90cc7299039d32f74d6c24",
+    "final": "4aa32824985824c3a9eb1951232832be1567eb621bf51ff9d5b2478d70df36fa"
+  },
+  "crates/fluxwm/src/ipc.rs": {
+    "reviewed": "feec6c2b83533c7ce086cc70902a2e3e74f73b2195fd2f24adada196d519e561",
+    "final": "3b105d66f1201add7969dbe93c535614b2c0096e73be4017d877934f72780c03"
+  },
+  "crates/fluxwm/src/state.rs": {
+    "reviewed": "a55ccbfbf30f76cc0f683e1d8adfda76f099e39bfbb919f8ac8823e74e649397",
+    "final": "b66edc34372331d7b1ccd90218ad06da7ed14b6bb179fcb1a62ce5eb91349c17"
+  },
+  "docs/development/maximize.md": {
+    "reviewed": "55bcfdc21de07711a79e76a8bc55b169691ac27878f90e8aa2c2764fe7970de9",
+    "final": "20bf7f1cb446928bf832c9e994a8cd58ced9202e9bd62e7fceee778588160ee4"
+  }
+}

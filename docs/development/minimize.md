@@ -24,11 +24,13 @@ it. Existing pending configure flow remains bounded; an ack is not proof the new
 buffer commit does not restore its window. All minimized means no selected window or keyboard focus.
 
 Unrelated active input grabs reject IPC transitions and decline advisory client minimize requests. A root's
-own tracked popup grab is dismissed through the existing popup cleanup path. There is no automatic retry.
-Only Minimize is advertised in XDG optional capabilities; maximize, fullscreen and window menu remain absent.
+own tracked popup grab is dismissed through the existing popup cleanup path. An owned implicit click queues a bounded `minimize_pending` flag until input grabs end; restore or null-buffer
+unmap cancels it. Other declined grabs have no automatic retry. Actual title-bar click timing remains
+unqualified by the current fixture.
+[Maximize](maximize.md) and Minimize are advertised in XDG optional capabilities; fullscreen and window menu remain absent.
 The pinned Smithay state serializer filters version-dependent hints.
 
 This implements the minimize/restore portion of [phase 4](../phases/04-scrolling-layout.md). It does not close
-that phase, qualify native hardware, or implement task UI, maximize/fullscreen restoration, output migration,
+that phase, qualify native hardware, or implement task UI, fullscreen state combinations, output migration,
 capture or accessibility. The pure model retains randomized invariant checks; the owned private-display
 fixture exercises real protocol and IPC transitions. Their actual results are recorded with the milestone.

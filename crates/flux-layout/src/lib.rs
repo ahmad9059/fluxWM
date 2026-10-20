@@ -218,6 +218,7 @@ pub struct Layout {
     columns: Vec<Column>,
     members: BTreeMap<WindowId, SizeConstraints>,
     minimized: BTreeSet<WindowId>,
+    maximized: BTreeSet<WindowId>,
     canvas: BTreeMap<GroupId, CanvasGroup>,
     next_group: u64,
     canvas_initialized: bool,
@@ -240,6 +241,7 @@ impl Layout {
             columns: Vec::new(),
             members: BTreeMap::new(),
             minimized: BTreeSet::new(),
+            maximized: BTreeSet::new(),
             canvas: BTreeMap::new(),
             next_group: 0,
             canvas_initialized: false,
@@ -288,7 +290,7 @@ impl Layout {
         for saved_mode in [LayoutMode::Strip, LayoutMode::Canvas] {
             candidate.mode = saved_mode;
             if candidate
-                .placements()
+                .base_placements()
                 .iter()
                 .any(|p| !valid_rect(p.rect) || !valid_rect(p.clip))
             {
@@ -333,7 +335,11 @@ impl Layout {
         if self.mode == LayoutMode::Strip && camera.zoom != 1.0 {
             return Err(LayoutError::InvalidGeometry);
         }
+        if !self.maximized.is_empty() && maximized_rect(self.viewport, camera).is_none() {
+            return Err(LayoutError::InvalidGeometry);
+        }
         *self.camera_mut() = camera;
+        self.clear_incompatible_maximized();
         Ok(())
     }
     /// Empty usable areas are rejected without changing the previous valid geometry.
@@ -341,9 +347,17 @@ impl Layout {
         if !valid_size(viewport) {
             return Err(LayoutError::InvalidGeometry);
         }
+        if !self.maximized.is_empty()
+            && [self.strip_camera, self.canvas_camera]
+                .iter()
+                .any(|camera| maximized_rect(viewport, *camera).is_none())
+        {
+            return Err(LayoutError::InvalidGeometry);
+        }
         self.default_width.resolve(viewport.width)?;
         self.check_strip_extent(viewport.width, self.gap, None, None, 0.0)?;
         self.viewport = viewport;
+        self.clear_incompatible_maximized();
         self.reveal_focus();
         Ok(())
     }
@@ -467,6 +481,7 @@ impl Layout {
         }
         self.members.remove(&window);
         self.minimized.remove(&window);
+        self.maximized.remove(&window);
         self.history.retain(|w| *w != window);
         if self.focus == Some(window) {
             self.focus = None;
@@ -528,6 +543,65 @@ impl Layout {
     pub fn is_minimized(&self, window: WindowId) -> bool {
         self.minimized.contains(&window)
     }
+    /// Return the active usable viewport size in world units when the client's
+    /// committed bounds permit that exact maximized size. This does not mutate
+    /// the layout and can also preflight a window that has not been admitted yet.
+    pub fn maximize_size(&self, constraints: SizeConstraints) -> Result<Size, LayoutError> {
+        if !constraints.valid() {
+            return Err(LayoutError::InvalidConstraints);
+        }
+        if [self.strip_camera, self.canvas_camera]
+            .iter()
+            .any(|camera| maximized_rect(self.viewport, *camera).is_none())
+        {
+            return Err(LayoutError::InvalidGeometry);
+        }
+        let rect =
+            maximized_rect(self.viewport, self.camera()).ok_or(LayoutError::InvalidGeometry)?;
+        let size = Size {
+            width: rect.width,
+            height: rect.height,
+        };
+        if size.width < constraints.min.width
+            || size.height < constraints.min.height
+            || constraints
+                .max
+                .is_some_and(|max| size.width > max.width || size.height > max.height)
+        {
+            return Err(LayoutError::InvalidConstraints);
+        }
+        Ok(size)
+    }
+    fn clear_incompatible_maximized(&mut self) {
+        let incompatible: Vec<_> = self
+            .maximized
+            .iter()
+            .copied()
+            .filter(|window| self.maximize_size(self.members[window]).is_err())
+            .collect();
+        for window in incompatible {
+            self.maximized.remove(&window);
+        }
+    }
+    /// Present a member across the usable viewport without changing its saved
+    /// slot, constraints, group, focus, or minimized state. Hidden tabs stay hidden.
+    /// Both saved camera views must fit the supported coordinate bounds.
+    pub fn set_maximized(&mut self, window: WindowId, maximized: bool) -> Result<(), LayoutError> {
+        if !self.members.contains_key(&window) {
+            return Err(LayoutError::UnknownWindow);
+        }
+        if maximized {
+            self.maximize_size(self.members[&window])?;
+            self.maximized.insert(window);
+        } else {
+            self.maximized.remove(&window);
+        }
+        Ok(())
+    }
+    /// Unknown and removed identities are never maximized.
+    pub fn is_maximized(&self, window: WindowId) -> bool {
+        self.maximized.contains(&window)
+    }
     fn replacement_focus(&self, column: usize) -> Option<WindowId> {
         self.history
             .iter()
@@ -576,6 +650,7 @@ impl Layout {
         )?;
         let value = self.members.get_mut(&window).unwrap();
         *value = constraints;
+        self.clear_incompatible_maximized();
         let group = self.columns[self.column_index(window).unwrap()].group;
         let minimum = self
             .columns
@@ -636,6 +711,7 @@ impl Layout {
             reveal = true;
         }
         self.mode = mode;
+        self.clear_incompatible_maximized();
         if reveal {
             self.reveal_focus();
         }
@@ -906,7 +982,7 @@ impl Layout {
                     .find(|w| !self.is_minimized(*w)),
             }
         } else {
-            let placements = self.placements();
+            let placements = self.base_placements();
             let source = placements.iter().find(|p| p.window == window).unwrap().rect;
             let origin = center(source);
             placements
@@ -959,6 +1035,20 @@ impl Layout {
     }
     /// All members, including hidden tabs and offscreen content, in deterministic scene order.
     pub fn placements(&self) -> Vec<Placement> {
+        let mut placements = self.base_placements();
+        if !self.maximized.is_empty() {
+            let rect =
+                maximized_rect(self.viewport, self.camera()).expect("maximized viewport invariant");
+            for placement in &mut placements {
+                if self.is_maximized(placement.window) {
+                    placement.rect = rect;
+                    placement.clip = rect;
+                }
+            }
+        }
+        placements
+    }
+    fn base_placements(&self) -> Vec<Placement> {
         if self.mode == LayoutMode::Strip {
             self.strip_placements()
         } else {
@@ -1064,6 +1154,15 @@ impl Layout {
         };
         let camera = shift(self.canvas_camera.position);
         if !valid_point(camera)
+            || (!self.maximized.is_empty()
+                && maximized_rect(
+                    self.viewport,
+                    Camera {
+                        position: camera,
+                        ..self.canvas_camera
+                    },
+                )
+                .is_none())
             || self.canvas.values().any(|g| {
                 !valid_point(shift(Point {
                     x: g.rect.x,
@@ -1119,6 +1218,23 @@ impl Layout {
         }) {
             return Err("invalid column");
         }
+        if self.maximized.iter().any(|w| !unique.contains(w)) {
+            return Err("stale maximized member");
+        }
+        if !self.maximized.is_empty()
+            && [self.strip_camera, self.canvas_camera]
+                .iter()
+                .any(|camera| maximized_rect(self.viewport, *camera).is_none())
+        {
+            return Err("invalid maximized viewport");
+        }
+        if self
+            .maximized
+            .iter()
+            .any(|window| self.maximize_size(self.members[window]).is_err())
+        {
+            return Err("incompatible maximized member");
+        }
         if self.minimized.iter().any(|w| !unique.contains(w)) {
             return Err("stale minimized member");
         }
@@ -1136,7 +1252,7 @@ impl Layout {
         {
             return Err("stale focus history");
         }
-        if self.placements().iter().any(|p| {
+        if self.base_placements().iter().any(|p| {
             !p.rect.is_valid()
                 || !p.clip.is_valid()
                 || p.rect.width < MIN_SIZE
@@ -1264,7 +1380,7 @@ impl Layout {
             let group = self.columns[i].group;
             if self.columns[i].mode == ColumnMode::Stack {
                 let rect = self
-                    .placements()
+                    .base_placements()
                     .into_iter()
                     .find(|p| p.window == window)
                     .unwrap()
@@ -1277,7 +1393,7 @@ impl Layout {
             }
         }
         let rect = self
-            .placements()
+            .base_placements()
             .into_iter()
             .find(|p| p.window == window)
             .unwrap()
@@ -1299,11 +1415,40 @@ impl Layout {
                 rect.height,
             )
         };
+        let (max_x, max_y) = if self.maximized.is_empty() {
+            (MAX_COORD, MAX_COORD)
+        } else {
+            (
+                MAX_COORD - self.viewport.width / camera.zoom,
+                MAX_COORD - self.viewport.height / camera.zoom,
+            )
+        };
         self.camera_mut().position = Point {
-            x: x.clamp(-MAX_COORD, MAX_COORD),
-            y: y.clamp(-MAX_COORD, MAX_COORD),
+            x: x.clamp(-MAX_COORD, max_x),
+            y: y.clamp(-MAX_COORD, max_y),
         };
     }
+}
+// Overlay dimensions are world units: a valid output can become smaller than
+// MIN_SIZE under zoom. Base client geometry retains its existing minimum size.
+fn maximized_rect(viewport: Size, camera: Camera) -> Option<Rect> {
+    let width = viewport.width / camera.zoom;
+    let height = viewport.height / camera.zoom;
+    (valid_point(camera.position)
+        && width.is_finite()
+        && height.is_finite()
+        && width > 0.0
+        && height > 0.0
+        && width <= MAX_COORD
+        && height <= MAX_COORD
+        && camera.position.x + width <= MAX_COORD
+        && camera.position.y + height <= MAX_COORD)
+        .then_some(Rect {
+            x: camera.position.x,
+            y: camera.position.y,
+            width,
+            height,
+        })
 }
 fn allocate_heights(
     windows: &[WindowId],
@@ -2351,7 +2496,7 @@ mod tests {
                 .iter()
                 .nth((seed as usize / 13) % live.len().max(1))
                 .copied();
-            match seed % 14 {
+            match seed % 16 {
                 0 if live.len() < 100 => {
                     let w = id(next);
                     next += 1;
@@ -2436,15 +2581,34 @@ mod tests {
                 }
                 11 | 12 => {
                     if let Some(w) = target {
-                        l.set_minimized(w, seed % 14 == 11).unwrap();
+                        l.set_minimized(w, seed % 16 == 11).unwrap();
                     }
                 }
                 13 => {
                     l.cycle_tab(seed & 128 == 0).unwrap();
                 }
+                14 | 15 => {
+                    if let Some(w) = target {
+                        let result = l.set_maximized(w, seed % 16 == 14);
+                        assert!(matches!(
+                            result,
+                            Ok(()) | Err(LayoutError::InvalidConstraints)
+                        ));
+                    }
+                }
                 _ => {}
             }
             assert_eq!(l.validate(), Ok(()));
+            for p in l.placements() {
+                if l.is_maximized(p.window) {
+                    let view = l.camera().rect_to_view(p.rect);
+                    assert!(view.x.abs() < 1e-6 && view.y.abs() < 1e-6);
+                    assert!((view.width - l.viewport.width).abs() < 1e-6);
+                    assert!((view.height - l.viewport.height).abs() < 1e-6);
+                }
+                assert_eq!(p.focused, l.focused() == Some(p.window));
+                assert!(!l.is_minimized(p.window) || !p.visible);
+            }
             assert_eq!(
                 l.placements()
                     .into_iter()
@@ -2453,5 +2617,247 @@ mod tests {
                 live
             );
         }
+    }
+    #[test]
+    fn maximize_preserves_base_geometry_focus_constraints_and_minimization() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+        }
+        l.join_column(id(1), id(0)).unwrap();
+        l.focus_window(id(0)).unwrap();
+        let base = l.base_placements();
+        let camera = l.camera();
+        l.set_maximized(id(1), true).unwrap();
+        l.set_maximized(id(1), true).unwrap();
+        assert_eq!(l.focused(), Some(id(0)));
+        assert_eq!(l.camera(), camera);
+        assert_eq!(l.base_placements(), base);
+        let max = l
+            .placements()
+            .into_iter()
+            .find(|p| p.window == id(1))
+            .unwrap();
+        assert_eq!(
+            l.camera().rect_to_view(max.rect),
+            Rect {
+                x: 0.,
+                y: 0.,
+                width: 1000.,
+                height: 600.
+            }
+        );
+        assert_eq!(max.rect, max.clip);
+        l.set_maximized(id(1), false).unwrap();
+        assert_eq!(l.placements(), base);
+        l.set_maximized(id(1), true).unwrap();
+        l.set_minimized(id(1), true).unwrap();
+        assert!(l.is_maximized(id(1)));
+        assert!(
+            !l.placements()
+                .into_iter()
+                .find(|p| p.window == id(1))
+                .unwrap()
+                .visible
+        );
+        l.set_minimized(id(1), false).unwrap();
+        assert_eq!(l.focused(), Some(id(1)));
+        assert!(l.is_maximized(id(1)));
+        l.set_column_mode(id(1), ColumnMode::Tabs).unwrap();
+        l.focus_window(id(0)).unwrap();
+        assert!(
+            !l.placements()
+                .into_iter()
+                .find(|p| p.window == id(1))
+                .unwrap()
+                .visible
+        );
+        l.cycle_tab(true).unwrap();
+        assert_eq!(l.focused(), Some(id(1)));
+        l.set_maximized(id(1), false).unwrap();
+        assert_eq!(l.placements(), l.base_placements());
+        l.set_maximized(id(1), true).unwrap();
+        l.remove(id(1)).unwrap();
+        assert!(!l.is_maximized(id(1)));
+        assert_eq!(
+            l.set_maximized(id(1), true),
+            Err(LayoutError::UnknownWindow)
+        );
+        l.insert(id(1), SizeConstraints::default()).unwrap();
+        assert!(!l.is_maximized(id(1)));
+        assert_eq!(l.validate(), Ok(()));
+    }
+
+    #[test]
+    fn maximized_canvas_navigation_uses_saved_geometry_across_camera_and_modes() {
+        let mut l = layout();
+        for n in 0..3 {
+            l.insert(id(n), SizeConstraints::default()).unwrap();
+            l.set_maximized(id(n), true).unwrap();
+        }
+        l.set_mode(LayoutMode::Canvas);
+        l.focus_window(id(0)).unwrap();
+        assert_eq!(l.focus_direction(Direction::Right), Ok(Some(id(1))));
+        assert_eq!(l.focus_direction(Direction::Right), Ok(Some(id(2))));
+        assert_eq!(l.focus_direction(Direction::Left), Ok(Some(id(1))));
+        let base = l.base_placements();
+        l.set_viewport(Size {
+            width: 800.,
+            height: 400.,
+        })
+        .unwrap();
+        l.set_camera(Camera::new(Point { x: 100., y: -50. }, 2.).unwrap())
+            .unwrap();
+        for placement in l.placements() {
+            assert_eq!(
+                l.camera().rect_to_view(placement.rect),
+                Rect {
+                    x: 0.,
+                    y: 0.,
+                    width: 800.,
+                    height: 400.
+                }
+            );
+        }
+        assert_eq!(l.base_placements(), base);
+        l.set_mode(LayoutMode::Strip);
+        l.set_mode(LayoutMode::Canvas);
+        for n in 0..3 {
+            l.set_maximized(id(n), false).unwrap();
+        }
+        assert_eq!(l.placements(), base);
+        assert_eq!(l.validate(), Ok(()));
+    }
+
+    #[test]
+    fn maximize_bounds_reject_atomically_and_reveal_stays_safe() {
+        let mut l = layout();
+        l.insert(id(0), SizeConstraints::default()).unwrap();
+        l.set_camera(
+            Camera::new(
+                Point {
+                    x: MAX_COORD,
+                    y: 0.,
+                },
+                1.,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(
+            l.set_maximized(id(0), true),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert!(!l.is_maximized(id(0)));
+        l.set_camera(Camera::default()).unwrap();
+        l.set_maximized(id(0), true).unwrap();
+        let before = l.camera();
+        assert_eq!(
+            l.set_camera(
+                Camera::new(
+                    Point {
+                        x: MAX_COORD,
+                        y: 0.
+                    },
+                    1.
+                )
+                .unwrap()
+            ),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_eq!(l.camera(), before);
+        l.set_mode(LayoutMode::Canvas);
+        l.set_canvas_rect(
+            id(0),
+            Rect {
+                x: MAX_COORD,
+                y: MAX_COORD,
+                width: 500.,
+                height: 600.,
+            },
+        )
+        .unwrap();
+        l.focus_window(id(0)).unwrap();
+        assert_eq!(l.validate(), Ok(()));
+        let before = l.camera();
+        assert_eq!(
+            l.rebase_canvas(Point { x: -1000., y: 0. }),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_eq!(l.camera(), before);
+        assert_eq!(
+            l.set_viewport(Size {
+                width: MAX_COORD,
+                height: 600.
+            }),
+            Err(LayoutError::InvalidGeometry)
+        );
+        assert_eq!(l.viewport().width, 1000.);
+        l.set_maximized(id(0), false).unwrap();
+        l.set_camera(Camera::new(Point::default(), 0.01).unwrap())
+            .unwrap();
+        l.set_viewport(Size {
+            width: MAX_COORD,
+            height: 600.,
+        })
+        .unwrap();
+        assert_eq!(
+            l.set_maximized(id(0), true),
+            Err(LayoutError::InvalidGeometry)
+        );
+    }
+    #[test]
+    fn maximize_declines_incompatible_bounds_and_clears_after_size_changes() {
+        let mut l = layout();
+        l.insert(id(0), SizeConstraints::default()).unwrap();
+        let fixed = SizeConstraints::from_xdg((400, 300), (400, 300)).unwrap();
+        assert_eq!(l.maximize_size(fixed), Err(LayoutError::InvalidConstraints));
+        l.set_constraints(id(0), fixed).unwrap();
+        let base = l.placements();
+        assert_eq!(
+            l.set_maximized(id(0), true),
+            Err(LayoutError::InvalidConstraints)
+        );
+        assert_eq!(l.placements(), base);
+        assert!(!l.is_maximized(id(0)));
+        let oversize = SizeConstraints::from_xdg((1001, 1), (0, 0)).unwrap();
+        assert_eq!(
+            l.maximize_size(oversize),
+            Err(LayoutError::InvalidConstraints)
+        );
+        let compatible = SizeConstraints::from_xdg((100, 100), (1000, 600)).unwrap();
+        assert_eq!(l.maximize_size(compatible), Ok(l.viewport()));
+        l.set_constraints(id(0), compatible).unwrap();
+        l.set_maximized(id(0), true).unwrap();
+        l.set_constraints(id(0), fixed).unwrap();
+        assert!(!l.is_maximized(id(0)));
+        assert_eq!(l.placements(), l.base_placements());
+        l.set_constraints(id(0), compatible).unwrap();
+        l.set_maximized(id(0), true).unwrap();
+        l.set_viewport(Size {
+            width: 1200.,
+            height: 600.,
+        })
+        .unwrap();
+        assert!(!l.is_maximized(id(0)));
+        assert_eq!(l.placements(), l.base_placements());
+        l.set_viewport(Size {
+            width: 1000.,
+            height: 600.,
+        })
+        .unwrap();
+        l.set_mode(LayoutMode::Canvas);
+        l.set_maximized(id(0), true).unwrap();
+        l.set_camera(Camera::new(Point::default(), 0.5).unwrap())
+            .unwrap();
+        assert!(!l.is_maximized(id(0)));
+        l.set_camera(Camera::new(Point::default(), 2.).unwrap())
+            .unwrap();
+        let minimum = SizeConstraints::from_xdg((1, 1), (700, 500)).unwrap();
+        l.set_constraints(id(0), minimum).unwrap();
+        l.set_maximized(id(0), true).unwrap();
+        l.set_mode(LayoutMode::Strip);
+        assert!(!l.is_maximized(id(0)));
+        assert_eq!(l.validate(), Ok(()));
     }
 }

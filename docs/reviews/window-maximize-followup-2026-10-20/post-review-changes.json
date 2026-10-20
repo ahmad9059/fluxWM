@@ -1,0 +1,14 @@
+{
+  "crates/fluxwm-fixture/src/main.rs": {
+    "reviewed": "9a56cb9e4eacc1741b5d4b643cb703c16d8ee01f7d01317b61ce2d87f359c708",
+    "final": "4aa32824985824c3a9eb1951232832be1567eb621bf51ff9d5b2478d70df36fa"
+  },
+  "crates/fluxwm/src/state.rs": {
+    "reviewed": "6dd5257bbabd2e50635a33474dc75247fd32bd0b2443905d13c0e6a478fe29bc",
+    "final": "b66edc34372331d7b1ccd90218ad06da7ed14b6bb179fcb1a62ce5eb91349c17"
+  },
+  "docs/development/maximize.md": {
+    "reviewed": "4be19d655143a453bbc387f1f0e0f05c11ac8e6f22272bd157c62d2efa0bf4f2",
+    "final": "20bf7f1cb446928bf832c9e994a8cd58ced9202e9bd62e7fceee778588160ee4"
+  }
+}

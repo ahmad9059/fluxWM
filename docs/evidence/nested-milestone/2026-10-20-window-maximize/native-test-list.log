@@ -1,0 +1,333 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running unittests src/lib.rs (target/debug/deps/flux_config-fd801f42e9a84b4e)
+bounds::tests::checks_depth_values_and_trailing_data_before_schema_decode: test
+coordinator::tests::diagnostics_never_retain_source_controlled_values: test
+coordinator::tests::generation_exhaustion_and_invalid_admission_do_not_alias: test
+coordinator::tests::notification_can_inspect_shared_state_without_internal_mutex: test
+schema::tests::aggregate_pattern_engine_budget_rejects_large_combined_programs: test
+schema::tests::all_matching_output_rules_merge_fields_in_order: test
+schema::tests::autostart_optional_ids_are_bounded_unique_and_backward_compatible: test
+schema::tests::defaults_roundtrip_and_remain_valid: test
+schema::tests::deny_first_capture_is_sticky_but_other_fields_are_later_wins: test
+schema::tests::invalid_references_regex_ranges_and_duplicate_keys_rejected: test
+schema::tests::tagged_records_reject_ambiguity_and_unknown_fields: test
+supervisor::tests::cancellation_of_spawned_sleeping_helper_is_typed_and_reaped: test
+supervisor::tests::error_cleanup_kills_and_reaps_the_owned_child: test
+
+13 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_core-8ce7c8253ffad06f)
+action::tests::argv_limits_preserve_empty_arguments_and_literal_shell_characters: test
+action::tests::duplicate_fields_invalid_types_and_unknown_variants_are_rejected: test
+action::tests::every_variant_keeps_its_wire_shape_and_rejects_extra_fields: test
+action::tests::shared_numeric_policy_covers_json_and_internal_construction: test
+arena::tests::free_list_iteration_and_mutation_keep_live_count_consistent: test
+arena::tests::generation_exhaustion_retires_slot_without_wrapping: test
+arena::tests::removed_identity_never_resolves_or_removes_replacement: test
+tests::geometry_rejects_nonfinite_and_uses_half_open_edges: test
+tests::identities_cannot_alias_generations_and_round_trip_without_json_precision_loss: test
+
+9 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_input-214e60fb235a45ff)
+0 tests, 0 benchmarks
+     Running tests/bindings.rs (target/debug/deps/bindings-1b0c7243b49a32c9)
+a_state_changing_shifted_action_is_checked_at_the_configured_modifier_level: test
+absent_symbols_are_explicit_and_foreign_groups_use_current_base_symbols: test
+actions_present_only_in_the_second_group_are_checked_in_that_group: test
+code_and_symbol_collisions_are_rejected_in_both_orders: test
+evdev_code_is_not_xkb_code_and_can_bind_without_symbol_assignment: test
+exact_modifiers_and_base_symbols_ignore_locked_caps_and_shifted_letters: test
+group_changing_actions_cannot_change_their_own_lookup_group: test
+invalid_names_numeric_aliases_and_duplicate_modifier_chords_fail_before_install: test
+limits_and_action_validation_apply_to_direct_rust_callers_too: test
+lock_only_actions_are_checked_even_when_matching_ignores_lock_modifiers: test
+modifier_and_group_triggers_are_not_misreported_as_reachable: test
+
+11 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_ipc-a855fcbe3678da95)
+driver::tests::buffered_work_continues_through_ping_without_more_client_bytes: test
+driver::tests::capacity_backoff_removes_listener_until_exact_retry_timer: test
+driver::tests::drain_deadline_wakes_without_reader_and_removes_all_socket_sources: test
+driver::tests::driver_can_outlive_loop_and_reports_broken_pipe_without_leaking_socket: test
+driver::tests::driver_in_loop_owned_callback_does_not_form_strong_handle_cycle: test
+driver::tests::dropping_driver_unregisters_sources_before_socket_and_clients_close: test
+driver::tests::eof_flushes_response_and_removes_duplicate_owned_fd: test
+driver::tests::exact_partial_deadline_wakes_without_client_or_periodic_polling: test
+driver::tests::idle_adapter_has_no_timer_or_repeated_wakes: test
+driver::tests::owned_sources_follow_write_backpressure_then_eof_for_large_reply: test
+driver::tests::stale_connection_registration_does_not_follow_reused_fd: test
+tests::accept_exhaustion_backs_off_and_rearms_with_a_deadline: test
+tests::bind_setup_failure_cleans_only_its_own_socket: test
+tests::bounded_connections_and_nonblocking_idle: test
+tests::buffered_requests_schedule_continuation_without_a_new_fd_edge: test
+tests::client_total_deadline_bounds_trickle_prefix_and_full_connect_backlog: test
+tests::complete_half_closed_requests_flush_and_truncated_tail_does_not_erase_them: test
+tests::config_path_is_nonempty_nul_free_and_bounded: test
+tests::controlled_drain_stops_pipeline_and_other_peer_dispatch: test
+tests::drain_absolute_deadline_cannot_be_extended_by_slow_reader: test
+tests::drain_discards_later_peers_previously_buffered_complete_request: test
+tests::drain_seals_dispatch_even_if_handler_response_is_invalid: test
+tests::frame_fragmentation_and_coalescing: test
+tests::half_close_preserves_large_pending_response_until_fully_flushed: test
+tests::outgoing_depth_size_and_escaped_strings_match_decoder: test
+tests::oversized_handler_reply_is_typed_error_without_losing_prior_replies: test
+tests::oversized_prefix_rejected_before_body: test
+tests::queued_drain_preserves_full_response_and_never_dispatches_tail: test
+tests::recursive_serializer_stops_before_unbounded_recursion: test
+tests::response_roundtrip: test
+tests::server_fragmentation_deadline_duplicate_and_stale_version: test
+tests::server_permissions_collision_and_cleanup: test
+tests::slow_reader_backpressure_and_per_message_deadline: test
+tests::socket_action_admission_uses_shared_strict_fields_and_domain_policy: test
+tests::stale_version_ids_params_and_counters: test
+tests::strict_json: test
+tests::transport_errors_follow_current_sequence_across_requests_and_connections: test
+
+37 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_layout-41151f65dcdacd54)
+tests::canvas_directional_focus_has_stable_ties_and_ignores_viewport: test
+tests::canvas_has_two_axes_negative_coordinates_and_restores_modes: test
+tests::canvas_stack_focus_scrolls_local_content_and_picking_obeys_group_clip: test
+tests::configured_default_width_only_changes_new_columns_in_both_modes: test
+tests::configured_width_still_honors_each_client_size_constraints: test
+tests::directional_scoring_uses_projected_edge_distance_after_angle: test
+tests::equal_canvas_positions_sort_by_stable_group_identity: test
+tests::first_canvas_conversion_uses_current_columns_not_insertion_snapshot: test
+tests::first_return_sorts_xy_stable_groups_then_preserves_independent_states: test
+tests::height_water_filling_respects_maximum_and_distributes_remaining: test
+tests::independent_columns_scroll_without_shrinking: test
+tests::invalid_default_or_future_admission_preserves_the_complete_model: test
+tests::invalid_mutations_preserve_valid_state_and_generations_are_distinct: test
+tests::maximize_bounds_reject_atomically_and_reveal_stays_safe: test
+tests::maximize_declines_incompatible_bounds_and_clears_after_size_changes: test
+tests::maximize_preserves_base_geometry_focus_constraints_and_minimization: test
+tests::maximized_canvas_navigation_uses_saved_geometry_across_camera_and_modes: test
+tests::minimize_tab_updates_active_and_remove_never_focuses_hidden_history: test
+tests::minimized_members_keep_constraints_and_saved_modes: test
+tests::minimized_stack_members_reserve_geometry_and_navigation_skips_them: test
+tests::randomized_10000_commands_preserve_membership_focus_and_geometry: test
+tests::reconfigure_changes_gap_preserving_members_focus_and_width_policies: test
+tests::reconfigure_modes_retain_saved_groups_tabs_and_cameras: test
+tests::reconfigure_rejects_invalid_and_aggregate_geometry_atomically: test
+tests::reconfigure_validates_dormant_stack_geometry_before_publication: test
+tests::rejected_and_remapped_admissions_use_the_current_default_without_stealing_focus: test
+tests::reorder_preserves_focused_screen_anchor: test
+tests::stable_groups_preserve_tabs_membership_and_destroy_only_when_empty: test
+tests::stack_minimum_overflow_is_reachable_and_tabs_preserve_geometry: test
+tests::tiny_viewport_and_extent_capacity_are_handled_without_partial_mutation: test
+tests::transform_round_trip_and_rebase_preserve_screen_geometry: test
+tests::unactivated_insert_and_unrelated_close_preserve_focus_and_anchor: test
+tests::xdg_constraints_handle_each_unlimited_axis_and_reject_conflicts: test
+
+33 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_native-5f0326a0827ac832)
+drm_events::tests::bounded_arbitrary_inputs_and_all_truncations_do_not_panic: test
+drm_events::tests::malformed_tail_never_delivers_valid_prefix: test
+drm_events::tests::preserves_full_cookie_unaligned_events_and_sequence_wrap: test
+drm_events::tests::vblank_and_unknown_events_do_not_authorize_a_flip: test
+frames::tests::admission_precedes_allocation_and_wrong_proof_cannot_release: test
+frames::tests::backend_unwind_preserves_uncertain_candidate_and_hides_old_scene: test
+frames::tests::blocking_completion_publishes_once_and_checks_exact_pending_cookie: test
+frames::tests::cookie_counter_never_wraps_and_exhaustion_seals_admission: test
+frames::tests::definite_rejection_returns_ready_resource_without_replacing_front: test
+frames::tests::front_and_scene_advance_only_on_exact_cookie_then_retire_on_replacement: test
+frames::tests::old_output_epoch_cookie_cannot_complete_reused_crtc: test
+frames::tests::uncertain_submit_timeout_and_invalidation_never_free_inflight_frames: test
+frames::tests::unexpected_drop_orphans_consumer_and_quota_prevents_unbounded_retry: test
+lifecycle::tests::capacity_failure_preserves_ready_devices_and_removal_releases_capacity: test
+lifecycle::tests::exhausted_counters_seal_instead_of_wrapping: test
+lifecycle::tests::inactive_boot_and_duplicate_discovery_cannot_prepare: test
+lifecycle::tests::pause_resume_and_changed_state_reject_old_completion: test
+lifecycle::tests::remove_and_reused_device_number_do_not_reuse_ticket: test
+lifecycle::tests::shutdown_invalidates_pending_and_all_future_work: test
+output::tests::exact_modifier_intersection_is_required_and_serializes_losslessly: test
+output::tests::excludes_non_desktop_unknown_disconnected_and_invalid_modes: test
+output::tests::exhaustive_two_by_two_resource_graphs_match_independent_oracle: test
+output::tests::input_order_is_irrelevant_and_current_routes_break_ties: test
+output::tests::rational_refresh_and_mode_ranking_handle_edge_cases: test
+output::tests::rejects_duplicate_zero_unknown_references_and_capacity_without_partial_plan: test
+output::tests::reroutes_flexible_output_without_reusing_encoder_crtc_or_plane: test
+system::atomic::tests::capacity_rejection_is_atomic_and_replacement_remains_possible: test
+system::atomic::tests::full_cookie_pointer_arrays_order_and_replacement_are_exact: test
+system::atomic::tests::kernel_request_flags_always_test_only_without_events_or_nonblock: test
+system::atomic::tests::live_commits_require_events_but_initial_modeset_and_rollback_do_not: test
+system::atomic::tests::uapi_layout_matches_current_linux_struct_contract: test
+system::discovery::tests::acquisition_retains_original_modes_and_shared_plane_has_one_owner: test
+system::discovery::tests::detects_resource_churn_but_accepts_resource_reordering: test
+system::discovery::tests::every_query_failure_aborts_without_publishing_partial_inventory: test
+system::discovery::tests::format_pair_capacity_failure_is_an_explicit_unavailable_plan: test
+system::discovery::tests::rejects_inconsistent_plane_formats_and_mode_index_records: test
+system::discovery::tests::rejects_over_capacity_resources_before_object_queries: test
+system::events::tests::batch_stamp_stays_old_after_callback_advances_generation: test
+system::events::tests::drain_discards_queued_packets_until_eagain_and_rejects_eof: test
+system::events::tests::drain_rejects_blocking_descriptor_without_reading: test
+system::events::tests::owned_pipe_dispatch_preserves_cookie_and_disables_after_malformed_read: test
+system::restore::tests::distinct_getfb_handles_closed_once_even_when_close_fails: test
+system::restore::tests::failed_closefb_preflight_cleans_probe_without_retained_clone: test
+system::restore::tests::successful_closefb_preflight_precedes_retained_clone: test
+system::restore::tests::transient_values_are_rejected: test
+system::restore::tests::unknown_and_wrong_object_properties_are_rejected: test
+system::scanout::tests::composed_content_stays_private_until_exact_completion_and_stops_on_invalidation: test
+system::scanout::tests::failed_restore_retains_front_and_pending_until_synchronous_success: test
+system::tests::broker_flags_are_enforced_on_original_and_renderer_duplicate: test
+system::tests::failed_broker_close_is_counted_and_not_repeated: test
+system::tests::failed_post_open_setup_still_closes_broker_device_once: test
+system::tests::inactive_or_failed_open_never_produces_an_owned_device: test
+system::tests::input_adapter_enforces_flags_transfers_ownership_and_accounts_close_failure: test
+system::tests::input_adapter_flag_failure_closes_without_transferring_or_retrying: test
+system::tests::notification_shutdown_suppresses_ready_but_preserves_terminal_events: test
+system::tests::output_failure_reports_context_readiness_and_explicit_missing_plan: test
+system::tests::partial_initialization_guard_pauses_on_error_and_disarms_on_handoff: test
+system::tests::reentrant_removal_keeps_broker_and_session_until_dispatcher_fd_retires: test
+system::tests::registration_does_not_retain_event_loop_and_survives_loop_first_drop: test
+system::tests::retirement_pauses_before_drop_and_ignores_absent_resources: test
+target::routes::tests::detaches_unplanned_clones_and_preserves_unrelated_routes: test
+target::routes::tests::disables_source_crtc_losing_last_connector_and_clears_its_planes: test
+target::routes::tests::rejects_stealing_primary_from_unrelated_surviving_output: test
+target::routes::tests::rejects_unknown_duplicate_and_over_capacity_snapshot_before_planning: test
+target::tests::all_targets_live_during_joint_test_and_retire_before_return: test
+target::tests::allocation_retries_have_a_global_attempt_budget: test
+target::tests::cleanup_failure_cannot_be_reported_as_a_successful_test: test
+target::tests::failed_joint_test_preserves_error_and_cleans_every_target: test
+target::tests::fatal_prepare_failure_drops_prior_target_and_never_tests: test
+target::tests::format_fallback_preserves_exact_pairs_and_xrgb_priority: test
+target::tests::legacy_empty_and_budget_reject_before_allocating: test
+target::tests::renderer_cache_retires_after_targets_and_errors_cannot_pass: test
+
+72 tests, 0 benchmarks
+     Running unittests src/probe.rs (target/debug/deps/fluxwm_native_probe-3256e335b54763c7)
+tests::empty_or_inactive_initialization_is_not_healthy: test
+tests::preview_requires_explicit_session_device_and_connector: test
+tests::target_health_requires_nonempty_successful_current_gpu_tickets: test
+tests::target_test_command_requires_explicit_session_opt_in: test
+
+4 tests, 0 benchmarks
+     Running tests/probe.rs (target/debug/deps/probe-517038775f78e78a)
+help_and_invalid_options_do_not_start_session_mode: test
+read_only_check_does_not_need_a_session_backend: test
+
+2 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_process-3b6f38120e16a7e0)
+autostart::tests::accepted_near_cap_prefixes_survive_three_restart_removal_readd_supersessions: test
+autostart::tests::failed_replacement_retires_old_child_and_unchanged_failure_is_not_retried: test
+autostart::tests::fast_exit_and_failed_exec_are_not_repeated_on_unchanged_reload: test
+autostart::tests::once_restart_named_reorder_removal_and_reintroduction_own_real_children: test
+autostart::tests::plan_validation_and_stale_admission_are_side_effect_free: test
+autostart::tests::positional_zero_and_named_zero_have_separate_owned_children: test
+autostart::tests::rejected_latest_plan_keeps_partial_active_status_settled_after_child_exit: test
+autostart::tests::retained_argv_budget_rejects_before_effects_and_removal_releases_bytes: test
+autostart::tests::session_identity_budget_rejects_whole_plan_without_starting_new_entries: test
+autostart::tests::shutdown_uses_a_common_grace_for_term_ignoring_owned_children: test
+autostart::tests::superseded_prefix_cannot_exceed_retained_history_budget: test
+autostart::tests::superseded_retirement_restores_original_argv_for_restartable_identity: test
+tests::actual_calloop_completion_transfers_child_ownership_to_root: test
+tests::actual_child_gets_instance_environment_and_only_three_masks_unblocked: test
+tests::bounded_completion_backlog_cannot_deadlock_worker_shutdown: test
+tests::child_fixture_entry: test
+tests::eight_queued_jobs_reject_overflow_and_shutdown_cancels_active_result: test
+tests::exact_arguments_and_environment_overrides_do_not_split_or_inherit_display_fd: test
+tests::failed_exec_reports_operation_and_worker_keeps_servicing_jobs: test
+tests::managed_child_drop_kills_and_reaps_and_wait_caches_exit: test
+tests::receiver_drop_kills_unsent_child_and_stops_worker_without_orphan: test
+tests::validates_argv_environment_and_missing_executable: test
+
+22 tests, 0 benchmarks
+     Running unittests src/lib.rs (target/debug/deps/flux_scene-34e1fc2db6ffbb50)
+tests::allocation_candidates_are_distinct_from_visual_hits_and_clip_to_viewport: test
+tests::capacity_counts_filtered_inputs_and_consumes_at_most_one_over_limit: test
+tests::duplicate_ids_include_hidden_inputs_but_generations_remain_distinct: test
+tests::endpoint_limit_is_checked_separately_from_origin_and_width: test
+tests::hidden_offscreen_and_disjoint_visual_container_have_no_scene_entry: test
+tests::integer_rounding_uses_shared_edges_and_rejects_overflow_without_saturation: test
+tests::intersections_require_positive_area_and_validate_all_fields: test
+tests::invalid_hidden_geometry_nonpositive_sizes_overflow_and_loss_of_extent_are_rejected: test
+tests::negative_origins_and_adjacent_half_open_boundaries_have_one_owner: test
+tests::overlap_order_is_reverse_of_stable_explicit_draw_order: test
+tests::oversized_client_retains_actual_geometry_and_picks_only_allocated_clip: test
+tests::snapshot_owns_copied_geometry_and_clone_preserves_pick_order: test
+
+12 tests, 0 benchmarks
+     Running unittests src/main.rs (target/debug/deps/fluxctl-f170dea4d3fd0b3b)
+0 tests, 0 benchmarks
+     Running tests/cli.rs (target/debug/deps/cli-9bf6b9d1cf83d286)
+cli_readiness_and_rejected_statuses: test
+cli_success_contains_sequence_and_payload: test
+help_and_missing_socket: test
+
+3 tests, 0 benchmarks
+     Running unittests src/main.rs (target/debug/deps/fluxwm-c2cddb15809bd669)
+config::tests::accepted_request_hides_prepared_generation_before_worker_observes_request: test
+config::tests::configured_width_resolves_one_based_presets_without_recursive_defaults: test
+config::tests::termination_seals_ready_config_publication: test
+config::tests::worker_publication_rejects_stale_and_closed_generations: test
+cursor::tests::hotspot_origin_is_checked_before_integer_conversion: test
+health::tests::empty_monitor_has_no_timer_or_strong_loop_cycle: test
+health::tests::late_pong_before_timer_service_still_records_missed_deadline: test
+health::tests::timeout_is_once_at_boundary_and_late_pong_recovers_without_duplicate_probe: test
+native::tests::lifecycle_changes_and_removal_have_distinct_failure_paths: test
+option_tests::configuration_paths_reject_empty_nul_and_expansion_beyond_budget: test
+option_tests::native_options_reject_ambiguous_or_unsupported_modes: test
+option_tests::native_output_ids_are_explicit_and_bounded: test
+option_tests::source_discovery_is_explicit_and_ignores_relative_xdg_roots: test
+scene::tests::container_projection_precedes_integer_conversion: test
+scene::tests::offscreen_camera_limit_does_not_reject_the_local_scene: test
+scene::tests::snapped_container_edge_has_the_same_half_open_input_boundary: test
+
+16 tests, 0 benchmarks
+     Running unittests src/main.rs (target/debug/deps/fluxwm_config-605e064769c31a33)
+tests::executable_return_values_and_text_only_chunks_are_rejected: test
+tests::pinned_build_really_embeds_lua54: test
+tests::raw_conversion_rejects_metatables_without_executing_metamethods: test
+
+3 tests, 0 benchmarks
+     Running tests/containment.rs (target/debug/deps/containment-7252830c6578d74e)
+child_receives_minimal_environment_fd_isolation_and_os_limits: test
+documentation_example_is_real_config_and_vm_is_lua54: test
+hostile_plain_data_and_structural_inputs_are_rejected: test
+infinite_loop_catchable_hook_and_allocation_are_bounded: test
+restricted_allowlist_has_no_host_or_dynamic_code_access: test
+source_bytes_and_result_trailing_junk_are_not_accepted: test
+supervisor_reaps_timeout_and_bounds_diagnostic_and_result_pipes: test
+
+7 tests, 0 benchmarks
+     Running tests/coordinator.rs (target/debug/deps/coordinator-a1fffe4d3ef22e52)
+accepted_missing_path_supersedes_held_candidate_and_recovers_without_path_diagnostics: test
+actual_helper_coalesces_pending_and_rejects_stale_even_when_latest_fails: test
+actual_helper_shutdown_cancels_active_drops_pending_and_prevents_late_commit: test
+actual_helper_timeout_then_recovery_and_foreign_candidate_rejection: test
+actual_lua_error_text_is_not_retained_in_coordinator_diagnostics: test
+coordinator_shutdown_cancels_sleeping_helper_without_cpu_backstop: test
+fifo_path_worker_child: test
+fifo_without_writer_does_not_block_and_test_process_is_owned_and_reaped: test
+invalid_path_admission_preserves_generation_and_held_candidate: test
+worker_reads_real_file_and_explicitly_allows_symlinks_and_non_utf8_paths: test
+worker_rejects_directory_oversized_and_non_utf8_source_before_helper_evaluation: test
+
+11 tests, 0 benchmarks
+     Running unittests src/main.rs (target/debug/deps/fluxwm_fixture-9d28713a3eff6739)
+tests::a_silent_server_cannot_hold_the_event_loop_past_the_deadline: test
+tests::container_checker_accepts_exact_clip_and_rejects_one_pixel_leak: test
+tests::diagnostics_rejects_oversized_response_before_allocating_payload: test
+tests::diagnostics_silent_peer_cannot_exceed_deadline: test
+tests::idle_observation_waits_for_its_interval_without_false_timeout: test
+tests::input_event_file_is_live_private_and_matches_retained_records: test
+tests::missing_socket_fails_without_blocking: test
+tests::oversized_pattern_preserves_original_quadrants_and_distinct_cyan_overflow: test
+tests::shm_pattern_is_native_xrgb_with_four_distinct_quadrants: test
+
+9 tests, 0 benchmarks
+   Doc-tests flux_config
+0 tests, 0 benchmarks
+   Doc-tests flux_core
+0 tests, 0 benchmarks
+   Doc-tests flux_input
+0 tests, 0 benchmarks
+   Doc-tests flux_ipc
+0 tests, 0 benchmarks
+   Doc-tests flux_layout
+0 tests, 0 benchmarks
+   Doc-tests flux_native
+0 tests, 0 benchmarks
+   Doc-tests flux_process
+0 tests, 0 benchmarks
+   Doc-tests flux_scene
+0 tests, 0 benchmarks

@@ -1,0 +1,324 @@
+{
+  "artifacts": "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene",
+  "binary": "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-native",
+  "binary_sha256": "f1d2e89e421ca575742886b50ef56fe9dccc68f0de8c51ba258c1d97d607776d",
+  "binary_sha256_after": "f1d2e89e421ca575742886b50ef56fe9dccc68f0de8c51ba258c1d97d607776d",
+  "cases": [
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-5b2c584a4e9c48e1813d803a",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/popup-lifecycle/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/popup-lifecycle/stats.json",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-fixture",
+        "popup-lifecycle",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6087,
+      "environment": {
+        "DISPLAY": ":8756",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-n7ad29u5"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "popup-lifecycle",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-n7ad29u5/fluxwm/fluxscene-5b2c584a4e9c48e1813d803a.sock",
+        "pid": 67866,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-5b2c584a4e9c48e1813d803a"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-5b2c584a4e9c48e1813d803a",
+      "stats": {
+        "compositions": 7,
+        "destroyed": 2,
+        "final_windows": 0,
+        "flush_cycles": 49,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 7,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 3,
+        "popup_grabs_denied_missing_press": 1,
+        "redraws": 8,
+        "submissions": 4,
+        "unmaps": 1,
+        "wayland_requests": 123
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-8e26d63a210c4dadab30bb20",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/pointer-feedback/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/pointer-feedback/stats.json",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-fixture",
+        "pointer-feedback",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6089,
+      "environment": {
+        "DISPLAY": ":8756",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-n7ad29u5"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "pointer-feedback",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-n7ad29u5/fluxwm/fluxscene-8e26d63a210c4dadab30bb20.sock",
+        "pid": 68091,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-8e26d63a210c4dadab30bb20"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-8e26d63a210c4dadab30bb20",
+      "stats": {
+        "compositions": 3,
+        "destroyed": 1,
+        "final_windows": 0,
+        "flush_cycles": 25,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 3,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 1,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 7,
+        "submissions": 3,
+        "unmaps": 0,
+        "wayland_requests": 27
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-f2cbca69d8ce45b2a4038b88",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/container-clip/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/container-clip/stats.json",
+        "--screenshot",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/container-clip/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-fixture",
+        "container-clip",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6093,
+      "environment": {
+        "DISPLAY": ":8756",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-n7ad29u5"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "container-clip",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "pixels": {
+        "background_rgb": [
+          15,
+          18,
+          23
+        ],
+        "expected_rgb_counts": {
+          "blue": 19200,
+          "cyan": 0,
+          "green": 14400,
+          "red": 19200,
+          "yellow": 14400
+        },
+        "height": 800,
+        "pixel_validation": "exact-row-equality",
+        "right_edge_x280_matches_background": true,
+        "sha256": "7f7460e47c88e7e3cbda59ccd8d559fa1e532d728445a646214e31e22d0fd57c",
+        "width": 1280
+      },
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-n7ad29u5/fluxwm/fluxscene-f2cbca69d8ce45b2a4038b88.sock",
+        "pid": 68281,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-f2cbca69d8ce45b2a4038b88"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-f2cbca69d8ce45b2a4038b88",
+      "stats": {
+        "compositions": 6,
+        "destroyed": 1,
+        "final_windows": 0,
+        "flush_cycles": 37,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 5,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 1,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 9,
+        "submissions": 4,
+        "unmaps": 0,
+        "wayland_requests": 40
+      }
+    },
+    {
+      "child_environment_overrides": {
+        "RUST_LOG": "fluxwm=info"
+      },
+      "command": [
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-native",
+        "--backend",
+        "nested",
+        "--no-config",
+        "--socket",
+        "fluxscene-c23d798bf56146a0a76ce670",
+        "--exit-after-ms",
+        "6000",
+        "--ready-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/popup-clip/ready.json",
+        "--stats-file",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/popup-clip/stats.json",
+        "--screenshot",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-feature-gui/scene/popup-clip/scene.ppm",
+        "--screenshot-after-ms",
+        "700",
+        "--",
+        "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-fixture",
+        "popup-clip",
+        "--timeout-ms",
+        "4500"
+      ],
+      "elapsed_ms": 6093,
+      "environment": {
+        "DISPLAY": ":8756",
+        "WAYLAND_DISPLAY": null,
+        "WAYLAND_SOCKET": null,
+        "WINIT_UNIX_BACKEND": "x11",
+        "XDG_RUNTIME_DIR": "/tmp/fluxrt-n7ad29u5"
+      },
+      "leaked_endpoints_before_harness_cleanup": [],
+      "mode": "popup-clip",
+      "ok": true,
+      "parent_environment_unchanged": true,
+      "pixels": {
+        "background_rgb": [
+          15,
+          18,
+          23
+        ],
+        "expected_rgb_counts": {
+          "blue": 19200,
+          "cyan": 0,
+          "green": 14400,
+          "magenta": 4800,
+          "red": 16320,
+          "yellow": 14400
+        },
+        "height": 800,
+        "pixel_validation": "exact-row-equality",
+        "popup_paints_above_own_root": true,
+        "popup_visible_outside_root_clip": true,
+        "right_edge_x312_matches_background": true,
+        "sha256": "242256d40e68581fa5c61525af9677f8bbd12719ce97c12f66da0c5c0f89c2c5",
+        "width": 1280
+      },
+      "readiness": {
+        "backend": "nested",
+        "ipc_socket": "/tmp/fluxrt-n7ad29u5/fluxwm/fluxscene-c23d798bf56146a0a76ce670.sock",
+        "pid": 68348,
+        "status": "dispatch-ready",
+        "wayland_display": "fluxscene-c23d798bf56146a0a76ce670"
+      },
+      "returncode": 0,
+      "socket": "fluxscene-c23d798bf56146a0a76ce670",
+      "stats": {
+        "compositions": 5,
+        "destroyed": 1,
+        "final_windows": 0,
+        "flush_cycles": 36,
+        "flush_retry_timer_fired": 0,
+        "flush_would_block": 0,
+        "focus_cancelled_buttons": 0,
+        "focus_cancelled_keys": 0,
+        "frames_sent": 5,
+        "host_focus_losses": 1,
+        "ipc_dispatches_after_shutdown": 0,
+        "ipc_drain_timed_out": 0,
+        "maps": 1,
+        "popup_grabs_denied_missing_press": 0,
+        "redraws": 9,
+        "submissions": 4,
+        "unmaps": 0,
+        "wayland_requests": 47
+      }
+    }
+  ],
+  "errors": [],
+  "fixture": "/home/ahmad/Documents/Projects/fluxwm/target/window-maximize-final-checks/bin/fluxwm-fixture",
+  "fixture_sha256": "74c6a0a000a869ee00911bdaa23d559458644a9c14b997568f51b70c7cf4ba82",
+  "fixture_sha256_after": "74c6a0a000a869ee00911bdaa23d559458644a9c14b997568f51b70c7cf4ba82",
+  "ok": true,
+  "parent_environment_unchanged": true,
+  "scope": "nested synthetic SHM scene/input regressions; excludes physical input, native backend and host presentation qualification"
+}

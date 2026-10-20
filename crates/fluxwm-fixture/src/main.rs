@@ -46,6 +46,7 @@ struct Window {
     capabilities: u32,
     capability_values: Vec<u32>,
     activated: bool,
+    maximized: bool,
     suspended: bool,
     destroyed: bool,
 }
@@ -220,6 +221,7 @@ impl State {
             capabilities: 0,
             capability_values: Vec::new(),
             activated: false,
+            maximized: false,
             suspended: false,
             destroyed: false,
         });
@@ -368,6 +370,45 @@ impl State {
         w.surface.commit();
         w.buffer = Some(buffer);
         w._storage = Some(file);
+        Ok(())
+    }
+    /// Allocate an exact-size client buffer; used for strict maximized geometry.
+    fn map_sized(&mut self, index: usize, size: [i32; 2], qh: &QueueHandle<Self>) -> Result<()> {
+        let [width, height] = size;
+        let length = i64::from(width) * i64::from(height) * 4;
+        if width <= 0 || height <= 0 || length > 32 * 1024 * 1024 {
+            return Err(format!("fixture buffer dimensions out of bounds: {size:?}"));
+        }
+        let mut file = memory_file()?;
+        file.set_len(length as u64).map_err(|e| e.to_string())?;
+        let bytes = [0x40, 0x80, 0xc0, 0xff].repeat((length / 4) as usize);
+        file.write_all(&bytes).map_err(|e| e.to_string())?;
+        let pool = self
+            .shm
+            .as_ref()
+            .unwrap()
+            .create_pool(file.as_fd(), length as i32, qh, ());
+        let buffer = pool.create_buffer(
+            0,
+            width,
+            height,
+            width * 4,
+            wl_shm::Format::Xrgb8888,
+            qh,
+            (),
+        );
+        pool.destroy();
+        let w = &mut self.windows[index];
+        w.xdg.set_window_geometry(0, 0, width, height);
+        w.surface.attach(Some(&buffer), 0, 0);
+        w.surface.damage(0, 0, width, height);
+        w.surface.frame(qh, Callback::Frame(index));
+        w.surface.commit();
+        if let Some(old) = w.buffer.replace(buffer) {
+            old.destroy();
+        }
+        w._storage = Some(file);
+        self.record(json!({"sized_map_commit":index,"size":size}));
         Ok(())
     }
     fn map(&mut self, index: usize, qh: &QueueHandle<Self>) -> Result<()> {
@@ -716,6 +757,9 @@ impl Dispatch<xdg_toplevel::XdgToplevel, usize> for State {
                 state.windows[*index].activated = states.as_chunks::<4>().0.iter().any(|bytes| {
                     u32::from_ne_bytes(*bytes) == xdg_toplevel::State::Activated as u32
                 });
+                state.windows[*index].maximized = states.as_chunks::<4>().0.iter().any(|bytes| {
+                    u32::from_ne_bytes(*bytes) == xdg_toplevel::State::Maximized as u32
+                });
                 state.windows[*index].suspended = states.as_chunks::<4>().0.iter().any(|bytes| {
                     u32::from_ne_bytes(*bytes) == xdg_toplevel::State::Suspended as u32
                 });
@@ -723,18 +767,25 @@ impl Dispatch<xdg_toplevel::XdgToplevel, usize> for State {
             xdg_toplevel::Event::WmCapabilities { capabilities } => {
                 state.windows[*index].capabilities += 1;
                 state.record(json!({"wm_capabilities":index,"bytes":capabilities}));
-                let values: Vec<_> = capabilities
+                let mut values: Vec<_> = capabilities
                     .as_chunks::<4>()
                     .0
                     .iter()
                     .map(|bytes| u32::from_ne_bytes(*bytes))
                     .collect();
+                // Capabilities are a protocol set; Smithay stores them in a
+                // HashSet, so wire order is deliberately not an oracle.
+                values.sort_unstable();
                 state.windows[*index].capability_values = values.clone();
                 if capabilities.len() % 4 != 0
-                    || values != [xdg_toplevel::WmCapabilities::Minimize as u32]
+                    || values
+                        != [
+                            xdg_toplevel::WmCapabilities::Maximize as u32,
+                            xdg_toplevel::WmCapabilities::Minimize as u32,
+                        ]
                 {
                     state.error = Some(format!(
-                        "window {index}: expected exactly Minimize capability, got {values:?}"
+                        "window {index}: expected exactly Maximize, Minimize capabilities, got {values:?}"
                     ));
                 }
             }
@@ -2959,6 +3010,494 @@ fn configure_stream(timeout: Duration) -> Json {
     evidence
 }
 
+/// Real wire maximize requests, bounded configure replies and exact-size commits.
+fn maximize(timeout: Duration) -> Json {
+    let start = Instant::now();
+    let deadline = start + timeout;
+    let mut state = State::new(start);
+    state.popup_mode = true;
+    state.pointer_feedback_enabled = true;
+    let mut healthy = State::new(start);
+    let mut evidence = json!({"ok":false,"mode":"maximize"});
+    let result = (|| -> Result<()> {
+        let path = display_path()?;
+        let connection = connect(&path, deadline)?;
+        let mut queue = connection.new_event_queue::<State>();
+        let qh = queue.handle();
+        health_registry(&connection, &mut queue, &mut state, deadline)?;
+        let ipc = std::env::var_os("FLUXWM_SOCKET").ok_or("explicit IPC socket required")?;
+        let mut diagnostics = Diagnostics::new(Path::new(&ipc), deadline)?;
+        let root = state.create(&qh, "maximize");
+        state.windows[root].toplevel.set_maximized();
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "preinitial maximize configure",
+            |s| s.windows[root].configures > 0,
+        )?;
+        if !state.windows[root].maximized {
+            return Err("preinitial maximize missing wire state".into());
+        }
+        let size = state.windows[root].pending_size;
+        state.map_sized(root, size, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "preinitial maximized frame",
+            |s| s.windows[root].frames > 0,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let first = configure_window(&mut diagnostics, "FluxWM fixture maximize", deadline)?;
+        if first["maximized"] != true {
+            return Err("initial model not maximized".into());
+        }
+        evidence["preinitial"] = first.clone();
+        // A repeated request still needs a configure even when its state is unchanged.
+        let count = state.windows[root].configures;
+        state.windows[root].toplevel.set_maximized();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "same-state maximize response",
+            |s| s.windows[root].configures > count,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        evidence["repeated_maximize_replied"] = json!(true);
+        state.windows[root].toplevel.unset_maximized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        if state.windows[root].maximized {
+            return Err("unmaximize wire state remained set".into());
+        }
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let normal = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if normal["maximized"] != false {
+            return Err("unmaximize model remained set".into());
+        }
+        evidence["normal"] = normal.clone();
+        let count = state.windows[root].configures;
+        state.windows[root].toplevel.unset_maximized();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "same-state unmaximize response",
+            |s| s.windows[root].configures > count,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        // Hold the only in-flight configure. Old normal commits are legal before ack.
+        state.windows[root].ack_configures = false;
+        state.windows[root].toplevel.set_maximized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let held = state.windows[root].configures;
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        for _ in 0..12 {
+            state.windows[root].toplevel.unset_maximized();
+            state.windows[root].toplevel.set_maximized();
+        }
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let bounded = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if bounded["configure"]["unacknowledged"] != 1 || state.windows[root].configures != held {
+            return Err(format!(
+                "maximize replies escaped single-flight bound: {bounded}"
+            ));
+        }
+        evidence["held_ack"] = bounded;
+        let serial = *state.windows[root].configure_serials.last().unwrap();
+        state.windows[root].ack_configures = true;
+        state.windows[root].xdg.ack_configure(serial);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "coalesced maximize response",
+            |s| s.windows[root].configures > held,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        if !state.windows[root].maximized {
+            return Err("coalesced latest maximize state missing".into());
+        }
+        let size = state.windows[root].pending_size;
+        state.map_sized(root, size, &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let maximized =
+            configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if maximized["maximized"] != true || maximized["id"] != normal["id"] {
+            return Err("mapped maximize identity/state failed".into());
+        }
+        evidence["maximized"] = maximized;
+        state.windows[root].toplevel.set_minimized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let hidden = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if hidden["minimized"] != true || hidden["maximized"] != true {
+            return Err("minimize lost maximize state".into());
+        }
+        diagnostics.call(
+            "action",
+            json!({"name":"restore-window","window":first["id"]}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let restored = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if restored["minimized"] != false
+            || restored["maximized"] != true
+            || restored["focused"] != true
+        {
+            return Err("restore did not preserve maximization/focus".into());
+        }
+        evidence["minimize_restore"] = restored;
+        diagnostics.call(
+            "action",
+            json!({"name":"maximize","toggle":false}),
+            deadline,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.map_sized(root, [WIDTH, HEIGHT], &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let normal_again =
+            configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if normal_again["geometry"] != normal["geometry"] || normal_again["maximized"] != false {
+            return Err("unmaximize did not restore saved normal geometry".into());
+        }
+        evidence["normal_restored"] = normal_again;
+        diagnostics.call("action", json!({"name":"maximize","toggle":true}), deadline)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let size = state.windows[root].pending_size;
+        state.map_sized(root, size, &qh)?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        state.windows[root].surface.attach(None, 0, 0);
+        state.windows[root].surface.commit();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let unmapped = configure_window(&mut diagnostics, first["id"].as_str().unwrap(), deadline)?;
+        if unmapped["maximized"] != false || unmapped["mapped"] != false {
+            return Err("unmap retained maximization".into());
+        }
+        evidence["unmapped"] = unmapped;
+        // Request while the initial configure is held, before the first buffer.
+        let second = state.create(&qh, "maximize-before-map");
+        state.windows[second].ack_configures = false;
+        state.windows[second].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "held initial configure",
+            |s| s.windows[second].configures > 0,
+        )?;
+        state.windows[second].toplevel.set_maximized();
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let serial = *state.windows[second].configure_serials.last().unwrap();
+        state.windows[second].ack_configures = true;
+        state.windows[second].xdg.ack_configure(serial);
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "maximize response before first buffer",
+            |s| s.windows[second].configures > 1 && s.windows[second].maximized,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let size = state.windows[second].pending_size;
+        state.map_sized(second, size, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "deferred initial maximize frame",
+            |s| s.windows[second].frames > 0,
+        )?;
+        evidence["pre_map_deferred_reply"] = json!(true);
+        // Remap the older role as a later column, then focus the earlier
+        // maximized peer. Both fill the viewport, so input at the compositor's
+        // unchanged (0,0) pointer proves which surface is actually on top.
+        let count = state.windows[root].configures;
+        state.windows[root]
+            .toplevel
+            .set_title("FluxWM fixture maximize-peer".into());
+        state.windows[root].toplevel.set_maximized();
+        state.windows[root].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "peer remap configure",
+            |s| s.windows[root].configures > count && s.windows[root].maximized,
+        )?;
+        let peer_size = state.windows[root].pending_size;
+        state.map_sized(root, peer_size, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "later overlay pointer precondition",
+            |s| {
+                s.pointer_focus_surface.as_ref() == Some(&s.windows[root].surface)
+                    && s.keyboard_focus.as_ref() == Some(&s.windows[root].surface)
+            },
+        )?;
+        diagnostics.call(
+            "action",
+            json!({"name":"focus","direction":"left"}),
+            deadline,
+        )?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "earlier maximized peer raised",
+            |s| {
+                s.pointer_focus_surface.as_ref() == Some(&s.windows[second].surface)
+                    && s.keyboard_focus.as_ref() == Some(&s.windows[second].surface)
+            },
+        )?;
+        evidence["focus_stacking"] =
+            json!({"later_pointer_precondition":true,"earlier_pointer_and_keyboard":true});
+
+        // A fixed-size client cannot fill the viewport. Decline its request
+        // with a configure rather than demand an impossible buffer size.
+        let fixed = state.create(&qh, "maximize-fixed-size");
+        state.windows[fixed].toplevel.set_min_size(WIDTH, HEIGHT);
+        state.windows[fixed].toplevel.set_max_size(WIDTH, HEIGHT);
+        state.windows[fixed].toplevel.set_maximized();
+        state.windows[fixed].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "fixed-size preinitial configure",
+            |s| s.windows[fixed].configures > 0,
+        )?;
+        if state.windows[fixed].maximized {
+            return Err("fixed-size preinitial request advertised impossible maximization".into());
+        }
+        state.map_sized(fixed, [WIDTH, HEIGHT], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "fixed-size normal frame",
+            |s| s.windows[fixed].frames > 0,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let count = state.windows[fixed].configures;
+        state.windows[fixed].toplevel.set_maximized();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "fixed-size declined maximize reply",
+            |s| s.windows[fixed].configures > count,
+        )?;
+        if state.windows[fixed].maximized {
+            return Err("fixed-size mapped request advertised impossible maximization".into());
+        }
+        let frames = state.windows[fixed].frames;
+        state.map_sized(fixed, [WIDTH, HEIGHT], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "declined maximize normal commit survival",
+            |s| s.windows[fixed].frames > frames,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let before_rejection = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture maximize-fixed-size",
+            deadline,
+        )?;
+        if before_rejection["maximized"] != false || before_rejection["focused"] != true {
+            return Err("fixed-size IPC rejection precondition failed".into());
+        }
+        let ipc_rejection = diagnostics
+            .call(
+                "action",
+                json!({"name":"maximize", "toggle":true}),
+                deadline,
+            )
+            .err()
+            .ok_or("IPC accepted impossible fixed-size maximization")?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let fixed_alive = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture maximize-fixed-size",
+            deadline,
+        )?;
+        if fixed_alive["mapped"] != true
+            || fixed_alive["maximized"] != false
+            || fixed_alive["geometry"] != before_rejection["geometry"]
+            || !state.windows[second].maximized
+            || !state.windows[root].maximized
+        {
+            return Err(
+                "declined fixed-size request changed client mapping, geometry or peers".into(),
+            );
+        }
+        evidence["fixed_size_declined"] = json!({
+            "preinitial_and_mapped_wire_replies":true,
+            "normal_commit_survived":true,
+            "ipc_error":ipc_rejection,
+            "window":fixed_alive,
+        });
+
+        // Constraints committed with the first buffer can invalidate the
+        // earlier maximize promise. Admit a visible normal window and send
+        // its correction instead of leaving the role permanently unmapped.
+        let late_fixed = state.create(&qh, "maximize-late-fixed-size");
+        state.windows[late_fixed].toplevel.set_maximized();
+        state.windows[late_fixed].surface.commit();
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "late fixed-size initial maximized configure",
+            |s| s.windows[late_fixed].configures > 0,
+        )?;
+        if !state.windows[late_fixed].maximized {
+            return Err("late fixed-size case lacks initial maximize promise".into());
+        }
+        let promised_size = state.windows[late_fixed].pending_size;
+        state.windows[late_fixed]
+            .toplevel
+            .set_min_size(WIDTH, HEIGHT);
+        state.windows[late_fixed]
+            .toplevel
+            .set_max_size(WIDTH, HEIGHT);
+        state.map_sized(late_fixed, promised_size, &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "late fixed-size first frame and normal correction",
+            |s| s.windows[late_fixed].frames > 0 && !s.windows[late_fixed].maximized,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        let late_admitted = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture maximize-late-fixed-size",
+            deadline,
+        )?;
+        if late_admitted["mapped"] != true || late_admitted["maximized"] != false {
+            return Err("constraints at first buffer left window unmapped or maximized".into());
+        }
+        let frames = state.windows[late_fixed].frames;
+        state.map_sized(late_fixed, [WIDTH, HEIGHT], &qh)?;
+        until(
+            &connection,
+            &mut queue,
+            &mut state,
+            deadline,
+            "late fixed-size corrected normal frame",
+            |s| s.windows[late_fixed].frames > frames,
+        )?;
+        protocol_roundtrip(&connection, &mut queue, &mut state, deadline)?;
+        evidence["late_fixed_size_admitted"] = json!({
+            "promised_size":promised_size,
+            "window":late_admitted,
+            "corrected_normal_frame":true,
+        });
+
+        // Malformed geometry must retire this connection, not a separate healthy client.
+        let healthy_connection = connect(&path, deadline)?;
+        let mut healthy_queue = healthy_connection.new_event_queue::<State>();
+        let healthy_qh = healthy_queue.handle();
+        health_registry(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+        )?;
+        let survivor = healthy.create(&healthy_qh, "maximize-survivor");
+        healthy.windows[survivor].surface.commit();
+        until(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+            "survivor configure",
+            |s| s.windows[survivor].configures > 0,
+        )?;
+        healthy.map(survivor, &healthy_qh)?;
+        until(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+            "survivor frame",
+            |s| s.windows[survivor].frames > 0,
+        )?;
+        state.map_sized(second, [size[0] - 1, size[1]], &qh)?;
+        let rejected = protocol_roundtrip(&connection, &mut queue, &mut state, deadline)
+            .err()
+            .ok_or("wrong-sized maximized commit accepted")?;
+        let error = connection
+            .protocol_error()
+            .ok_or_else(|| format!("missing protocol error after rejection: {rejected}"))?;
+        if error.code != xdg_wm_base::Error::InvalidSurfaceState as u32
+            || error.object_interface != "xdg_wm_base"
+        {
+            return Err(format!("wrong geometry error: {error:?}"));
+        }
+        evidence["malformed_geometry_error"] =
+            json!({"code":error.code,"interface":error.object_interface,"message":error.message});
+        protocol_roundtrip(
+            &healthy_connection,
+            &mut healthy_queue,
+            &mut healthy,
+            deadline,
+        )?;
+        let survivor_state = configure_window(
+            &mut diagnostics,
+            "FluxWM fixture maximize-survivor",
+            deadline,
+        )?;
+        if survivor_state["mapped"] != true {
+            return Err("healthy sibling lost mapping".into());
+        }
+        let stale = diagnostics
+            .call(
+                "action",
+                json!({"name":"restore-window","window":first["id"]}),
+                deadline,
+            )
+            .err()
+            .ok_or("retired ID accepted restore")?;
+        if !stale.contains("unknown or unmapped window") {
+            return Err(format!("unexpected stale ID response: {stale}"));
+        }
+        evidence["stale_restore_error"] = json!(stale);
+        evidence["healthy_survivor"] = survivor_state;
+        Ok(())
+    })();
+    evidence["ok"] = json!(result.is_ok());
+    evidence["error"] = json!(result.err());
+    evidence["elapsed_ms"] = json!(start.elapsed().as_millis());
+    evidence["events"] = json!(state.events);
+    evidence["healthy_events"] = json!(healthy.events);
+    evidence
+}
+
 /// Exercise real XDG minimize requests and the compositor's explicit restore API.
 fn minimize(timeout: Duration) -> Json {
     let start = Instant::now();
@@ -2999,7 +3538,11 @@ fn minimize(timeout: Duration) -> Json {
         if state.windows.iter().any(|w| {
             w.toplevel.version() < 5
                 || w.capabilities == 0
-                || w.capability_values != [xdg_toplevel::WmCapabilities::Minimize as u32]
+                || w.capability_values
+                    != [
+                        xdg_toplevel::WmCapabilities::Maximize as u32,
+                        xdg_toplevel::WmCapabilities::Minimize as u32,
+                    ]
         }) {
             return Err("missing actual protocol v5+ Minimize capability".into());
         }
@@ -4002,7 +4545,8 @@ fn main() {
                 || mode == "popup-clip"
                 || mode == "configure-stream"
                 || mode == "configure-admission"
-                || mode == "minimize" =>
+                || mode == "minimize"
+                || mode == "maximize" =>
         {
             Ok((mode.as_str(), Duration::from_secs(5)))
         }
@@ -4015,7 +4559,8 @@ fn main() {
                 || mode == "popup-clip"
                 || mode == "configure-stream"
                 || mode == "configure-admission"
-                || mode == "minimize")
+                || mode == "minimize"
+                || mode == "maximize")
                 && flag == "--timeout-ms" =>
         {
             value
@@ -4026,11 +4571,12 @@ fn main() {
                 .ok_or("timeout must be 1..=5000 ms")
         }
         _ => Err(
-            "usage: fluxwm-fixture lifecycle|minimize|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
+            "usage: fluxwm-fixture lifecycle|minimize|maximize|config-width|config-geometry|configure-stream|configure-admission|slow-reader|pointer-feedback|popup-lifecycle|container-clip|popup-clip|input-probe|shell-health|shell-health-capacity|shell-health-disconnect [--timeout-ms N; maximum depends on mode]",
         ),
     };
     let result = match parsed {
         Ok(("minimize", timeout)) => minimize(timeout),
+        Ok(("maximize", timeout)) => maximize(timeout),
         Ok(("configure-stream", timeout)) => configure_stream(timeout),
         Ok(("config-width", timeout)) => config_width(timeout),
         Ok(("config-geometry", timeout)) => config_geometry(timeout),
